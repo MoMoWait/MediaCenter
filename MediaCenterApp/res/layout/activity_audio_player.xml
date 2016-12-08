@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.rockchips.mediacenter.viewutils.dynamicspotbg.DynBackgroudRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#002d5f" >
+
+    <!-- 音乐播放界面整体布局文件 -->
+
+    <LinearLayout
+        android:id="@+id/parent_linear"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <!-- 背景图片，暂时不用 -->
+
+        <RelativeLayout
+            android:id="@+id/fullRelative"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:visibility="gone" >
+
+            <LinearLayout
+                android:id="@+id/image_exception"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="gone" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/image_default" />
+
+                <TextView
+                    android:id="@+id/text_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dip"
+                    android:text="@string/can_not_play_image"
+                    android:textColor="#dedede"
+                    android:textSize="24sp" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <!-- 背景图片相关，暂时不用 -->
+
+        <ProgressBar
+            android:id="@+id/circleProgressBar"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="600px"
+            android:layout_marginTop="300px"
+            mce_style="?android:attr/progressBarStyleLarge"
+            android:visibility="gone" >
+        </ProgressBar>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" 
+            android:layout_marginTop="50dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp">
+
+            <com.rockchips.mediacenter.viewutils.preview.PreviewWidget
+                android:id="@+id/music_info"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="450dp"/>
+
+            <!-- 播放列表组件 -->
+
+            <com.rockchips.mediacenter.viewutils.playlist.PlayListView
+                android:id="@+id/music_playlist"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:id="@+id/playmode_icon"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/playmode_icon_sequential" />
+
+            <TextView
+                android:id="@+id/main_playmode_text"
+                android:layout_width="400dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="10dp"
+                android:text="@string/play_mode_sequence_play"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right" >
+
+                <TextView
+                    android:id="@+id/music_already_played_duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/default_remaining_duration"
+                    android:textColor="@color/white"
+                    android:textSize="30sp" />
+
+                <TextView
+                    android:id="@+id/slant"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right|center"
+                    android:layout_marginLeft="7dp"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/slant"
+                    android:textColor="@color/white"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/music_total_duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right|center"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/default_remaining_duration"
+                    android:textColor="@color/white"
+                    android:textSize="18sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <SeekBar
+            android:id="@+id/music_seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:max="1000"
+            android:minHeight="4dp"
+            android:progressDrawable="@drawable/music_seekbar_style"
+            android:thumb="@drawable/seekbar_thumb"
+            android:thumbOffset="6dp" />
+
+        <TextView
+            android:id="@+id/left_lyric"
+            android:layout_width="720dp"
+            android:layout_height="46dp"
+            android:layout_gravity="center_horizontal|left"
+            android:layout_marginLeft="72dp"
+            android:layout_marginTop="10dp"
+            android:ellipsize="end"
+            android:textColor="@color/white"
+            android:textSize="36sp" />
+
+        <TextView
+            android:id="@+id/right_lyric"
+            android:layout_width="720dp"
+            android:layout_height="46dp"
+            android:layout_gravity="center_horizontal|right"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="72dp"
+            android:ellipsize="end"
+            android:gravity="right"
+            android:textColor="@color/white"
+            android:textSize="36sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/center_no_lyric"
+        android:layout_width="wrap_content"
+        android:layout_height="46dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="100dp"
+        android:text="@string/no_lyric"
+        android:textColor="@color/white"
+        android:textSize="38sp" />
+
+</com.rockchips.mediacenter.viewutils.dynamicspotbg.DynBackgroudRelativeLayout>

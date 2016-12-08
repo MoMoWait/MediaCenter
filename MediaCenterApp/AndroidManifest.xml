@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.rockchips.mediacenter"
+    android:versionCode="2"
+    android:versionName="1.2"
+    android:sharedUserId="android.uid.system">
+
+    <uses-sdk
+        android:minSdkVersion="19"
+        android:targetSdkVersion="24" />
+
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="com.rockchips.mediacenter.localscan.PROTECT" />
+    <uses-permission android:name="com.rockchips.android.airsharing.PROTECT" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.android.permission.airsharing_play_interface" />
+    <uses-permission android:name="com.android.permission.airsharing_mediabrowser_interface" />
+    <uses-permission android:name="com.rockchips.mediacenter.dlna_server" />
+    <uses-permission android:name="com.rockchips.mediacenter.localscan_server" />
+    <uses-permission android:name="com.android.rockchips.permission.MEDIACENTER_SEND_RECV" />
+    <uses-permission android:name="android.permission.ACCESS_SUPERUSER" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    
+    
+    <application
+        android:name="com.rockchips.mediacenter.application.MediaCenterApplication"
+        android:allowBackup="false"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <meta-data
+            android:name="inputmode"
+            android:value="keyboard" />
+        <activity 
+            android:name="com.rockchips.mediacenter.activity.UpnpFileListActivity"/>
+         <activity 
+            android:name="com.rockchips.mediacenter.activity.UpnpImageActivity"/>
+        <activity
+            android:name="com.rockchips.mediacenter.activity.MainActivity"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.rockchips.mediacenter.activity.ALImageActivity"
+            android:exported="false"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
+        </activity>
+        <activity
+            android:name="com.rockchips.mediacenter.activity.FileListActivity"
+            android:exported="false"
+            android:label="@string/title_activity_file_list"
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
+        </activity>
+        <activity
+            android:name="com.rockchips.mediacenter.audioplayer.AudioPlayerActivity"
+            android:exported="false"
+            android:label="@string/title_activity_audio_player"
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
+            <intent-filter>
+                <action android:name="com.rockchips.mediacenter.audioplayer.AudioPlayerActivity" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.rockchips.mediacenter.audioplayer.InternalAudioPlayer"
+            android:exported="false"
+            android:label="@string/title_activity_audio_player"
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
+            <intent-filter>
+                <action android:name="com.rockchips.mediacenter.audioplayer.InternalAudioPlayer" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.rockchips.mediacenter.imageplayer.InternalImagePlayer"
+            android:exported="false"
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
+            <intent-filter>
+                <action android:name="com.rockchips.mediacenter.imageplayer.InternalImagePlayer" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.rockchips.mediacenter.imageplayer.ImagePlayerActivity"
+            android:exported="false"
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
+            <intent-filter>
+                <action android:name="com.rockchips.mediacenter.imageplayer.ImagePlayerActivity" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.rockchips.mediacenter.videoplayer.VideoPlayerActivity"
+            android:exported="false"
+            android:label="@string/title_activity_video_player"
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
+            <intent-filter>
+                <action android:name="com.rockchips.mediacenter.videoplayer.VideoPlayerActivity" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.rockchips.mediacenter.videoplayer.InternalVideoPlayer"
+            android:exported="false"
+            android:label="@string/title_activity_video_player"
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
+            <intent-filter>
+                <action android:name="com.rockchips.mediacenter.videoplayer.InternalVideoPlayer" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.rockchips.mediacenter.imageplayer.ImageScaleMoveActivity"
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
+        </activity>
+        <activity
+            android:name="com.rockchips.mediacenter.activity.SearchActivity"
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
+        </activity>
+
+        <service
+            android:name="com.rockchips.mediacenter.dlna.MediaCenterService"
+            android:exported="true"
+            android:permission="com.rockchips.mediacenter.dlna_server" >
+            <intent-filter>
+                <action android:name="com.rockchips.mediacenter.dlna.MediaCenterService.SenderService" />
+                <action android:name="com.rockchips.mediacenter.dlna.MediaCenterService.PlayerService" />
+            </intent-filter>
+        </service>
+        <service
+            android:name="com.rockchips.mediacenter.audioplayer.AudioPlayerService"
+            android:exported="false" >
+        </service>
+        <service
+            android:name="com.rockchips.mediacenter.service.DeviceMonitorService"
+            android:exported="false" />
+        <receiver android:name="com.rockchips.mediacenter.service.BootReceiver">
+            <intent-filter >
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+        
+         <receiver android:name="com.rockchips.mediacenter.service.NetWorkChangeReceiver">
+            <intent-filter >
+                <action android:name= "android.net.conn.CONNECTIVITY_CHANGE"/>
+            </intent-filter>
+        </receiver>
+        
+        <service android:name="com.zxt.dlna.dmr.RenderPlayerService" />
+        <service android:name="org.fourthline.cling.android.AndroidUpnpServiceImpl"/>
+        
+    </application>
+
+</manifest>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="white">#ffffff</color>
+    <color name="red">#0000ff</color>
+    <color name="gray">#c8d0d4</color>
+    <color name="homepagebg">#ABA79E</color>
+    <color name="light_black">#C7C4BC</color>
+    <color name="image_sum_color">#a9c4e8</color>
+
+    <!-- 首页设备类型字体颜色 -->
+    <color name="home_page_dev_type">#8A8A8A</color>
+
+    <!-- 首页设备名字体颜色 -->
+    <color name="home_page_dev_name">#505050</color>
+
+    <!-- 音乐预览组件的背景颜色 -->
+    <color name="audio_pre_widget">#e4e7eb</color>
+    <color name="local_audio_pre_widget">#EBE8E4</color>
+
+    <!-- 视频预览字体颜色 -->
+    <color name="vedio_preview_text">#ffffff</color>
+    <color name="folder_tip">#8B8A88</color>
+
+    <!-- 音频预览字体颜色 -->
+    <color name="audio_preview_text">#ffffff</color>
+    <color name="audio_preview_song_color">#ffffff</color>
+    <color name="background_audio_preview_song_color">#ff00ff</color>
+    <color name="audio_preview_durnation_color">#1E1E1E</color>
+
+    <!-- 顶部字体颜色 -->
+    <color name="header_text_color">#7bbbe8</color>
+
+    <!-- 视频列表字体颜色 -->
+    <color name="video_list_attr">#a9c4e8</color>
+    <color name="video_list_value">#a9c4e8</color>
+    <color name="folder_image_name">#DEDEDE</color>
+
+    <!-- 灰色背景 -->
+    <color name="option_bg_color">#b5555555</color>
+
+    <!-- 菜单栏按钮字体颜色 -->
+    <color name="menu_btn_tital_color">#54422b</color>
+
+    <!-- 透明颜色 -->
+    <color name="transparent_color">#00000000</color>
+
+    <!-- 本地文件浏览时右侧的背景色 -->
+    <color name="dlna_folder_right">#CFCCC2</color>
+
+    <!-- 云登录字体颜色 -->
+    <color name="cloud_edittext_hint">#ffffff</color>
+    <color name="cloud_input_text">#ffffff</color>
+    <color name="cloud_remember_pswd">#7bbbe8</color>
+    <color name="cloud_login_btn">#ffffff</color>
+    <color name="cloud_sharename_color">#ffffff</color>
+    <color name="cloud_address_hint">#a9c4e8</color>
+
+    <!-- 菜单分类名没有选中时颜色 -->
+    <color name="menu_category_color_uns">#7bbbe8</color>
+
+    <!-- 菜单分类名选中时颜色 -->
+    <color name="menu_category_color_s">#ffffff</color>
+    <color name="preview_name_color">#ffffff</color>
+    <color name="preview_other_color">#ffffff</color>
+    <color name="itemUnFocused">#FFFFFF</color>
+    <color name="file_num_bg">#7bbbe8</color>
+
+</resources>

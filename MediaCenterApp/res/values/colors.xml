@@ -1,0 +1,9 @@
+<resources>
+
+    <color name="black_overlay">#66000000</color>
+    <color name="file_num_bg">#cccaaa</color>
+    <color name="transparent_color">#00000000</color>
+    <color name="lyricUnFocused">#969696</color>
+    <color name="lyricFocused">#7bbbe8</color>
+
+</resources>

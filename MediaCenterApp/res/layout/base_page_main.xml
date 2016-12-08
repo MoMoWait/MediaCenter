@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <RelativeLayout
+        android:id="@+id/layout_no_files"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:visibility="gone" >
+
+        <ImageView
+            android:id="@+id/image_no_data"
+            android:layout_width="144dip"
+            android:layout_height="144dip"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="130dp"
+            android:src="@drawable/image_folder_empty" />
+
+        <TextView
+            android:id="@+id/text_no_data_tips"
+            android:layout_width="wrap_content"
+            android:layout_height="35dip"
+            android:layout_below="@id/image_no_data"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30px"
+            android:text="@string/folder_no_data"
+            android:textSize="30px" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_search_no_data"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginTop="60dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <ImageView
+            android:id="@+id/image_no_data"
+            android:layout_width="144dip"
+            android:layout_height="144dip"
+            android:layout_marginTop="130dp"
+            android:src="@drawable/search_no_data" />
+
+        <TextView
+            android:id="@+id/text_no_data_tips"
+            android:layout_width="500dip"
+            android:layout_height="40dip"
+            android:layout_marginTop="40px"
+            android:gravity="center"
+            android:text="@string/search_no_data"
+            android:textSize="32px" />
+
+        <RelativeLayout
+            android:id="@+id/select_btn"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="74px"
+            android:gravity="center_vertical" >
+
+            <Button
+                android:id="@+id/button_research"
+                android:layout_width="196dp"
+                android:layout_height="60dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="432dp"
+                android:background="@drawable/search_edit_bg"
+                android:nextFocusRight="@+id/button_exit"
+                android:text="@string/search_try_again"
+                android:textColor="@color/white"
+                android:textSize="28px" />
+
+            <Button
+                android:id="@+id/button_exit"
+                android:layout_width="196dp"
+                android:layout_height="60dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="16dp"
+                android:layout_toRightOf="@+id/button_research"
+                android:background="@drawable/search_edit_bg"
+                android:nextFocusLeft="@+id/button_research"
+                android:text="@string/exit"
+                android:textColor="@color/white"
+                android:textSize="28px" />
+
+            <ImageView
+                android:id="@+id/focus_image"
+                android:layout_width="230dp"
+                android:layout_height="94dp"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="415dp"
+                android:background="@drawable/focus"
+                android:visibility="gone" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progress_loading"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone" >
+    </ProgressBar>
+
+</RelativeLayout>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="620dp"
+    android:layout_height="wrap_content" >
+    <ImageView android:id="@+id/music_playcontrol_icon"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:src="@drawable/music_play_icon"
+        android:visibility="invisible"
+        android:layout_marginTop="13dp"
+        android:layout_marginLeft="20dp"
+        
+        />
+    <TextView
+        android:id="@+id/itemname"
+        android:layout_width="538dp"
+        android:layout_height="69dp"
+        android:textSize="26sp"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:scrollHorizontally="true"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:layout_toRightOf="@+id/music_playcontrol_icon"
+        android:layout_marginLeft="-60dp"
+        />
+    
+    <ImageView android:id="@+id/item_bg"
+        android:layout_width="620dp"
+        android:layout_height="1dp"
+        android:src="@drawable/separate"
+        android:scaleType="fitXY"
+        android:layout_below="@+id/itemname"
+        android:alpha="0.25"
+        android:visibility="invisible"
+        
+        />
+
+</RelativeLayout>

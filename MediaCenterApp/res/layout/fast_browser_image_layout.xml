@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 快速选择图片布局 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="horizontal" >
+
+    <LinearLayout
+        android:layout_width="130dip"
+        android:layout_height="88dip"
+        android:background="@drawable/fast_browser_bg"
+        android:gravity="center" >
+
+        <TextView
+            android:id="@+id/fast_index"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#ffffff"
+            android:textSize="36sp" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dip"
+        android:text="@string/text_file_seperator"
+        android:textColor="#ffffff"
+        android:textSize="26sp" />
+	<TextView
+	    android:id="@+id/fast_total"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dip"
+        android:textColor="#ffffff"
+        android:textSize="26sp" />   
+
+</LinearLayout>

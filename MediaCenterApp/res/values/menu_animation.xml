@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>     
+    <style name="VideoMenuAnimation" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/video_menu_enter</item>  
+        <item name="android:windowExitAnimation">@anim/video_menu_exit</item>   
+    </style>  
+</resources> 

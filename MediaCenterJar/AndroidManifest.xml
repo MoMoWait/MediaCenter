@@ -1,0 +1,21 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.huawei.mediacenter.sdkjar"
+    android:versionCode="101000"
+    android:versionName="1.01.000" >
+	
+    <uses-permission android:name="com.huawei.mediacenter.localscan.PROTECT"/>
+    <uses-permission android:name="com.huawei.android.airsharing.PROTECT"/>
+	<uses-permission android:name="com.huawei.mediacenter.localscan_server"/>
+	<uses-permission android:name="com.android.huawei.permission.MEDIACENTER_SEND_RECV"/>
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="19" />
+
+    <application
+        android:allowBackup="false"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+    </application>
+
+</manifest>

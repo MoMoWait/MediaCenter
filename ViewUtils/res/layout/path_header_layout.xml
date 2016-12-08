@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 头部显示布局文件 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="60dip"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="60dip"
+        android:layout_marginTop="25dip"
+        android:gravity="center_vertical" >
+
+        <!-- 左边显示图标区 -->
+
+        <ImageView
+            android:id="@+id/header_icon"
+            android:layout_width="32dip"
+            android:layout_height="32dip"
+            android:scaleType="fitXY" />
+
+        <!-- 路径区 -->
+
+        <LinearLayout
+            android:id="@+id/pathContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dip"
+            android:layout_toRightOf="@id/header_icon"
+            android:gravity="center" />
+
+        <!-- 右边menu提示区 -->
+
+        <LinearLayout
+            android:id="@+id/menu_tip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="50dip"
+            android:layout_marginTop="5dip"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="gone" >
+
+            <ImageView
+                android:id="@+id/right_menu_icon"
+                android:layout_width="16dip"
+                android:layout_height="16dip"
+                android:scaleType="fitXY" />
+
+            <TextView
+                android:id="@+id/right_menu_tip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dip"
+                android:gravity="center"
+                android:textColor="@color/header_text_color"
+                android:textSize="16sp" />
+
+            <ImageView
+                android:id="@+id/right_menu_icon2"
+                android:layout_width="16dip"
+                android:layout_height="16dip"
+                android:layout_marginLeft="4dip"
+                android:scaleType="fitXY" />
+
+            <TextView
+                android:id="@+id/right_menu_tip2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dip"
+                android:gravity="center"
+                android:textColor="@color/header_text_color"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <!-- 底部分割线 -->
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="fitXY"
+        android:src="@drawable/cut_off_rule_bg" />
+
+</LinearLayout>

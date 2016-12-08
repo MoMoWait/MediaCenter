@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<encodes id="1">
+       <default>
+				<encode name="NONE" value="0"/>
+				<encode name="BIG5" value="1"/>
+				<encode name="UTF8" value="2"/>
+				<encode name="ISO8859_1" value="3"/>
+				<encode name="ISO8859_2" value="4"/>
+				<encode name="ISO8859_3" value="5"/>
+				<encode name="ISO8859_4" value="6"/>
+				<encode name="ISO8859_5" value="7"/>
+				<encode name="ISO8859_6" value="8"/>
+				<encode name="ISO8859_7" value="9"/>
+				<encode name="ISO8859_8" value="10"/>
+				<encode name="ISO8859_9" value="11"/>
+				<encode name="ISO8859_10" value="12"/>
+				<encode name="ISO8859_11" value="13"/>
+				<encode name="ISO8859_13" value="14"/>
+				<encode name="ISO8859_14" value="15"/>
+				<encode name="ISO8859_15" value="16"/>
+				<encode name="ISO8859_16" value="17"/>
+				<encode name="UNICODE_16LE" value="18"/>
+				<encode name="UNICODE_16BE" value="19"/>
+				<encode name="GBK" value="20"/>
+				<encode name="CP1250" value="21"/>
+				<encode name="CP1251" value="22"/>
+				<encode name="CP1252" value="23"/>
+				<encode name="CP1253" value="24"/>
+				<encode name="CP1254" value="25"/>
+				<encode name="CP1255" value="26"/>
+				<encode name="CP1256" value="27"/>
+				<encode name="CP1257" value="28"/>
+				<encode name="CP1258" value="29"/>
+				<encode name="CP874" value="30"/>
+				<encode name="UNICODE_32LE" value="31"/>
+				<encode name="UNICODE_32BE" value="32"/>
+       </default>
+       <chinese>
+               <encode name="UTF8" value="2"/>
+               <encode name="UTF16BE" value="19"/>
+               <encode name="UTF16LE" value="20"/>
+               <encode name="GBK" value="21"/>
+       </chinese>
+       <!-- <english>
+               <encode name="UTF-8" value="7"/>
+               <encode name="UTF-8" value="8"/>
+       </english> -->
+       <spanish>
+               <encode name="UTF8" value="2"/>
+               <encode name="UTF16BE" value="19"/>
+               <encode name="UTF16LE" value="20"/>
+               <encode name="ISOLAT_1" value="3"/>
+       </spanish>
+       <europe>
+               <encode name="UTF8" value="2"/>
+               <encode name="UTF16BE" value="19"/>
+               <encode name="UTF16LE" value="20"/>
+               <encode name="ISO8859_2" value="4"/>
+       </europe>
+
+</encodes>
+
+<!--
+hi_charset_common.h
+
+typedef enum {
+    HI_CHARSET_CODETYPE_NONE = 0,
+    HI_CHARSET_CODETYPE_BIG5=1,   
+    HI_CHARSET_CODETYPE_UTF8=2,       
+    HI_CHARSET_CODETYPE_ISO8859_1, 
+    HI_CHARSET_CODETYPE_ISO8859_2, 
+    HI_CHARSET_CODETYPE_ISO8859_3, 
+    HI_CHARSET_CODETYPE_ISO8859_4, 
+    HI_CHARSET_CODETYPE_ISO8859_5, 
+    HI_CHARSET_CODETYPE_ISO8859_6, 
+    HI_CHARSET_CODETYPE_ISO8859_7, 
+    HI_CHARSET_CODETYPE_ISO8859_8=10, 
+    HI_CHARSET_CODETYPE_ISO8859_9,
+    HI_CHARSET_CODETYPE_ISO8859_10,
+    HI_CHARSET_CODETYPE_ISO8859_11,
+    HI_CHARSET_CODETYPE_ISO8859_13,
+    HI_CHARSET_CODETYPE_ISO8859_14=15, 
+    HI_CHARSET_CODETYPE_ISO8859_15, 
+    HI_CHARSET_CODETYPE_ISO8859_16, 
+    HI_CHARSET_CODETYPE_UNICODE_16LE,
+    HI_CHARSET_CODETYPE_UNICODE_16BE, 
+    HI_CHARSET_CODETYPE_GBK=20,
+    HI_CHARSET_CODETYPE_CP1250,  
+    HI_CHARSET_CODETYPE_CP1251,   
+    HI_CHARSET_CODETYPE_CP1252, 
+    HI_CHARSET_CODETYPE_CP1253, 
+    HI_CHARSET_CODETYPE_CP1254, 
+    HI_CHARSET_CODETYPE_CP1255, 
+    HI_CHARSET_CODETYPE_CP1256, 
+    HI_CHARSET_CODETYPE_CP1257, 
+    HI_CHARSET_CODETYPE_CP1258,  
+    HI_CHARSET_CODETYPE_CP874,   
+    HI_CHARSET_CODETYPE_UNICODE_32LE=31,
+    HI_CHARSET_CODETYPE_UNICODE_32BE=32, 
+} HI_CHARSET_CODETYPE_ENUM; -->

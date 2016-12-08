@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/video_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:gravity="center_horizontal"
+    android:orientation="vertical" >
+
+    <!-- videoview -->
+
+    <com.rockchips.mediacenter.portable.orig.OrigVideoView
+        android:id="@+id/vv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <!-- subtitle (must be inited before videoview ) -->
+
+    <SurfaceView
+        android:id="@+id/subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <!-- 加载进度图标circle ProgressBar -->
+
+    <ProgressBar
+        android:id="@+id/circleProgressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        mce_style="?android:attr/progressBarStyleLarge" />
+    <!--
+		android:layout_width="250px" 
+		android:layout_height="250px"
+		style="@style/ProgressbarStyle"    
+		android:indeterminate="true" 
+		android:layout_centerVertical="true" 
+		android:layout_marginLeft="515px"
+    -->
+
+
+    <!-- 进度条 -->
+
+    <com.rockchips.mediacenter.videoplayer.widget.SeekBarLayout
+        android:id="@+id/seekbarlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="0px"
+        android:layout_marginTop="0px" />
+
+    <!-- 菜单键播放模式 -->
+
+    <LinearLayout
+        android:id="@+id/hint_playmode_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50px"
+        android:layout_marginTop="40px"
+        android:focusable="false"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" >
+
+        <ImageView
+            android:id="@+id/hint_playmode_imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/hint_playmode_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10px"
+            android:gravity="left"
+            android:textSize="30px" />
+    </LinearLayout>
+
+    <!-- 快进/快退图标 -->
+
+    <ImageView
+        android:id="@+id/acceleration_imgview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="582px"
+        android:layout_marginTop="302px" />
+
+    <ImageView
+        android:id="@+id/acceleration_multiple"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="492px"
+        android:layout_marginTop="302px" />
+
+    <ImageView
+        android:id="@+id/acceleration_multiple_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="582px"
+        android:layout_marginTop="302px" />
+
+    <!-- 右上角显示的时间 -->
+
+    <com.rockchips.mediacenter.viewutils.timelayout.TimeLayout
+        android:id="@+id/timeLayout"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="40dp"
+        android:layout_marginTop="20dp"
+        android:focusable="false"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" />
+
+</RelativeLayout>

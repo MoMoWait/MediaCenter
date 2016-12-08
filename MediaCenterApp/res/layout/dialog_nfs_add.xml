@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 添加NFS设备对话框 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/common_grey_dailog_background" 
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp">
+    
+     <TextView 
+        android:id="@+id/text_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="25sp"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:text="@string/add_nfs_device"/>
+    
+    <EditText
+        android:id="@+id/edit_server_address"
+        android:layout_width="match_parent"
+        android:inputType="textUri" 
+        android:hint="@string/server_address"
+        android:layout_height="40dp"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="10dp"
+        android:textSize="20sp"
+        android:paddingLeft="10dp"
+        android:background="@drawable/common_edit_background"/>
+    <TextView 
+        android:id="@+id/text_ex_nfs_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textSize="16sp"
+        android:textColor="@android:color/white"
+        android:text="@string/ex_nfs_address"/>
+    
+    <EditText
+        android:id="@+id/edit_user_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:hint="@string/user_name" 
+        android:visibility="gone"/>
+
+    <EditText
+        android:id="@+id/edit_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:hint="@string/password"
+        android:inputType="textPassword" 
+        android:visibility="gone"/>
+
+    <CheckBox
+        android:id="@+id/cbox_unknow_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/unknow_name" 
+        android:visibility="gone"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btn_ok"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/ok" 
+            android:layout_margin="10dp"/>
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/cancel" 
+            android:layout_margin="10dp"/>
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="400dp"
+    android:layout_height="match_parent"
+    android:background="#7f000000">
+    
+    <LinearLayout
+        android:id="@+id/playlist_head_lay"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginTop="30dp"
+        android:layout_centerHorizontal="true"
+        android:focusable="false"
+        android:orientation="horizontal"
+        android:layout_alignParentTop="true" >
+
+        <TextView
+            android:id="@+id/playlist_dev_name"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:focusable="false"
+            android:singleLine="true"
+            android:textColor="#dedede"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/playlist_arrow_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="16dp"
+        	android:layout_marginTop="5dp"
+            android:paddingLeft="4dip"
+            android:paddingRight="4dip"
+            android:src="@drawable/video_next_path_icon" />
+
+        <TextView
+            android:id="@+id/playlist_device_name"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:focusable="false"
+            android:singleLine="true"
+            android:textColor="#dedede"
+            android:textSize="18sp" />
+    </LinearLayout>
+    
+    <ImageView
+        android:id="@+id/iv_devision"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="31dp"
+        android:layout_marginRight="31dp"
+        android:src="@drawable/devision_line"
+        android:focusable="false"
+        android:layout_below="@+id/playlist_head_lay" />
+
+    <RelativeLayout
+        android:id="@+id/video_playlist_relativelayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/iv_devision" >
+
+        <ListView
+            android:id="@+id/playlist_listview"
+            android:layout_width="300dp"
+            android:layout_height="625dp"
+        	android:layout_alignParentTop="true"
+        	android:layout_centerHorizontal="true"
+            android:listSelector="@android:color/transparent"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="0dp"
+            android:scrollbars="none">
+        </ListView>
+
+        <ImageView
+            android:id="@+id/playlist_gridview_focus"
+            android:layout_width="338dp"
+            android:layout_height="130dp"
+            android:layout_marginTop="0dp"
+        	android:layout_alignParentTop="true"
+        	android:layout_centerHorizontal="true"
+            android:background="@drawable/playlist_item_focusbg"
+            android:focusable="false" />
+    </RelativeLayout>
+
+</RelativeLayout>

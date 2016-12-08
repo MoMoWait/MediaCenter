@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- BEGIN: Added by c00224451 for  DTS2014021408267 2014/2/19  -->
+<!-- BEGIN: Modified by c00224451 for  DTS2014022708542  2014/2/28  -->
+<scale 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="@android:integer/config_longAnimTime"
+    android:fromXScale="0"
+    android:toXScale="0"
+    android:fromYScale="0"
+    android:toYScale="0"
+    android:pivotX="50%" 
+    android:pivotY="50%" />
+<!-- END: Modified by c00224451 for  DTS2014022708542  2014/2/28  -->
+<!-- END: Added by c00224451 for  DTS2014021408267 2014/2/19  -->

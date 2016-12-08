@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- BEGIN: Added by c00224451 for  DTS2014021408267 2014/2/19  -->
+<translate
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="@android:integer/config_longAnimTime"
+    android:fromYDelta="0" 
+    android:toYDelta="-100%">
+    
+</translate>
+<!-- END: Added by c00224451 for  DTS2014021408267 2014/2/19  -->

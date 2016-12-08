@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dip"
+    android:layout_height="493dip"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="258dip"
+        android:layout_height="493dip"
+        android:background="@drawable/music_menu_bg"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/music_menu_category_name"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="28dp"
+            android:text="@string/play_mode_audio"
+            android:textColor="#7bbbe8"
+            android:textSize="20dp" />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:gravity="center_horizontal" >
+
+            <ImageView
+                android:id="@+id/music_typeRectBox"
+                android:layout_width="fill_parent"
+                android:layout_height="86dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginTop="165dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/music_menu_focus_low" />
+
+            <com.rockchips.mediacenter.viewutils.wheelview.WheelView
+                android:id="@+id/music_type"
+                android:layout_width="fill_parent"
+                android:layout_height="216dp"
+                android:layout_marginBottom="15dp"
+                android:layout_marginTop="115dp"
+                android:focusable="true" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="278dip"
+        android:layout_height="118dip"
+        android:layout_marginLeft="-11dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginTop="-290dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/playmode_focus" />
+
+</LinearLayout>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+        Base application theme, dependent on API level. This theme is replaced
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+    -->
+    <style name="AppBaseTheme" parent="android:Theme.Light">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style>
+
+    <style name="ProgressbarStyle" parent="@android:style/Widget.ProgressBar"> 
+		<item name="android:indeterminateDrawable">@drawable/video_circle</item> 
+		<item name="android:indeterminateDuration">500</item> 
+		<item name="android:indeterminateOnly">true</item>  
+		<item name="android:minWidth">250px</item>   
+        <item name="android:maxWidth">250px</item>   
+        <item name="android:minHeight">250px</item>   
+        <item name="android:maxHeight">250px</item>  
+    
+    </style> 
+
+    <style name="VideoSubtitleSettingTextStyle">
+         <item name="android:textSize">16px</item>
+         <item name="android:textColor">#818b9a</item>
+         <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="VideoSubtitleSettingItemTextStyle">
+         <item name="android:textSize">24px</item>
+         <item name="android:textColor">@android:color/white</item>
+         <item name="android:gravity">center</item>
+    </style>
+    <!-- BEGIN: Modified by c00224451 for  DTS2014031902115  2014/3/19  -->
+    <style name="VideoSubtitleSettingItemNumStyle">
+         <item name="android:textSize">18px</item>
+         <item name="android:textColor">@color/file_num_bg</item>
+         <item name="android:gravity">center</item>
+    </style>
+    <!-- END: Modified by c00224451 for  DTS2014031902115  2014/3/19  -->
+
+    <style name="DialogCustomizeStyle">
+         <item name="android:windowNoTitle">true</item>
+         <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <!-- Application theme. -->
+    <style name="AppTheme" parent="AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style>
+
+    <style name="FullscreenTheme" parent="android:Theme.NoTitleBar">
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@null</item>
+        <item name="metaButtonBarStyle">@style/ButtonBar</item>
+        <item name="metaButtonBarButtonStyle">@style/ButtonBarButton</item>
+    </style>
+
+    <style name="ButtonBar">
+        <item name="android:paddingLeft">2dp</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingRight">2dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:background">@android:drawable/bottom_bar</item>
+    </style>
+
+    <style name="ButtonBarButton" />
+
+    <style name="MusicPopupWindowAnimation" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/audio_popup_enter</item>
+        <item name="android:windowExitAnimation">@anim/audio_popup_exit</item>
+    </style>
+
+    <style name="DialogCustomizeStyle">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+</resources>

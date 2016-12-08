@@ -1,0 +1,63 @@
+<com.rockchips.mediacenter.viewutils.dynamicspotbg.DynBackgroudRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rl_local_file_list_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#1159db"
+    tools:context=".FolderActivity" >
+
+    <TextView
+        android:id="@+id/text_path_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:padding="10dp"
+        android:textColor="#8fffffff"
+        android:textSize="20sp" />
+
+    <View
+        android:id="@+id/view_line"
+         android:layout_below="@+id/text_path_title"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:background="#8fffffff"/>
+
+    <LinearLayout
+        android:id="@+id/layout_content_page"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/view_line"
+        android:visibility="gone" >
+
+        <ListView
+            android:id="@+id/list_file"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="40dp"
+            android:layout_marginTop="20dp"
+            android:layout_weight="3"
+            android:focusable="true"
+            android:paddingBottom="4dp"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingTop="5dp" />
+
+        <com.rockchips.mediacenter.viewutils.preview.PreviewWidget
+            android:id="@+id/widget_preview"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp"
+            android:layout_weight="2"
+            android:focusable="false"
+            android:focusableInTouchMode="false" />
+    </LinearLayout>
+
+    <include
+        android:id="@+id/base_main_page"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/base_page_main" />
+
+</com.rockchips.mediacenter.viewutils.dynamicspotbg.DynBackgroudRelativeLayout>

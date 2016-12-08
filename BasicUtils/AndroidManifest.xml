@@ -1,0 +1,5 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.rockchips.mediacenter.basicutils"
+    android:versionCode="101000"
+    android:versionName="1.01.000" >
+</manifest>

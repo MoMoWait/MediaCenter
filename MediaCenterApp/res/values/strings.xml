@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">媒体中心</string>
+    <string name="usb_device">USB设备:</string>
+    <string name="sd">SD卡:</string>
+    <string name="nfs_device">NFS设备:</string>
+    <string name="nfs">NFS</string>
+    <string name="samba">Samba</string>
+    <string name="smb_device">SMB设备:</string>
+    <string name="refresh_network_device">刷新网络设备</string>
+    <string name="refresh_all_devices">刷新所有设备</string>
+    <string name="dlna_device">网络设备:</string>
+    <string name="unknown_device">未知设备:</string>
+    <string name="no_usb_hint_before">没有发现USB，DLNA设备，</string>
+    <string name="no_usb_hint_after">马上接上一个USB设备试试吧 !</string>
+    <string name="title_activity_file_list">FileListActivity</string>
+    <string name="title_activity_audio_player">AudioPlayerActivity</string>
+    <string name="title_activity_video_player">VideoPlayerActivity</string>
+    <string name="unknown">未知</string>
+    <string name="unknown_title">未知名称</string>
+    <string name="unknown_artist">未知艺术家</string>
+    <string name="unknown_album">未知专辑</string>    
+    <string name="menu_refresh">刷新</string>
+
+    <!-- 分区预览 -->
+    <string name="used_space_tip">已使用 : </string>
+    <string name="total_space_tip">总大小 : </string>
+    <string name="free_space_tip">可用空间 : </string>
+
+    <!-- 文件夹预览 -->
+    <string name="folder_no_data">文件夹为空，没有内容</string>
+    <string name="file_tip">文件数 : </string>
+    <string name="image_size_tip">尺寸 : </string>
+    <string name="file_size_tip">大小 : </string>
+    <string name="modify_time_tip">修改时间 : </string>
+    <string name="media_file_size_tip">媒体文件大小  : </string>
+
+    <!-- 视频文件数 -->
+    <string name="video_file_tip">文件数 : </string>
+
+    <!-- 视频文件夹大小 -->
+    <string name="video_folder_size">大小 : </string>
+    <string name="error_dowload_image">下载图片失败,请检查网络</string>
+    <string name="image_unit">张</string>
+    <string name="video_unit">个</string>
+    <string name="audio_unit">首</string>
+    <string name="audio_unitTrack">首</string>
+    <string name="all_image">全部照片</string>
+    <string name="according_iamge_name">按相册浏览</string>
+    <string name="according_date">按日期浏览</string>
+    <string name="according_dir">按目录浏览</string>
+    <string name="according_artist">按艺术家浏览</string>
+    <string name="according_album">按专辑浏览</string>
+    <string name="according_all_video">所有视频</string>
+    <string name="according_all_audio">所有音乐</string>
+    <string name="according_favorite">收藏文件</string>
+    <string name="all_media_file">所有文件</string>
+    <string name="audio_title_name">歌曲名称</string>
+    <string name="audio_title_artist_name">艺术家</string>
+    <string name="audio_title_album_name">专辑</string>
+    <!-- menu -->
+    <string name="menu_btn_search_name">搜索</string>
+    <string name="search_tips">搜索内容不能为空，请输入搜索内容</string>
+    <string name="menu_delete_fail">删除失败</string>
+    <string name="menu_delete_success">删除成功</string>
+    <string name="menu_please_press">请按</string>
+    <string name="menu_please_press_2">键更改浏览方式</string>
+    <string name="view_mode">浏览方式</string>
+    <string name="order_by_time">日期</string>
+    <string name="order_by_character">名称</string>
+    <string name="order_by_folder">文件夹</string>
+    <string name="order_by_photo_album">相册</string>
+    <string name="order_by_album">专辑</string>
+    <string name="order_by_artist">艺术家</string>
+    <string name="change_view_mode">更改浏览方式</string>
+    <string name="delete_all_files">删除全部</string>
+    <string name="delete_file">删除</string>
+    <string name="delete_all_message">您是否确定删除当前目录下全部文件及文件夹？</string>
+    <string name="delete_selected_message">您是否确定删除所选择的文件及文件夹？</string>
+    <string name="delete_cancel">取消</string>
+    <string name="delete_mode_tip">删除模式</string>
+    <string name="delete_mode_note1">键退出删除模式</string>
+    <string name="delete_mode_note2">键选择删除方式</string>
+
+    <!-- 磁盘单位 -->
+    <string name="unit_disk_size_b">B</string>
+    <string name="unit_disk_size_kb">K</string>
+    <string name="unit_disk_size_mb">M</string>
+    <string name="unit_disk_size_gb">G</string>
+    <string name="unit_disk_size_tb">T</string>
+    <string name="real_unknown">未知</string>
+    <string name="date_today_string">今天\u0020</string>
+    <string name="date_yesterday_string">昨天\u0020</string>
+    <string name="date_year_string">年</string>
+    <string name="date_month_string">月</string>
+    <string name="date_day_string">日\u0020</string>
+    <string name="video_app_name">视频播放器</string>
+    <string name="folder_no_data">文件夹为空，没有内容</string>
+    <string name="file_tip">文件数 : </string>
+    <string name="image_size_tip">尺寸 : </string>
+    <string name="file_size_tip">大小 : </string>
+    <string name="modify_time_tip">修改时间 : </string>
+    <string name="media_file_size_tip">媒体文件大小  : </string>
+    <string name="play_mode_audio">播放模式</string>
+    <string name="background_pics">播放背景</string>
+    <string name="can_not_play_image">图片无法显示</string>
+    <string name="play_mode_sequence_play">顺序播放</string>
+    <string name="play_mode_single_play">单曲播放</string>
+    <string name="play_mode_random_play">随机播放</string>
+    <string name="play_mode_loop_play">循环播放</string>
+    <string name="default_remaining_duration">00:00:00</string>
+    <string name="slant">/</string>
+    <string name="no_lyric">暂无歌词</string>
+    <string name="reach_last_item">已是最后一首音乐</string>
+    <string name="audio_cannot_paly">该音乐无法播放</string>
+    <string name="close">关闭</string>
+    <string name="open_album">打开</string>
+    <string name="no_image">此设备没有图片文件</string>
+    <string name="no_music">此设备没有音乐文件</string>
+    <string name="no_video">此设备没有视频文件</string>
+    <string name="no_file">此设备没有文件</string>
+    <string name="newline">\n</string>
+    <string name="select_bg_image">选择背景图片</string>
+
+    <!-- VideoPlayer  hint -->
+    <string name="video_program_completion">播放完毕</string>
+    <string name="video_error">该视频无法播放</string>
+    <string name="video_cannot_pre">已经是第一个视频</string>
+    <string name="video_cannot_next">已经是最后一个视频</string>
+
+    <!-- VideoPlayer -->
+    <string name="video_seekbar_duration_init">00:00:00</string>
+
+    <!-- VideoPlayer   menu -->
+    <!-- BEGIN: Modified by c00224451 for  DTS2014021706506 2014/2/21 -->
+    <string name="video_menu_playmode">连续播放</string>
+    <!-- END: Modified by c00224451 for  DTS2014021706506 2014/2/21 -->
+    <string name="video_menu_subtitle">字幕</string>
+
+    <!-- VideoPlayer  hint  item -->
+    <string name="video_hint_play_loop">顺序播放</string>
+    <string name="video_hint_play_single">单次播放</string>
+    <!-- BEGIN: Added by c00224451 for  DTS2014021706506 2014/2/21 -->
+    <string name="video_hint_loop_open">开启</string>
+    <string name="video_hint_loop_close">关闭</string>
+    <!-- END: Added by c00224451 for  DTS2014021706506 2014/2/21 -->
+    <string name="video_hint_subtitle_state_close">关闭状态</string>
+    <string name="video_hint_subtitle_id">字幕</string>
+    <!-- BEGIN: Added by c00224451 for  AR-0000698413 外挂字幕  2014/2/21 -->
+    <string name="video_hint_subtitle_state_other">其它</string>
+    <string name="video_toast_invalid_subtile">无效字幕</string>
+    <string name="video_toast_no_exist_subtiles">抱歉，没有扫描到字幕文件！</string>
+    <!-- END: Added by c00224451 for  AR-0000698413 外挂字幕  2014/2/21 -->
+
+    <string name="video_menu_sound">音轨</string>
+    <string name="video_menu_sund_lang">音轨</string>
+    <!-- BEGIN: Modified by c00224451 for  DTS2014021706506 2014/2/21 -->
+    <string name="video_menu_video_full">全屏拉伸</string>
+    <string name="video_menu_video_original">原始大小</string>
+    <string name="video_menu_video_scale">等比拉伸</string>
+    <string name="video_menu_video_display">屏幕显示</string>
+    <!-- END: Modified by c00224451 for  DTS2014021706506 2014/2/21 -->
+
+    <string name="video_playlist_all_left">全部视频 (</string>
+    <string name="video_playlist_all_right">)</string>
+    <string name="create_menu_fail">内存溢出，无法创建菜单界面</string>
+    <string name="video_seekbar_duration_filter"> / </string>
+    <string name="mediaInfoUnknown">未知</string>
+    <string name="subintitle">内置字幕</string>
+    <string name="subextitle">外置字幕</string>
+    <string name="time_seek">定位</string>
+    <string name="play_settings">播放设置</string>
+
+    <!-- BEGIN: Added by r00178559 for AR-0000698413 2014/02/12 -->
+    <string name="video_menu_channel_mode">音效</string>
+    <string name="video_menu_channel_mode_surround">环绕立体声</string>
+    <string name="video_menu_channel_mode_single">单声道</string>
+    <string name="video_menu_channel_mode_stereo">立体声</string>
+    <string name="video_menu_channel_mode_leftchannelonly">左声道</string>
+    <string name="video_menu_channel_mode_rightchannelonly">右声道</string>
+    <!-- END: Added by r00178559 for AR-0000698413 2014/02/12 -->
+
+
+    <!-- BEGIN: Added by c00224451 for  DTS2014021706506 2014/2/22 -->
+    <string name="video_subtitle_setting_select_tip">选择其它字幕</string>
+    <string name="video_subtitle_finish_right_tip">键完成选择</string>
+    <string name="video_subtitle_finish_left_tip">请按</string>
+    <!-- END: Added by c00224451 for  DTS2014021706506 2014/2/22 -->
+
+    <string name="text_video_time_seek_time_default">0</string>
+    <string name="text_video_time_seek_time_divider">:</string>
+
+    <!-- 开始图片播控相关 -->
+    <string name="image">相片</string>
+    <!-- 相片播放 -->
+    <string name="pictureplayer_showdetail">显示详情</string>
+    <string name="pictureplayer_hidedetail">隐藏详情</string>
+    <string name="image_cannot_pre">已经是第一张图片</string>
+    <string name="image_cannot_next">已经是最后一张图片</string>
+    <string name="image_start_autoplay">已开启自动播放</string>
+    <string name="image_stop_autoplay">已停止自动播放</string>
+    <string name="image_cannt_display">该图片无法播放</string>
+    <string name="image_rotated_failed">该图片旋转失败</string>
+    <!-- 播放模式 -->
+    <string name="play_mode_image">播放模式</string>
+    <string name="play_mode_sequence_play">顺序播放</string>
+    <string name="play_mode_loop_play">循环播放</string>
+    <!-- 相片播放菜单 -->
+    <string name="image_delete_success">图片删除成功</string>
+    <string name="image_delete_failure">图片删除失败</string>
+    <string name="image_sorteup_success">图片收藏成功</string>
+    <string name="image_sorteup_failure">图片收藏失败</string>
+    <string name="start_background_music">已经启动背景音乐</string>
+    <string name="stop_background_music">已经关闭背景音乐</string>
+    <string name="no_exite_background_music">不存在背景音乐资源</string>
+    <string name="playinterval1">播放间隔3秒</string>
+    <string name="playinterval2">播放间隔8秒</string>
+    <string name="playinterval3">播放间隔5秒</string>
+    <string name="store_up">收藏</string>
+    <string name="blind_window">百叶窗</string>
+    <string name="play_interval">播放间隔</string>
+    <string name="background_music">背景音乐</string>
+    <string name="delete_store_up">删除</string>
+    <string name="operation_text">请按“上、下”键旋转照片，“左、右”键切换照片</string>
+    <string name="operation_text_to">请按“上、下”键旋转照片</string>
+    <string name="play_set">播放设置</string>
+    <string name="switch_with">切换方式</string>
+    <string name="switch_time">切换时间</string>
+    <string name="anim_type_zoom_out">缩放</string>
+    <string name="anim_type_float_up">上升</string>
+    <string name="anim_type_fade_out">淡入淡出</string>
+    <string name="anim_type_scrape_out">擦除</string>
+    <string name="anim_type_float_down">下降</string>
+    <string name="anim_type_spread_out">展开</string>
+    <string name="eight_sec">8秒</string>
+    <string name="fine_sec">5秒</string>
+    <string name="three_sec">3秒</string>
+    <string name="open">开启</string>
+    <string name="close">关闭</string>
+    <string name="can_not_play_image">图片无法显示</string>
+    <string name="photography_in">摄于：</string>
+    <string name="image_size">尺寸：</string>
+    <string name="image_order">序号：</string>
+    <string name="image_detail">相片详情</string>
+    <string name="create_menu_fail">内存溢出，无法创建菜单界面</string>
+    <string name="load_net_image_fail">加载失败</string>
+    <string name="load_net_image_timeout">网络连接超时</string>
+    <string name="path">下载路径</string>
+    <string name="downloadbutton">下载</string>
+    <string name="sdcarderror">SDCard不存在或者写保护</string>
+    <string name="success">下载完成</string>
+    <string name="error">下载失败</string>
+    <string name="bottom_menu_image_scale_move">相片缩放</string>
+    <string name="bottom_menu_image_settings">播放设置</string>
+    <string name="image_scale_mode_ok_hint">完成缩放; </string>
+    <string name="image_scale_mode_back_hint">键退出缩放</string>
+    <string name="image_move_mode_ok_hint">继续缩放; </string>
+    <string name="image_move_mode_back_hint">键退出缩放</string>
+    <string name="text_file_seperator">/</string>
+    <string name="unknown_title_audio">[未知标题]</string>
+    <string name="unknown_artist_audio">[未知艺术家]</string>
+    <string name="unknown_album_audio">[未知唱片集]</string>
+    <string name="nowplaying">现在播放:</string>
+    <string name="nomusictoplay">自定义背景音乐已下线</string>
+    <string name="without_music">没有自定义背景音乐</string>
+    <string name="no_album">没有发现相片，将为你播放系统自带相片！</string>
+    <string name="select_bg_audio">选择背景音乐</string>
+    <string name="no_audio">没有发现音乐，将为你播放系统自带音乐！</string>
+    <string name="unknown_durnation">未知时长</string>
+    <string name="audio_preview_info">文件大小：%1$s\n文件类型：%2$s\n时长：%3$s\n下载时间：%4$s\n简要内容：%5$s</string>
+    <string name="video_preview_info">文件大小：%1$s\n文件类型：%2$s\n时长：%3$s\n下载时间：%4$s\n简要内容：%5$s</string>
+    <string name="image_preview_info">文件大小：%1$s\n文件类型：%2$s\n下载时间：%3$s\n简要内容：%4$s</string>
+    <string name="search_no_data">对不起,没有找到相关文件</string>
+    <string name="search_try_again">重新搜索</string>
+    <string name="exit">退出</string>
+    <string name="search_all_devices">全部设备</string>
+    <string name="search">搜索</string>
+    <string name="key_words">关键字“%1$s”</string>
+    <string name="search_count">(共搜索出%1$s个文件)</string>
+    <string name="search_help_content">请输入关键词后，选择“搜索”按钮，完成输入操作</string>
+	 <string name="picture">图片</string>
+    <string name="music">音乐</string>
+    <string name="video">视频</string>
+
+    <!-- 结束图片播控相关 -->
+        
+    <!-- share -->
+    <string name="share">共享</string>
+    <string name="sharing">共享中</string>
+    <string name="canceling">取消中</string>
+    <string name="addshare">添加共享</string>
+    <string name="cancelshare">取消共享</string>
+    <string name="share_ok">添加共享成功</string>
+    <string name="cancelshare_ok">取消共享成功</string>
+    <string name="share_failure">添加共享失败 </string>
+    <string name="cancelshare_failure">取消共享失败</string>
+    <string name="menu_btn_favorite_name">收藏</string>
+    <string name="net_unconnect">网络未连接</string>
+    <string name="parent_directory_shared">父目录已共享</string>
+    <string name="sharing_hint">正在共享中，请稍后！</string>
+    <string name="delsharing_hint">正在取消共享，请稍后！</string>
+    <string name="sharedAdd">已经添加共享</string>
+    <string name="sharedCanceled">已经取消共享</string>
+    
+    <string name="allphotos">全部相片</string>
+    <string name="allaudio">全部音乐</string>
+    <string name="allvideo">全部视频</string>
+    <string name="browserbytime">|按日期浏览</string>
+    <string name="browserbyphotoalbum">|按相册浏览</string>
+    <string name="browserbyfolder">|按文件夹浏览</string>
+    <string name="browserbyalbum">|按专辑浏览</string>
+    <string name="browserbyartist">|按艺术家浏览</string>
+    <string name="device_ip">(%1$s)</string>
+    <string name="music_unit">首</string>
+    
+    <string name="unknow_name">匿名</string>
+    <string name="server_address">服务器地址</string>
+    <string name="user_name">用户名</string>
+    <string name="password">密码</string>
+    <string name="ok">确定</string>
+    <string name="cancel">取消</string>
+    <string name="enter_server_address">请输入服务器地址</string>
+    <string name="enter_full">请填写完整</string>
+    <string name="read_nfs_error">NFS设备数据被破坏，请重新添加NFS设备</string>
+    <string name="read_samba_error">Samba设备数据被破坏，请重新添加Samba设备</string>
+    <string name="check_network">请检查网络是否连接</string>
+    <string name="mount_fail">挂载失败</string>
+    <string name="add_network_device">添加网络设备</string>
+    <string name="add_nfs_device">添加NFS设备</string>
+    <string name="add_samba_device">添加Samba设备</string>
+    <string name="ex_nfs_address">如:172.16.21.123:/home/szc/nfsTest</string>
+    <string name="ex_samba_address">如://10.10.10.163/gf</string>
+    <string name="enter_right_nfs_address">请输入正确的NFS地址</string>
+    <string name="enter_right_samba_address">请输入正确的Samba地址</string>
+    <string name="internel_storage">内部存储:</string>
+</resources>

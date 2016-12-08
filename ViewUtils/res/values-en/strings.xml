@@ -1,0 +1,19 @@
+<resources>
+
+    <string name="app_name">Media Center</string>
+    <string name="text_video_time_seek_time_default">0</string>
+    <string name="text_video_time_seek_time_divider">:</string>
+    <string name="search_inputhint">Search Home Devices</string>
+    <string name="more_operation_pre">please press</string>
+    <string name="more_operation_back">Key to more Operation</string>
+    <string name="video">Video</string>
+    <string name="file">File</string>
+    <string name="photo">Image</string>
+    <string name="music">Audio</string>
+    <string name="gridView_not_support">Please layout in XML</string>
+    <string name="list_setting_select_tip">Select Other Subtitles</string>
+    <string name="list_finish_right_tip">to finish the selection</string>
+    <string name="list_finish_left_tip">please press</string>
+    <string name="no_album">No photos found，The system photos will be played！</string>
+
+</resources>

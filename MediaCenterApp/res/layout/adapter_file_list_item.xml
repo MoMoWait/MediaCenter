@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="10dp">
+    
+    <ImageView 
+        android:id="@+id/img_file_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/select_backgroundmusic_return_icon"/>
+    
+    <TextView 
+        android:id="@+id/text_file_name"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:textSize="20sp"
+        android:text="@string/app_name"
+        android:gravity="center_vertical"
+        android:textColor="@android:color/white"
+        android:singleLine="true"
+        android:ellipsize="marquee"/>
+</LinearLayout>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- BEGIN: Modified by c00224451 for  DTS2014021408267 2014/2/19  -->
+<set xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <translate
+        android:duration="@android:integer/config_longAnimTime"
+        android:fromXDelta="0"
+        android:toXDelta="-100%p" />
+
+</set>
+<!-- END: Modified by c00224451 for  DTS2014021408267 2014/2/19  -->

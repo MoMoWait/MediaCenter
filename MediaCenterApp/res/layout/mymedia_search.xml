@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.rockchips.mediacenter.viewutils.dynamicspotbg.DynBackgroudRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#002d5f" >
+    
+    <TextView
+        android:id="@+id/devices_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="57dp"
+        android:layout_marginTop="24dp"
+        android:drawableLeft="@drawable/icon_search_header"
+        android:drawablePadding="8dp"
+        android:focusable="false"
+        android:gravity="center"
+        android:text="@string/menu_btn_search_name"
+        android:textColor="#7bbbe8"
+        android:textSize="18sp" />
+
+    <ImageView
+        android:id="@+id/search_header_line"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:src="@drawable/cut_off_rule_bg" />    
+
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/input_method"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70px"
+        android:gravity="center_vertical" >
+
+        <EditText
+            android:id="@+id/keyword"
+            android:layout_width="474dp"
+            android:layout_height="60dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="300dp"
+            android:background="@drawable/search_edit_bg"
+            android:cursorVisible="true"
+            android:drawableLeft="@drawable/icon_search"
+            android:drawablePadding="15dp"
+            android:ems="10"
+            android:focusable="true"
+            android:hint="@string/search_inputhint"
+            android:imeOptions="actionDone"
+            android:inputType="text"
+            android:paddingLeft="10dp"
+            android:singleLine="true"
+            android:textColor="#7bbbe8"
+            android:textSize="26sp" >
+
+            <requestFocus />
+        </EditText>
+
+        <Button
+            android:id="@+id/btn_confirm"
+            android:layout_width="146dp"
+            android:layout_height="60dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="4dp"
+            android:layout_toRightOf="@+id/keyword"
+            android:background="@drawable/search_edit_bg"
+            android:text="@string/menu_btn_search_name"
+            android:textColor="@color/white"
+            android:textSize="26sp" />
+
+        <com.rockchips.mediacenter.viewutils.animfocusimage.FocusImageView
+            android:id="@+id/focus"
+            android:layout_width="fill_parent"
+            android:layout_height="100px" 
+            android:layout_centerVertical="true"/>
+        
+        <LinearLayout
+	        android:id="@+id/search_help"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/keyword"
+	        android:layout_marginTop="180dp"
+	        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="50dp"            
+            android:drawablePadding="15dp"
+            android:text="@string/search_help_content"
+            android:textColor="#7bbbe8"
+            android:textSize="16sp" />
+    </LinearLayout>
+    </RelativeLayout>    
+
+</com.rockchips.mediacenter.viewutils.dynamicspotbg.DynBackgroudRelativeLayout>

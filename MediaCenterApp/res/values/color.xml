@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- BEGIN: Modified by c00224451 for  DTS2014031902115  2014/3/19  -->
+<resources>
+    <!-- 天蓝色 -->
+    <color name="azure">#ccf0ffff</color>
+    <!-- 亮灰色 -->
+    <color name="lightgray">#ccd3d3d3</color>
+    <color name="file_num_bg">#7bbbe8</color>
+</resources>
+<!-- END: Modified by c00224451 for  DTS2014031902115  2014/3/19  -->

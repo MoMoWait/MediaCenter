@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/video_subtitle_setting_bg"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/menu_subtitle_setting_bg_paddingleft"
+    android:paddingRight="@dimen/menu_subtitle_setting_bg_paddingleft"
+    android:paddingTop="@dimen/menu_subtitle_setting_bg_paddingtop"
+    android:paddingBottom="@dimen/menu_subtitle_setting_bg_paddingtop" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/menu_subtitle_setting_title_height"
+        android:gravity="center_vertical" 
+        android:layout_weight="0">
+
+        <ImageView
+            android:id="@+id/iv_video_subtitile_setting_logo"
+            android:layout_width="@dimen/menu_subtitle_setting_logo_width"
+            android:layout_height="@dimen/menu_subtitle_setting_logo_height"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/menu_subtitle_setting_title_margin"
+            android:src="@drawable/list_setting_title_logo" />
+
+        <TextView
+            android:id="@+id/tv_video_subtitle_finish_right"
+            style="@style/VideoSubtitleSettingTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/menu_subtitle_setting_title_margin"
+            android:text="@string/video_subtitle_finish_right_tip" />
+
+        <TextView
+            android:id="@+id/tv_select_tip"
+            style="@style/VideoSubtitleSettingTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="@dimen/menu_subtitle_setting_select_tip_margin"
+            android:layout_toRightOf="@+id/iv_video_subtitile_setting_logo"
+            android:text="@string/video_subtitle_setting_select_tip" />
+
+        <ImageView
+            android:id="@+id/iv_video_subtitile_setting_back"
+            android:layout_width="@dimen/menu_subtitle_setting_back_width"
+            android:layout_height="@dimen/menu_subtitle_setting_back_height"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/tv_video_subtitle_finish_right"
+            android:src="@drawable/list_setting_back" />
+
+        <TextView
+            style="@style/VideoSubtitleSettingTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@+id/iv_video_subtitile_setting_back"
+            android:text="@string/video_subtitle_finish_left_tip" />
+    </RelativeLayout>
+    <GridView 
+        android:id="@+id/gv_video_subtitle_folder_select"
+	    android:layout_width="match_parent"
+	    android:layout_height="0dp" 
+	    android:layout_weight="1"
+	    android:listSelector="@android:color/transparent"
+	    android:numColumns="4"
+	    android:layout_marginBottom="10px"/>
+</LinearLayout>

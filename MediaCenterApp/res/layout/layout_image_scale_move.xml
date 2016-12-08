@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black" >
+
+    <ImageView
+        android:id="@+id/iv_ivscalemove_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:scaleType="matrix" />
+	<!-- BEGIN: Added by r00178559 for DTS2014031901446 2014/03/19 -->
+    <RelativeLayout
+        android:id="@+id/rl_scale_move_mode_hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:paddingBottom="@dimen/image_scale_mode_hint_margin_bottom"
+        android:paddingLeft="@dimen/image_scale_mode_hint_margin_left"
+        android:background="@drawable/ic_bg_scale_move_hint" >
+
+        <ImageView
+            android:id="@+id/iv_hint_ok_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_hint_ok" />
+
+        <TextView
+            android:id="@+id/tv_hint_ok_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/iv_hint_ok_icon"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/image_scale_mode_hint_text_size" />
+        
+        <ImageView
+            android:id="@+id/iv_hint_back_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/tv_hint_ok_text"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_hint_back" />
+        
+        <TextView
+            android:id="@+id/tv_hint_back_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/iv_hint_back_icon"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/image_scale_mode_hint_text_size" />
+
+    </RelativeLayout>
+	<!-- END: Added by r00178559 for DTS2014031901446 2014/03/19 -->
+
+    <!-- 开始缩放图片的指示条 -->
+    <RelativeLayout
+        android:id="@+id/rl_scale_zoom_area"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/rl_scale_move_mode_hint"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/image_scale_mode_zoom_out_button_margin_top"
+        android:visibility="invisible" >
+        
+        <ImageView
+            android:id="@+id/iv_scale_mode_zoom_out"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/image_scale_mode_zoom_out_margin_bottom"
+            android:src="@drawable/ic_image_scale_zoom_out_normal"
+            android:clickable="true" />
+
+        <ImageView
+            android:id="@+id/iv_scale_mode_zoom_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/iv_scale_mode_zoom_out"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_image_scale_zoom_bar" />
+        
+        <ImageView
+            android:id="@+id/iv_scale_mode_zoom_indictor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_alignBottom="@+id/iv_scale_mode_zoom_bar"
+            android:src="@drawable/ic_image_scale_zoom_indictor" />
+        
+        <ImageView
+            android:id="@+id/iv_scale_mode_zoom_in"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/iv_scale_mode_zoom_bar"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/image_scale_mode_zoom_in_margin_top"
+            android:src="@drawable/ic_image_scale_zoom_in_normal"
+            android:clickable="true" />
+    </RelativeLayout>
+    <!-- 结束缩放图片的指示条 -->
+
+    <ImageView
+        android:id="@+id/iv_move_mode_up_indictor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/image_move_mode_up_indictor_margin_top"
+        android:src="@drawable/ic_image_move_up_normal"
+        android:visibility="invisible"
+        android:clickable="true" />
+
+    <ImageView
+        android:id="@+id/iv_move_mode_down_indictor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/image_move_mode_down_indictor_margin_bottom"
+        android:src="@drawable/ic_image_move_down_normal"
+        android:visibility="invisible"
+        android:clickable="true" />
+
+    <ImageView
+        android:id="@+id/iv_move_mode_left_indictor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/image_move_mode_left_indictor_margin_left"
+        android:src="@drawable/ic_image_move_left_normal"
+        android:visibility="invisible"
+        android:clickable="true" />
+
+    <ImageView
+        android:id="@+id/iv_move_mode_right_indictor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/image_move_mode_right_indictor_margin_right"
+        android:src="@drawable/ic_image_move_right_normal"
+        android:visibility="invisible"
+        android:clickable="true" />
+
+    <RelativeLayout
+        android:id="@+id/rl_move_mode_thumbnail_area"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true" >
+
+        <ImageView
+            android:id="@+id/iv_move_mode_thumbnail_disp"
+            android:layout_width="@dimen/image_move_mode_thumbnail_width"
+            android:layout_height="@dimen/image_move_mode_thumbnail_height"
+            android:layout_centerInParent="true"
+            android:background="@android:color/black" />
+
+        <ImageView
+            android:id="@+id/iv_move_mode_thumbnail_mask"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_image_disp_thumbnail_mask" />
+
+    </RelativeLayout>
+    
+</RelativeLayout>

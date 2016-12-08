@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.rockchips.mediacenter.viewutils.dynamicspotbg.DynBackgroudRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#002d5f" >
+
+    <ImageView
+        android:id="@+id/iv_devices_list_logo"
+        android:layout_width="142dp"
+        android:layout_height="38dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="70dp"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/devices_list_logo"
+        android:visibility="gone" />
+
+    <com.rockchips.mediacenter.viewutils.devicelist.DevicesListView
+        android:id="@+id/deviceList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/layout_no_device"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <TextView
+            android:id="@+id/text_no_device_tips"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:shadowColor="#ff000000"
+            android:shadowDx="0"
+            android:shadowDy="5"
+            android:shadowRadius="5"
+            android:text="@string/no_usb_hint_before"
+            android:textColor="#80FFFFFF"
+            android:textSize="26sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:shadowColor="#ff000000"
+            android:shadowDx="0"
+            android:shadowDy="5"
+            android:shadowRadius="5"
+            android:text="@string/no_usb_hint_after"
+            android:textColor="#80FFFFFF"
+            android:textSize="26sp" />
+    </LinearLayout>
+
+</com.rockchips.mediacenter.viewutils.dynamicspotbg.DynBackgroudRelativeLayout>

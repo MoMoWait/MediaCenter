@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language id="1" >
+
+    <nation
+        abb="zho"
+        lang="Chinese" />
+    <nation
+        abb="chi"
+        lang="Chinese" />
+    <nation
+        abb="eng"
+        lang="English" />
+    <nation
+        abb="jpn"
+        lang="Japanese" />
+    <nation
+        abb="deu"
+        lang="German" />
+    <nation
+        abb="fra"
+        lang="French" />
+    <nation
+        abb="ita"
+        lang="Italian" />
+    <nation
+        abb="nld"
+        lang="Dutch" />
+    <nation
+        abb="tur"
+        lang="Turkish" />
+    <nation
+        abb="ind"
+        lang="Indonesian" />
+    <nation
+        abb="hin"
+        lang="Hindi" />
+    <nation
+        abb="kor"
+        lang="Korean" />
+    <nation
+        abb="tha"
+        lang="Thai" />
+    <nation
+        abb="spa"
+        lang="Spanish" />
+    <nation
+        abb="por"
+        lang="Portuguese" />
+    <nation
+        abb="swe"
+        lang="Swedish" />
+    <nation
+        abb="rus"
+        lang="Russian" />
+    <nation
+        abb="cat"
+        lang="Catalan" />
+    <nation
+        abb="dan"
+        lang="Danish" />
+    <nation
+        abb="fin"
+        lang="Finnish" />
+    <nation
+        abb="ell"
+        lang="Greek" />
+    <nation
+        abb="isl"
+        lang="Icelandic" />
+    <nation
+        abb="nor"
+        lang="Norwegian" />
+    <nation
+        abb="ara"
+        lang="Arabic" />
+    <nation
+        abb="bul"
+        lang="Bulgarian" />
+    <nation
+        abb="hrv"
+        lang="Croatian" />
+    <nation
+        abb="ces"
+        lang="Czech" />
+    <nation
+        abb="est"
+        lang="Estonian" />
+    <nation
+        abb="heb"
+        lang="Hebrew" />
+    <nation
+        abb="hun"
+        lang="Hungarian" />
+    <nation
+        abb="lav"
+        lang="Latvian" />
+    <nation
+        abb="lit"
+        lang="Lithuanian" />
+    <nation
+        abb="pol"
+        lang="Polish" />
+    <nation
+        abb="ron"
+        lang="Romanian" />
+    <nation
+        abb="srp"
+        lang="Serbian" />
+    <nation
+        abb="slv"
+        lang="Slovenian" />
+    <nation
+        abb="ukr"
+        lang="Ukrainian" />
+    <nation
+        abb="slk"
+        lang="Slovak" />
+    <nation
+        abb="sla"
+        lang="Slovak" />
+    <nation
+        abb="tam"
+        lang="Tamil" />
+    <nation
+        abb="tel"
+        lang="Telugu" />
+    <nation
+        abb="vie"
+        lang="Vietnamese" />
+    <nation
+        abb="rom"
+        lang="Romanian" />
+    <nation
+        abb="tgl"
+        lang="Filipino" />
+    <nation
+        abb="msa"
+        lang="Indonesian" />
+
+</language>

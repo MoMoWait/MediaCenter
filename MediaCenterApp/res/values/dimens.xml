@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 查看DLNA设备所有图片时的animGridView的属性 -->
+    <dimen name="anim_gridview_item_all_paddingLeft">4px</dimen>
+    <dimen name="anim_gridview_item_all_paddingTop">0px</dimen>
+    <dimen name="anim_gridview_item_all_itemDefaultHeight">197px</dimen>
+    <dimen name="anim_gridview_item_all_itemGap">5px</dimen>
+    <dimen name="anim_gridview_item_all_itemHeight">197px</dimen>
+    <dimen name="anim_gridview_item_all_itemWidth">197px</dimen>
+    <dimen name="anim_gridview_item_all_lineGap">5px</dimen>
+    <dimen name="display_name_padding_top">25px</dimen>
+    
+    <dimen name="menu_subtitle_setting_bg_width">820px</dimen>
+    <dimen name="menu_subtitle_setting_bg_height">600px</dimen>
+    <dimen name="menu_subtitle_setting_bg_paddingleft">130px</dimen>
+    <dimen name="menu_subtitle_setting_bg_paddingtop">50px</dimen>
+    <dimen name="menu_subtitle_setting_title_height">50px</dimen>
+    <dimen name="menu_subtitle_setting_title_margin">30px</dimen>
+    <dimen name="menu_subtitle_setting_logo_width">26px</dimen>
+    <dimen name="menu_subtitle_setting_logo_height">22px</dimen>
+    <dimen name="menu_subtitle_setting_select_tip_margin">16px</dimen>
+    <dimen name="menu_subtitle_setting_back_width">40px</dimen>
+    <dimen name="menu_subtitle_setting_back_height">24px</dimen>
+    <dimen name="menu_subtitle_setting_folder_width">160px</dimen>
+    <dimen name="menu_subtitle_setting_folder_height">170px</dimen>
+    <dimen name="menu_subtitle_setting_name_top">30px</dimen>
+    
+    <dimen name="menu_setting_gridview_width">724px</dimen>
+    <dimen name="menu_setting_gridview_height">410px</dimen>    
+    <dimen name="menu_subtitle_setting_item_width">210px</dimen>
+    <dimen name="menu_subtitle_setting_item_height">220px</dimen>    
+    
+    <dimen name="menu_focus_imageview_height">60dp</dimen>
+    <dimen name="menu_focus_imageview_width">240dp</dimen>
+
+    <!-- 图片缩放页面布局参数  begin -->
+    <dimen name="image_scale_mode_hint_margin_left">22dp</dimen>
+    <dimen name="image_scale_mode_hint_margin_bottom">14dp</dimen>
+    <dimen name="image_scale_mode_hint_text_size">18px</dimen>
+    <dimen name="image_move_mode_hint_margin_left">22dp</dimen>
+    <dimen name="image_move_mode_hint_margin_bottom">14dp</dimen>
+    <dimen name="image_move_mode_hint_text_size">18px</dimen>
+    <dimen name="image_scale_mode_zoom_out_button_margin_top">92dp</dimen>
+    <dimen name="image_scale_mode_zoom_out_margin_bottom">4dp</dimen>
+    <dimen name="image_scale_mode_zoom_in_margin_top">10dp</dimen>
+    <dimen name="image_move_mode_up_indictor_margin_top">74dp</dimen>
+    <dimen name="image_move_mode_down_indictor_margin_bottom">76dp</dimen>
+    <dimen name="image_move_mode_left_indictor_margin_left">88dp</dimen>
+    <dimen name="image_move_mode_right_indictor_margin_right">90dp</dimen>
+    <dimen name="image_move_mode_thumbnail_width">280dp</dimen>
+    <dimen name="image_move_mode_thumbnail_height">158dp</dimen>
+    <dimen name="image_music_poster_width">188px</dimen>
+    <dimen name="image_music_poster_height">188px</dimen>
+    <!-- 图片缩放页面布局参数  end -->
+</resources>

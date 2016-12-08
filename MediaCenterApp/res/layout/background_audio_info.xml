@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 背景音乐信息 -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/background_audio_info"
+    android:layout_width="850dip"
+    android:layout_height="250dip" 
+    android:orientation="vertical">
+
+    <!-- 原图 -->
+    <ImageView
+        android:id="@+id/item_iconview"
+        android:layout_width="200dip"
+        android:layout_height="200dip"
+        android:layout_marginTop="15dip"
+        android:scaleType="fitCenter"/>
+ 
+    <!-- 歌名字 -->
+    <TextView
+        android:id="@+id/song_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="104dip"
+        android:layout_toRightOf="@id/item_iconview"
+        android:layout_marginLeft="20dip"
+        android:maxWidth="700dip"
+        android:singleLine="true"
+        android:textColor="@color/white"
+        android:textSize="40sp" />
+    
+    <!-- 歌手名 -->
+    <TextView
+            android:id="@+id/background_audio_signer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/song_name"
+            android:layout_below="@id/song_name"
+            android:layout_marginTop="4dip"
+            android:maxWidth="700dip"
+            android:singleLine="true"
+            android:textColor="#88ffffff"
+            android:textSize="20sp"/>
+    
+    <!-- 专辑名 -->
+    <TextView
+            android:id="@+id/background_audio_album"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/song_name"
+            android:layout_below="@id/background_audio_signer"
+            android:layout_marginTop="1dip"
+            android:maxWidth="700dip"
+            android:singleLine="true"
+            android:textColor="#88ffffff"
+            android:textSize="20sp"/>
+</RelativeLayout>
+   

@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/imagecontainer"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#ff000000"
+    android:gravity="center"
+    android:paddingTop="0px" >
+
+    <RelativeLayout
+        android:id="@+id/fullRelative"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center" >
+    </RelativeLayout>
+    <!-- 无法显示图片 -->
+
+    <LinearLayout
+        android:id="@+id/image_exception"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/image_default" />
+
+        <TextView
+            android:id="@+id/text_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dip"
+            android:text="@string/can_not_play_image"
+            android:textColor="#dedede"
+            android:textSize="24sp" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/leftNavigationImageView"
+        android:layout_width="37px"
+        android:layout_height="55px"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="64px"
+        android:layout_marginTop="316px"
+        android:src="@drawable/ip_left_dir" >
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/rightNavigationImageView"
+        android:layout_width="37px"
+        android:layout_height="55px"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="64px"
+        android:layout_marginTop="316px"
+        android:src="@drawable/ip_right_dir" >
+    </ImageView>
+
+    <ProgressBar
+        android:id="@+id/circleProgressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="600px"
+        android:layout_marginTop="300px"
+        mce_style="?android:attr/progressBarStyleLarge" >
+    </ProgressBar>
+
+    <LinearLayout
+        android:id="@+id/Operating_hint"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dip"
+        android:gravity="center"
+        android:visibility="visible" >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ip_questionmarket" />
+
+        <TextView
+            android:id="@+id/operation_text_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dip"
+            android:text="@string/operation_text"
+            android:textColor="#FFFFFF"
+            android:textSize="16dip" />
+    </LinearLayout>
+    <!-- 图片详细信息 -->
+
+    <LinearLayout
+        android:id="@+id/image_detail_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:paddingLeft="32dip"  
+        android:paddingBottom="24px"              
+        android:background="@drawable/image_auto_player_detail_bg"
+        android:orientation="vertical"
+        android:visibility="visible" 
+        android:gravity="center_vertical">
+
+        <!-- 图片名字 -->
+
+        <TextView
+            android:id="@+id/pic_detail_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"  
+            android:singleLine="true"
+            android:textColor="#FFFFFF"
+            android:textSize="26sp" />
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dip" >
+
+            <LinearLayout
+                android:id="@+id/ll_photo_create_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"                
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/image_time_tip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/photography_in"
+                    android:textColor="#dedede"
+                    android:textSize="20sp" />
+                <!-- 摄影时间 -->
+
+                <TextView
+                    android:id="@+id/imageplayer_image_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#dedede"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_photo_ratio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_toRightOf="@+id/ll_photo_create_time"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/image_size_tip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/image_size"
+                    android:textColor="#dedede"
+                    android:textSize="20sp" />
+                <!-- 尺寸 -->
+
+                <TextView
+                    android:id="@+id/image_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#dedede"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_toRightOf="@+id/ll_photo_ratio"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:id="@+id/image_order_tip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/image_order"
+                    android:textColor="#dedede"
+                    android:textSize="20sp" />
+                <!-- 序号 -->
+
+                <TextView
+                    android:id="@+id/image_order"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#dedede"
+                    android:textSize="20sp" />
+            </LinearLayout>
+        </RelativeLayout>
+    </LinearLayout>   
+
+
+    <RelativeLayout
+        android:id="@+id/detail"
+        android:layout_width="match_parent"
+        android:layout_height="124px"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="32px"
+        android:background="@drawable/image_detail_bg"
+        android:visibility="gone" >
+
+        <LinearLayout            
+            android:id="@+id/pic_detail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="15px"
+            android:layout_marginTop="10px"
+            android:orientation="vertical" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:textColor="#dedede"
+                android:textSize="26sp" >
+            </TextView>
+
+            <TextView
+                android:id="@+id/pic_detail_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="9px"
+                android:textColor="#dedede"
+                android:textSize="18px" >
+            </TextView>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/pic_detail_pos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="15px"
+            android:layout_marginTop="55px"
+            android:textColor="#ffffff"
+            android:textSize="18px" >
+        </TextView>
+    </RelativeLayout>
+
+</RelativeLayout>
