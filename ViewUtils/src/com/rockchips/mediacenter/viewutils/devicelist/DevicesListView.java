@@ -3,6 +3,7 @@ package com.rockchips.mediacenter.viewutils.devicelist;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.R.integer;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
@@ -232,7 +233,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         mTextViews[TEXTVIEW_FIVE] = (TextView) findViewById(R.id.fiveDevice);
     }
 
-    private static final int TRANSLATE_TO_X = -16;
+    private static final int TRANSLATE_TO_X = 40;
 
     private void initData()
     {
@@ -258,6 +259,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
 
         // mTextViews[3]为焦点设备显示载体
         mTextViews[TEXTVIEW_THIRD].setAnimation(initAnimationSet);
+        mTextViews[TEXTVIEW_THIRD].setBackgroundResource(R.drawable.current_select_device_background);
     }
 
     private void initFocus()
@@ -407,7 +409,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
 
         // 第三个设备动画
         setIdx++;
-        Animation thirdViewTranAnim = new TranslateAnimation(0, -16, -(mTextViews[setIdx].getY() - mTextViews[setIdx - 1].getY()), 0);
+        Animation thirdViewTranAnim = new TranslateAnimation(0, TRANSLATE_TO_X, -(mTextViews[setIdx].getY() - mTextViews[setIdx - 1].getY()), 0);
         thirdViewTranAnim.setDuration(ANIMTE_TIME);
 
         Animation thirdViewScaleAnima = new ScaleAnimation(1f, FOCUS_SCALE_RATE, 1f, FOCUS_SCALE_RATE);
@@ -443,7 +445,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
 
         // 第四个设备动画
         setIdx++;
-        Animation fourthViewTranAnim = new TranslateAnimation(-16, 0, -(mTextViews[setIdx].getY() - mTextViews[setIdx - 1].getY())
+        Animation fourthViewTranAnim = new TranslateAnimation(TRANSLATE_TO_X, 0, -(mTextViews[setIdx].getY() - mTextViews[setIdx - 1].getY())
                 / FOCUS_SCALE_RATE, 0);
         fourthViewTranAnim.setDuration(ANIMTE_TIME);
 
@@ -561,7 +563,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
 
         // 第二个设备动画
         setIdx++;
-        Animation secondViewTranAnim = new TranslateAnimation(-16 * FOCUS_SCALE_RATE, 0, mTextViews[setIdx].getY() - mTextViews[setIdx - 1].getY(), 0);
+        Animation secondViewTranAnim = new TranslateAnimation(TRANSLATE_TO_X * FOCUS_SCALE_RATE, 0, mTextViews[setIdx].getY() - mTextViews[setIdx - 1].getY(), 0);
         secondViewTranAnim.setDuration(ANIMTE_TIME);
 
         Animation secondViewScaleAnima = new ScaleAnimation(FOCUS_SCALE_RATE, 1f, FOCUS_SCALE_RATE, 1f);
@@ -579,7 +581,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
 
         // 第三个设备动画
         setIdx++;
-        Animation thirdViewTranAnim = new TranslateAnimation(0, -16, mTextViews[setIdx].getY() - mTextViews[setIdx - 1].getY(), 0);
+        Animation thirdViewTranAnim = new TranslateAnimation(0, TRANSLATE_TO_X, mTextViews[setIdx].getY() - mTextViews[setIdx - 1].getY(), 0);
         thirdViewTranAnim.setDuration(ANIMTE_TIME);
 
         Animation thirdViewScaleAnima = new ScaleAnimation(1f, FOCUS_SCALE_RATE, 1f, FOCUS_SCALE_RATE);
@@ -645,7 +647,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         // 设备名动画
         Animation nameScaleAnima = new ScaleAnimation(1f, FOCUS_SCALE_RATE, 1f, FOCUS_SCALE_RATE);
         nameScaleAnima.setDuration(ANIMTE_TIME);
-        Animation nameTranAnim = new TranslateAnimation(0, -16 * FOCUS_SCALE_RATE, 0, 0);
+        Animation nameTranAnim = new TranslateAnimation(0, TRANSLATE_TO_X * FOCUS_SCALE_RATE, 0, 0);
         nameTranAnim.setDuration(ANIMTE_TIME);
 
         Animation nameAlphaAnim = new AlphaAnimation(0.2f, 1f);
@@ -696,7 +698,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         nameScaleAnima = new ScaleAnimation(FOCUS_SCALE_RATE, 1f, FOCUS_SCALE_RATE, 1f);
         nameScaleAnima.setDuration(ANIMTE_TIME);
 
-        nameTranAnim = new TranslateAnimation(-16 * FOCUS_SCALE_RATE, 0, 0, 0);
+        nameTranAnim = new TranslateAnimation(TRANSLATE_TO_X * FOCUS_SCALE_RATE, 0, 0, 0);
         nameTranAnim.setDuration(ANIMTE_TIME);
 
         nameAlphaAnim = new AlphaAnimation(1f, 0.2f);
@@ -910,7 +912,16 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
 
     private void refreshFocusDeviceId()
     {
+    	//mTextViews[mFocusIndex].setBackgroundResource(R.drawable.current_select_device_background);
         mFocusDeviceObject = getCurrentFocusObj();
+        /*if(mFocusDeviceObject == null)
+        	return;*/
+        /*for(int i = 0; i < mTextViews.length; ++i){
+    		if(mTextViews[i].getText().toString().equals(mDevicesList.get(mFocusIndex).mName)){
+    			mTextViews[i].setBackgroundResource(R.drawable.current_select_device_background);
+    			break;
+    		}
+    	}*/
     }
     
     public Object getCurrentFocusObj()

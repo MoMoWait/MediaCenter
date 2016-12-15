@@ -75,7 +75,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/ok" 
-            android:layout_margin="10dp"/>
+            android:layout_margin="10dp"
+            android:background="@drawable/common_btn_background"/>
 
         <Button
             android:id="@+id/btn_cancel"
@@ -83,7 +84,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/cancel" 
-            android:layout_margin="10dp"/>
+            android:layout_margin="10dp"
+            android:background="@drawable/common_btn_background"/>
     </LinearLayout>
 
 </LinearLayout>

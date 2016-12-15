@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:orientation="vertical" 
     android:background="@drawable/main_page_mask">
 
@@ -18,14 +18,14 @@
 
     <RelativeLayout
         android:id="@+id/layout_devices"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
         <TextView
             android:id="@+id/zeroDevice"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="left"
+            android:gravity="center"
             android:layout_marginTop="30dp"
             android:textColor="@color/white"
 	        android:singleLine="true"
@@ -34,10 +34,10 @@
 
         <TextView
             android:id="@+id/firstDevice"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="80dp"
-            android:gravity="left"
+            android:gravity="center"
             android:textColor="@color/white"
 	        android:singleLine="true"
 	        android:textSize="24sp"
@@ -45,10 +45,10 @@
 
         <TextView
             android:id="@+id/secondDevice"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="130dp"
-            android:gravity="left"
+            android:gravity="center"
             android:textColor="@color/white"
 	        android:singleLine="true"
 	        android:textSize="24sp"
@@ -56,20 +56,22 @@
 
         <TextView
             android:id="@+id/thirdDevice"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_marginTop="185dp"
             android:textColor="@color/white"
-            android:gravity="left"
+            android:gravity="center"
 	        android:singleLine="true"
-	        android:textSize="24sp" />
+	        android:textSize="24sp" 
+	        android:paddingLeft="8dp"
+	        android:paddingRight="8dp"/>
 
         <TextView
             android:id="@+id/fourthDevice"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
-            android:gravity="left"
+            android:gravity="center"
             android:layout_marginTop="580dp"
 	        android:singleLine="true"
 	        android:textSize="24sp"
@@ -77,11 +79,11 @@
 
         <TextView
             android:id="@+id/fiveDevice"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="680dp"
             android:textColor="@color/white"
-            android:gravity="left"
+            android:gravity="center"
 	        android:singleLine="true"
 	        android:textSize="24sp"
             android:alpha="0.0" />
@@ -89,18 +91,33 @@
     
     <RelativeLayout
         android:id="@+id/rl_mainpage_header"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="80dp"
         android:gravity="center_horizontal" >
-        
-        <ImageView
-            android:id="@+id/iv_mediacenter_logo"
-            android:layout_width="142dp"
-            android:layout_height="38dp"
-            android:layout_marginLeft="70dp"
+        <LinearLayout 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"            
-            android:src="@drawable/devices_list_logo" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+          	<ImageView
+            	android:id="@+id/iv_mediacenter_logo"
+            	android:layout_width="40dp"
+            	android:layout_height="40dp"
+            	android:layout_marginLeft="70dp"
+            	android:src="@drawable/ic_media" />
+          	
+          	 <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:text="@string/media_center"
+                android:textColor="@android:color/white"
+                android:textSize="30sp" />
+
+          	    
+        </LinearLayout>
+        
 
         <LinearLayout
             android:id="@+id/ll_mediacenter_hint_operate"
@@ -112,21 +129,21 @@
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
+                android:layout_height="match_parent"
                 android:layout_centerVertical="true"
                 android:text="@string/more_operation_pre"
                 android:textSize="16sp" />
 
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
+                android:layout_height="match_parent"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="8dp"
                 android:src="@drawable/more_operation_icon" />
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
+                android:layout_height="match_parent"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="8dp"
                 android:text="@string/more_operation_back"
@@ -135,7 +152,7 @@
         
        <RelativeLayout
 	        android:id="@+id/search_layout"
-	        android:layout_width="fill_parent"
+	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:layout_toRightOf="@+id/iv_mediacenter_logo"	 
 	        android:layout_toLeftOf="@+id/ll_mediacenter_hint_operate"  

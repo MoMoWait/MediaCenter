@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.rockchips.mediacenter.viewutils.dynamicspotbg.DynBackgroudRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#002d5f" >
+    android:background="@drawable/bg_01" >
 
-    <ImageView
+<!--     <ImageView
         android:id="@+id/iv_devices_list_logo"
         android:layout_width="142dp"
         android:layout_height="38dp"
@@ -12,7 +12,7 @@
         android:layout_marginLeft="70dp"
         android:layout_marginTop="20dp"
         android:src="@drawable/devices_list_logo"
-        android:visibility="gone" />
+        android:visibility="gone" /> -->
 
     <com.rockchips.mediacenter.viewutils.devicelist.DevicesListView
         android:id="@+id/deviceList"
@@ -53,4 +53,4 @@
             android:textSize="26sp" />
     </LinearLayout>
 
-</com.rockchips.mediacenter.viewutils.dynamicspotbg.DynBackgroudRelativeLayout>
+</RelativeLayout>

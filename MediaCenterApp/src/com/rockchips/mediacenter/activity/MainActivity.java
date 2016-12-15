@@ -103,7 +103,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
 
     private DevicesListView mDevicesListView;
 
-    private ImageView mIvLogo; 
+    //private ImageView mIvLogo; 
 
     private List<DeviceItem> mDeviceItemList = new ArrayList<DeviceItem>();
 
@@ -173,8 +173,8 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
         mStMainActivity = this;
         setContentView(R.layout.activity_main);
         mDevicesListView = (DevicesListView) findViewById(R.id.deviceList);
-        mIvLogo = (ImageView) findViewById(R.id.iv_devices_list_logo);
-        mIvLogo.setVisibility(View.VISIBLE);
+        //mIvLogo = (ImageView) findViewById(R.id.iv_devices_list_logo);
+        //mIvLogo.setVisibility(View.VISIBLE);
         mLlNoDev = (LinearLayout) findViewById(R.id.layout_no_device);
         mDevicesListView.setOnSearchListener(this);
         initView();
@@ -278,7 +278,10 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     	for(int i = 0; i != mLayoutDevices.getChildCount(); ++i){
     		TextView deviceTextView = (TextView)mLayoutDevices.getChildAt(i);
     		//设置DeviceItem的padding
-    		deviceTextView.setPadding((DeviceInfoUtils.getScreenWidth(this) - BITMAP_WIDTH * 4) / 2 + BITMAP_WIDTH / 2, 0, 0, 0);
+    		RelativeLayout.LayoutParams textParams = (RelativeLayout.LayoutParams)deviceTextView.getLayoutParams();
+    		textParams.leftMargin = (DeviceInfoUtils.getScreenWidth(this) - BITMAP_WIDTH * 4) / 2 + BITMAP_WIDTH / 2;
+    		//deviceTextView.setPadding((DeviceInfoUtils.getScreenWidth(this) - BITMAP_WIDTH * 4) / 2 + BITMAP_WIDTH / 2, 0, 0, 0);
+    		deviceTextView.setLayoutParams(textParams);
     	}
     	
     }

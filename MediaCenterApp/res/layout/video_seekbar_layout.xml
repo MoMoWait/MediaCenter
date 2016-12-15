@@ -37,9 +37,7 @@
 				android:padding="0px"
 				android:layout_marginTop="0px"
 				android:focusable="true"
-				android:layout_marginLeft="0px"
-				>
-		</com.rockchips.mediacenter.videoplayer.widget.MyseekBar>
+				android:layout_marginLeft="0px"/>
 
         <com.rockchips.mediacenter.viewutils.marqueetextview.MarqueeTextView
             android:id="@+id/elapsedName"

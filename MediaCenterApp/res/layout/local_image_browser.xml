@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.rockchips.mediacenter.viewutils.dynamicspotbg.DynBackgroudRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rl_local_image_browser_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#002d5f" >
+    android:background="@drawable/bg_01">
 
     <TextView
         android:id="@+id/text_path_title"
@@ -66,4 +66,4 @@
             layout="@layout/base_page_main" />
     </RelativeLayout>
 
-</com.rockchips.mediacenter.viewutils.dynamicspotbg.DynBackgroudRelativeLayout>
+</RelativeLayout>

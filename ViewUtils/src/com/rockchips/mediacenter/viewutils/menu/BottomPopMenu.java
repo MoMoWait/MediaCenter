@@ -8,7 +8,9 @@ import momo.cn.edu.fjnu.androidutils.data.CommonValues;
 import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Message;
@@ -158,11 +160,12 @@ public class BottomPopMenu extends PopupWindow
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         @SuppressWarnings("deprecation")
         int width = wm.getDefaultDisplay().getWidth();
-        BitmapDrawable drawbleBg = (BitmapDrawable) context.getResources().getDrawable(R.drawable.option_bg);
-        this.setBackgroundDrawable(drawbleBg); // 设置TabMenu菜单背景
+        //BitmapDrawable drawbleBg = (BitmapDrawable) context.getResources().getDrawable(R.drawable.option_bg);
+        this.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#292930"))); // 设置TabMenu菜单背景
         this.setWidth(width);
-        this.setHeight(drawbleBg.getBitmap().getHeight());
-
+        //this.setHeight(drawbleBg.getBitmap().getHeight());
+        //fly.gao
+        this.setHeight(SizeUtils.dp2px(mContext, 136));
         this.setAnimationStyle(R.style.MenuAnimation);
         this.setFocusable(true); // menu菜单获得焦点 如果没有获得焦点menu菜单中的控件事件无法响应
 
@@ -298,7 +301,7 @@ public class BottomPopMenu extends PopupWindow
 
         private int mCurrentItemIndex = -1;
 
-        private ImageView mFocusAnimView;
+        //private ImageView mFocusAnimView;
 
         private boolean mbNeedLayout;
 
@@ -335,14 +338,6 @@ public class BottomPopMenu extends PopupWindow
             mLayout.setGravity(Gravity.CENTER);
             mLayout.setLayoutParams(new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
             this.setGravity(Gravity.CENTER);
-
-            mFocusAnimView = new ImageView(mContext);
-            mFocusAnimView.setScaleType(ScaleType.CENTER);
-            RelativeLayout.LayoutParams p = new RelativeLayout.LayoutParams(LAYOUT_WIDTH, LAYOUT_HIGTH);
-            mFocusAnimView.setBackgroundResource(R.drawable.buttonview_focus_border);
-            mFocusAnimView.setVisibility(View.GONE);
-
-            this.addView(mFocusAnimView, p);
             this.addView(mLayout);
         }
 
@@ -389,10 +384,10 @@ public class BottomPopMenu extends PopupWindow
                     textView.setTextColor(mButtonTextColor);
 
                     mButtonLayout.setTag(item);
-                    if (mMenuButtonNormalBg != null)// 设置按钮正常的背景颜色
+                   /* if (mMenuButtonNormalBg != null)// 设置按钮正常的背景颜色
                     {
                         mButtonLayout.setBackgroundDrawable(mMenuButtonNormalBg);
-                    }
+                    }*/
                     p = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                     p.gravity = Gravity.CENTER;
                     p.leftMargin = MENU_BUTTON_GAP;
@@ -425,13 +420,13 @@ public class BottomPopMenu extends PopupWindow
                 textView.setTextColor(mButtonTextColor);
 
                 mButtonLayout.setTag(menuItemImpl);
-                if (mMenuButtonNormalBg != null)
+               /* if (mMenuButtonNormalBg != null)
                 {
                     mButtonLayout.setBackgroundDrawable(mMenuButtonNormalBg);
-                }
+                }*/
 
-                LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(SizeUtils.dp2px(mContext, 150),
+                		SizeUtils.dp2px(mContext, 136));
                 p.gravity = Gravity.CENTER;
                 p.leftMargin = MENU_BUTTON_GAP;
                 int childCount = mLayout.getChildCount();
@@ -470,7 +465,6 @@ public class BottomPopMenu extends PopupWindow
          */
         public void clear()
         {
-            mFocusAnimView.setVisibility(View.GONE);
             mCurrentItemIndex = -1;
             mItems.clear();
             mLayout.removeAllViews();
@@ -713,7 +707,9 @@ public class BottomPopMenu extends PopupWindow
             {
                 return;
             }
-
+            View currentView = mLayout.getChildAt(mCurrentItemIndex);
+            if (currentView != null)
+            	currentView.setBackgroundColor(Color.TRANSPARENT);
             if (newIdx >= 0 && newIdx < mLayout.getChildCount())
             {
                 if (mCurrentItemIndex >= 0 && mCurrentItemIndex < mLayout.getChildCount())
@@ -734,45 +730,20 @@ public class BottomPopMenu extends PopupWindow
          */
         private void setCurrentFocusItemByAnim(int newIdx)
         {
-            mFocusAnimView.clearAnimation();
-
             View currentView = mLayout.getChildAt(mCurrentItemIndex);
             View newView = mLayout.getChildAt(newIdx);
-
-            showFocusBackgroundAt(mCurrentItemIndex);
-
+            //showFocusBackgroundAt(mCurrentItemIndex);
             int xoffset = newView.getLeft() - currentView.getLeft();
             int yoffset = newView.getTop() - currentView.getTop();
             // 做焦点移动的动画效果在此处实现
             mCurrentItemIndex = newIdx;
             showFocusBackgroundAt(mCurrentItemIndex);
-            Animation focusAnimation = new TranslateAnimation(-xoffset, 0, -yoffset, 0);
-            focusAnimation.setDuration(ANIMATION_DURATION);
-            focusAnimation.setAnimationListener(new AnimationListener()
+            if (mOnMenuListener != null)
             {
-                public void onAnimationStart(Animation animation)
-                {
+                int id = mItems.get(mCurrentItemIndex).getItemId();
+                mOnMenuListener.onItemFocusChanged(id);
+            }
 
-                }
-
-                public void onAnimationRepeat(Animation animation)
-                {
-
-                }
-
-                public void onAnimationEnd(Animation animation)
-                {
-                    if (mOnMenuListener != null)
-                    {
-                        int id = mItems.get(mCurrentItemIndex).getItemId();
-                        mOnMenuListener.onItemFocusChanged(id);
-                    }
-
-                }
-            });
-
-            // 开始动画
-            mFocusAnimView.startAnimation(focusAnimation);
         }
 
         /**
@@ -795,32 +766,17 @@ public class BottomPopMenu extends PopupWindow
                     View currentView = mLayout.getChildAt(index);
                     if (currentView != null)
                     {
-                        RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams) mFocusAnimView.getLayoutParams();
-                        p.leftMargin = currentView.getLeft() + (currentView.getWidth() - p.width) / 2;
-                        p.topMargin = currentView.getTop() + (currentView.getHeight() - p.height) / 2;
-                        // mFocusAnimView.layout(currentView.getLeft(),
-                        // currentView.getTop(), currentView.getRight(),
-                        // currentView.getBottom());
-
-                        mFocusAnimView.setLayoutParams(p);
-                        mFocusAnimView.setVisibility(View.VISIBLE);
+                    	currentView.setBackgroundColor(Color.parseColor("#19395B"));
                     }
-                    else
-                    {
-                        mFocusAnimView.setVisibility(View.GONE);
-                    }
+                 
                 }
                 else
                 {
                     // 正在布局菜单项，等布局完了再显示聚焦的光标
                     mbNeedLayout = true;
-                    mFocusAnimView.setVisibility(View.GONE);
                 }
             }
-            else
-            {
-                mFocusAnimView.setVisibility(View.GONE);
-            }
+           
         }
 
         public int getCurrentMenuItem()

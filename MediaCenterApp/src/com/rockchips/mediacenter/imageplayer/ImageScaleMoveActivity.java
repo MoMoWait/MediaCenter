@@ -16,6 +16,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -99,7 +100,6 @@ public class ImageScaleMoveActivity extends DeviceActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_image_scale_move);
-
         mIvDisplay = (ImageView) findViewById(R.id.iv_ivscalemove_image);
         mTvHintOk = (TextView) findViewById(R.id.tv_hint_ok_text);
         mTvHintBack = (TextView) findViewById(R.id.tv_hint_back_text);

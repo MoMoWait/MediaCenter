@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 当前选中设备背景 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" >
+    <corners android:radius="8dp"/>
+    <solid android:color="@android:color/transparent"/>
+    <stroke android:color="@android:color/white" android:width="2dp"/>
+</shape>

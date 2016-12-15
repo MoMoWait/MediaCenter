@@ -64,8 +64,7 @@
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="600px"
-        android:layout_marginTop="300px"
+        android:layout_centerInParent="true"
         mce_style="?android:attr/progressBarStyleLarge" >
     </ProgressBar>
 

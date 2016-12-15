@@ -136,7 +136,7 @@ public class UpnpFileScanThread extends Thread {
 			Log.i(TAG, "run->mUpnpFolders:" + mUpnpFolders);
 			Log.i(TAG, "run->mUpnpFiles:" + mUpnpFiles);
 			synchronized (mUpnpFiles) {
-				if(mUpnpFiles.size() >= 5){
+				if(mUpnpFiles.size() >= 1){
 					mUpnpFileService.saveAll(mUpnpFiles);
 					//文件入库
 					mUpnpFiles.clear();

@@ -1,9 +1,9 @@
-<com.rockchips.mediacenter.viewutils.dynamicspotbg.DynBackgroudRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rl_local_file_list_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1159db"
+   android:background="@drawable/bg_02"
     tools:context=".FolderActivity" >
 
     <TextView
@@ -42,7 +42,8 @@
             android:paddingBottom="4dp"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
-            android:paddingTop="5dp" />
+            android:paddingTop="5dp" 
+            android:listSelector="@drawable/common_list_background"/>
 
         <com.rockchips.mediacenter.viewutils.preview.PreviewWidget
             android:id="@+id/widget_preview"
@@ -60,4 +61,4 @@
         android:layout_height="match_parent"
         layout="@layout/base_page_main" />
 
-</com.rockchips.mediacenter.viewutils.dynamicspotbg.DynBackgroudRelativeLayout>
+</RelativeLayout>

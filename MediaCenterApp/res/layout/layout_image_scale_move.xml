@@ -13,13 +13,12 @@
 	<!-- BEGIN: Added by r00178559 for DTS2014031901446 2014/03/19 -->
     <RelativeLayout
         android:id="@+id/rl_scale_move_mode_hint"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
         android:paddingBottom="@dimen/image_scale_mode_hint_margin_bottom"
-        android:paddingLeft="@dimen/image_scale_mode_hint_margin_left"
-        android:background="@drawable/ic_bg_scale_move_hint" >
+        android:paddingRight="20dp" >
 
         <ImageView
             android:id="@+id/iv_hint_ok_icon"
@@ -63,9 +62,10 @@
         android:id="@+id/rl_scale_zoom_area"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/rl_scale_move_mode_hint"
+        android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:layout_marginTop="@dimen/image_scale_mode_zoom_out_button_margin_top"
+        android:layout_marginRight="20dp"
         android:visibility="invisible" >
         
         <ImageView

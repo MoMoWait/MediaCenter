@@ -15,5 +15,6 @@
     <string name="list_finish_right_tip">to finish the selection</string>
     <string name="list_finish_left_tip">please press</string>
     <string name="no_album">No photos found，The system photos will be played！</string>
+    <string name="media_center">Media Center</string>
 
 </resources>

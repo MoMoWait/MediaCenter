@@ -2951,35 +2951,6 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         Log.d(TAG, "requestRefreshTotalDuration() OUT...");
     }
 
-    /* BEGIN: Modified by c00224451 for 新增音乐播放，歌词滚动效果 2014/3/26 */
-    // public void colorLyric(String[] lyricArray, int currentLine)
-    // {
-    // if (lyricArray == null || lyricArray.length == 0)
-    // {
-    // return;
-    // }
-    // if (currentLine % 2 == 0)
-    // {
-    // mRightLyric.setText(lyricArray[1]);
-    // mRightLyric.setTextColor(Color.GRAY);
-    // mLeftLyric.setText(lyricArray[0]);
-    // mLeftLyric.setTextColor(Color.WHITE);
-    // }
-    // else
-    // {
-    // mLeftLyric.setText(lyricArray[0]);
-    // mLeftLyric.setTextColor(Color.GRAY);
-    // mRightLyric.setText(lyricArray[1]);
-    // mRightLyric.setTextColor(Color.WHITE);
-    // }
-    // }
-    //
-    // public void clearLyric()
-    // {
-    // mLeftLyric.setText("");
-    // mRightLyric.setText("");
-    // }
-
     public void colorLyric(String[] lyricArray, int currentLine, int duration)
     {
         if (lyricArray == null || lyricArray.length == 0)
@@ -3066,7 +3037,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     private SpannableStringBuilder highlight(String showText, int start, int end)
     {
         SpannableStringBuilder spannable = new SpannableStringBuilder(showText);// 用于可变字符串
-        ForegroundColorSpan span = new ForegroundColorSpan(getResources().getColor(R.color.lyricFocused));
+        ForegroundColorSpan span = new ForegroundColorSpan(Color.parseColor("#49F3FE"));
         spannable.setSpan(span, start, end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
         return spannable;
     }

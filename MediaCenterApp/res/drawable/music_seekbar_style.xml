@@ -7,7 +7,7 @@
     </item>
     <item
         android:id="@android:id/progress"
-        android:drawable="@drawable/played2">
+        android:drawable="@drawable/music_progress">
     </item>
 
 </layer-list>
