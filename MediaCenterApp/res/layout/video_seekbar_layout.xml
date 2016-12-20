@@ -23,67 +23,72 @@
     <RelativeLayout
         android:id="@+id/rl_play_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="80dp"
         android:layout_alignBottom="@+id/rl_play_status"
-        android:layout_toRightOf="@+id/rl_play_status" 
-        android:layout_marginBottom="18dp"
         android:layout_marginLeft="20dp"
-        android:layout_marginRight="40dp">
+        android:layout_marginRight="40dp"
+        android:layout_toRightOf="@+id/rl_play_status" >
 
-        <com.rockchips.mediacenter.videoplayer.widget.MyseekBar 
-				android:layout_width="match_parent" 
-				android:layout_height="90px"
-				android:id="@+id/seekbar" 
-				android:padding="0px"
-				android:layout_marginTop="0px"
-				android:focusable="true"
-				android:layout_marginLeft="0px"/>
+        <com.rockchips.mediacenter.videoplayer.widget.MyseekBar
+            android:id="@+id/seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="0px"
+            android:layout_marginTop="0px"
+            android:layout_toLeftOf="@+id/layout_time"
+            android:focusable="true"
+            android:padding="0px" />
 
         <com.rockchips.mediacenter.viewutils.marqueetextview.MarqueeTextView
             android:id="@+id/elapsedName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_toLeftOf="@+id/elapsedDuration"
-            android:layout_marginTop="52px"
             android:layout_marginLeft="32dp"
+            android:layout_marginTop="52px"
+            android:singleLine="true"
+            android:textColor="#dedede"
             android:textSize="26dp"
-            android:textColor="#dedede"
-            android:singleLine="true" />
-        
-        <TextView
-            android:id="@+id/totalDuration"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/layout_time"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="80dp"
+            android:orientation="horizontal" 
             android:layout_alignParentRight="true"
-            android:layout_marginTop="56px"
-            android:layout_marginRight="20dp"
-            android:text="@string/video_seekbar_duration_init"
-            android:textSize="20dp"
-            android:textColor="#dedede" />
-        
-        <TextView
-            android:id="@+id/sbdurationfilter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="56px"
-            android:layout_toLeftOf="@id/totalDuration"
-            android:text="@string/video_seekbar_duration_filter"
-            android:textColor="#dedede"
-            android:textSize="20dp" />
+            android:gravity="center_vertical"
+            android:layout_marginLeft="20dp">
 
-        <TextView
-            android:id="@+id/elapsedDuration"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="56px"
-            android:layout_toLeftOf="@+id/sbdurationfilter"
-            android:text="@string/video_seekbar_duration_init"
-            android:textColor="#dedede"
-            android:textSize="20dp" />
-</RelativeLayout>
+            <TextView
+                android:id="@+id/totalDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:text="@string/video_seekbar_duration_init"
+                android:textColor="#dedede"
+                android:textSize="20sp" />
 
-    <!-- 
+            <TextView
+                android:id="@+id/sbdurationfilter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/video_seekbar_duration_filter"
+                android:textColor="#dedede"
+                android:textSize="20sp"/>
+
+            <TextView
+                android:id="@+id/elapsedDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/video_seekbar_duration_init"
+                android:textColor="#dedede"
+                android:textSize="20sp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <!--
     <RelativeLayout
         android:id="@+id/rl_play_cursor"
         android:layout_width="wrap_content"
@@ -108,7 +113,6 @@
             android:layout_marginTop="5dp"
             android:textSize="26dp"
             android:textColor="#f1f1f1" />
-    </RelativeLayout>
-     -->
+    </RelativeLayout> -->
 
 </RelativeLayout>

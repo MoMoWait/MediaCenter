@@ -807,7 +807,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                 }
                 else
                 {
-                    showPlayListLayout();
+                    //showPlayListLayout();
                 }
 
                 break;
@@ -820,7 +820,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                 }
                 else
                 {
-                    showPlayListLayout();
+                	//去除右边侧边栏			
+                    //showPlayListLayout();
                 }
                 //
 
@@ -1134,7 +1135,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             }
             else
             {
-                showPlayListLayout();
+                //showPlayListLayout();
             }
         }
 
@@ -1146,7 +1147,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             }
             else
             {
-                showPlayListLayout();
+                //showPlayListLayout();
             }
         }
 

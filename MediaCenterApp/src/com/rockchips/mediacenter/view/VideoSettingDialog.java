@@ -170,7 +170,7 @@ public class VideoSettingDialog extends AppBaseDialog {
           }
           
           TextView menuItemView = (TextView)(mLayoutMenuItems.getChildAt(category.getSelectIndex()));
-          menuItemView.setBackgroundColor(Color.BLACK);
+          menuItemView.setBackgroundColor(Color.parseColor("#0D6795"));
           
           LinearLayout.LayoutParams categoryLayoutParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1);
           mLayoutSettingContainer.addView(menuItemLayout, categoryLayoutParams);
@@ -288,7 +288,7 @@ public class VideoSettingDialog extends AppBaseDialog {
 			//menuItemsLayout.getChildAt(mFocusPoint.y).setBackground(mContext.getResources().getDrawable(R.drawable.common_grey_border, mContext.getTheme()));
 			//还原选中
 			if(mCategorys.get(mFocusPoint.x).getSelectIndex() == mFocusPoint.y){
-				menuItemsLayout.getChildAt(mFocusPoint.y).setBackgroundColor(Color.BLACK);
+				menuItemsLayout.getChildAt(mFocusPoint.y).setBackgroundColor(Color.parseColor("#0D6795"));
 			}
 		}
 		

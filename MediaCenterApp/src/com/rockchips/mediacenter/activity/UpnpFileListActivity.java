@@ -91,6 +91,8 @@ public class UpnpFileListActivity extends AppBaseActivity  implements OnItemSele
 	private ProgressBar mPregressLoading;
 	@ViewInject(R.id.layout_content_page)
 	private LinearLayout mLayoutContentPage;
+	@ViewInject(R.id.text_file_name)
+	private TextView mTextFileName;
 	private int mCurrMediaType;
 	private LocalDevice mCurrDevice; 
 	private UpnpFolderListAdapter mFolderAdapter;
@@ -213,10 +215,12 @@ public class UpnpFileListActivity extends AppBaseActivity  implements OnItemSele
     	    mWidgetPreview.updateName(mediaFolder.getName());
             mWidgetPreview.updateImage(getPreviewIcon(ConstData.MediaType.FOLDER));
             mWidgetPreview.updateOtherText(getPreviewInfo(mediaFolder));
+            mTextFileName.setText(mediaFolder.getName());
     	}else{
     		final UpnpFile mediaFile = (UpnpFile)mListFile.getAdapter().getItem(position);
     		mWidgetPreview.updateName(mediaFile.getName());
     		mWidgetPreview.updateImage(getPreviewIcon(mediaFile.getType()));
+    		mTextFileName.setText(mediaFile.getName());
     		String previewPhotoPath = mediaFile.getPreviewPhotoPath();
     		Bitmap preViewBitmap = null;
     		if(!TextUtils.isEmpty(previewPhotoPath)){

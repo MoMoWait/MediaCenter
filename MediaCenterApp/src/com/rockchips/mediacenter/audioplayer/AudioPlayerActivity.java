@@ -443,12 +443,12 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 
         // 创建焦点框
         mGlobalFocus = new GlobalFocus(this);
-        mGlobalFocus.setFocusRes(R.drawable.new_music_focus);
+        mGlobalFocus.setFocusRes(R.drawable.music_list_focus_background);
         mGlobalFocus.setVisibility(View.INVISIBLE);
 
-        LayoutParams params = new LayoutParams(DeviceInfoUtils.getScreenWidth(this) / 2 - SizeUtils.dp2px(this, 20), 102);
+        LayoutParams params = new LayoutParams(DeviceInfoUtils.getScreenWidth(this) / 2 - SizeUtils.dp2px(this, 20), 50);
 
-        params.topMargin = -SizeUtils.dp2px(this, 652);
+        params.topMargin = -SizeUtils.dp2px(this, 620);
         params.leftMargin = DeviceInfoUtils.getScreenWidth(this) / 2 ;
         mGlobalFocus.setFocusInitParams(params);
         mParentLinear.addView(mGlobalFocus);
@@ -520,9 +520,10 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     // 获取背景图片标志
     private void getBackgroundPicFlag()
     {
-        SharedPreferences sp = getAudioSettingsSharedPreferences();
+       /* SharedPreferences sp = getAudioSettingsSharedPreferences();
         boolean flag = sp.getBoolean("isShowBackgroundPic", true);
-        mStIsShowBackgroundPic = flag;
+        mStIsShowBackgroundPic = flag;*/
+    	mStIsShowBackgroundPic = false;
     }
 
     // 设置背景图片是否开启
@@ -3270,7 +3271,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         /**
          * 播放背景
          */
-        menuCgy = new MenuCategory();
+/*        menuCgy = new MenuCategory();
         menuCgy.setCategoryName(getResources().getString(R.string.background_pics));
         itemImpls = new ArrayList<MenuItemImpl>();
         // 关闭播放背景
@@ -3285,7 +3286,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         menuCgy.setSelectIndex(mStIsShowBackgroundPic ? 1 : 0);
         if (!isPlayMode)
             mPopMenu.addMenuCategory(menuCgy);
-
+*/
         openMenu();
     }
 
@@ -3430,8 +3431,8 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         {
             mBottomPopMenu.add(1, ENUMLAYOUTDISPLAYTYPE.ENUM_AUDIO_PLAY_MODE, R.drawable.menu_icon_audio_play_mode, 1, 1,
                     getResources().getString(R.string.play_mode_audio));
-            mBottomPopMenu.add(2, ENUMLAYOUTDISPLAYTYPE.ENUM_AUDIO_PLAY_BACKGROUND, R.drawable.menu_icon_background_pic, 2, 2, getResources()
-                    .getString(R.string.background_pics));
+            //mBottomPopMenu.add(2, ENUMLAYOUTDISPLAYTYPE.ENUM_AUDIO_PLAY_BACKGROUND, R.drawable.menu_icon_background_pic, 2, 2, getResources()
+             //       .getString(R.string.background_pics));
         }
         /* END: Modified by c00224451 for DTS2014031902972 2014/3/19 */
     }
@@ -3606,7 +3607,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 
             case ENUM_OPEN_BACKGROUND_PIC:
                 MenuItemImpl menuFocusItem = mPopMenu.getCurrentFocusItemImpl();
-                mStIsShowBackgroundPic = true;
+                mStIsShowBackgroundPic = false;
                 // xWX184171 DTS2014021910705 需要断电保存
                 setBackgroundPicFlag(true);
                 mBackgroundRet = true;

@@ -2,7 +2,6 @@ package com.rockchips.mediacenter.viewutils.marqueetextview;
 
 import android.content.Context;
 import android.graphics.Rect;
-import android.text.TextUtils.TruncateAt;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
@@ -38,7 +37,7 @@ public class MarqueeTextView extends TextView
         mIsFocused = true;
         this.setFocusable(false);
         this.setSingleLine();
-        this.setEllipsize(TruncateAt.MARQUEE);
+        //this.setEllipsize(TruncateAt.MARQUEE);
         this.setFocusableInTouchMode(false);
         this.setMarqueeRepeatLimit(-1);
     }

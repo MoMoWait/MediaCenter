@@ -4,7 +4,7 @@
     <string name="text_video_time_seek_time_default">0</string>
     <string name="text_video_time_seek_time_divider">:</string>
     <string name="search_inputhint">搜索家庭设备内容</string>
-    <string name="more_operation_pre">请按</string>
+    <string name="more_operation_pre">请按菜单键进行进行更多操作\n请按上下键切换设备</string>
     <string name="more_operation_back">键进行更多操作</string>
     <string name="video">视频浏览</string>
     <string name="file">文件</string>

@@ -1,6 +1,4 @@
 package com.rockchips.mediacenter.viewutils.playlist;
-
-import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Handler.Callback;

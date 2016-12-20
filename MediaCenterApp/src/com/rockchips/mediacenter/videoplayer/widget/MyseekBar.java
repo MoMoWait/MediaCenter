@@ -1,5 +1,6 @@
 package com.rockchips.mediacenter.videoplayer.widget;
 
+import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -104,7 +105,7 @@ public class MyseekBar extends AbsSeekBar
     /** 修改者：l00174030；修改原因：先画背景，在画进度条**/
     // 把数字常量抽出，便于修改
 	/* BEGIN: Modified by s00211113 for DTS2014031902280  2014/03/19 */
-    private int seekbarLeftTop = 50;//42 + 10 + 5 + 8;
+    private int seekbarLeftTop = 0;//42 + 10 + 5 + 8;
     
     // 进度条圆圈TOP
     private int pauseLeftTop = 0;//42 + 10 + 5;
@@ -362,14 +363,12 @@ public class MyseekBar extends AbsSeekBar
     {
         super(context, attrs, defStyle);
         this.context = context;
-        // TODO Auto-generated constructor stub
     }
     
     public MyseekBar(Context context)
     {
         super(context);
         this.context = context;
-        // TODO Auto-generated constructor stub
     }
     
     /**
@@ -408,8 +407,9 @@ public class MyseekBar extends AbsSeekBar
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(0X7f233619);
         paint.setAntiAlias(true);
-        RectF rectfbg = new RectF(0, seekbarLeftTop , this.getWidth(), seekbarLeftTop+40);
-        canvas.drawRoundRect(rectfbg, 10, 10, paint);
+        RectF rectfbg = new RectF(0, seekbarLeftTop , this.getWidth(), seekbarLeftTop+SizeUtils.dp2px(context, 20));
+        //canvas.drawRoundRect(rectfbg, 10, 10, paint);
+        canvas.drawRect(rectfbg, paint);
         
         int X = Math.abs(Xacceleration);
         
@@ -424,12 +424,12 @@ public class MyseekBar extends AbsSeekBar
         {
             if (thumbPos > 0)
             {
-                imgSeekbar_Played = imgSeekbar_Played.createScaledBitmap(imgSeekbar_Played, thumbPos, 40, true);
+                imgSeekbar_Played = imgSeekbar_Played.createScaledBitmap(imgSeekbar_Played, thumbPos, SizeUtils.dp2px(context, 20), true);
                 pos = thumbPos;
             }
             else
             {
-                imgSeekbar_Played = imgSeekbar_Played.createScaledBitmap(imgSeekbar_Played, 1, 40, true);
+                imgSeekbar_Played = imgSeekbar_Played.createScaledBitmap(imgSeekbar_Played, 1, SizeUtils.dp2px(context, 20), true);
                 pos = 1;
             }
         }
@@ -470,13 +470,15 @@ public class MyseekBar extends AbsSeekBar
 		        
 		        if (pos < this.getWidth() - 5)
 		        {
-		            float[] radii = {10f,10f,0f,0f,0f,0f,10f,10f};
-		            path.addRoundRect(new RectF(0, seekbarLeftTop, thumbPos1, seekbarLeftTop+40), radii, Path.Direction.CW);
+		            //float[] radii = {10f,10f,0f,0f,0f,0f,10f,10f};
+		            //path.addRoundRect(new RectF(0, seekbarLeftTop, thumbPos1, seekbarLeftTop+40), radii, Path.Direction.CW);
+		            path.addRect(new RectF(0, seekbarLeftTop, thumbPos1, seekbarLeftTop+SizeUtils.dp2px(context, 20)), Path.Direction.CW);
 		        }
 		        else
 		        {
-		            float[] radii = {10f,10f,10f,10f,10f,10f,10f,10f};
-		            path.addRoundRect(new RectF(0, seekbarLeftTop, thumbPos1, seekbarLeftTop+40), radii, Path.Direction.CW);
+		            //float[] radii = {10f,10f,10f,10f,10f,10f,10f,10f};
+		            path.addRect(new RectF(0, seekbarLeftTop, thumbPos1, seekbarLeftTop+SizeUtils.dp2px(context, 20)), Path.Direction.CW);
+		            //path.addRoundRect(new RectF(0, seekbarLeftTop, thumbPos1, seekbarLeftTop+40), radii, Path.Direction.CW);
 		        }
 		        canvas.drawPath(path,paint1);
 			}
@@ -734,7 +736,6 @@ public class MyseekBar extends AbsSeekBar
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
-        // TODO Auto-generated method stub
         float Progress = 0;
         
         // Log.e(TAG, "scale --->" + scale + "Kscale--->" + Kscale + "X-->" +
@@ -1106,7 +1107,6 @@ public class MyseekBar extends AbsSeekBar
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event)
     {
-        // TODO Auto-generated method stub
         if (isFromNetwork) return super.onKeyUp(keyCode, event);
         hasKeyUp = true;
         if(needSeek){
@@ -1598,13 +1598,13 @@ public class MyseekBar extends AbsSeekBar
         Log.d(TAG, "pressDraw: pos=" + pos + "this.getWidth()=" + this.getWidth());
         if (pos < this.getWidth() - 20)
         {
-            float[] radii = {10f,10f,0f,0f,0f,0f,10f,10f};
-            path.addRoundRect(new RectF(0, seekbarLeftTop, pos, 40), radii, Path.Direction.CW);
+            float[] radii = {0f,0f,0f,0f,0f,0f,0f,0f};
+            path.addRoundRect(new RectF(0, seekbarLeftTop, pos, SizeUtils.dp2px(context, 20)), radii, Path.Direction.CW);
         }
         else
         {
-            float[] radii = {10f,10f,10f,10f,10f,10f,10f,10f};
-            path.addRoundRect(new RectF(0, seekbarLeftTop, pos, 40), radii, Path.Direction.CW);
+            float[] radii = {0f,0f,0f,0f,0f,0f,0f,0f};
+            path.addRoundRect(new RectF(0, seekbarLeftTop, pos, SizeUtils.dp2px(context, 20)), radii, Path.Direction.CW);
         }
         
         canvas.drawPath(path,paint);
@@ -1923,13 +1923,13 @@ public class MyseekBar extends AbsSeekBar
         
         if (pos < this.getWidth() - 5)
         {
-            float[] radii = {10f, 10f, 0f, 0f, 0f, 0f, 10f, 10f};
-            path.addRoundRect(new RectF(0, seekbarLeftTop, pos, 40), radii, Path.Direction.CW);
+            float[] radii = {0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f};
+            path.addRoundRect(new RectF(0, seekbarLeftTop, pos, SizeUtils.dp2px(context, 20)), radii, Path.Direction.CW);
         }
         else
         {
-            float[] radii = {10f, 10f, 10f, 10f, 10f, 10f, 10f, 10f};
-            path.addRoundRect(new RectF(0, seekbarLeftTop, pos, 40), radii, Path.Direction.CW);
+            float[] radii = {0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f};
+            path.addRoundRect(new RectF(0, seekbarLeftTop, pos, SizeUtils.dp2px(context, 20)), radii, Path.Direction.CW);
         }
         canvas.drawPath(path, paint);
     }
@@ -1954,13 +1954,13 @@ public class MyseekBar extends AbsSeekBar
         
         if (pos < this.getWidth() - 5)
         {
-            float[] radii = {10f,10f,0f,0f,0f,0f,10f,10f};
-            path.addRoundRect(new RectF(0, seekbarLeftTop, pos, seekbarLeftTop+40), radii, Path.Direction.CW);
+            float[] radii = {0f,0f,0f,0f,0f,0f,0f,0f};
+            path.addRoundRect(new RectF(0, seekbarLeftTop, pos, seekbarLeftTop+SizeUtils.dp2px(context, 20)), radii, Path.Direction.CW);
         }
         else
         {
             float[] radii = {10f,10f,10f,10f,10f,10f,10f,10f};
-            path.addRoundRect(new RectF(0, seekbarLeftTop, pos, seekbarLeftTop+40), radii, Path.Direction.CW);
+            path.addRoundRect(new RectF(0, seekbarLeftTop, pos, seekbarLeftTop+SizeUtils.dp2px(context, 20)), radii, Path.Direction.CW);
         }
         canvas.drawPath(path,paint);
         

@@ -8,6 +8,8 @@ import momo.cn.edu.fjnu.androidutils.utils.DeviceInfoUtils;
 import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -903,6 +905,14 @@ public class PlayListView extends RelativeLayout
      */
     public void setCurrentItem(int index)
     {
+    	
+    	//设置背景颜色为透明
+    	/*if(mCurrentPlayIndex >= 0 && mViewList != null 
+    			&& mViewList.size() > 0 && mCurrentPlayIndex < mViewList.size()){
+        	//mViewList.get(mCurrentFocusedIndex).setBackground(new ColorDrawable(Color.TRANSPARENT));
+        	mViewList.get(mCurrentFocusedIndex).setBackgroundColor(Color.TRANSPARENT);
+    	}*/
+    	
         // index为0，需要将焦点放在可视区域内的第一个位置上
         if (index == 0)
         {
@@ -919,6 +929,10 @@ public class PlayListView extends RelativeLayout
         }
 
         mCurrentFocusedIndex = index;
+        //设置背景颜色
+      /*  if(mViewList != null && mViewList.size() > 0){
+        	mViewList.get(mCurrentFocusedIndex).setBackgroundColor(Color.parseColor("#2158A9"));
+        }*/
 
     }
 

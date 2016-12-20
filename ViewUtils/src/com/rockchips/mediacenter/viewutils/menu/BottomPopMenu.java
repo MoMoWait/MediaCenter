@@ -166,7 +166,7 @@ public class BottomPopMenu extends PopupWindow
         //this.setHeight(drawbleBg.getBitmap().getHeight());
         //fly.gao
         this.setHeight(SizeUtils.dp2px(mContext, 136));
-        this.setAnimationStyle(R.style.MenuAnimation);
+        //this.setAnimationStyle(R.style.MenuAnimation);
         this.setFocusable(true); // menu菜单获得焦点 如果没有获得焦点menu菜单中的控件事件无法响应
 
         mMenuView = new MenuView(context);

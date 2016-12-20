@@ -101,6 +101,8 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
 	private ProgressBar mPregressLoading;
 	@ViewInject(R.id.layout_content_page)
 	private LinearLayout mLayoutContentPage;
+	@ViewInject(R.id.text_file_name)
+	private TextView mTextFileName;
 	private int mCurrMediaType;
 	private LocalDevice mCurrDevice; 
 	private FolderListAdapter mFolderAdapter;
@@ -223,9 +225,13 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
     	    mWidgetPreview.updateName(mediaFolder.getName());
             mWidgetPreview.updateImage(getPreviewIcon(ConstData.MediaType.FOLDER));
             mWidgetPreview.updateOtherText(getPreviewInfo(mediaFolder));
+            //更新头部信息
+            mTextFileName.setText(mediaFolder.getName());
     	}else{
     		LocalMediaFile mediaFile = (LocalMediaFile)mListFile.getAdapter().getItem(position);
     		mWidgetPreview.updateName(mediaFile.getName());
+    		//更新头部信息
+    		mTextFileName.setText(mediaFile.getName());
     		Bitmap previewBitmap = null;
     		if(mediaFile.getType() == ConstData.MediaType.IMAGE)
     			previewBitmap = BitmapUtils.getScaledBitmapFromFile(mediaFile.getPath(), SizeUtils.dp2px(this, 280), SizeUtils.dp2px(this, 280));

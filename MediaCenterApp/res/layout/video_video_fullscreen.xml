@@ -49,7 +49,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="0px"
-        android:layout_marginTop="0px" />
+        android:layout_marginTop="0px"/>
 
     <!-- 菜单键播放模式 -->
 

@@ -133,21 +133,6 @@
                 android:layout_centerVertical="true"
                 android:text="@string/more_operation_pre"
                 android:textSize="16sp" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="8dp"
-                android:src="@drawable/more_operation_icon" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="8dp"
-                android:text="@string/more_operation_back"
-                android:textSize="16sp" />
         </LinearLayout>   
         
        <RelativeLayout

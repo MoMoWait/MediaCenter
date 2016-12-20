@@ -77,7 +77,7 @@ public class PhotoGridAdapter extends ArrayAdapter<LocalMediaInfo> {
 				File[] subFiles = imgFile.listFiles();
 				Log.i(TAG, "getView->subFiles:" + Arrays.toString(subFiles));
 				if(subFiles != null && subFiles.length > 0){
-					x.image().bind(holder.imgPhoto, subFiles[0].getPath(), mImageOptions, null);
+					//x.image().bind(holder.imgPhoto, subFiles[0].getPath(), mImageOptions, null);
 				}
 			}else{ 
 				holder.textFileCount.setVisibility(View.GONE);
@@ -85,7 +85,7 @@ public class PhotoGridAdapter extends ArrayAdapter<LocalMediaInfo> {
 			}
 		}else{
 			if(mediaInfo.getmFiles() > 0){
-				x.image().bind(holder.imgPhoto, mediaInfo.getFirstPhotoUrl(), mImageOptions, null);
+				//x.image().bind(holder.imgPhoto, mediaInfo.getFirstPhotoUrl(), mImageOptions, null);
 			}else{
 				holder.textFileCount.setVisibility(View.GONE);
 				x.image().bind(holder.imgPhoto, mediaInfo.getmResUri(), mImageOptions, null);
