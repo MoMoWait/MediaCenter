@@ -31,14 +31,14 @@ public class LocalDeviceMountThread extends Thread{
 		//内部存储路径
 		String internelStoragePath = StorageUtils.getFlashStoragePath();
 		List<String> allUsbPaths = StorageUtils.getUSBPaths(mService);
-		Log.i(TAG, "initStorage->allUsbPaths:" + allUsbPaths);
+		//Log.i(TAG, "initStorage->allUsbPaths:" + allUsbPaths);
 		List<String> allSdCardPaths = StorageUtils.getSdCardPaths(mService);
-		Log.i(TAG, "initStorage->allSdCardPaths:" + allSdCardPaths);
+		//Log.i(TAG, "initStorage->allSdCardPaths:" + allSdCardPaths);
 		LocalDeviceService localDeviceService = new LocalDeviceService();
 		LocalMediaFolderService localMediaFolderService = new LocalMediaFolderService();
 		LocalMediaFileService localMediaFileService = new LocalMediaFileService();
 		List<LocalDevice> devices = localDeviceService.getAllLocalStorageDevices();
-		Log.i(TAG, "run->devices:" + devices);
+		//Log.i(TAG, "run->devices:" + devices);
 		if(devices != null && devices.size() > 0){
 			for(LocalDevice device : devices){
 				localDeviceService.delete(device);

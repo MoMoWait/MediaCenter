@@ -148,10 +148,10 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
-		Log.i(TAG, "onItemClick");
+		//Log.i(TAG, "onItemClick");
 		Object itemObject = parent.getAdapter().getItem(position);
 		if(itemObject instanceof LocalMediaFolder){
-			Log.i(TAG, "click folder");
+			//Log.i(TAG, "click folder");
 			LocalMediaFolder itemFolder = (LocalMediaFolder)itemObject;
 			mSelectFolder = itemFolder;
 			loadFiles(itemFolder, false);
@@ -293,7 +293,7 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
 			public void onSuccess(List<LocalMediaFolder> mediaFiles) {
 				DialogUtils.closeLoadingDialog();
 				mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id());
-				Log.i(TAG, "onSuccess->mediaFiles:" + mediaFiles);
+				//Log.i(TAG, "onSuccess->mediaFiles:" + mediaFiles);
 				if(mediaFiles != null && mediaFiles.size() > 0){
 					mLayoutContentPage.setVisibility(View.VISIBLE);
 					mLayoutNoFiles.setVisibility(View.GONE);
@@ -337,7 +337,7 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
 			public void onSuccess(List<LocalMediaFile> mediaFiles) {
 				DialogUtils.closeLoadingDialog();
 				mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id() + ">" + mediaFolder.getName());
-				Log.i(TAG, "loadFiles->onSuccess->mediaFiles:" + mediaFiles);
+				//Log.i(TAG, "loadFiles->onSuccess->mediaFiles:" + mediaFiles);
 				if(mediaFiles != null && mediaFiles.size() > 0){
 					mLayoutContentPage.setVisibility(View.VISIBLE);
 					mLayoutNoFiles.setVisibility(View.GONE);
@@ -542,7 +542,7 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
 //            intent.putParcelableArrayListExtra(Constant.IntentKey.MEDIA_INFO_LIST, mediaInfoList);
             InternalImagePlayer.setMediaList(mediaInfoList, newPosition);
         }
-        Log.i(TAG, "start internal player");
+        //Log.i(TAG, "start internal player");
         startActivityForResult(intent, START_PLAYER_REQUEST_CODE);
     }
     
@@ -635,9 +635,9 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
     	mMediaDataLoadTask = new FileMediaDataLoadTask(new FileMediaDataLoadTask.CallBack(){
     		@Override
     		public void onFinish(LocalMediaFile mediaFile) {
-    			Log.i(TAG, "loadExtraMediaInfo->onFinish->mediaFile:" + mediaFile);
+    			//Log.i(TAG, "loadExtraMediaInfo->onFinish->mediaFile:" + mediaFile);
     			if(mediaFile == mCurrentFocusFile){
-    				Log.i(TAG, "loadExtraMediaInfo->mediaFile==mSelectFile");
+    				//Log.i(TAG, "loadExtraMediaInfo->mediaFile==mSelectFile");
     				//更新当前预览图，时长
     				refreshPreview(mCurrentFocusPosition);
     			}

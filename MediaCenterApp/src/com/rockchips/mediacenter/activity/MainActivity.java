@@ -169,7 +169,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-		Log.i(TAG, "onCreate->start");
+		//Log.i(TAG, "onCreate->start");
         mStMainActivity = this;
         setContentView(R.layout.activity_main);
         mDevicesListView = (DevicesListView) findViewById(R.id.deviceList);
@@ -186,7 +186,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
         attachServices();
         //初始化网络设备
         initNetWorkDevices();
-		Log.i(TAG, "onCreate->end");
+		//Log.i(TAG, "onCreate->end");
 		//KeyEvent.KEYCODE_DPAD_UP
     }
 
@@ -292,13 +292,13 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     public List<NFSInfo> readNFSInfos(){
     	List<NFSInfo> nfsList = new ArrayList<NFSInfo>();
     	String nfsInfos = StorageUtils.getDataFromSharedPreference(ConstData.SharedKey.NFS_INFOS);
-    	Log.i(TAG, "readNFSInfos->nfsInfos:" + nfsInfos);
+    	//Log.i(TAG, "readNFSInfos->nfsInfos:" + nfsInfos);
     	if(!TextUtils.isEmpty(nfsInfos)){
     		try{
     			mNFSInfoArray = new JSONArray(nfsInfos);
     			nfsList = (List<NFSInfo>)JsonUtils.arrayToList(NFSInfo.class, mNFSInfoArray);
     		}catch (Exception e){
-    			Log.i(TAG, "readNFSInfos->" + e);
+    			//Log.i(TAG, "readNFSInfos->" + e);
     			//此处发生异常，直接清空数据
     			StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.NFS_INFOS, "");
     			ToastUtils.showToast(getString(R.string.read_nfs_error));
@@ -315,13 +315,13 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
 	public List<SmbInfo> readSmbInfos() {
 		List<SmbInfo> smbList = new ArrayList<SmbInfo>();
 		String smbInfos = StorageUtils.getDataFromSharedPreference(ConstData.SharedKey.SMB_INFOS);
-		Log.i(TAG, "readSmbInfos->smbinfos:" + smbInfos);
+		//Log.i(TAG, "readSmbInfos->smbinfos:" + smbInfos);
 		if(!TextUtils.isEmpty(smbInfos)){
 			try {
 				mSmbInfoArray = new JSONArray(smbInfos);
 				smbList = (List<SmbInfo>)JsonUtils.arrayToList(SmbInfo.class, mSmbInfoArray);
 			} catch (Exception e) {
-				Log.i(TAG, "" + e);
+				//Log.i(TAG, "" + e);
 				//此处发生异常，直接清空数据
 				StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.SMB_INFOS, "");
 				ToastUtils.showToast(getString(R.string.read_samba_error));
@@ -441,7 +441,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
 					@Override
 					protected void onPostExecute(Integer result) {
 						DialogUtils.closeLoadingDialog();
-						Log.i(TAG, "showSambaAddDialog->mountResult:" + result);
+						//Log.i(TAG, "showSambaAddDialog->mountResult:" + result);
 						if(result == ConstData.TaskExecuteResult.SUCCESS){
 							//发送广播
 							Intent sambaMountIntent = new Intent(ConstData.BroadCastMsg.SAMBA_MOUNT);
@@ -508,7 +508,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
         switch (offset)
         {
             case MEDIA_TYPE_FOLDER:
-            	Log.i(TAG, "onSelected->offset:" + "MEDIA_TYPE_FOLDER");
+            	//Log.i(TAG, "onSelected->offset:" + "MEDIA_TYPE_FOLDER");
                 intent.putExtra(ConstData.IntentKey.EXTRAL_MEDIA_TYPE, ConstData.MediaType.FOLDER);
                 if(selectDevice.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_DMS)
                 	intent.setClass(this, UpnpFileListActivity.class);
@@ -609,7 +609,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
         LOG.d(TAG, "devUpdate: mDevInfoList.size():" + mDevInfoList.size());
 
         for(LocalDevice deviceInfo : mDevInfoList){
-        	Log.i(TAG, "deviceInfo:" + deviceInfo);
+        	//Log.i(TAG, "deviceInfo:" + deviceInfo);
         }
         
         mLlNoDev.setVisibility(View.GONE);
@@ -724,7 +724,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     class DeviceUpDownReceiver extends BroadcastReceiver{
     	@Override
     	public void onReceive(Context context, Intent intent) {
-    		Log.i(TAG, "DeviceUpDownReceiver->onReceive");
+    		//Log.i(TAG, "DeviceUpDownReceiver->onReceive");
     		int deviceType = intent.getIntExtra(ConstData.IntentKey.EXTRA_DEVICE_TYPE, -1);
     		loadDeviceInfoList();
     	}

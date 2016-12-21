@@ -134,7 +134,7 @@ public class AudioSettingsDialog extends AppBaseDialog{
 	 }
 	 
 	  private void addCategoryView(MenuCategory category){
-		  Log.i(TAG, "addCategoryView->category:" + category);
+		  //Log.i(TAG, "addCategoryView->category:" + category);
           LinearLayout menuItemLayout = (LinearLayout) LayoutInflater.from(mContext).inflate(R.layout.menu_item, null);
           TextView cateName = (TextView) menuItemLayout.findViewById(R.id.menu_category_name);
           cateName.setText(category.getCategoryName());
@@ -165,7 +165,7 @@ public class AudioSettingsDialog extends AppBaseDialog{
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		Log.i(TAG, "onKeyDown->keyCode:" + keyCode);
+		//Log.i(TAG, "onKeyDown->keyCode:" + keyCode);
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_DPAD_RIGHT:
 			rightMove();

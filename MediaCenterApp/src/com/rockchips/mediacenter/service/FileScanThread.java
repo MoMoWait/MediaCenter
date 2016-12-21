@@ -68,7 +68,7 @@ public class FileScanThread extends Thread{
 	
 	@Override
 	public void run() {
-		Log.i(TAG, "FileScanThread start");
+		//Log.i(TAG, "FileScanThread start");
 		while(!mScanDirectory.isEmpty()){
 			mIsMounted = mService.isMounted(mPath);
 			if(!mIsMounted){
@@ -103,7 +103,7 @@ public class FileScanThread extends Thread{
 						mScanDirectory.add(new File(itemDirectory.getPath()));
 					}
 					
-					Log.i(TAG, "dbDirecories:" + dbDirectories);
+					//Log.i(TAG, "dbDirecories:" + dbDirectories);
 					//删除数据库中对应的数据
 					mScanDirectoryService.deleteAll(dbDirectories);
 				}
@@ -205,7 +205,7 @@ public class FileScanThread extends Thread{
 		mDevice.setHas_scaned(true);
 		LocalDeviceService localDeviceService = new LocalDeviceService();
 		localDeviceService.update(mDevice);
-		Log.i(TAG, "FileScanThread end");
+		//Log.i(TAG, "FileScanThread end");
 	}
 	
 	

@@ -128,10 +128,10 @@ public class UpnpFileListActivity extends AppBaseActivity  implements OnItemSele
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
-		Log.i(TAG, "onItemClick");
+		//Log.i(TAG, "onItemClick");
 		Object itemObject = parent.getAdapter().getItem(position);
 		if(itemObject instanceof UpnpFolder){
-			Log.i(TAG, "click folder");
+			//Log.i(TAG, "click folder");
 			UpnpFolder itemFolder = (UpnpFolder)itemObject;
 			mSelectFolder = itemFolder;
 			loadFiles(itemFolder, false);
@@ -282,7 +282,7 @@ public class UpnpFileListActivity extends AppBaseActivity  implements OnItemSele
 			public void onSuccess(List<UpnpFolder> mediaFolders) {
 				DialogUtils.closeLoadingDialog();
 				mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id());
-				Log.i(TAG, "onSuccess->mediaFolders:" + mediaFolders);
+				//Log.i(TAG, "onSuccess->mediaFolders:" + mediaFolders);
 				if(mediaFolders != null && mediaFolders.size() > 0){
 					mLayoutContentPage.setVisibility(View.VISIBLE);
 					mLayoutNoFiles.setVisibility(View.GONE);
@@ -326,7 +326,7 @@ public class UpnpFileListActivity extends AppBaseActivity  implements OnItemSele
 			public void onSuccess(List<UpnpFile> mediaFiles) {
 				DialogUtils.closeLoadingDialog();
 				mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id() + ">" + mediaFolder.getName());
-				Log.i(TAG, "loadFiles->onSuccess->mediaFiles:" + mediaFiles);
+				//Log.i(TAG, "loadFiles->onSuccess->mediaFiles:" + mediaFiles);
 				if(mediaFiles != null && mediaFiles.size() > 0){
 					mLayoutContentPage.setVisibility(View.VISIBLE);
 					mLayoutNoFiles.setVisibility(View.GONE);
@@ -555,7 +555,7 @@ public class UpnpFileListActivity extends AppBaseActivity  implements OnItemSele
 //            intent.putParcelableArrayListExtra(Constant.IntentKey.MEDIA_INFO_LIST, mediaInfoList);
             InternalImagePlayer.setMediaList(mediaInfoList, newPosition);
         }
-        Log.i(TAG, "start internal player");
+        //Log.i(TAG, "start internal player");
         startActivityForResult(intent, START_PLAYER_REQUEST_CODE);
     }
     
@@ -667,7 +667,7 @@ public class UpnpFileListActivity extends AppBaseActivity  implements OnItemSele
 			
 			@Override
 			public void onFinish(UpnpFile upnpFile) {
-				Log.i(TAG, "loadExtraMediaInfo->upnpFile:" + upnpFile);
+				//Log.i(TAG, "loadExtraMediaInfo->upnpFile:" + upnpFile);
 				if(mCurrentFocusFile == upnpFile)
 					refreshPreview(mFocusPosition);
 			}

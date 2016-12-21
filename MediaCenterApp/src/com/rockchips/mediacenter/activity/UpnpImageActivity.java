@@ -129,7 +129,7 @@ public class UpnpImageActivity extends AppBaseActivity implements OnItemClickLis
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position,
 			long id) {
-		Log.i(TAG, "onItemSelected->position:" + position);
+		//Log.i(TAG, "onItemSelected->position:" + position);
 	}
 
 	@Override
@@ -140,7 +140,7 @@ public class UpnpImageActivity extends AppBaseActivity implements OnItemClickLis
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
-		Log.i(TAG, "onItemClick");
+		//Log.i(TAG, "onItemClick");
 		if(parent == mGridAlbum){
 			mSelectMediaFolder = mLocalMediaFolders.get(position);
 			loadFiles(mSelectMediaFolder);
@@ -182,7 +182,7 @@ public class UpnpImageActivity extends AppBaseActivity implements OnItemClickLis
 			public void onSuccess(List<UpnpFolder> mediaFolders) {
 				DialogUtils.closeLoadingDialog();
 				mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id());
-				Log.i(TAG, "onSuccess->mediaFolders:" + mediaFolders);
+				//Log.i(TAG, "onSuccess->mediaFolders:" + mediaFolders);
 				mGridImage.setVisibility(View.GONE);
 				if(mediaFolders != null && mediaFolders.size() > 0){
 					mLayoutNoFiles.setVisibility(View.GONE);
@@ -230,7 +230,7 @@ public class UpnpImageActivity extends AppBaseActivity implements OnItemClickLis
 				mLocalMediaFiles = mediaFiles;
 				mGridAlbum.setVisibility(View.GONE);
 				mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id() + ">" + mediaFolder.getName());
-				Log.i(TAG, "loadFiles->onSuccess->mediaFiles:" + mediaFiles);
+				//Log.i(TAG, "loadFiles->onSuccess->mediaFiles:" + mediaFiles);
 				if(mediaFiles != null && mediaFiles.size() > 0){
 					mGridImage.setVisibility(View.VISIBLE);
 					mGridImage.requestFocus();
@@ -283,7 +283,7 @@ public class UpnpImageActivity extends AppBaseActivity implements OnItemClickLis
         intent.putExtra(ConstData.IntentKey.IS_INTERNAL_PLAYER, true);
         intent.putExtra(ConstData.IntentKey.CURRENT_INDEX, newPosition);
         InternalImagePlayer.setMediaList(mediaInfoList, newPosition);
-        Log.i(TAG, "start internal player");
+        //Log.i(TAG, "start internal player");
         startActivityForResult(intent, START_PLAYER_REQUEST_CODE);
     }
     

@@ -120,7 +120,7 @@ public class DeviceMonitorService extends Service {
 	
 	@Override
 	public void onCreate() {
-		Log.i(TAG, "onCreate");
+		//Log.i(TAG, "onCreate");
 		initData();
 		attachService();
 		initStorage();
@@ -129,7 +129,7 @@ public class DeviceMonitorService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		Log.i(TAG, "onStartCommand");
+		//Log.i(TAG, "onStartCommand");
 		attachService();
 		return START_STICKY;
 	}
@@ -169,13 +169,13 @@ public class DeviceMonitorService extends Service {
 
 			@Override
 			public void onServiceDisconnected(ComponentName name) {
-				Log.i(TAG, "DeviceMonitorService->component name:" + name.getClass().getName());
-				Log.i(TAG, "DeviceMonitorService->mUpnpConnection onServiceDisconnected:" + name);
+				//Log.i(TAG, "DeviceMonitorService->component name:" + name.getClass().getName());
+				//Log.i(TAG, "DeviceMonitorService->mUpnpConnection onServiceDisconnected:" + name);
 			}
 
 			@Override
 			public void onServiceConnected(ComponentName name, IBinder service) {
-				Log.i(TAG, "DeviceMonitorService->mUpnpConnection on ServiceConnected");
+				//Log.i(TAG, "DeviceMonitorService->mUpnpConnection on ServiceConnected");
 				mUpnpService = (AndroidUpnpService) service;
 				mUpnpService.getRegistry().addListener(mRegistryListener);
 				//searchUpnpDevice();
@@ -229,8 +229,8 @@ public class DeviceMonitorService extends Service {
 	 * @param deviceType
 	 */
 	public synchronized void processMountMsg(String path, String state, int deviceType) {
-		Log.i(TAG, "processMountMsg->path:" + path);
-		Log.i(TAG, "processMountMsg->state:" + state);
+		//Log.i(TAG, "processMountMsg->path:" + path);
+		//Log.i(TAG, "processMountMsg->state:" + state);
 		synchronized (mountMsgs) {
 			LocalDeviceService localDeviceService = new LocalDeviceService();
 			LocalMediaFileService mediaFileService = new LocalMediaFileService();
@@ -313,9 +313,9 @@ public class DeviceMonitorService extends Service {
 			for (SmbInfo itemInfo : smbList) {
 				LocalDevice sambaDevice = deviceService
 						.getDeviceByPath(itemInfo.getLocalMountPath());
-				Log.i(TAG,
-						"processSambaDevicesMountMsg->itemInfo->localMountPath:"
-								+ itemInfo.getLocalMountPath());
+				//Log.i(TAG,
+				//		"processSambaDevicesMountMsg->itemInfo->localMountPath:"
+				//				+ itemInfo.getLocalMountPath());
 				if (sambaDevice == null
 						&& MountUtils.isMountSuccess(itemInfo.getNetWorkPath(),
 								itemInfo.getLocalMountPath())) {
@@ -347,12 +347,12 @@ public class DeviceMonitorService extends Service {
 	 * 搜索UPNP设备
 	 */
 	public void searchUpnpDevice(){
-		Log.i(TAG, "searchUpnpService");
+		//Log.i(TAG, "searchUpnpService");
 		//数据库操作，这里需要启动线程进行处理
 		new AsyncTask<Void, Integer, Integer>() {
 			@Override
 			protected Integer doInBackground(Void... params) {
-				Log.i(TAG, "searchUpnpService->doInBackground");
+				//Log.i(TAG, "searchUpnpService->doInBackground");
 				LocalDeviceService localDeviceService = new LocalDeviceService();
 				List<LocalDevice> allUpnpDevices = localDeviceService.getAllUpnpDevices();
 				UpnpFolderService upnpFolderService = new UpnpFolderService();
@@ -376,7 +376,7 @@ public class DeviceMonitorService extends Service {
 			
 			@Override
 			protected void onPostExecute(Integer result) {
-				Log.i(TAG, "searchUpnpService->onPostExecute");
+				//Log.i(TAG, "searchUpnpService->onPostExecute");
 				unBindServices();
 				try{
 					mUpnpService.getConfiguration().shutdown();
@@ -394,7 +394,7 @@ public class DeviceMonitorService extends Service {
 	 * 刷新所有设备
 	 */
 	public void refreshAllDevices(){
-		Log.i(TAG, "refreshAllDevices");
+		//Log.i(TAG, "refreshAllDevices");
 		//先停止正在扫描的线程,这里使用AsyncTask
 		synchronized (mCurrProcessMsgs) {
 			Set<String> processPaths = mCurrProcessMsgs.keySet();
@@ -417,7 +417,7 @@ public class DeviceMonitorService extends Service {
 					return ConstData.TaskExecuteResult.SUCCESS;
 				}catch(Exception e){
 					//no handle
-					Log.i(TAG, "refreshAllDevices->doInBackground:" + e);
+					//Log.i(TAG, "refreshAllDevices->doInBackground:" + e);
 				}
 				
 				return ConstData.TaskExecuteResult.FAILED;
@@ -426,7 +426,7 @@ public class DeviceMonitorService extends Service {
 			@Override
 			protected void onPostExecute(Integer result) {
 				if(result == ConstData.TaskExecuteResult.SUCCESS){
-					Log.i(TAG, "refreshAllDevices->onPostExecute->success");
+					//Log.i(TAG, "refreshAllDevices->onPostExecute->success");
 					initStorage();
 					searchUpnpDevice();
 				}
@@ -455,7 +455,7 @@ public class DeviceMonitorService extends Service {
 			// 绑定UPNP服务
 			bindService(upnpIntent, mUpnpConnection, Service.BIND_AUTO_CREATE);
 		}catch (Exception e){
-			Log.i(TAG, "attachService->exception:" + e);
+			//Log.i(TAG, "attachService->exception:" + e);
 		}
 		
 	}
@@ -516,8 +516,8 @@ public class DeviceMonitorService extends Service {
 					// 启动文件扫描线程
 					LocalDeviceService deviceService = new LocalDeviceService();
 					LocalDevice device = deviceService.getDeviceByPath(path);
-					Log.i(TAG, "MountThread->run->device:" + device);
-					Log.i(TAG, "execute FileScanThread");
+					//Log.i(TAG, "MountThread->run->device:" + device);
+					//Log.i(TAG, "execute FileScanThread");
 					mScanDeviceService.execute(new FileScanThread(
 							DeviceMonitorService.this, device));
 				}
@@ -528,7 +528,7 @@ public class DeviceMonitorService extends Service {
 				try {
 					Thread.sleep(1000);
 				} catch (Exception e) {
-					Log.i(TAG, "MountThread->e:" + e);
+					//Log.i(TAG, "MountThread->e:" + e);
 				}
 
 			}
@@ -544,14 +544,14 @@ public class DeviceMonitorService extends Service {
 	class MountListener extends StorageEventListener {
 
 		public void onUsbMassStorageConnectionChanged(boolean connected) {
-			Log.i(TAG, "onUsbMassStorageConnectionChanged->connected:"
-					+ connected);
+			//Log.i(TAG, "onUsbMassStorageConnectionChanged->connected:"
+			//		+ connected);
 		}
 
 		public void onStorageStateChanged(String path, String oldState,
 				String newState) {
-			Log.i(TAG, "path =" + path + "   " + "oldState=" + oldState + "   "
-					+ "newState=" + newState);
+			//Log.i(TAG, "path =" + path + "   " + "oldState=" + oldState + "   "
+			//		+ "newState=" + newState);
 			if(newState.equals(Environment.MEDIA_MOUNTED) || newState.equals(Environment.MEDIA_UNMOUNTED)){
 				processMountMsg(path, newState, ConstData.DeviceType.DEVICE_TYPE_SD);
 			}
@@ -575,7 +575,7 @@ public class DeviceMonitorService extends Service {
 
 		@Override
 		public void remoteDeviceAdded(Registry registry, RemoteDevice device) {
-			Log.i(TAG, "UpnpRegistryListener->remoteDeviceAdded:" + device);
+			//Log.i(TAG, "UpnpRegistryListener->remoteDeviceAdded:" + device);
 			if(device.getType().getType().equals("MediaServer")){
 				deleteUpnpDatas(device);
 				// 添加至数据库或更新数据库数据
@@ -599,7 +599,7 @@ public class DeviceMonitorService extends Service {
 
 		@Override
 		public void remoteDeviceRemoved(Registry registry, RemoteDevice device) {
-			Log.i(TAG, "UpnpRegistryListener->remoteDeviceRemoved:" + device);
+			//Log.i(TAG, "UpnpRegistryListener->remoteDeviceRemoved:" + device);
 			if(device.getType().getType().equals("MediaServer")){
 				deleteUpnpDatas(device);
 				Message message = new Message();
@@ -651,7 +651,7 @@ public class DeviceMonitorService extends Service {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
-			Log.i(TAG, "NetWorkDeviceMountReceiver->receive action:" + action);
+			//Log.i(TAG, "NetWorkDeviceMountReceiver->receive action:" + action);
 			if(action.equals(ConstData.BroadCastMsg.NFS_MOUNT)){
 				NFSInfo nfsInfo = (NFSInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_NFS_INFO);
 				NFSDeviceMountThread nfsDeviceMountThread = new NFSDeviceMountThread(DeviceMonitorService.this, nfsInfo);

@@ -231,7 +231,7 @@ public class MediaFileUtils {
      * @return
      */
     public static LocalMediaInfo getMediaInfoFromFile(File file, int mediaType, LocalDeviceInfo deviceInfo){
-    	Log.i(TAG, "getMediaInfoFromFile");
+    	//Log.i(TAG, "getMediaInfoFromFile");
     	int currentMediaType = getMediaTypeFromFile(file);
     	if(currentMediaType != mediaType)
     		return null;
@@ -254,7 +254,7 @@ public class MediaFileUtils {
      * @return
      */
     public static LocalMediaFile getMediaFileFromFile(File file, LocalDevice device){
-    	Log.i(TAG, "getMediaFileFromFile->file:" + file);
+    	//Log.i(TAG, "getMediaFileFromFile->file:" + file);
     	int currentMediaType = getMediaTypeFromFile(file);
     	if(currentMediaType == ConstData.MediaType.UNKNOWN_TYPE)
     		return null;
@@ -330,14 +330,14 @@ public class MediaFileUtils {
      * @return
      */
     public static List<LocalMediaInfo> getChildMediaInfos(String dirPath, int mediaType, LocalDeviceInfo deviceInfo){
-    	Log.i(TAG, "getChildMediaInfos->dirPath:" + dirPath);
+    	//Log.i(TAG, "getChildMediaInfos->dirPath:" + dirPath);
     	List<LocalMediaInfo> mediaInfos = new ArrayList<LocalMediaInfo>();
     	File dirFile = new File(dirPath);
     	File[] childFiles = dirFile.listFiles();
     	for(File childFile : childFiles){
     		if(!childFile.isDirectory()){
     			LocalMediaInfo mediaInfo = getMediaInfoFromFile(childFile, mediaType, deviceInfo);
-    			Log.i(TAG, "getChildMediaInfos->mediaInfo:" + mediaInfo);
+    			//Log.i(TAG, "getChildMediaInfos->mediaInfo:" + mediaInfo);
     			if(mediaInfo != null)
     				mediaInfos.add(mediaInfo);
     		}

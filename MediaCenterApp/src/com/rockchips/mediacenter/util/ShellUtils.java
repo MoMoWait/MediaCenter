@@ -28,7 +28,7 @@ public class ShellUtils {
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
-			Log.i(TAG, "getMountMsg->" + e);
+			//Log.i(TAG, "getMountMsg->" + e);
 		}
 		return strlist;
 	}
@@ -48,7 +48,7 @@ public class ShellUtils {
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
-			Log.i(TAG, "getDfMsgs->" + e);
+			//Log.i(TAG, "getDfMsgs->" + e);
 		}
 		return strlist;
 	}
@@ -69,7 +69,7 @@ public class ShellUtils {
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
-			Log.i(TAG, "getLsMsgs->" + e);
+			//Log.i(TAG, "getLsMsgs->" + e);
 		}
 		return strlist;
 	

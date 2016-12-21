@@ -72,10 +72,10 @@ public class PhotoGridAdapter extends ArrayAdapter<LocalMediaInfo> {
 		holder.textFileCount.setText("" + mediaInfo.getmFiles());
 		if(mediaInfo.getmDeviceType() != ConstData.DeviceType.DEVICE_TYPE_DMS){
 			File imgFile = new File(mediaInfo.getmParentPath() + "/" + mediaInfo.getmFileName());
-			Log.i(TAG, "getView->imgFile.path:" + imgFile.getPath());
+			//Log.i(TAG, "getView->imgFile.path:" + imgFile.getPath());
 			if(imgFile.isDirectory()){
 				File[] subFiles = imgFile.listFiles();
-				Log.i(TAG, "getView->subFiles:" + Arrays.toString(subFiles));
+				//Log.i(TAG, "getView->subFiles:" + Arrays.toString(subFiles));
 				if(subFiles != null && subFiles.length > 0){
 					//x.image().bind(holder.imgPhoto, subFiles[0].getPath(), mImageOptions, null);
 				}

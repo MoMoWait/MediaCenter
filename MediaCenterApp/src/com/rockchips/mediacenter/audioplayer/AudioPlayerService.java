@@ -168,7 +168,7 @@ public class AudioPlayerService extends Service
      */
     private void dobind()
     {
-        Log.i(TAG, "dobind - IN ");        
+        //Log.i(TAG, "dobind - IN ");        
         if (mMCSHandlerThread == null)
         {
             Log.d(TAG, "Create mMCSHandlerThread and start it");
@@ -217,7 +217,7 @@ public class AudioPlayerService extends Service
         // 对解绑定的过程加把锁
         synchronized (this)
         {
-            Log.i(TAG, " unbind() - IN ");
+            //Log.i(TAG, " unbind() - IN ");
             if (mMediaCenterPlayerClient != null)
             {
                 Log.d(TAG, "mMediaCenterPlayerClient != null");
@@ -298,7 +298,7 @@ public class AudioPlayerService extends Service
         {
             size = mMediaBaseList.size();
         }
-        Log.i(TAG, "parseInputIntent:playIndex " + mPlayIndex + ",MediaList size is " + size);
+        //Log.i(TAG, "parseInputIntent:playIndex " + mPlayIndex + ",MediaList size is " + size);
 
         return true;
     }

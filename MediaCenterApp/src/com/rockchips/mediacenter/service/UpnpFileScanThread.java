@@ -119,7 +119,7 @@ public class UpnpFileScanThread extends Thread {
 	
 	@Override
 	public void run() {
-		Log.i(TAG, getName() + "->UpnpFileScanThread->start");
+		//Log.i(TAG, getName() + "->UpnpFileScanThread->start");
 		while(isServiceRunning){
 			if(!mService.isMounted(mRemoteDevice.getIdentity().getDescriptorURL().toString())){
 				//删除数据库对应的数据
@@ -133,8 +133,8 @@ public class UpnpFileScanThread extends Thread {
 					mCurrentBrowser.isEnd = true;
 				continue;
 			}
-			Log.i(TAG, "run->mUpnpFolders:" + mUpnpFolders);
-			Log.i(TAG, "run->mUpnpFiles:" + mUpnpFiles);
+			//Log.i(TAG, "run->mUpnpFolders:" + mUpnpFolders);
+			//Log.i(TAG, "run->mUpnpFiles:" + mUpnpFiles);
 			synchronized (mUpnpFiles) {
 				if(mUpnpFiles.size() >= 1){
 					mUpnpFileService.saveAll(mUpnpFiles);
@@ -163,7 +163,7 @@ public class UpnpFileScanThread extends Thread {
 					isWaitTenSecond = true;
 					continue;
 				}catch (Exception e){
-					Log.i(TAG, "UpnpFileScanThread->run exception:" + e);
+					//Log.i(TAG, "UpnpFileScanThread->run exception:" + e);
 				}
 			}else{
 				isWaitTenSecond = false;
@@ -211,7 +211,7 @@ public class UpnpFileScanThread extends Thread {
 			}
 		}
 		
-		Log.i(TAG, "UpnpFileScanThred->end");
+		//Log.i(TAG, "UpnpFileScanThred->end");
 	}
 	
 	private Container createRootContainer() {
@@ -258,7 +258,7 @@ public class UpnpFileScanThread extends Thread {
 		if(resources != null &&  resources.size() > 0 && resources.get(0) != null && resources.get(0).getProtocolInfo() != null
 				&& resources.get(0).getProtocolInfo().getContentFormat() != null){
 			String contentFormat = resources.get(0).getProtocolInfo().getContentFormat();
-			Log.i(TAG, "UpnpFileScanThread->itemToFile->contentFormat:" + contentFormat);
+			//Log.i(TAG, "UpnpFileScanThread->itemToFile->contentFormat:" + contentFormat);
 			List<Property> properties = item.getProperties();
 			/**
 			 * 设置属性值
@@ -270,15 +270,15 @@ public class UpnpFileScanThread extends Thread {
 						field.setAccessible(true);
 						field.set(upnpFile, itemProperty.getValue().toString());
 					} catch (NoSuchFieldException e) {
-						Log.i(TAG, "itemToFile exception:" + e);
-						e.printStackTrace();
+						//Log.i(TAG, "itemToFile exception:" + e);
+						//e.printStackTrace();
 					} catch (Exception e) {
-						Log.i(TAG, "itemToFile exception:" + e);
+						//Log.i(TAG, "itemToFile exception:" + e);
 					}
 				}
 				
 			}
-			Log.i(TAG, "itemToFile->5");
+			//Log.i(TAG, "itemToFile->5");
 			
 			if (resources.get(0).getBitrate() != null)
 				upnpFile.setBitrate(resources.get(0).getBitrate());
@@ -300,37 +300,37 @@ public class UpnpFileScanThread extends Thread {
 			upnpFile.setSize(resources.get(0).getSize());
 			upnpFile.setWidth(resources.get(0).getResolutionX());
 			
-			Log.i(TAG, "itemToFile->6");
+			//Log.i(TAG, "itemToFile->6");
 			Integer[] fileCounts = mUpnpFolderMap.get(item.getParentID());
 			if(fileCounts == null)
 				fileCounts = new Integer[]{0,0,0,0};
-			Log.i(TAG, "itemToFile->7");
+			//Log.i(TAG, "itemToFile->7");
 			if(contentFormat.contains("audio")){
 				upnpFile.setType(ConstData.MediaType.AUDIO);
 				++fileCounts[0];
 				++fileCounts[1];
-				Log.i(TAG, "itemToFile->8");
+				//Log.i(TAG, "itemToFile->8");
 				mUpnpFolderMap.put(item.getParentID(), fileCounts);
 			}else if(contentFormat.contains("video")){
 				upnpFile.setType(ConstData.MediaType.VIDEO);
 				++fileCounts[0];
 				++fileCounts[2];
-				Log.i(TAG, "itemToFile->9");
+				//Log.i(TAG, "itemToFile->9");
 				mUpnpFolderMap.put(item.getParentID(), fileCounts);
 			}else if(contentFormat.contains("image")){
 				upnpFile.setType(ConstData.MediaType.IMAGE);
 				++fileCounts[0];
 				++fileCounts[3];
-				Log.i(TAG, "itemToFile->10");
+				//Log.i(TAG, "itemToFile->10");
 				mUpnpFolderMap.put(item.getParentID(), fileCounts);
 			}else{
-				Log.i(TAG, "UpnpFileScanThread->itemToFile3:");
+				//Log.i(TAG, "UpnpFileScanThread->itemToFile3:");
 				return null;
 			}
 		}else{
 			return null;
 		}
-		Log.i(TAG, "UpnpFileScanThread->itemToFile4:" + upnpFile);
+		//Log.i(TAG, "UpnpFileScanThread->itemToFile4:" + upnpFile);
 		return upnpFile;
 	}
 	
@@ -341,7 +341,7 @@ public class UpnpFileScanThread extends Thread {
 				&& resources.get(0).getProtocolInfo().getContentFormat() != null){
 			String contentFormat = resources.get(0).getProtocolInfo().getContentFormat();
 			if(contentFormat.contains("image")){
-				Log.i(TAG, "itemToFile->10");
+				//Log.i(TAG, "itemToFile->10");
 				return true;
 			}
 		}
@@ -423,7 +423,7 @@ public class UpnpFileScanThread extends Thread {
 		public void updateStatus(Status status) {
 			if(isEnd)
 				return;
-			Log.i(TAG, "FileBrowser->updateStatus:" + status);
+			//Log.i(TAG, "FileBrowser->updateStatus:" + status);
 		}
 
 		@Override
@@ -433,8 +433,8 @@ public class UpnpFileScanThread extends Thread {
 				return;
 			//打开目录失败
 			mIsOpenDirectory = false;
-			Log.i(TAG, "FileBrowser->failure:" + operation);
-			Log.i(TAG, "FileBrowser->deaultMsg:" + defaultMsg);
+			//Log.i(TAG, "FileBrowser->failure:" + operation);
+			//Log.i(TAG, "FileBrowser->deaultMsg:" + defaultMsg);
 		}
 		
 	}

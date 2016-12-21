@@ -18,7 +18,7 @@ public class NetWorkChangeReceiver extends BroadcastReceiver{
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Log.i(TAG, "onReceive");
+		//Log.i(TAG, "onReceive");
 		Intent refershIntent = new Intent(ConstData.BroadCastMsg.REFRESH_NETWORK_DEVICE);
 		LocalBroadcastManager.getInstance(context).sendBroadcast(refershIntent);
 	}

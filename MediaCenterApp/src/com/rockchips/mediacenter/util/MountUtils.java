@@ -47,13 +47,13 @@ public class MountUtils {
 	 * 挂载NFS设备
 	 */
 	public static boolean mountNFS(NFSInfo nfsInfo){
-		Log.i(TAG, "mountNFS");
+		//Log.i(TAG, "mountNFS");
 		//网络路径
 		String netWorkPath = nfsInfo.getNetWorkPath();
 		//本地挂载路径
 		String localMountPath = nfsInfo.getLocalMountPath();
 		File mountDirPath = new File(localMountPath);
-		Log.i(TAG, "mountNFS->mountDirPath.exists():" + mountDirPath.exists());
+		//Log.i(TAG, "mountNFS->mountDirPath.exists():" + mountDirPath.exists());
 		if(mountDirPath.exists()){
 			if(isMountSuccess(netWorkPath, localMountPath)){
 				mMountResult = ConstData.MOUNT_RESULT.MOUNT_SUCC;
@@ -202,7 +202,7 @@ public class MountUtils {
 		while(iterator.hasNext()){
 			final SmbInfo smbInfo = iterator.next();
 			mountSamba(smbInfo);
-			Log.i(TAG, "filterSambaDevices->mountResult:" + mMountResult);
+			//Log.i(TAG, "filterSambaDevices->mountResult:" + mMountResult);
 			if(mMountResult.equals(ConstData.MOUNT_RESULT.MOUNT_FAIL)){
 				iterator.remove();
 			}
@@ -216,14 +216,14 @@ public class MountUtils {
 	 * @return
 	 */
 	public static boolean isMountSuccess(String netWorkPath, String mountDir){
-		Log.i(TAG, "isMountSuccess->netWorkPath:" + netWorkPath);
-		Log.i(TAG, "isMountSuccess->mountDir:" + mountDir);
+		//Log.i(TAG, "isMountSuccess->netWorkPath:" + netWorkPath);
+		//Log.i(TAG, "isMountSuccess->mountDir:" + mountDir);
 		List<String> lines = ShellUtils.getMountMsgs();
 		File dirFile = new File(mountDir);
 		String[] fileNames = dirFile.list();
-		Log.i(TAG, "isMountSuccess->fileNames:" +Arrays.toString(fileNames));
+		//Log.i(TAG, "isMountSuccess->fileNames:" +Arrays.toString(fileNames));
 		for(String line : lines){
-			Log.i(TAG, "isMountSuccess->line:" + line);
+			//Log.i(TAG, "isMountSuccess->line:" + line);
 			//对于NFS挂载
 			if(line.contains(netWorkPath) && fileNames != null && fileNames.length > 0)
 				return true;
@@ -233,7 +233,7 @@ public class MountUtils {
 			if(replaceLine.contains(netWorkPath) && fileNames != null && fileNames.length > 0)
 				return true;
 		}
-		Log.i(TAG, "isMountSuccess->result:" + false);
+		//Log.i(TAG, "isMountSuccess->result:" + false);
 		return false;
 	}
 	
@@ -244,7 +244,7 @@ public class MountUtils {
 	 */
 	public static boolean isUMountSuccess(String mountDir){
 		List<String> lines = ShellUtils.getDfMsgs();
-		Log.i(TAG, "isMountSuccess->lines:" + lines);
+		//Log.i(TAG, "isMountSuccess->lines:" + lines);
 		File dirFile = new File(mountDir);
 		String[] fileNames = dirFile.list();
 		for(String line : lines){
@@ -259,7 +259,7 @@ public class MountUtils {
 	 * 写入命令至Shell文件
 	 */
 	public static boolean writeCommandToShellFile(String command){
-		Log.i(TAG, "writeCommandToShellFile->command:" + command);
+		//Log.i(TAG, "writeCommandToShellFile->command:" + command);
 		File shellDirFile = new File(SHELL_FILE_DIR);
 		if(!shellDirFile.exists())
 			shellDirFile.mkdirs();
@@ -284,7 +284,7 @@ public class MountUtils {
 			buffwr.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-			Log.i(TAG, "writeCommandToShellFile->" + e);
+			//Log.i(TAG, "writeCommandToShellFile->" + e);
 			return false;
 		}
 		

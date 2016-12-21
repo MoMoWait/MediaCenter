@@ -398,7 +398,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-    	Log.i(TAG, "onCreate");
+    	//Log.i(TAG, "onCreate");
     	mCurrentDevice = (LocalDevice)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
 /*        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -1047,7 +1047,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event)
     {
-        Log.i(TAG, "keyCode === " + keyCode);
+        //Log.i(TAG, "keyCode === " + keyCode);
         if (keyCode == KeyEvent.KEYCODE_MENU)
         {
             // Menu键自带5s的显示时间要包含进去
@@ -2345,12 +2345,12 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                     mMediaPlayer.setOnInfoListener(mOnInfoListener);
                     mMediaPlayer.setOnSeekCompleteListener(mOnSeekCompleteListener);
                     mMediaPlayer.setOnBufferingUpdateListener(mOnBufferingUpdateListener);
-                    Log.i(TAG, "setDataSourceAsync->path:" + path);
+                    //Log.i(TAG, "setDataSourceAsync->path:" + path);
                     if(mCurrentDevice.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_DMS)
                     	mMediaPlayer.setVideoURI(Uri.parse(path));
                     else
                     	mMediaPlayer.setVideoURI(Uri.parse(Uri.encode(path)));
-                    Log.i(TAG, "setDataSourceAsync->encode path:" + Uri.parse(Uri.encode(path)));
+                    //Log.i(TAG, "setDataSourceAsync->encode path:" + Uri.parse(Uri.encode(path)));
 
                     // DTS2014033000710 还原成以前的上层控制状态模式，播放器的release等动作需要prepare先完成才行。
 //                    mMediaPlayer.start();
@@ -2371,7 +2371,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                 catch (IllegalArgumentException ex)
                 {
                 	
-                	Log.i(TAG, "setDataSourceAsync->IllegalArgumentException->ex:" + ex);
+                	//Log.i(TAG, "setDataSourceAsync->IllegalArgumentException->ex:" + ex);
                     mMediaPlayer = null;
 
                     removeLogicalMessage(AudioPlayerMsg.MSG_PROC_ERROR);
@@ -2381,7 +2381,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                 }
                 catch (RuntimeException ex)
                 {
-                	Log.i(TAG, "setDataSourceAsync->IllegalArgumentException->ex:" + ex);
+                	//Log.i(TAG, "setDataSourceAsync->IllegalArgumentException->ex:" + ex);
                     // retriever = null;
                     // artistFromRetriever = null;
                     // titleFromRetriever = null;
@@ -3208,7 +3208,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     }
 
     // public boolean onCreateOptionsMenu(Menu menu) {
-    // Log.i("wanghuanlai","onCreateOptionsMenu ...");
+    // //Log.i("wanghuanlai","onCreateOptionsMenu ...");
     // if (mPopMenu == null) {
     // mPopMenu = new MyMediaPopMenu_v2(this);
     // // 注意： 必须创建一项
@@ -3348,7 +3348,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        Log.i(TAG, "onActivityResult ");
+        //Log.i(TAG, "onActivityResult ");
         // TODO Auto-generated method stub
         mIsPicActivityShow = false;
         if (data != null)
@@ -3472,7 +3472,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         /*
         if (Constant.DeviceType.isDLNADevice(deviceType))
         {
-            Log.i(TAG, "DEVICE_TYPE_DMS");
+            //Log.i(TAG, "DEVICE_TYPE_DMS");
             int devId = bundle.getInt(LocalDeviceInfo.DEVICE_ID, -1);
             if (devId == -1)
             {
@@ -3486,13 +3486,13 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
       //else if (deviceType == Constant.DeviceType.DEVICE_TYPE_U || deviceType == Constant.DeviceType.DEVICE_TYPE_SD)
         else if (Constant.DeviceType.isLocalDevice(deviceType)) 
         {
-            Log.i(TAG, "DEVICE_TYPE_U");
+            //Log.i(TAG, "DEVICE_TYPE_U");
             String mountPath = bundle.getString(LocalDeviceInfo.MOUNT_PATH);
             mediaInfoList = mLocalDeviceManager.getFlatAVIFile(mountPath, MediaType.IMAGE, 0, 100, EBrowerType.ORDER_TYPE_CHARACTER);
         }
         else
         {
-            Log.i(TAG, "unknown device type");
+            //Log.i(TAG, "unknown device type");
         }
 
         ListSelectItem item;
@@ -3506,7 +3506,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         }
         else
         {
-            Log.i(TAG, "no Image data in it");
+            //Log.i(TAG, "no Image data in it");
         }
 
         return miList;

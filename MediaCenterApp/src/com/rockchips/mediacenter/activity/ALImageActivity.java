@@ -178,7 +178,7 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 			public void onSuccess(List<LocalMediaFolder> mediaFolders) {
 				DialogUtils.closeLoadingDialog();
 				mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id());
-				Log.i(TAG, "onSuccess->mediaFolders:" + mediaFolders);
+				//Log.i(TAG, "onSuccess->mediaFolders:" + mediaFolders);
 				mGridImage.setVisibility(View.GONE);
 				if(mediaFolders != null && mediaFolders.size() > 0){
 					mLayoutNoFiles.setVisibility(View.GONE);
@@ -226,7 +226,7 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 				mLocalMediaFiles = mediaFiles;
 				mGridAlbum.setVisibility(View.GONE);
 				mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id() + ">" + mediaFolder.getName());
-				Log.i(TAG, "loadFiles->onSuccess->mediaFiles:" + mediaFiles);
+				//Log.i(TAG, "loadFiles->onSuccess->mediaFiles:" + mediaFiles);
 				if(mediaFiles != null && mediaFiles.size() > 0){
 					mGridImage.setVisibility(View.VISIBLE);
 					mGridImage.requestFocus();
@@ -279,7 +279,7 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
         intent.putExtra(ConstData.IntentKey.IS_INTERNAL_PLAYER, true);
         intent.putExtra(ConstData.IntentKey.CURRENT_INDEX, newPosition);
         InternalImagePlayer.setMediaList(mediaInfoList, newPosition);
-        Log.i(TAG, "start internal player");
+        //Log.i(TAG, "start internal player");
         startActivityForResult(intent, START_PLAYER_REQUEST_CODE);
     }
     
