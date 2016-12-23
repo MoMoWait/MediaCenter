@@ -2587,7 +2587,7 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
                             isSelectMusic = true;
                         }
                     }
-                    
+                    /*
                     //选择音乐并开启（内置播放器）
                     if (isSelectMusic && mbInternalPlayer)
                     {
@@ -2614,8 +2614,9 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
                     {
                         mIsplayBackgroundMusic = true;
                         playBackgroundMusic(null);
-                    }
-                    
+                    }*/
+                    mIsplayBackgroundMusic = true;
+                    playBackgroundMusic(null);
                     mImagePlaySetHelper.saveBGMusic(true);
                     
                 }

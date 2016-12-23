@@ -28,6 +28,8 @@ public class UpnpFolderLoadTask extends AsyncTask<String, Integer, Integer>{
 	
 	@Override
 	protected Integer doInBackground(String... params) {
+		//设置最高优先级
+		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 		String deviceID = params[0];
 		int mediaType = Integer.parseInt(params[1]);
 		UpnpFolderService upnpFolderService = new UpnpFolderService();

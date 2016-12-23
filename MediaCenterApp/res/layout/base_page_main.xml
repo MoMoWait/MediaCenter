@@ -15,7 +15,7 @@
             android:layout_height="144dip"
             android:layout_centerInParent="true"
             android:layout_marginTop="130dp"
-            android:src="@drawable/image_folder_empty" />
+            android:src="@drawable/img_empty" />
 
         <TextView
             android:id="@+id/text_no_data_tips"
@@ -25,7 +25,8 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="30px"
             android:text="@string/folder_no_data"
-            android:textSize="30px" />
+            android:textSize="30px" 
+            android:textColor="@android:color/white"/>
     </RelativeLayout>
 
     <LinearLayout

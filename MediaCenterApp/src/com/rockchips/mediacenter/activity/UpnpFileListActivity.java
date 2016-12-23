@@ -195,7 +195,6 @@ public class UpnpFileListActivity extends AppBaseActivity  implements OnItemSele
         // 如果ImageView的大小不是定义为wrap_content, 不要crop.
         .setCrop(true) // 很多时候设置了合适的scaleType也不需要它.
         // 加载中或错误图片的ScaleType
-        //.setPlaceholderScaleType(ImageView.ScaleType.MATRIX)
         .setImageScaleType(ImageView.ScaleType.FIT_XY)
         .setLoadingDrawableId(R.drawable.image_browser_default)
         .setFailureDrawableId(R.drawable.image_browser_default)
@@ -231,31 +230,15 @@ public class UpnpFileListActivity extends AppBaseActivity  implements OnItemSele
     		}else{
     			loadExtraMediaInfo(mediaFile);
     		}
-    		
-    		//mWidgetPreview.updateImage(previewBitmap);
-    		
             int mediaType = mediaFile.getType();
             switch (mediaType)
             {
                 case ConstData.MediaType.AUDIO:
                 case ConstData.MediaType.VIDEO:
                 	updateOtherText(position);
-                    //asyncGetAVInfo(selectMediaInfo);
                     break;
                 case ConstData.MediaType.IMAGE:
                 	updateOtherText(position);
-                  /*  if (StringUtils.isNotEmpty(selectMediaInfo.getmResoulution()))
-                    {
-                        Log.d(TAG, " mResoulution 已经存在，无需再次获取......");
-                        updateOtherInfo(selectMediaType);
-                    }
-                    else
-                    {
-                        asyncGetImagResoulution(selectMediaInfo);
-                    }*/
-                    /*mUIHandler.removeMessages(MSG_UI_REQUEST_THUMBNAIL);
-                    mUIHandler.sendMessageDelayed(Message.obtain(mUIHandler, MSG_UI_REQUEST_THUMBNAIL,
-                                                             null), REQUEST_THUMBNAIL_DELAY);*/
                     break;
             }  
             
@@ -282,7 +265,6 @@ public class UpnpFileListActivity extends AppBaseActivity  implements OnItemSele
 			public void onSuccess(List<UpnpFolder> mediaFolders) {
 				DialogUtils.closeLoadingDialog();
 				mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id());
-				//Log.i(TAG, "onSuccess->mediaFolders:" + mediaFolders);
 				if(mediaFolders != null && mediaFolders.size() > 0){
 					mLayoutContentPage.setVisibility(View.VISIBLE);
 					mLayoutNoFiles.setVisibility(View.GONE);
@@ -369,24 +351,6 @@ public class UpnpFileListActivity extends AppBaseActivity  implements OnItemSele
     protected String getPreviewInfo(UpnpFolder mediaFolder)
     {
         String info = getFolderPreviewInfo(mediaFolder);;
-      /*  switch (mediaInfo.getmFileType())
-        {
-            case Constant.MediaType.AUDIO:
-                info = getAudioPreviewInfo(mediaInfo);
-                break;
-            case Constant.MediaType.FOLDER:
-                info = getFolderPreviewInfo(mediaInfo);
-                break;
-            case Constant.MediaType.IMAGE:
-                info = getImagePreviewInfo(mediaInfo);
-                break;
-            case Constant.MediaType.VIDEO:
-                info = getVideoPreviewInfo(mediaInfo);
-                break;
-            default:
-                info = getFolderPreviewInfo(mediaInfo);
-                break;
-        }*/
         return info;
     }
 	
@@ -530,29 +494,20 @@ public class UpnpFileListActivity extends AppBaseActivity  implements OnItemSele
         if (mediaFile.getType() == ConstData.MediaType.AUDIO)
         {
             intent.setClass(this, InternalAudioPlayer.class);
-           
-            //int newPosition = getMediaBundleList(ConstData.MediaType.AUDIO, mediaInfoList, position);
             intent.putExtra(ConstData.IntentKey.CURRENT_INDEX, newPosition);
-//            intent.putParcelableArrayListExtra(Constant.IntentKey.MEDIA_INFO_LIST, mediaInfoList);  
             InternalAudioPlayer.setMediaList(mediaInfoList, newPosition);
         }
         else if (mediaFile.getType() == ConstData.MediaType.VIDEO)
         {
-//            String dispName = mSelectDisk.getPhysicId();
             intent.setClass(this, InternalVideoPlayer.class);
-            //int newPosition = getMediaBundleList(ConstData.MediaType.VIDEO, mediaInfoList, position);
             intent.putExtra(ConstData.IntentKey.CURRENT_INDEX, newPosition);
-//            intent.putParcelableArrayListExtra(Constant.IntentKey.MEDIA_INFO_LIST, mediaInfoList);  
-//            InternalVideoPlayer.setMediaList(mediaInfoList, newPosition, dispName);
             InternalVideoPlayer.setMediaList(mediaInfoList, newPosition);
         }
         else if (mediaFile.getType() == ConstData.MediaType.IMAGE)
         {
             intent.setClass(this, InternalImagePlayer.class);
             intent.putExtra(ConstData.IntentKey.IS_INTERNAL_PLAYER, true);
-            //int newPosition = getMediaBundleList(ConstData.MediaType.IMAGE, mediaInfoList, position);
             intent.putExtra(ConstData.IntentKey.CURRENT_INDEX, newPosition);
-//            intent.putParcelableArrayListExtra(Constant.IntentKey.MEDIA_INFO_LIST, mediaInfoList);
             InternalImagePlayer.setMediaList(mediaInfoList, newPosition);
         }
         //Log.i(TAG, "start internal player");
@@ -667,7 +622,6 @@ public class UpnpFileListActivity extends AppBaseActivity  implements OnItemSele
 			
 			@Override
 			public void onFinish(UpnpFile upnpFile) {
-				//Log.i(TAG, "loadExtraMediaInfo->upnpFile:" + upnpFile);
 				if(mCurrentFocusFile == upnpFile)
 					refreshPreview(mFocusPosition);
 			}

@@ -117,7 +117,7 @@ public class TimeSeekDialog extends Dialog implements OnClickListener
         mTimeSeekLayout.setFocusable(true);
         mTimeSeekLayout.setFocusableInTouchMode(true);
         mTimeSeekLayout.requestFocus();
-        mTimeSeekLayout.setBackgroundDrawable(new BitmapDrawable(context.getResources())); // 必须加上此句，不然阴影会变深
+        //mTimeSeekLayout.setBackgroundDrawable(new BitmapDrawable(context.getResources())); // 必须加上此句，不然阴影会变深
         this.setOnKeyListener(mKeyListener);
 
         mTvArr = new TextView[TEXTVIEW_NUMBER];
@@ -329,7 +329,7 @@ public class TimeSeekDialog extends Dialog implements OnClickListener
 
     private void loseFocus(int idx)
     {
-        mTvArr[mCurFocusIdx].setBackgroundResource(R.drawable.time_text_bg);
+        mTvArr[mCurFocusIdx].setBackgroundResource(R.drawable.video_seek_normal_background);
         mIvUpArr[idx].setVisibility(View.INVISIBLE);
         mIvDownArr[idx].setVisibility(View.INVISIBLE);
     }
@@ -337,7 +337,7 @@ public class TimeSeekDialog extends Dialog implements OnClickListener
     private void getFocus(int idx)
     {
         mTvArr[mCurFocusIdx].requestFocus();
-        mTvArr[mCurFocusIdx].setBackgroundResource(R.drawable.time_text_bg_focus);
+        mTvArr[mCurFocusIdx].setBackgroundResource(R.drawable.video_seek_select_background);
         if (!checkIsTimeExceed(mValues[idx] + 1))
         {
             mIvUpArr[idx].setVisibility(View.VISIBLE);

@@ -27,6 +27,8 @@ public class FolderLoadTask extends AsyncTask<String, Integer, Integer> {
 	
 	@Override
 	protected Integer doInBackground(String... params) {
+		//设置最高优先级
+		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 		int folderType = Integer.parseInt(params[0]);
 		String deviceId = params[1];
 		LocalMediaFolderService folderService = new LocalMediaFolderService();

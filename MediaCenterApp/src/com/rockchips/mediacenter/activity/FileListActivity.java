@@ -251,22 +251,9 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
                 	if(!mediaFile.isLoadPreviewPhoto()){
                 		loadExtraMediaInfo(mediaFile);
                 	}
-                    //asyncGetAVInfo(selectMediaInfo);
                     break;
                 case ConstData.MediaType.IMAGE:
                 	updateOtherText(position);
-                  /*  if (StringUtils.isNotEmpty(selectMediaInfo.getmResoulution()))
-                    {
-                        Log.d(TAG, " mResoulution 已经存在，无需再次获取......");
-                        updateOtherInfo(selectMediaType);
-                    }
-                    else
-                    {
-                        asyncGetImagResoulution(selectMediaInfo);
-                    }*/
-                    /*mUIHandler.removeMessages(MSG_UI_REQUEST_THUMBNAIL);
-                    mUIHandler.sendMessageDelayed(Message.obtain(mUIHandler, MSG_UI_REQUEST_THUMBNAIL,
-                                                             null), REQUEST_THUMBNAIL_DELAY);*/
                     break;
             }  
             
@@ -337,7 +324,6 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
 			public void onSuccess(List<LocalMediaFile> mediaFiles) {
 				DialogUtils.closeLoadingDialog();
 				mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id() + ">" + mediaFolder.getName());
-				//Log.i(TAG, "loadFiles->onSuccess->mediaFiles:" + mediaFiles);
 				if(mediaFiles != null && mediaFiles.size() > 0){
 					mLayoutContentPage.setVisibility(View.VISIBLE);
 					mLayoutNoFiles.setVisibility(View.GONE);
@@ -517,32 +503,22 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
         if (mediaFile.getType() == ConstData.MediaType.AUDIO)
         {
             intent.setClass(this, InternalAudioPlayer.class);
-           
-            //int newPosition = getMediaBundleList(ConstData.MediaType.AUDIO, mediaInfoList, position);
             intent.putExtra(ConstData.IntentKey.CURRENT_INDEX, newPosition);
-//            intent.putParcelableArrayListExtra(Constant.IntentKey.MEDIA_INFO_LIST, mediaInfoList);  
             InternalAudioPlayer.setMediaList(mediaInfoList, newPosition);
         }
         else if (mediaFile.getType() == ConstData.MediaType.VIDEO)
         {
-//            String dispName = mSelectDisk.getPhysicId();
             intent.setClass(this, InternalVideoPlayer.class);
-            //int newPosition = getMediaBundleList(ConstData.MediaType.VIDEO, mediaInfoList, position);
             intent.putExtra(ConstData.IntentKey.CURRENT_INDEX, newPosition);
-//            intent.putParcelableArrayListExtra(Constant.IntentKey.MEDIA_INFO_LIST, mediaInfoList);  
-//            InternalVideoPlayer.setMediaList(mediaInfoList, newPosition, dispName);
             InternalVideoPlayer.setMediaList(mediaInfoList, newPosition);
         }
         else if (mediaFile.getType() == ConstData.MediaType.IMAGE)
         {
             intent.setClass(this, InternalImagePlayer.class);
             intent.putExtra(ConstData.IntentKey.IS_INTERNAL_PLAYER, true);
-            //int newPosition = getMediaBundleList(ConstData.MediaType.IMAGE, mediaInfoList, position);
             intent.putExtra(ConstData.IntentKey.CURRENT_INDEX, newPosition);
-//            intent.putParcelableArrayListExtra(Constant.IntentKey.MEDIA_INFO_LIST, mediaInfoList);
             InternalImagePlayer.setMediaList(mediaInfoList, newPosition);
         }
-        //Log.i(TAG, "start internal player");
         startActivityForResult(intent, START_PLAYER_REQUEST_CODE);
     }
     
@@ -635,9 +611,7 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
     	mMediaDataLoadTask = new FileMediaDataLoadTask(new FileMediaDataLoadTask.CallBack(){
     		@Override
     		public void onFinish(LocalMediaFile mediaFile) {
-    			//Log.i(TAG, "loadExtraMediaInfo->onFinish->mediaFile:" + mediaFile);
     			if(mediaFile == mCurrentFocusFile){
-    				//Log.i(TAG, "loadExtraMediaInfo->mediaFile==mSelectFile");
     				//更新当前预览图，时长
     				refreshPreview(mCurrentFocusPosition);
     			}
