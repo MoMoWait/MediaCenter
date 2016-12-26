@@ -186,16 +186,16 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
         attachServices();
         //初始化网络设备
         initNetWorkDevices();
-		//Log.i(TAG, "onCreate->end");
-		//KeyEvent.KEYCODE_DPAD_UP
     }
 
   
     
     /**
-     * 初始化网络设备(NFS,Samba)
+     * 初始化网络设备(NFS,Samba,DLNA)
      */
     private void initNetWorkDevices(){
+    	//检测网络
+    	checkNetWork();
     	mNFSList = readNFSInfos();
     	mSmbList = readSmbInfos();
     	if(mNFSList != null && mNFSList.size() > 0){
@@ -239,6 +239,14 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     	Intent nfsMountIntent = new Intent(ConstData.BroadCastMsg.NFS_MOUNT);
 		nfsMountIntent.putExtra(ConstData.IntentKey.EXTRA_NFS_INFO, nfsInfo);
 		LocalBroadcastManager.getInstance(MainActivity.this).sendBroadcast(nfsMountIntent);
+    }
+    
+    /**
+     * 发送网络检测广播
+     */
+    private void checkNetWork(){
+    	Intent netWrokIntent = new Intent(ConstData.BroadCastMsg.CHECK_NETWORK);
+		LocalBroadcastManager.getInstance(MainActivity.this).sendBroadcast(netWrokIntent);
     }
     
     public static MainActivity getInstance()
@@ -511,7 +519,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
             	//Log.i(TAG, "onSelected->offset:" + "MEDIA_TYPE_FOLDER");
                 intent.putExtra(ConstData.IntentKey.EXTRAL_MEDIA_TYPE, ConstData.MediaType.FOLDER);
                 if(selectDevice.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_DMS)
-                	intent.setClass(this, UpnpFileListActivity.class);
+                	intent.setClass(this, AllUpnpFileListActivity.class);
                 else
                 	intent.setClass(this, AllFileListActivity.class);
                 break;

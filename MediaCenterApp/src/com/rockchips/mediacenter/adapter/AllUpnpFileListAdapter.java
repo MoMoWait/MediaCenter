@@ -1,14 +1,15 @@
 package com.rockchips.mediacenter.adapter;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
-import com.rockchips.mediacenter.adapter.FileListAdapter.ViewHolder;
+import org.fourthline.cling.support.model.container.Container;
+import org.fourthline.cling.support.model.item.Item;
+
+import com.rockchips.mediacenter.adapter.AllFileListAdapter.ViewHolder;
 import com.rockchips.mediacenter.bean.AllFileInfo;
-import com.rockchips.mediacenter.bean.LocalMediaFile;
+import com.rockchips.mediacenter.bean.AllUpnpFileInfo;
 import com.rockchips.mediacenter.data.ConstData;
-import com.rockchips.mediacenter.R;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,16 +17,15 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+import com.rockchips.mediacenter.R;
 /**
  * @author GaoFei
- * 所有本地文件适配器
+ * 所有Upnp文件列表适配器
  */
-public class AllFileListAdapter extends ArrayAdapter<AllFileInfo> {
-
+public class AllUpnpFileListAdapter extends ArrayAdapter<AllUpnpFileInfo> {
 	private int mResourceId = 0;
 	private LayoutInflater mInflater;
-	public AllFileListAdapter(Context context, int resource, List<AllFileInfo> objects) {
+	public AllUpnpFileListAdapter(Context context, int resource, List<AllUpnpFileInfo> objects) {
 		super(context, resource, objects);
 		mResourceId = resource;
 		mInflater = LayoutInflater.from(context);
@@ -43,8 +43,8 @@ public class AllFileListAdapter extends ArrayAdapter<AllFileInfo> {
 		ViewHolder holder = (ViewHolder)convertView.getTag();
 		/*ImageView fileIconImageView = (ImageView)convertView.findViewById(R.id.img_file_icon);
 		TextView fileNamTextView = (TextView)convertView.findViewById(R.id.text_file_name);*/
-		AllFileInfo allFileInfo = getItem(position);
-		int fileType = allFileInfo.getType();
+		AllUpnpFileInfo upnpFileInfo = getItem(position);
+		int fileType = upnpFileInfo.getType();
 		if(fileType == ConstData.MediaType.VIDEO){
 			holder.imgFileIcon.setImageResource(R.drawable.icon_local_video);
 		}else if(fileType == ConstData.MediaType.AUDIO){
@@ -54,12 +54,15 @@ public class AllFileListAdapter extends ArrayAdapter<AllFileInfo> {
 		}else if(fileType == ConstData.MediaType.FOLDER){
 			holder.imgFileIcon.setImageResource(R.drawable.icon_local_folder);
 		}
-		holder.textFileName.setText(allFileInfo.getFile().getName());
+		Object object = upnpFileInfo.getFile();
+		if(object instanceof Item){
+			holder.textFileName.setText(((Item)object).getTitle());
+		}else{
+			holder.textFileName.setText(((Container)object).getTitle());
+		}
 		return convertView;
 	}
 
-	
-	
 	
 	final class ViewHolder{
 		ImageView imgFileIcon;

@@ -542,6 +542,7 @@ public class ConstData {
     	String SAMBA_MOUNT = "com.rockchip.mediacenter.sambamount";
     	String REFRESH_NETWORK_DEVICE = "com.rockchip.mediacenter.refresh_network_device";
     	String REFRESH_ALL_DEVICES = "com.rockchip.mediacenter.refresh_all_devices";
+    	String CHECK_NETWORK = "com.rockchip.mediacenter.check_network";
     }
     
     public enum EBrowerType

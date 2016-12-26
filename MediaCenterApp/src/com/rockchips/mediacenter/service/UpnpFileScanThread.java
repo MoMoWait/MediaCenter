@@ -112,6 +112,13 @@ public class UpnpFileScanThread extends Thread {
 		mUpnpFolderService = new UpnpFolderService();
 		mLocalDeviceService = new LocalDeviceService();
 		mContentDirectoryService = mRemoteDevice.findService(new UDAServiceType("ContentDirectory"));
+		/*Log.i(TAG, "mContentDirectoryService->serviceType:" + mContentDirectoryService.getServiceType()); 
+		Log.i(TAG, "mContentDirectoryService->serviceId:" + mContentDirectoryService.getServiceId());
+		Log.i(TAG, "mContentDirectoryService->className:" + mContentDirectoryService.getClass().getName());
+		RemoteService remoteService = (RemoteService)mContentDirectoryService;
+		Log.i(TAG, "remoteService->descriptorURI:" + remoteService.getDescriptorURI());
+		Log.i(TAG, "remoteService->controlURI:" + remoteService.getControlURI());
+		Log.i(TAG, "remoteService->enventSubScriptionURI:" + remoteService.getEventSubscriptionURI());*/
 		Container rootContainer = createRootContainer();
 		mContainers.add(rootContainer);
 		mContainerMap.put(rootContainer.getId(), rootContainer);
@@ -186,7 +193,6 @@ public class UpnpFileScanThread extends Thread {
 					mCurrentBrowser = new FileBrowser(mContentDirectoryService, itemContainer.getId(), BrowseFlag.DIRECT_CHILDREN, "*", 0, 100000L, mSortCriterions);
 					mCurrentOpenContainer = itemContainer;
 					mStartTimeContainers.put(itemContainer, System.currentTimeMillis());
-					//mUpnpService.
 					mUpnpService.getControlPoint().execute(mCurrentBrowser);
 				}else{
 					try{

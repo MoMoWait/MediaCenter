@@ -2,6 +2,7 @@ package com.rockchips.mediacenter.service;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -12,6 +13,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import momo.cn.edu.fjnu.androidutils.utils.NetWorkUtils;
 
 import org.fourthline.cling.android.AndroidUpnpService;
 import org.fourthline.cling.android.AndroidUpnpServiceImpl;
@@ -107,6 +110,10 @@ public class DeviceMonitorService extends Service {
 	 * 异步执行刷新所有设备
 	 */
 	private AsyncTask<String, Integer, Integer> mRefreshAllTask;
+	/**
+	 * 远程设备Map表 
+	 */
+	private Map<String, RemoteDevice> mRemoteDevices = Collections.synchronizedMap(new HashMap<String, RemoteDevice>());
 	
 	/**
 	 * 设备上下线消息
@@ -197,6 +204,7 @@ public class DeviceMonitorService extends Service {
 		netWorkDeviceMountFilter.addAction(ConstData.BroadCastMsg.SAMBA_MOUNT);
 		netWorkDeviceMountFilter.addAction(ConstData.BroadCastMsg.REFRESH_NETWORK_DEVICE);
 		netWorkDeviceMountFilter.addAction(ConstData.BroadCastMsg.REFRESH_ALL_DEVICES);
+		netWorkDeviceMountFilter.addAction(ConstData.BroadCastMsg.CHECK_NETWORK);
 		LocalBroadcastManager.getInstance(this).registerReceiver(mNetWorkDeviceMountReceiver, netWorkDeviceMountFilter);
 	}
 
@@ -487,6 +495,23 @@ public class DeviceMonitorService extends Service {
 		mCurrProcessMsgs.put(remoteDevice.getIdentity().getDescriptorURL().toString(), false);
 	}
 	
+	
+	/**
+	 * 获取Upnp服务
+	 * @return
+	 */
+	public AndroidUpnpService getUpnpService(){
+		return mUpnpService;
+	}
+	
+	/**
+	 * 获取远程设备表
+	 * @return
+	 */
+	public Map<String, RemoteDevice> getRemoteDevices(){
+		return mRemoteDevices;
+	}
+	
 	/**
 	 * 循环监测挂载队列的数据
 	 * 
@@ -575,13 +600,13 @@ public class DeviceMonitorService extends Service {
 
 		@Override
 		public void remoteDeviceAdded(Registry registry, RemoteDevice device) {
-			//Log.i(TAG, "UpnpRegistryListener->remoteDeviceAdded:" + device);
 			if(device.getType().getType().equals("MediaServer")){
 				deleteUpnpDatas(device);
 				// 添加至数据库或更新数据库数据
 				LocalDevice upnpDevice = MediaFileUtils.getLocalDeviceFromRemoteDevice(device);
 				String friendName = device.getDetails().getFriendlyName();
 				localDeviceService.saveOrUpdate(upnpDevice);
+				mRemoteDevices.put(upnpDevice.getMountPath(), device);
 				synchronized (mCurrProcessMsgs) {
 					mCurrProcessMsgs.put(upnpDevice.getMountPath(), true);
 					Message message = new Message();
@@ -599,7 +624,6 @@ public class DeviceMonitorService extends Service {
 
 		@Override
 		public void remoteDeviceRemoved(Registry registry, RemoteDevice device) {
-			//Log.i(TAG, "UpnpRegistryListener->remoteDeviceRemoved:" + device);
 			if(device.getType().getType().equals("MediaServer")){
 				deleteUpnpDatas(device);
 				Message message = new Message();
@@ -666,6 +690,12 @@ public class DeviceMonitorService extends Service {
 			}else if(action.equals(ConstData.BroadCastMsg.REFRESH_ALL_DEVICES)){
 				//刷新所有设备
 				refreshAllDevices();
+			}else if(action.equals(ConstData.BroadCastMsg.CHECK_NETWORK)){
+				//检测网络
+				if(!NetWorkUtils.haveInternet(getApplicationContext())){
+					//刷新网络设备
+					searchUpnpDevice();
+				}
 			}
 		}
 		
