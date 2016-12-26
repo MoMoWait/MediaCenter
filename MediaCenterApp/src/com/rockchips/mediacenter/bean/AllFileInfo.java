@@ -1,8 +1,5 @@
 package com.rockchips.mediacenter.bean;
 import java.io.File;
-
-import android.graphics.Bitmap;
-
 /**
  * @author GaoFei
  * 文件列表
@@ -22,9 +19,13 @@ public class AllFileInfo {
 	 */
 	private String duration;
 	/**
-	 * 视频或音频缩列图
+	 * 视频或音频缩列图路径
 	 */
-	private Bitmap bitmap;	
+	private String priviewPhotoPath;
+	/**
+	 * 是否已经加载过预览内容
+	 */
+	private boolean isLoadPreview;
 	public File getFile() {
 		return file;
 	}
@@ -43,11 +44,17 @@ public class AllFileInfo {
 	public void setDuration(String duration) {
 		this.duration = duration;
 	}
-	public Bitmap getBitmap() {
-		return bitmap;
+	public String getPriviewPhotoPath() {
+		return priviewPhotoPath;
 	}
-	public void setBitmap(Bitmap bitmap) {
-		this.bitmap = bitmap;
+	public boolean isLoadPreview() {
+		return isLoadPreview;
+	}
+	public void setLoadPreview(boolean isLoadPreview) {
+		this.isLoadPreview = isLoadPreview;
+	}
+	public void setPriviewPhotoPath(String priviewPhotoPath) {
+		this.priviewPhotoPath = priviewPhotoPath;
 	}
 	
 }

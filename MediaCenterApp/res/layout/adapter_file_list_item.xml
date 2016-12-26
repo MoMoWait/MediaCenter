@@ -10,7 +10,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:scaleType="fitXY"
-        android:src="@drawable/select_backgroundmusic_return_icon"/>
+        android:src="@drawable/unknow_file_type"/>
     
     <TextView 
         android:id="@+id/text_file_name"

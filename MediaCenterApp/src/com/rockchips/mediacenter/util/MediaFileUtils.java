@@ -24,6 +24,7 @@ import com.rockchips.mediacenter.basicutils.util.HanziToPinyin;
 import com.rockchips.mediacenter.basicutils.util.HanziToPinyin.Token;
 import com.rockchips.mediacenter.basicutils.bean.LocalMediaInfo;
 import com.rockchips.mediacenter.basicutils.bean.LocalDeviceInfo;
+import com.rockchips.mediacenter.bean.AllFileInfo;
 import com.rockchips.mediacenter.bean.LocalDevice;
 import com.rockchips.mediacenter.bean.LocalMediaFile;
 import com.rockchips.mediacenter.bean.LocalMediaFolder;
@@ -564,5 +565,26 @@ public class MediaFileUtils {
     	pnpServerDevice.setSize("");
     	pnpServerDevice.setUsed("");
     	return pnpServerDevice;
+    }
+    
+    /**
+     * 获取某个媒体文件对应该目录下的所有文件
+     * @param allFileInfo
+     * @return
+     */
+    public static List<LocalMediaInfo> getMediaInfosFromAllFileInfo(AllFileInfo allFileInfo, LocalDevice device){
+    	List<LocalMediaInfo> mediaInfos = new ArrayList<LocalMediaInfo>();
+    	File parentFile = allFileInfo.getFile().getParentFile();
+    	if(parentFile != null){
+    		File[] subFiles = parentFile.listFiles();
+    		if(subFiles != null && subFiles.length > 0){
+    			for(File itemFile : subFiles){
+    				LocalMediaInfo localMediaInfo = getMediaInfoFromFile(itemFile, allFileInfo.getType(), getDeviceInfoFromDevice(device));
+    				if(localMediaInfo != null)
+    					mediaInfos.add(localMediaInfo);
+    			}
+    		}
+    	}
+    	return mediaInfos;
     }
 }

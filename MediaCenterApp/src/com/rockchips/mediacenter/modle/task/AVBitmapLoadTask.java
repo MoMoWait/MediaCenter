@@ -1,10 +1,15 @@
 package com.rockchips.mediacenter.modle.task;
+import java.io.File;
+import java.util.UUID;
+
 import momo.cn.edu.fjnu.androidutils.data.CommonValues;
+import momo.cn.edu.fjnu.androidutils.utils.BitmapUtils;
 import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
 import com.rockchips.mediacenter.bean.AllFileInfo;
 import com.rockchips.mediacenter.data.ConstData;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Bitmap.CompressFormat;
 import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
 import android.os.AsyncTask;
@@ -21,6 +26,7 @@ public class AVBitmapLoadTask extends AsyncTask<AllFileInfo, Integer, Integer> {
 	}
 	private CallBack mCallBack;
 	private AllFileInfo mFileInfo;
+	private boolean isOOM;
 	public AVBitmapLoadTask(CallBack callBack){
 		mCallBack = callBack;
 	}
@@ -79,14 +85,20 @@ public class AVBitmapLoadTask extends AsyncTask<AllFileInfo, Integer, Integer> {
 					priviewBitmap = BitmapFactory.decodeByteArray(albumData, 0, albumData.length, options);
 				}catch (OutOfMemoryError error){
 					//no handle
+					isOOM = true;
 				}
 				
 			}
 		}
-		
-		if(priviewBitmap != null)
-			mFileInfo.setBitmap(priviewBitmap);
-		
+		File cacheImageDirFile = new File(ConstData.CACHE_IMAGE_DIRECTORY);
+		if(!cacheImageDirFile.exists())
+			cacheImageDirFile.mkdirs();
+		String savePath = cacheImageDirFile.getPath() + "/" + UUID.randomUUID().toString() + ".png";
+		if(priviewBitmap != null && BitmapUtils.saveBitmapToImage(priviewBitmap, savePath, CompressFormat.PNG, 80))
+			mFileInfo.setPriviewPhotoPath(savePath);
+		//未发生OOM异常
+		if(!isOOM)
+			mFileInfo.setLoadPreview(true);
 		return ConstData.TaskExecuteResult.SUCCESS;
 	
 	}

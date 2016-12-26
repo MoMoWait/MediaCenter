@@ -82,7 +82,7 @@ public class DeviceItemView extends View implements OnGestureListener
     private int mAlpha;
 
     private boolean mRightKey = true;
-
+    private boolean mLeftKey = false;
     private boolean mBeFristLoading = true;
 
     private Canvas mCanvas;
@@ -255,12 +255,14 @@ public class DeviceItemView extends View implements OnGestureListener
         if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT)
         {
         	mRightKey = false;
+        	mLeftKey = true;
             invalidate();
           
         }
         else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)
         {
         	mRightKey = true;
+        	mLeftKey = false;
         	invalidate();
         }
         else if (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_DPAD_CENTER)
@@ -285,10 +287,15 @@ public class DeviceItemView extends View implements OnGestureListener
         if(mBeFristLoading){
         	initDraw(canvas);
         	mBeFristLoading = false;
-        }else if(mRightKey){
+        }else if(mRightKey && !mLeftKey){
         	leftMove(canvas);
+        	mRightKey = false;
+        }else if(mLeftKey && !mRightKey){
+        	rightMove(canvas);
+        	mLeftKey = false;
         }else{
         	rightMove(canvas);
+        	leftMove(canvas);
         }
         
     }
@@ -339,7 +346,7 @@ public class DeviceItemView extends View implements OnGestureListener
      */
     private void leftMove(Canvas canvas)
     {
-    	
+    	Log.i(TAG, "leftMove");
     	int offsetX = (SCREEN_WIDTH - BITMAP_WIDTH * 4) / 2;
     	
     	canvas.save();

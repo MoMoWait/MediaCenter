@@ -36,7 +36,7 @@ public class UpnpFile {
 	 */
 	@Column(name="duration")
 	private String duration;
-	/**
+	/**daojiu
 	 * 比特率，针对audio，video
 	 */
 	@Column(name="bitrate")

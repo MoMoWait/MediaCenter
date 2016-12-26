@@ -39,6 +39,7 @@
         <meta-data
             android:name="inputmode"
             android:value="keyboard" />
+        <activity android:name="com.rockchips.mediacenter.activity.AllFileListActivity"></activity>
         <activity 
             android:name="com.rockchips.mediacenter.activity.UpnpFileListActivity"/>
          <activity 

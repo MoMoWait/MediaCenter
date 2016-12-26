@@ -513,7 +513,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
                 if(selectDevice.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_DMS)
                 	intent.setClass(this, UpnpFileListActivity.class);
                 else
-                	intent.setClass(this, FileListActivity.class);
+                	intent.setClass(this, AllFileListActivity.class);
                 break;
             case MEDIA_TYPE_PHOTO:
                 intent.putExtra(ConstData.IntentKey.EXTRAL_MEDIA_TYPE, ConstData.MediaType.IMAGEFOLDER);
