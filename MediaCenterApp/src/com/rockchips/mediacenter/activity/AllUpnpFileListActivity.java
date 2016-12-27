@@ -2,6 +2,7 @@ package com.rockchips.mediacenter.activity;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import momo.cn.edu.fjnu.androidutils.utils.BitmapUtils;
@@ -18,6 +19,7 @@ import org.fourthline.cling.support.model.BrowseFlag;
 import org.fourthline.cling.support.model.DIDLContent;
 import org.fourthline.cling.support.model.Res;
 import org.fourthline.cling.support.model.SortCriterion;
+import org.fourthline.cling.support.model.DIDLObject.Property;
 import org.fourthline.cling.support.model.container.Container;
 import org.fourthline.cling.support.model.item.Item;
 import org.xutils.x;
@@ -52,6 +54,7 @@ import com.rockchips.mediacenter.adapter.AllUpnpFileListAdapter;
 import com.rockchips.mediacenter.adapter.UpnpFileListAdapter;
 import com.rockchips.mediacenter.adapter.UpnpFolderListAdapter;
 import com.rockchips.mediacenter.audioplayer.InternalAudioPlayer;
+import com.rockchips.mediacenter.bean.AllFileInfo;
 import com.rockchips.mediacenter.bean.AllUpnpFileInfo;
 import com.rockchips.mediacenter.bean.LocalDevice;
 import com.rockchips.mediacenter.bean.UpnpFile;
@@ -61,6 +64,7 @@ import com.rockchips.mediacenter.imageplayer.InternalImagePlayer;
 import com.rockchips.mediacenter.modle.db.UpnpFileService;
 import com.rockchips.mediacenter.modle.task.UpnpFileLoadTask;
 import com.rockchips.mediacenter.modle.task.UpnpFileMediaDataLoadTask;
+import com.rockchips.mediacenter.modle.task.UpnpFilePreviewLoadTask;
 import com.rockchips.mediacenter.modle.task.UpnpFolderLoadTask;
 import com.rockchips.mediacenter.service.DeviceMonitorService;
 import com.rockchips.mediacenter.util.DialogUtils;
@@ -108,7 +112,6 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
 	private UpnpFileLoadTask mFileLoadTask;
 	private UpnpFolder mSelectFolder;
 	private UpnpFile mSelectFile;
-	private UpnpFile mCurrentFocusFile;
 	private int mFocusPosition;
 	/**
 	 * 当前文件夹列表选中的位置
@@ -119,11 +122,16 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
 	 */
 	private int mFileSelection = 0;
 	private ImageOptions mImageOptions;
-	private UpnpFileMediaDataLoadTask mUpnpFileMediaDataLoadTask;
+	private UpnpFilePreviewLoadTask mUpnpFilePreviewLoadTask;
 	/**
 	 * 当前目录
 	 */
 	private Container mCurrContainer;
+	/**
+	 * 上一次目录
+	 */
+	private Container mLastContainer;
+	
 	/**
 	 * 目录服务
 	 */
@@ -161,10 +169,22 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
 	 */
 	private AllUpnpFileListAdapter mUpnpFileListAdapter;
 	/**
+	 * 当前选中的Upnp文件
+	 */
+	private AllUpnpFileInfo mCurrFocusFileInfo;
+	/**
+	 * 文件目录title
+	 */
+	private LinkedList<Container> mContainerTitles = new LinkedList<Container>();
+	/**
 	 * Upnp文件浏览消息
 	 * @author GaoFei
 	 *
 	 */
+	/**
+	 * 当前文件，文件夹内容
+	 */
+	private DIDLContent mDidlContent;
 	interface BrowserMsg{
 		/**请求文件*/
 		int REQUEST_FILES = 1;
@@ -190,6 +210,17 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
 		//Log.i(TAG, "onItemClick");
+		if(mCurrFocusFileInfo.getType() == ConstData.MediaType.FOLDER){
+			mLastContainer = null;
+			mCurrContainer = (Container)mCurrFocusFileInfo.getFile();
+			mContainerTitles.add(mCurrContainer);
+			Log.i(TAG, "onItemClick->mCurrContainer:" + mCurrContainer.getId() + ":" + mCurrContainer.getTitle());
+			loadFiles();
+		}else{
+			//启动Activity
+			loadActivity(mCurrFocusFileInfo);
+		}
+		/*mCurrFocusFileInfo.getType();
 		Object itemObject = parent.getAdapter().getItem(position);
 		if(itemObject instanceof UpnpFolder){
 			//Log.i(TAG, "click folder");
@@ -200,19 +231,19 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
 			UpnpFile itemFile = (UpnpFile)itemObject;
 			mSelectFile = itemFile;
 			loadActivity(itemFile);
-		}
+		}*/
 	}
 
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position,
 			long id) {
 		mFocusPosition = position;
-		Object itemObject = parent.getAdapter().getItem(position);
-		if(itemObject instanceof UpnpFile){
+		mCurrFocusFileInfo = (AllUpnpFileInfo)parent.getAdapter().getItem(position);
+		/*if(itemObject instanceof UpnpFile){
 			UpnpFile itemFile = (UpnpFile)itemObject;
 			mCurrentFocusFile = itemFile;
-		}
-		refreshPreview(position);
+		}*/
+		refreshPreview(mCurrFocusFileInfo);
 	}
 
 	@Override
@@ -223,20 +254,30 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if(keyCode == KeyEvent.KEYCODE_BACK){
-			if(mListFile.getAdapter() instanceof UpnpFileListAdapter){
-				if(mUpnpFileMediaDataLoadTask != null && mUpnpFileMediaDataLoadTask.getStatus() == Status.RUNNING)
-					mUpnpFileMediaDataLoadTask.cancel(true);
-				//loadFolders();
+			//String currContainerID = mCurrContainer.getId();
+			Log.i(TAG, "onKeyDown->currContainerID:" + mCurrContainer.getId());
+			Log.i(TAG, "onKeyDown->parentID:" + mCurrContainer.getParentID());
+			if(mContainerTitles.size() > 1){
+				mLastContainer = mContainerTitles.removeLast();
+				mCurrContainer = mContainerTitles.getLast();
+				Log.i(TAG, "onKeyDown->mCurrContainer:" + mCurrContainer.getId() + ":" + mCurrContainer.getTitle());
+				loadFiles(); 
 				return true;
 			}
+			/*if(mListFile.getAdapter() instanceof UpnpFileListAdapter){
+				if(mUpnpFilePreviewLoadTask != null && mUpnpFilePreviewLoadTask.getStatus() == Status.RUNNING)
+					mUpnpFilePreviewLoadTask.cancel(true);
+				//loadFolders();
+				return true;
+			}*/
 		}
 		return super.onKeyDown(keyCode, event);
 	}
 	
 	@Override
 	protected void onDestroy() {
-		if(mUpnpFileMediaDataLoadTask != null && mUpnpFileMediaDataLoadTask.getStatus() == Status.RUNNING)
-			mUpnpFileMediaDataLoadTask.cancel(true);
+		if(mUpnpFilePreviewLoadTask != null && mUpnpFilePreviewLoadTask.getStatus() == Status.RUNNING)
+			mUpnpFilePreviewLoadTask.cancel(true);
 		unbindService(mDeviceMonitorConnection);
 		super.onDestroy();
 	}
@@ -244,7 +285,7 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		//loadFiles(mSelectFolder, true);
-		loadFiles(mSelectFolder, true);
+		//loadFiles(mSelectFolder, true);
 	}
 	
     public void initDataAndView(){
@@ -262,6 +303,7 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
         .setFailureDrawableId(R.drawable.image_browser_default)
         .build();
     	mCurrContainer = createRootContainer();
+    	mContainerTitles.add(mCurrContainer);
     	mDeviceMonitorConnection = new ServiceConnection() {
 			
 			@Override
@@ -275,8 +317,11 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
 				mMonitorService = ((DeviceMonitorService.MonitorBinder)service).getMonitorService();
 				mUpnpService = mMonitorService.getUpnpService();
 				mCurrRemoteDevice = mMonitorService.getRemoteDevices().get(mCurrDevice.getMountPath());
-				mDirectoryService =  mCurrRemoteDevice.findService(new UDAServiceType("ContentDirectory"));
-				mBrowserHandler.sendEmptyMessage(BrowserMsg.REQUEST_FILES);
+				if(mCurrRemoteDevice != null){
+					mDirectoryService =  mCurrRemoteDevice.findService(new UDAServiceType("ContentDirectory"));
+					mBrowserHandler.sendEmptyMessage(BrowserMsg.REQUEST_FILES);
+				}
+				
 			}
 		};
     }
@@ -286,20 +331,26 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
     	mListFile.setOnItemSelectedListener(this);
     }
     
-    private void refreshPreview(int position)
+    /**
+     * 刷新预览信息
+     * @param upnpFileInfo
+     */
+    private void refreshPreview(AllUpnpFileInfo upnpFileInfo)
     {
-    	if(isShowFolder()){
-    		UpnpFolder mediaFolder = (UpnpFolder)mListFile.getAdapter().getItem(position);
-    	    mWidgetPreview.updateName(mediaFolder.getName());
+    	if(upnpFileInfo.getType() == ConstData.MediaType.FOLDER){
+    		//UpnpFolder mediaFolder = (UpnpFolder)mListFile.getAdapter().getItem(position);
+    		Container container = (Container)upnpFileInfo.getFile();
+    	    mWidgetPreview.updateName(container.getTitle());
             mWidgetPreview.updateImage(getPreviewIcon(ConstData.MediaType.FOLDER));
-            mWidgetPreview.updateOtherText(getPreviewInfo(mediaFolder));
-            mTextFileName.setText(mediaFolder.getName());
+            mWidgetPreview.updateOtherText(getPreviewInfo(container));
+            mTextFileName.setText(container.getTitle());
     	}else{
-    		final UpnpFile mediaFile = (UpnpFile)mListFile.getAdapter().getItem(position);
-    		mWidgetPreview.updateName(mediaFile.getName());
-    		mWidgetPreview.updateImage(getPreviewIcon(mediaFile.getType()));
-    		mTextFileName.setText(mediaFile.getName());
-    		String previewPhotoPath = mediaFile.getPreviewPhotoPath();
+    		Item item = (Item)upnpFileInfo.getFile();
+    		//final UpnpFile mediaFile = (UpnpFile)mListFile.getAdapter().getItem(position);
+    		mWidgetPreview.updateName(item.getTitle());
+    		mWidgetPreview.updateImage(getPreviewIcon(upnpFileInfo.getType()));
+    		mTextFileName.setText(item.getTitle());
+    		String previewPhotoPath = upnpFileInfo.getPreviewPath();
     		Bitmap preViewBitmap = null;
     		if(!TextUtils.isEmpty(previewPhotoPath)){
     			//加载至页面
@@ -307,17 +358,17 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
     			if(preViewBitmap != null)
         			mWidgetPreview.updateImage(preViewBitmap);
     		}else{
-    			loadExtraMediaInfo(mediaFile);
+    			loadExtraMediaInfo(upnpFileInfo);
     		}
-            int mediaType = mediaFile.getType();
+            int mediaType = upnpFileInfo.getType();
             switch (mediaType)
             {
                 case ConstData.MediaType.AUDIO:
                 case ConstData.MediaType.VIDEO:
-                	updateOtherText(position);
+                	updateOtherText(upnpFileInfo);
                     break;
                 case ConstData.MediaType.IMAGE:
-                	updateOtherText(position);
+                	updateOtherText(upnpFileInfo);
                     break;
             }  
             
@@ -430,9 +481,9 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
 	}
 	
 	
-    protected String getPreviewInfo(UpnpFolder mediaFolder)
+    protected String getPreviewInfo(Container container)
     {
-        String info = getFolderPreviewInfo(mediaFolder);;
+        String info = getFolderPreviewInfo(container);;
         return info;
     }
 	
@@ -446,9 +497,10 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
     }
 
     
-    private String getFolderPreviewInfo(UpnpFolder mediaFolder){
+    private String getFolderPreviewInfo(Container container){
         String info = getString(R.string.file_tip);
-        if(mCurrMediaType == ConstData.MediaType.FOLDER){
+        info += container.getChildCount();
+        /*if(mCurrMediaType == ConstData.MediaType.FOLDER){
         	info += mediaFolder.getFileCount();
         }else if(mCurrMediaType == ConstData.MediaType.AUDIOFOLDER){
         	info += mediaFolder.getAudioCount();
@@ -456,7 +508,7 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
         	info += mediaFolder.getVideoCount();
         }else{
         	info += mediaFolder.getImageCount();
-        }
+        }*/
         return info;
     }
 
@@ -486,6 +538,58 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
 
         return DiskUtil.getDiskSizeString(this, Long.valueOf(size / 1024).intValue(), R.string.unknown, R.string.unit_disk_size_kb,
                 R.string.unit_disk_size_mb, R.string.unit_disk_size_gb, R.string.unit_disk_size_tb);
+    }
+    
+    
+    /**
+     * 从Upnp文件中获取文件大小
+     * @param upnpFileInfo
+     * @return
+     */
+    private long getFileSizeFromUpnpFileInfo(AllUpnpFileInfo upnpFileInfo){
+    	Item item = (Item)upnpFileInfo.getFile();
+    	try{
+    		return item.getResources().get(0).getSize();
+    	}catch(Exception e){
+    		
+    	}
+    	return 0;
+    }
+    
+    /**
+     * 从Upnp文件中读取时长
+     * @param upnpFileInfo
+     * @return
+     */
+    private String getDurationFromUpnpFileInfo(AllUpnpFileInfo upnpFileInfo){
+    	Item item = (Item)upnpFileInfo.getFile();
+    	try{
+    		return item.getResources().get(0).getDuration();
+    	}catch(Exception e){
+    		
+    	}
+    	return "";
+    
+    }
+    
+    /**
+     * 从Upnp文件中读取日期
+     * @param upnpFileInfo
+     * @return
+     */
+    private String getDateFromUpnpFileInfo(AllUpnpFileInfo upnpFileInfo){
+    	Item item = (Item)upnpFileInfo.getFile();
+    	List<Property> properties = item.getProperties();
+    	if(properties != null && properties.size() > 0){
+			for(Property property : properties){
+				if(property.getDescriptorName().equals("date")){
+					return property.getValue().toString();
+				}
+				
+			}
+		}
+    	return "";
+    
     }
     
     protected Bitmap getPreviewIcon(int type)
@@ -521,31 +625,32 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
     }
     
     
-    private void updateOtherText(int position)
+    private void updateOtherText(AllUpnpFileInfo upnpFileInfo)
     {
-        UpnpFile mediaFile = (UpnpFile)mListFile.getAdapter().getItem(position);
-        int mediaType = mediaFile.getType();
+        //UpnpFile mediaFile = (UpnpFile)mListFile.getAdapter().getItem(position);
+        int mediaType = upnpFileInfo.getType();
+        Item item = (Item)upnpFileInfo.getFile();
         String strInfo = null;
         switch(mediaType)
         {
             case ConstData.MediaType.AUDIO:
             	strInfo = String.format(getString(R.string.audio_preview_info), 
-                		getFileSize(mediaFile.getSize()), 
-                		getFileType(mediaFile.getName(),getString(R.string.music),mediaFile.getDevicetype()), 
-                		getRunningTime(mediaFile.getDuration()),
-                		formatCreateDate(mediaFile),getDescription(""));
+                		getFileSize(getFileSizeFromUpnpFileInfo(upnpFileInfo)), 
+                		getFileType(item.getTitle(),getString(R.string.music), mCurrDevice.getDevices_type()), 
+                		getRunningTime(getDurationFromUpnpFileInfo(upnpFileInfo)),
+                		formatCreateDate(upnpFileInfo),getDescription(""));
             	break;
             case ConstData.MediaType.VIDEO:
             	strInfo = String.format(getString(R.string.video_preview_info),
-                        getFileSize(mediaFile.getSize()), 
-                        getFileType(mediaFile.getName(),getString(R.string.video),mediaFile.getDevicetype()), 
-                        getRunningTime(mediaFile.getDuration()), 
-                        formatCreateDate(mediaFile),getDescription(""));
+                        getFileSize(getFileSizeFromUpnpFileInfo(upnpFileInfo)), 
+                        getFileType(item.getTitle(),getString(R.string.video), mCurrDevice.getDevices_type()), 
+                        getRunningTime(getDurationFromUpnpFileInfo(upnpFileInfo)), 
+                        formatCreateDate(upnpFileInfo),getDescription(""));
               break;
             // 显示尺寸
             case ConstData.MediaType.IMAGE:
-                strInfo = String.format(getString(R.string.image_preview_info), getFileSize(mediaFile.getSize()),
-                        getFileType(mediaFile.getName(),getString(R.string.picture),mediaFile.getDevicetype()), formatCreateDate(mediaFile),getDescription(""));
+                strInfo = String.format(getString(R.string.image_preview_info), getFileSize(getFileSizeFromUpnpFileInfo(upnpFileInfo)),
+                        getFileType(item.getTitle(),getString(R.string.image), mCurrDevice.getDevices_type()), formatCreateDate(upnpFileInfo),getDescription(""));
                 break;
         }
         mWidgetPreview.updateOtherText(strInfo);
@@ -554,38 +659,40 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
     /**
      * 加载播放器
      */
-    public void loadActivity(UpnpFile mediaFile){
+    public void loadActivity(AllUpnpFileInfo upnpFileInfo){
         Intent intent = new Intent();
         intent.putExtra(ConstData.IntentKey.IS_INTERNAL_PLAYER, true);
         intent.putExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE, mCurrDevice);
         intent.putExtra(LocalDeviceInfo.DEVICE_EXTRA_NAME, MediaFileUtils.getDeviceInfoFromDevice(mCurrDevice).compress());
-        UpnpFileService upnpFileService = new UpnpFileService();
-        List<UpnpFile> mediaFiles = upnpFileService.getFilesByDeviceIdAndParentId(mediaFile.getDeviceID(), mediaFile.getParentId(), mediaFile.getType());
-        List<LocalMediaInfo> mediaInfos = MediaFileUtils.getMediaInfoListFromUpnpFileList(mediaFiles);
+        //UpnpFileService upnpFileService = new UpnpFileService();
+        //List<UpnpFile> mediaFiles = upnpFileService.getFilesByDeviceIdAndParentId(mediaFile.getDeviceID(), mediaFile.getParentId(), mediaFile.getType());
+        List<LocalMediaInfo> mediaInfos = MediaFileUtils.getMediaInfosFromAllUpnpFileInfo(upnpFileInfo, mDidlContent, mCurrDevice);
+        Log.i(TAG, "loadActivity->mediaInfos:" + mediaInfos);
         List<Bundle> mediaInfoList = new ArrayList<Bundle>();
         for(LocalMediaInfo itemInfo : mediaInfos){
         	mediaInfoList.add(itemInfo.compress());
         }
         int newPosition = 0;
-        for(int i = 0; i != mediaFiles.size(); ++i){
-        	if(mediaFiles.get(i).getFileId() == mediaFile.getFileId()){
+        String fileTitle = ((Item)upnpFileInfo.getFile()).getTitle();
+        for(int i = 0; i != mediaInfos.size(); ++i){
+        	if(fileTitle.equals(mediaInfos.get(i).getmFileName())){
         		newPosition = i;
         		break;
         	}
         }
-        if (mediaFile.getType() == ConstData.MediaType.AUDIO)
+        if (upnpFileInfo.getType() == ConstData.MediaType.AUDIO)
         {
             intent.setClass(this, InternalAudioPlayer.class);
             intent.putExtra(ConstData.IntentKey.CURRENT_INDEX, newPosition);
             InternalAudioPlayer.setMediaList(mediaInfoList, newPosition);
         }
-        else if (mediaFile.getType() == ConstData.MediaType.VIDEO)
+        else if (upnpFileInfo.getType() == ConstData.MediaType.VIDEO)
         {
             intent.setClass(this, InternalVideoPlayer.class);
             intent.putExtra(ConstData.IntentKey.CURRENT_INDEX, newPosition);
             InternalVideoPlayer.setMediaList(mediaInfoList, newPosition);
         }
-        else if (mediaFile.getType() == ConstData.MediaType.IMAGE)
+        else if (upnpFileInfo.getType() == ConstData.MediaType.IMAGE)
         {
             intent.setClass(this, InternalImagePlayer.class);
             intent.putExtra(ConstData.IntentKey.IS_INTERNAL_PLAYER, true);
@@ -635,8 +742,8 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
 		return description;
 	}
     
-    private String formatCreateDate(UpnpFile mediaFile){
-        String dataStr = mediaFile.getDate();
+    private String formatCreateDate(AllUpnpFileInfo upnpFileInfo){
+        String dataStr = getDateFromUpnpFileInfo(upnpFileInfo);
         if (TextUtils.isEmpty(dataStr))
         {
             dataStr = getString(R.string.unknown);
@@ -648,10 +755,8 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
 	{				
 		Log.d(TAG, "=====deviceType==="+deviceType);
 		String fileType=typename;
-		if (deviceType == ConstData.DeviceType.DEVICE_TYPE_U || deviceType == ConstData.DeviceType.DEVICE_TYPE_SD)
-		{					
+		if(deviceType != ConstData.DeviceType.DEVICE_TYPE_DMS)
 			fileType = filename.substring(filename.lastIndexOf(".")+1);
-		}		
 		return fileType;
 	}
     
@@ -697,18 +802,17 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
      * 加载额外的媒体信息
      * @param upnpFile
      */
-    private void loadExtraMediaInfo(UpnpFile upnpFile){
-    	if(mUpnpFileMediaDataLoadTask != null && mUpnpFileMediaDataLoadTask.getStatus() == Status.RUNNING)
-    		mUpnpFileMediaDataLoadTask.cancel(true);
-    	mUpnpFileMediaDataLoadTask = new UpnpFileMediaDataLoadTask(new UpnpFileMediaDataLoadTask.CallBack() {
-			
+    private void loadExtraMediaInfo(AllUpnpFileInfo upnpFileInfo){
+    	if(mUpnpFilePreviewLoadTask != null && mUpnpFilePreviewLoadTask.getStatus() == Status.RUNNING)
+    		mUpnpFilePreviewLoadTask.cancel(true);
+    	mUpnpFilePreviewLoadTask = new UpnpFilePreviewLoadTask(new UpnpFilePreviewLoadTask.CallBack() {
 			@Override
-			public void onFinish(UpnpFile upnpFile) {
-				if(mCurrentFocusFile == upnpFile)
-					refreshPreview(mFocusPosition);
+			public void onFinished(AllUpnpFileInfo upnpFileInfo) {
+				if(mCurrFocusFileInfo == upnpFileInfo)
+					refreshPreview(mCurrFocusFileInfo);
 			}
 		});
-    	mUpnpFileMediaDataLoadTask.execute(upnpFile);
+    	mUpnpFilePreviewLoadTask.execute(upnpFileInfo);
     }
 
 
@@ -744,6 +848,7 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
 	 * @param content
 	 */
 	private void fillUpnpFileAdapter(DIDLContent content){
+		mDidlContent = content;
 		Log.i(TAG, "fillUpnpFileAdapter->content:" + content);
 		DialogUtils.closeLoadingDialog();
 		List<Container> containers = content.getContainers();
@@ -783,10 +888,56 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
 				allUpnpFileInfos.add(fileInfo);
 			}
 		}
-		
-		AllUpnpFileListAdapter upnpFileListAdapter = new AllUpnpFileListAdapter(this, R.layout.adapter_file_list_item, allUpnpFileInfos);
-		mListFile.setAdapter(upnpFileListAdapter);
+		mTextPathTitle.setText(mCurrContainer.getTitle());
+		if(allUpnpFileInfos.size() > 0){
+			mLayoutContentPage.setVisibility(View.VISIBLE);
+			mLayoutNoFiles.setVisibility(View.GONE);
+			AllUpnpFileListAdapter upnpFileListAdapter = new AllUpnpFileListAdapter(this, R.layout.adapter_file_list_item, allUpnpFileInfos);
+			mListFile.setAdapter(upnpFileListAdapter);
+			mListFile.requestFocus();
+			if(mLastContainer != null){
+				int focusIndex = getFocusIndex(mLastContainer, allUpnpFileInfos);
+				mListFile.setSelection(focusIndex);
+			}
+		}else{
+			mLayoutContentPage.setVisibility(View.GONE);
+			mLayoutNoFiles.setVisibility(View.VISIBLE);
+		}
+	
 	} 
+	
+	/**
+	 * 获取焦点位置
+	 * @param upnpFileInfo
+	 * @param upnpFileInfos
+	 * @return
+	 */
+	private int getFocusIndex(Container lastContainer, List<AllUpnpFileInfo> upnpFileInfos){
+		if(upnpFileInfos != null && upnpFileInfos.size() > 0){
+			for(int i = 0; i < upnpFileInfos.size(); ++i){
+				try{
+					String containerId = ((Container)(upnpFileInfos.get(i).getFile())).getId();
+					boolean isEqual = lastContainer.getId().equals(containerId);
+					if(isEqual)
+						return i;
+				}catch (Exception e){
+					
+				}
+				
+			}
+		}
+		return 0;
+	}
+	
+	/**
+	 * 处理文件接收失败
+	 */
+	private void processFailedReceiveFiles(){
+		DialogUtils.closeLoadingDialog();
+		mTextPathTitle.setText(mCurrContainer.getTitle());
+		mLayoutContentPage.setVisibility(View.GONE);
+		mLayoutNoFiles.setVisibility(View.VISIBLE);
+	}
 	
 	/**
 	 * @author GaoFei
@@ -803,7 +954,7 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
 
 		@Override
 		public void received(ActionInvocation actionInvocation, DIDLContent didl) {
-			Log.i(TAG, "FileBrowser->received");
+			Log.i("FileBrowser", "FileBrowser->received");
 			Message receivedMessage = new Message();
 			receivedMessage.what = BrowserMsg.RECEIVED_SUCC;
 			receivedMessage.obj = didl;
@@ -814,11 +965,14 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
 
 		@Override
 		public void updateStatus(Status status) {
-			Log.i(TAG, "FileBrowser->updateStatus:" + status);
+			Log.i("FileBrowser", "FileBrowser->updateStatus:" + status);
 		}
 		@Override
 		public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg) {
-			Log.i(TAG, "FileBrowser->failure");
+			Log.i("FileBrowser", "FileBrowser->failure");
+			Message failedMessage = new Message();
+			failedMessage.what = BrowserMsg.RECEIVED_FAILED;
+			mBrowserHandler.sendMessage(failedMessage);
 		}
 		
 	}
@@ -839,7 +993,7 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
 				fillUpnpFileAdapter((DIDLContent)msg.obj);
 				break;
 			case BrowserMsg.RECEIVED_FAILED:
-				DialogUtils.closeLoadingDialog();
+				processFailedReceiveFiles();
 				break;
 			default:
 				break;

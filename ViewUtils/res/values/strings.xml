@@ -6,10 +6,10 @@
     <string name="search_inputhint">搜索家庭设备内容</string>
     <string name="more_operation_pre">请按菜单键进行进行更多操作\n请按上下键切换设备</string>
     <string name="more_operation_back">键进行更多操作</string>
-    <string name="video">视频浏览</string>
+    <string name="view_video">视频</string>
     <string name="file">文件</string>
     <string name="photo">图片</string>
-    <string name="music">音乐</string>
+    <string name="view_music">音乐</string>
     <string name="gridView_not_support">尚不支持直接new的使用方式，请使用布局文件</string>
     <string name="list_setting_select_tip">选择其它字幕</string>
     <string name="list_finish_right_tip">键完成选择</string>

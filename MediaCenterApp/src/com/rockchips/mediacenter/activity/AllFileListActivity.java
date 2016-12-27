@@ -337,10 +337,16 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
         switch(allFileInfo.getType())
         {
             case ConstData.MediaType.AUDIO:
-            case ConstData.MediaType.VIDEO:
             	strInfo = String.format(getString(R.string.audio_preview_info), 
                 		getFileSize(allFileInfo.getFile().length()), 
                 		getFileType(allFileInfo.getFile().getName(),getString(R.string.music), mCurrDevice.getDevices_type()), 
+                		getRunningTime(allFileInfo),
+                		formatCreateDate(allFileInfo),getDescription(""));
+            	break;
+            case ConstData.MediaType.VIDEO:
+            	strInfo = String.format(getString(R.string.audio_preview_info), 
+                		getFileSize(allFileInfo.getFile().length()), 
+                		getFileType(allFileInfo.getFile().getName(),getString(R.string.video), mCurrDevice.getDevices_type()), 
                 		getRunningTime(allFileInfo),
                 		formatCreateDate(allFileInfo),getDescription(""));
               break;

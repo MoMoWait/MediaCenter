@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Locale;
 
 import org.fourthline.cling.model.meta.RemoteDevice;
+import org.fourthline.cling.support.model.DIDLContent;
+import org.fourthline.cling.support.model.container.Container;
+import org.fourthline.cling.support.model.item.Item;
 import org.json.JSONArray;
 
 import momo.cn.edu.fjnu.androidutils.data.CommonValues;
@@ -25,6 +28,7 @@ import com.rockchips.mediacenter.basicutils.util.HanziToPinyin.Token;
 import com.rockchips.mediacenter.basicutils.bean.LocalMediaInfo;
 import com.rockchips.mediacenter.basicutils.bean.LocalDeviceInfo;
 import com.rockchips.mediacenter.bean.AllFileInfo;
+import com.rockchips.mediacenter.bean.AllUpnpFileInfo;
 import com.rockchips.mediacenter.bean.LocalDevice;
 import com.rockchips.mediacenter.bean.LocalMediaFile;
 import com.rockchips.mediacenter.bean.LocalMediaFolder;
@@ -586,5 +590,94 @@ public class MediaFileUtils {
     		}
     	}
     	return mediaInfos;
+    }
+    
+    
+ 
+    /**
+     * 获取当前目录下与upnpFileInfo对应的同类型的媒体文件列表
+     * @param upnpFileInfo
+     * @param container
+     * @return
+     */
+    public static List<LocalMediaInfo>  getMediaInfosFromAllUpnpFileInfo(AllUpnpFileInfo upnpFileInfo, DIDLContent content, LocalDevice localDevice){
+    	List<LocalMediaInfo> mediaInfos = new ArrayList<LocalMediaInfo>();
+    	List<Item> items = content.getItems();
+    	Log.i(TAG, "getMediaInfosFromAllUpnpFileInfo->items:" + items);
+    	if(items != null && items.size() > 0){
+    		for(Item item : items){
+    			if(upnpFileInfo.getType() == getMediaTypeFromUpnpItem(item)){
+    				LocalMediaInfo localMediaInfo = new LocalMediaInfo();
+    				localMediaInfo.setmFileName(item.getTitle());
+    				localMediaInfo.setmParentPath("");
+    				//localMediaInfo.setmModifyDate((int)mediaFile.getLast_modify_date());
+    				localMediaInfo.setmPinyin(MediaFileUtils.getFullPinYin(item.getTitle()));
+    				localMediaInfo.setmDeviceType(ConstData.DeviceType.DEVICE_TYPE_DMS);
+    				localMediaInfo.setmPhysicId(localDevice.getPhysic_dev_id());
+    				localMediaInfo.setmFileSize(getFileSizeFromUpnpItem(item));
+    				localMediaInfo.setmFiles(0);
+    				localMediaInfo.setmFileType(upnpFileInfo.getType());
+    				localMediaInfo.setmResUri(getPathFromUpnpItem(item));
+    				mediaInfos.add(localMediaInfo);
+    			}
+    		}
+    	}
+    	
+		return mediaInfos;
+    }
+    
+    /**
+     * 从Item中获取媒体文件类型
+     * @param item
+     * @return
+     */
+    public static int getMediaTypeFromUpnpItem(Item item){
+    	String contentFormat = null;
+    	try{
+    		contentFormat = item.getResources().get(0).getProtocolInfo().getContentFormat();
+    	}catch (Exception e){
+    		
+    	}
+    	if(contentFormat != null){
+    		if(contentFormat.contains("audio"))
+    			return ConstData.MediaType.AUDIO;
+    		else if(contentFormat.contains("video"))
+    			return ConstData.MediaType.VIDEO;
+    		else if(contentFormat.contains("image"))
+    			return ConstData.MediaType.IMAGE;
+    		return ConstData.MediaType.UNKNOWN_TYPE;
+    	}
+    	return ConstData.MediaType.UNKNOWN_TYPE;
+    }
+    
+    /**
+     * 从Item获取文件大小
+     * @param item
+     * @return
+     */
+    public static long getFileSizeFromUpnpItem(Item item){
+    	long size = 0;
+    	try{
+    		size = item.getResources().get(0).getSize();
+    	}catch (Exception e){
+    		
+    	}
+    	return size;
+    }
+    
+    /**
+     * 从Item中获取文件路径
+     * @param item
+     * @return
+     */
+    public static String getPathFromUpnpItem(Item item){
+    	String path = "";
+    	try{
+    		path = item.getResources().get(0).getValue();
+    	}catch(Exception e){
+    		
+    	}
+    	
+    	return path;
     }
 }

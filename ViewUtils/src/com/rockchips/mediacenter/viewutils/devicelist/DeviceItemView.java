@@ -54,7 +54,7 @@ public class DeviceItemView extends View implements OnGestureListener
 
     private static final int MAX_OFFSETX = 260;
 
-    private static final int NAMESIZE = 16;
+    private static final int NAMESIZE = 20;
 
     /**
      * 4张分类海报
@@ -106,7 +106,7 @@ public class DeviceItemView extends View implements OnGestureListener
     {  R.drawable.file_icon, R.drawable.photo_icon, R.drawable.music_icon, R.drawable.video_icon};
 
     private static final int[] TEXTIDS =
-    { R.string.file, R.string.photo, R.string.music, R.string.video};
+     { R.string.file, R.string.photo, R.string.view_music, R.string.view_video};
 
     public DeviceItemView(Context context)
     {

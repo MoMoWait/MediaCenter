@@ -7,10 +7,10 @@
     <string name="more_operation_pre">Please press MENU key to more opration\nPlease press UP or DOWN
          key to change devices</string>
     <string name="more_operation_back">Key to more Operation</string>
-    <string name="video">Video</string>
+    <string name="view_video">Video</string>
     <string name="file">File</string>
     <string name="photo">Image</string>
-    <string name="music">Audio</string>
+    <string name="view_music">Audio</string>
     <string name="gridView_not_support">Please layout in XML</string>
     <string name="list_setting_select_tip">Select Other Subtitles</string>
     <string name="list_finish_right_tip">to finish the selection</string>

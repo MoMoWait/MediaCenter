@@ -12,6 +12,7 @@ import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.Shader.TileMode;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
@@ -128,6 +129,8 @@ public final class ImageHelper
         Rect rect = new Rect();
         
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        //设置粗体
+        paint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
         paint.setTextSize(size);
         paint.setColor(color);
         paint.getTextBounds(text, 0, text.length(), rect);
