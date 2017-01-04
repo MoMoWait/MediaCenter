@@ -333,6 +333,7 @@ public class SeekBarLayout extends RelativeLayout
     {
         public void onStopTrackingTouch(MyseekBar seekBar)
         {
+        	Log.i(TAG, "onStopTrackingTouch");
             // TODO Auto-generated method stub
             // mVideoView.seekTo(mprogress);
             // isTrackingTouch = false;
@@ -346,6 +347,7 @@ public class SeekBarLayout extends RelativeLayout
 
         public void onStartTrackingTouch(MyseekBar seekBar)
         {
+        	Log.i(TAG, "onStartTrackingTouch");
             // TODO Auto-generated method stub
             isTrackingTouch = true;
             mSeekBarPopWindowListener.onTrackingTouchChange(isTrackingTouch);
@@ -354,6 +356,8 @@ public class SeekBarLayout extends RelativeLayout
         // 按键操作快进时会回调此方法,通过此方法还可以控制快进的速率倍数，按确定键继续正常播放
         public void onKeyTounch(MyseekBar seekBar)
         {
+        	Log.i(TAG, "onKeyTounch");
+        	Log.i(TAG, "onKeyTounch->stackTrace:" + Log.getStackTraceString(new Throwable()));
             // TODO Auto-generated method stub
             // 网络视频不支持快进快退
             if (getmSeekBar().isFromNetwork())
@@ -376,6 +380,7 @@ public class SeekBarLayout extends RelativeLayout
 
             if (!canAccelerate)
             {
+            	Log.i(TAG, "onKeyTounch->!canAccelerate");
                 switch (mSeekBar.getPlayMode())
                 {
                     case PlayMode.PLAY_TRICK:
@@ -486,6 +491,7 @@ public class SeekBarLayout extends RelativeLayout
         // 拖动和通过左右键 操作快进的话，会回调此方法
         public void onProgressChanged(MyseekBar seekBar, int progress, boolean fromUser, int kprogress)
         {
+        	Log.i(TAG, "onProgressChanged");
             // TODO Auto-generated method stub
             // Log.e(TAG, "seekbarlayout onProgressChanged" + progress + ":" +
             // kprogress);
@@ -495,6 +501,7 @@ public class SeekBarLayout extends RelativeLayout
 
         public float onNan()
         {
+        	Log.i(TAG, "onNan");
             // TODO Auto-generated method stub
             return mSeekBarPopWindowListener.onNan();
         }
@@ -508,6 +515,7 @@ public class SeekBarLayout extends RelativeLayout
         if (mSeekBar == null)
         {
             mSeekBar = (MyseekBar) findViewById(R.id.seekbar);
+            mSeekBar.setSeekBarLayout(this);
         }
 
         if (durationTextView == null)
@@ -926,6 +934,7 @@ public class SeekBarLayout extends RelativeLayout
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event)
     {
+    	Log.i(TAG, "onKeyUp->keyCode:" + keyCode);
         // TODO Auto-generated method stub
         if (mSeekBar.isFromNetwork())
         {
@@ -981,6 +990,7 @@ public class SeekBarLayout extends RelativeLayout
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
+    	Log.i(TAG, "onKeyDown->keyCode:" + keyCode);
         // ���������ϵͳ���?��Ҫ��������¼�������������Ҳ������������?ԭ500ms����һ��)
         switch (keyCode)
         {

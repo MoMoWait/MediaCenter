@@ -39,6 +39,7 @@ public class UpnpFileMediaDataLoadTask extends AsyncTask<UpnpFile, Integer, Inte
 	
 	@Override
 	protected Integer doInBackground(UpnpFile... params) {
+		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 		mUpnpFile = params[0];
 		String photoUrl = null;
 		if(mUpnpFile.getType() == ConstData.MediaType.IMAGE)

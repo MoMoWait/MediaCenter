@@ -43,6 +43,7 @@ public class UpnpFilePreviewLoadTask extends AsyncTask<AllUpnpFileInfo, Integer,
 	
 	@Override
 	protected Integer doInBackground(AllUpnpFileInfo... params) {
+		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 		mFileInfo = params[0];
 		String photoUrl = null;
 		Item item = (Item)mFileInfo.getFile();

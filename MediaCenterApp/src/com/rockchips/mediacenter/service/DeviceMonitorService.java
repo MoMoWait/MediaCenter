@@ -52,6 +52,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.AsyncTask.Status;
+import android.os.Process;
 import android.os.storage.StorageManager;
 import android.os.storage.StorageEventListener;
 import android.support.v4.content.LocalBroadcastManager;
@@ -115,6 +116,15 @@ public class DeviceMonitorService extends Service {
 	 */
 	private Map<String, RemoteDevice> mRemoteDevices = Collections.synchronizedMap(new HashMap<String, RemoteDevice>());
 	
+	/**
+	 * Upnp设备搜索器
+	 */
+	private AsyncTask<String, Integer, Integer> mUpnpSearchTask;
+	
+	/**
+	 * 是否有网络
+	 */
+	private boolean isHaveNetwork;
 	/**
 	 * 设备上下线消息
 	 * @author GaoFei
@@ -184,9 +194,34 @@ public class DeviceMonitorService extends Service {
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				//Log.i(TAG, "DeviceMonitorService->mUpnpConnection on ServiceConnected");
 				mUpnpService = (AndroidUpnpService) service;
-				mUpnpService.getRegistry().addListener(mRegistryListener);
-				//searchUpnpDevice();
-				mUpnpService.getControlPoint().search();
+				if(mUpnpSearchTask != null && mUpnpSearchTask.getStatus() == Status.RUNNING)
+					mUpnpSearchTask.cancel(true);
+				mUpnpSearchTask = new AsyncTask<String, Integer, Integer>(){
+					protected  Integer doInBackground(String[] params) {
+						//删除相关数据
+						LocalDeviceService localDeviceService = new LocalDeviceService();
+						List<LocalDevice> allUpnpDevices = localDeviceService.getAllUpnpDevices();
+						UpnpFolderService upnpFolderService = new UpnpFolderService();
+						UpnpFileService upnpFileService = new UpnpFileService();
+						if(allUpnpDevices != null && allUpnpDevices.size() > 0){
+							for(LocalDevice upnpDevice : allUpnpDevices){
+								synchronized (mCurrProcessMsgs) {
+									mCurrProcessMsgs.put(upnpDevice.getMountPath(), false);
+								}
+								localDeviceService.delete(upnpDevice);
+								upnpFolderService.deleteFoldersByDeviceId(upnpDevice.getDeviceID());
+								upnpFileService.deleteFilesByDeviceId(upnpDevice.getDeviceID());
+							}
+						}
+						return ConstData.TaskExecuteResult.SUCCESS;
+					};
+					
+					protected void onPostExecute(Integer result) {
+						mUpnpService.getRegistry().addListener(mRegistryListener);
+						mUpnpService.getControlPoint().search();
+					};
+				};
+				mUpnpSearchTask.execute();
 				
 			}
 		};
@@ -388,6 +423,8 @@ public class DeviceMonitorService extends Service {
 				unBindServices();
 				try{
 					mUpnpService.getConfiguration().shutdown();
+					mUpnpService.get().shutdown();
+					mUpnpService.getRegistry().shutdown();
 				}catch (Exception e){
 					
 				}
@@ -546,10 +583,16 @@ public class DeviceMonitorService extends Service {
 					mScanDeviceService.execute(new FileScanThread(
 							DeviceMonitorService.this, device));
 				}
-
+				
 				// processSambaDevicesMountMsg(mSmbList);
 				// processNFSDevicesMountMsg(mNFSList);
-
+				
+				boolean haveNetWork = NetWorkUtils.haveInternet(DeviceMonitorService.this);
+				if(isHaveNetwork != haveNetWork){
+					isHaveNetwork = haveNetWork;
+					searchUpnpDevice();
+				}
+				
 				try {
 					Thread.sleep(1000);
 				} catch (Exception e) {
@@ -626,6 +669,8 @@ public class DeviceMonitorService extends Service {
 		public void remoteDeviceRemoved(Registry registry, RemoteDevice device) {
 			if(device.getType().getType().equals("MediaServer")){
 				deleteUpnpDatas(device);
+				//移除远程设备
+				mRemoteDevices.remove(device.getIdentity().getDescriptorURL().toString());
 				Message message = new Message();
 				message.what = DeviceMountMsgs.DEVICE_DOWN;
 				message.arg1 = ConstData.DeviceType.DEVICE_TYPE_DMS;

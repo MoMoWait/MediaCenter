@@ -16,6 +16,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaFormat;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
@@ -182,7 +183,7 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if(keyCode == KeyEvent.KEYCODE_BACK){
-			if(mListFile.getAdapter() instanceof FileListAdapter){
+			if(mListFile.getAdapter() instanceof FileListAdapter && mCurrMediaType == ConstData.MediaType.AUDIOFOLDER){
 				if(mMediaDataLoadTask != null && mMediaDataLoadTask.getStatus() == Status.RUNNING)
 					mMediaDataLoadTask.cancel(true);
 				loadFolders();
@@ -203,14 +204,21 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		loadFiles(mSelectFolder, true);
+		if(mCurrMediaType == ConstData.MediaType.AUDIOFOLDER)
+			loadFiles(mSelectFolder, true);
+		else{
+			loadVideoFiles(true);
+		}
 	}
 	
     public void initDataAndView(){
     	mPregressLoading.setVisibility(View.GONE);
     	mCurrMediaType = getIntent().getIntExtra(ConstData.IntentKey.EXTRAL_MEDIA_TYPE, -1);
     	mCurrDevice = (LocalDevice)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
-    	loadFolders();
+    	if(mCurrMediaType == ConstData.MediaType.AUDIOFOLDER)
+    		loadFolders();
+    	else
+    		loadVideoFiles(false);
     }
 
     public void initEvent(){
@@ -323,7 +331,10 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
 			@Override
 			public void onSuccess(List<LocalMediaFile> mediaFiles) {
 				DialogUtils.closeLoadingDialog();
-				mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id() + ">" + mediaFolder.getName());
+				if(mCurrMediaType == ConstData.MediaType.AUDIOFOLDER)
+					mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id() + ">" + mediaFolder.getName());
+				else
+					mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id());
 				if(mediaFiles != null && mediaFiles.size() > 0){
 					mLayoutContentPage.setVisibility(View.VISIBLE);
 					mLayoutNoFiles.setVisibility(View.GONE);
@@ -339,6 +350,9 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
 					}else{
 						mListFile.setSelection(0);
 					}
+					mListFile.setFocusable(true);
+					mListFile.setFocusableInTouchMode(true);
+					mListFile.requestFocus();
 				}else{
 					mLayoutContentPage.setVisibility(View.GONE);
 					mLayoutNoFiles.setVisibility(View.VISIBLE);
@@ -362,6 +376,14 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
     	}
 	}
 	
+	
+	/**
+	 * 加载所有的视频文件
+	 */
+	private void loadVideoFiles(boolean isBack){
+		LocalMediaFolder videoFolder = new LocalMediaFolder();
+		loadFiles(videoFolder, isBack);
+	}
 	
     protected String getPreviewInfo(LocalMediaFolder mediaFolder)
     {
@@ -487,7 +509,11 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
         intent.putExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE, mCurrDevice);
         intent.putExtra(LocalDeviceInfo.DEVICE_EXTRA_NAME, MediaFileUtils.getDeviceInfoFromDevice(mCurrDevice).compress());
         LocalMediaFileService localMediaFileService = new LocalMediaFileService();
-        List<LocalMediaFile> mediaFiles = localMediaFileService.getFilesByParentPath(mediaFile.getParentPath(), mediaFile.getType());
+        List<LocalMediaFile> mediaFiles = new ArrayList<LocalMediaFile>();
+        if(mCurrMediaType == ConstData.MediaType.AUDIOFOLDER)
+        	mediaFiles = localMediaFileService.getFilesByParentPath(mediaFile.getParentPath(), mediaFile.getType());
+        else
+        	mediaFiles = localMediaFileService.getFilesByMediaType(ConstData.MediaType.VIDEO);
         List<LocalMediaInfo> mediaInfos = MediaFileUtils.getMediaInfoList(mediaFiles);
         List<Bundle> mediaInfoList = new ArrayList<Bundle>();
         for(LocalMediaInfo itemInfo : mediaInfos){

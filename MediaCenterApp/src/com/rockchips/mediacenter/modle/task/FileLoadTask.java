@@ -7,6 +7,7 @@ import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.modle.db.LocalMediaFileService;
 
 import android.os.AsyncTask;
+import android.text.TextUtils;
 
 /**
  * @author GaoFei
@@ -26,11 +27,15 @@ public class FileLoadTask extends AsyncTask<String, Integer, Integer> {
 	
 	@Override
 	protected Integer doInBackground(String... params) {
+		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 		String parentPath = params[0];
 		int mediaType = Integer.parseInt(params[1]);
 		LocalMediaFileService fileService = new LocalMediaFileService();
 		if(params.length == 2){
-			mFiles = fileService.getFilesByParentPath(parentPath, mediaType);
+			if(!TextUtils.isEmpty(parentPath))
+				mFiles = fileService.getFilesByParentPath(parentPath, mediaType);
+			else
+				mFiles = fileService.getFilesByMediaType(mediaType);
 		}else{
 			int maxCount = Integer.parseInt(params[2]);
 			mFiles = fileService.getFilesByParentPath(parentPath, mediaType, maxCount);

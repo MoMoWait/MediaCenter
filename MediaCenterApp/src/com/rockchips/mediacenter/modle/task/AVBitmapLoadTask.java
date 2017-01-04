@@ -33,6 +33,7 @@ public class AVBitmapLoadTask extends AsyncTask<AllFileInfo, Integer, Integer> {
 	
 	@Override
 	protected Integer doInBackground(AllFileInfo... params) {
+		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 		/**
 		 * 媒体信息元数据获取器
 		 * */

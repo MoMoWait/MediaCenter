@@ -36,6 +36,7 @@ public class FileMediaDataLoadTask extends AsyncTask<LocalMediaFile, Integer, In
 	
 	@Override
 	protected Integer doInBackground(LocalMediaFile... params) {
+		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 		Log.i(TAG, "doInBackground");
 		/**
 		 * 媒体信息元数据获取器

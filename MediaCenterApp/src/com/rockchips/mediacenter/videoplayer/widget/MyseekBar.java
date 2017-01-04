@@ -19,10 +19,11 @@ import android.widget.AbsSeekBar;
 
 import com.rockchips.mediacenter.R;
 import com.rockchips.mediacenter.basicutils.constant.Constant.PlayMode;
+import com.rockchips.mediacenter.videoplayer.VideoPlayerActivity;
 
 public class MyseekBar extends AbsSeekBar
 {
-    private static final String TAG = "MediaCenterApp";
+    private static final String TAG = "MyseekBar";
     
     private Bitmap imgPlaying, imgSeekbar_background,imgSeekbar_Speed, imgSeekbar_Played, imgThumb_Pressed, imgThumb_Stop,
         imgSeekbar_Played1, imgSeekbar_Cur_Up, imgSeekbar_Cur_Down;
@@ -134,6 +135,9 @@ public class MyseekBar extends AbsSeekBar
     
     private static final int ACCELERATE_BASE_DURATION = 8000;
     
+    /**fly.gao 快进，快退步长度,单位毫秒*/
+    private static final int SEEK_STEP_LENGTH = 5000;
+    
     // zkf61715 是否支持快进快退
     private boolean canAccelerate = true;
     public void canAccelerate(boolean canAccelerate)
@@ -149,6 +153,11 @@ public class MyseekBar extends AbsSeekBar
     private int lastKeycode;
     
     private int pos;
+    
+    /**
+     * 父布局
+     */
+    private SeekBarLayout mSeekBarLayout;
     
     public boolean hasKeyUp(){
         return hasKeyUp;
@@ -736,6 +745,7 @@ public class MyseekBar extends AbsSeekBar
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
+    	Log.i(TAG, "onKeyDown->keyCode:" + keyCode);
         float Progress = 0;
         
         // Log.e(TAG, "scale --->" + scale + "Kscale--->" + Kscale + "X-->" +
@@ -1107,6 +1117,7 @@ public class MyseekBar extends AbsSeekBar
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event)
     {
+    	Log.i(TAG, "onKeyUp");
         if (isFromNetwork) return super.onKeyUp(keyCode, event);
         hasKeyUp = true;
         if(needSeek){
@@ -1137,7 +1148,16 @@ public class MyseekBar extends AbsSeekBar
                 switch (playMode)
                 {
                     case PlayMode.PLAY_TRICK:
-                        if (Xacceleration == 64)
+                    	VideoPlayerActivity videoPlayerActivity = (VideoPlayerActivity)context;
+                    	int totalDuration = videoPlayerActivity.getDuration();
+                    	int currPlayPosition = videoPlayerActivity.getCurrentPosition();
+                    	if(currPlayPosition > 0 && totalDuration > 0){
+                    		int targetPositon = currPlayPosition + SEEK_STEP_LENGTH;
+                    		if(targetPositon > totalDuration)
+                    			targetPositon = totalDuration;
+                    		videoPlayerActivity.seekToNow(targetPositon);
+                    	}
+/*                        if (Xacceleration == 64)
                         {
                             break;
                         }
@@ -1150,17 +1170,19 @@ public class MyseekBar extends AbsSeekBar
                         if (mHandler == null)
                         {
                             mHandler = new Handler();
-                        }
+                        }*/
 //                        if (!isBflush())
 //                        {
 //                            return true;
 //                        }
-                        reMove();
-                        if (mHandler != null)
-                        {
-                            rStart();
-                        }
-                        needUpdate = false;
+                        //停止计时器
+                        //reMove();
+                       // if (mHandler != null)
+                        //{
+                        	//启动定时器
+                        //    rStart();
+                       // }
+                       // needUpdate = false;
                         break;
                     case PlayMode.PLAY_SEEK:
                         onKeyTouch();
@@ -1174,7 +1196,16 @@ public class MyseekBar extends AbsSeekBar
                 switch (playMode)
                 {
                     case PlayMode.PLAY_TRICK:
-                        if(Xacceleration == -64)
+                    	VideoPlayerActivity videoPlayerActivity = (VideoPlayerActivity)context;
+                    	int totalDuration = videoPlayerActivity.getDuration();
+                    	int currPlayPosition = videoPlayerActivity.getCurrentPosition();
+                    	if(currPlayPosition > 0 && totalDuration > 0){
+                    		int targetPositon = currPlayPosition - SEEK_STEP_LENGTH;
+                    		if(targetPositon < 0)
+                    			targetPositon = 0;
+                    		videoPlayerActivity.seekToNow(targetPositon);
+                    	}
+                       /* if(Xacceleration == -64)
                         {
                             break;
                         }
@@ -1196,7 +1227,7 @@ public class MyseekBar extends AbsSeekBar
                         if (mHandler != null)
                         {
                             rStart();
-                        }
+                        }*/
                         break;
                     case PlayMode.PLAY_SEEK:
                         onKeyTouch();
@@ -1250,6 +1281,8 @@ public class MyseekBar extends AbsSeekBar
         public void run()
         {
                 update();
+           //     update();
+            //   mSeekBarLayout.onKeyDown(KeyEvent.KEYCODE_DPAD_CENTER, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_CENTER));
             //Log.e("onkey", "update now TTTT");
             if (mHandler != null)
             {
@@ -2107,4 +2140,11 @@ public class MyseekBar extends AbsSeekBar
     	isFirst = true;
     }
     /****/
+    
+    /**
+     * 设置父布局
+     */
+    public void setSeekBarLayout(SeekBarLayout seekBarLayout){
+    	mSeekBarLayout = seekBarLayout;
+    }
 }

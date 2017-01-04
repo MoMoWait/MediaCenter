@@ -161,11 +161,11 @@
             </intent-filter>
         </receiver>
         
-         <receiver android:name="com.rockchips.mediacenter.service.NetWorkChangeReceiver">
+         <!-- <receiver android:name="com.rockchips.mediacenter.service.NetWorkChangeReceiver">
             <intent-filter >
                 <action android:name= "android.net.conn.CONNECTIVITY_CHANGE"/>
             </intent-filter>
-        </receiver>
+        </receiver> -->
         
         <service android:name="com.zxt.dlna.dmr.RenderPlayerService" />
         <service android:name="org.fourthline.cling.android.AndroidUpnpServiceImpl"/>

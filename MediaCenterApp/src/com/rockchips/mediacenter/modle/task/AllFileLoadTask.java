@@ -29,6 +29,7 @@ public class AllFileLoadTask extends AsyncTask<String, Integer, Integer> {
 	
 	@Override
 	protected Integer doInBackground(String... params) {
+		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 		String dirPath = params[0];
 		File dirFile = new File(dirPath);
 		AllFileInfo allFileInfo;

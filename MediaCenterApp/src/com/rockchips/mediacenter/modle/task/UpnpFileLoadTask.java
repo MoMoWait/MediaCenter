@@ -26,11 +26,15 @@ public class UpnpFileLoadTask extends AsyncTask<String, Integer, Integer> {
 	
 	@Override
 	protected Integer doInBackground(String... params) {
+		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 		String deviceId = params[0];
 		String parentId = params[1];
 		int fileType = Integer.parseInt(params[2]);
 		UpnpFileService upnpFileService = new UpnpFileService();
-		mFiles = upnpFileService.getFilesByDeviceIdAndParentId(deviceId, parentId, fileType);
+		if(fileType == ConstData.MediaType.AUDIO || fileType == ConstData.MediaType.IMAGE)
+			mFiles = upnpFileService.getFilesByDeviceIdAndParentId(deviceId, parentId, fileType);
+		else
+			mFiles = upnpFileService.getFilesByDeviceIdAndMediaType(deviceId, fileType);
 		//LocalMediaFileService fileService = new LocalMediaFileService();
 		//mFiles = fileService.getFilesByParentPath(parentPath, mediaType);
 		return ConstData.TaskExecuteResult.SUCCESS;

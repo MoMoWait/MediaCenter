@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.TreeMap;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -714,6 +715,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
+    	
         Log.d(TAG, "onKeyDown, keyCode:" + keyCode + ", event:" + event);
 
         // 对音量键不进行按键累积，避免调节音量出现卡顿
@@ -868,10 +870,10 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event)
     {
+    	Log.i(TAG, "onKeyUp->keyCode:" + keyCode);
         boolean retkeyup = mSbpw.onKeyUp(keyCode, event);
         mUIHandler.removeMessages(MSG_PROGRESS_CHANGED);
         mUIHandler.sendEmptyMessage(MSG_PROGRESS_CHANGED);
-
         return retkeyup;
     }
 
@@ -2868,7 +2870,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     @Override
     protected void loadResource()
     {
-        // TODO
         if (PlatformConfig.isSupportHisiMediaplayer())
         {
             setContentView(R.layout.video_video_fullscreen_hisisdk17);
@@ -4030,7 +4031,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
      * @param msec 时间
      * @see [类、类#方法、类#成员]
      */
-    private void seekToNow(int msec)
+    public void seekToNow(int msec)
     {
         if (mVVAdapter != null)
         {
@@ -4654,4 +4655,28 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             play();
         }
     }
+    
+    /**
+     * @author fly.gao 
+     * 返回当前播放位置
+     * @return
+     */
+    public int getCurrentPosition(){
+    	if(mVVAdapter != null)
+    		return mVVAdapter.getCurrentPosition();
+    	return -1;
+    }
+    
+    /**
+     * @author fly.gao
+     * 返回当前视频的长度
+     * @return
+     */
+    public int getDuration(){
+    	if(mVVAdapter != null)
+    		return mVVAdapter.getDuration();
+    	return -1;
+    }
+    
+    
 }

@@ -162,7 +162,7 @@ public class UpnpFileListActivity extends AppBaseActivity  implements OnItemSele
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if(keyCode == KeyEvent.KEYCODE_BACK){
-			if(mListFile.getAdapter() instanceof UpnpFileListAdapter){
+			if(mListFile.getAdapter() instanceof UpnpFileListAdapter && mCurrMediaType == ConstData.MediaType.AUDIOFOLDER){
 				if(mUpnpFileMediaDataLoadTask != null && mUpnpFileMediaDataLoadTask.getStatus() == Status.RUNNING)
 					mUpnpFileMediaDataLoadTask.cancel(true);
 				loadFolders();
@@ -182,7 +182,10 @@ public class UpnpFileListActivity extends AppBaseActivity  implements OnItemSele
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		//loadFiles(mSelectFolder, true);
-		loadFiles(mSelectFolder, true);
+		if(mCurrMediaType == ConstData.MediaType.AUDIOFOLDER)
+			loadFiles(mSelectFolder, true);
+		else
+			loadVideoFiles(true);
 	}
 	
     public void initDataAndView(){
@@ -199,7 +202,11 @@ public class UpnpFileListActivity extends AppBaseActivity  implements OnItemSele
         .setLoadingDrawableId(R.drawable.image_browser_default)
         .setFailureDrawableId(R.drawable.image_browser_default)
         .build();
-    	loadFolders();
+    	if(mCurrMediaType == ConstData.MediaType.AUDIOFOLDER)
+    		loadFolders();
+    	else
+    		loadVideoFiles(false);
+    	
     }
 
     public void initEvent(){
@@ -255,6 +262,15 @@ public class UpnpFileListActivity extends AppBaseActivity  implements OnItemSele
     	return (mListFile.getAdapter() instanceof UpnpFolderListAdapter);
     }
     
+    
+    /**
+     * 加载视频文件
+     */
+    private void loadVideoFiles(boolean isBack){
+    	UpnpFolder upnpFolder = new UpnpFolder();
+    	loadFiles(upnpFolder, isBack);
+    }
+    
 	/**
 	 * 加载文件夹列表
 	 */
@@ -307,7 +323,10 @@ public class UpnpFileListActivity extends AppBaseActivity  implements OnItemSele
 			@Override
 			public void onSuccess(List<UpnpFile> mediaFiles) {
 				DialogUtils.closeLoadingDialog();
-				mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id() + ">" + mediaFolder.getName());
+				if(mCurrMediaType == ConstData.MediaType.AUDIOFOLDER)
+					mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id() + ">" + mediaFolder.getName());
+				else
+					mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id());
 				//Log.i(TAG, "loadFiles->onSuccess->mediaFiles:" + mediaFiles);
 				if(mediaFiles != null && mediaFiles.size() > 0){
 					mLayoutContentPage.setVisibility(View.VISIBLE);
@@ -324,6 +343,9 @@ public class UpnpFileListActivity extends AppBaseActivity  implements OnItemSele
 					}else{
 						mListFile.setSelection(0);
 					}
+					mListFile.setFocusable(true);
+					mListFile.setFocusableInTouchMode(true);
+					mListFile.requestFocus();
 				}else{
 					mLayoutContentPage.setVisibility(View.GONE);
 					mLayoutNoFiles.setVisibility(View.VISIBLE);
@@ -478,7 +500,11 @@ public class UpnpFileListActivity extends AppBaseActivity  implements OnItemSele
         intent.putExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE, mCurrDevice);
         intent.putExtra(LocalDeviceInfo.DEVICE_EXTRA_NAME, MediaFileUtils.getDeviceInfoFromDevice(mCurrDevice).compress());
         UpnpFileService upnpFileService = new UpnpFileService();
-        List<UpnpFile> mediaFiles = upnpFileService.getFilesByDeviceIdAndParentId(mediaFile.getDeviceID(), mediaFile.getParentId(), mediaFile.getType());
+        List<UpnpFile> mediaFiles = new ArrayList<UpnpFile>();
+        if(mCurrMediaType == ConstData.MediaType.AUDIOFOLDER)
+        	mediaFiles = upnpFileService.getFilesByDeviceIdAndParentId(mediaFile.getDeviceID(), mediaFile.getParentId(), mediaFile.getType());
+        else
+        	mediaFiles = upnpFileService.getFilesByDeviceIdAndMediaType(mediaFile.getDeviceID(), ConstData.MediaType.VIDEO);
         List<LocalMediaInfo> mediaInfos = MediaFileUtils.getMediaInfoListFromUpnpFileList(mediaFiles);
         List<Bundle> mediaInfoList = new ArrayList<Bundle>();
         for(LocalMediaInfo itemInfo : mediaInfos){

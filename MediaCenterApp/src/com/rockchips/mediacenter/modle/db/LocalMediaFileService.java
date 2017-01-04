@@ -4,11 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.xutils.db.sqlite.WhereBuilder;
+import org.xutils.ex.DbException;
 
 import com.rockchips.mediacenter.application.MediaCenterApplication;
 import com.rockchips.mediacenter.bean.LocalMediaFile;
 import com.rockchips.mediacenter.data.ConstData;
 
+/**
+ * 本地媒体文件数据库操作
+ * @author GaoFei
+ *
+ */
 public class LocalMediaFileService extends AppBeanService<LocalMediaFile> {
 
 	@Override
@@ -92,4 +98,19 @@ public class LocalMediaFileService extends AppBeanService<LocalMediaFile> {
 	
 	}
 	
+	
+	/**
+	 * 根据文件类型获取文件列表
+	 * @param mediaType
+	 * @return
+	 */
+	public List<LocalMediaFile> getFilesByMediaType(int mediaType){
+		List<LocalMediaFile> mediaFiles = new ArrayList<LocalMediaFile>();
+		try {
+			mediaFiles = MediaCenterApplication.mDBManager.selector(LocalMediaFile.class).where("type", "=" , mediaType).findAll();
+		} catch (DbException e) {
+			e.printStackTrace();
+		}
+		return mediaFiles;
+	}
 }

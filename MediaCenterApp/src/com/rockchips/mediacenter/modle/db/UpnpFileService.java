@@ -61,4 +61,22 @@ public class UpnpFileService extends AppBeanService<UpnpFile> {
 		}
 		return upnpFiles;
 	}
+	
+	/**
+	 * 通过设备ID和媒体文件类型获取所有文件
+	 * @param deviceId
+	 * @param mediaType
+	 * @return
+	 */
+	public List<UpnpFile> getFilesByDeviceIdAndMediaType(String deviceId, int mediaType){
+		List<UpnpFile> upnpFiles = new ArrayList<UpnpFile>();
+		try {
+			upnpFiles = MediaCenterApplication.mDBManager.selector(UpnpFile.class).
+					where("deviceID", "=", deviceId).and("type", "=", mediaType).findAll();
+		} catch (DbException e) {
+			e.printStackTrace();
+			Log.i(TAG, "getFilesByDeviceIdAndParentId->exception:" + e);
+		}
+		return upnpFiles;
+	}
 }
