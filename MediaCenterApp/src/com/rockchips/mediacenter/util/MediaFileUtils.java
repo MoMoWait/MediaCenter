@@ -56,7 +56,7 @@ public class MediaFileUtils {
 		int startIndex = dotIndex + 1;
 		if(startIndex >= path.length())
 			return ConstData.MediaType.UNKNOWN_TYPE;
-		String tailEx = path.substring(startIndex);
+		String tailEx = path.substring(startIndex).toLowerCase();
 		if(Arrays.binarySearch(ConstData.AUDIO_SUFFIX, tailEx) >= 0){
 			return ConstData.MediaType.AUDIO;
 		}

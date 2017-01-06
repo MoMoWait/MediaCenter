@@ -237,11 +237,11 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	 * 加载文件夹列表
 	 */
 	public void loadFiles(){
-		DialogUtils.showLoadingDialog(this, false);
+		//DialogUtils.showLoadingDialog(this, false);
 		mAllFileLoadTask = new AllFileLoadTask(new AllFileLoadTask.CallBack() {
 			@Override
 			public void onGetFiles(List<AllFileInfo> fileInfos) {
-				DialogUtils.closeLoadingDialog();
+				//DialogUtils.closeLoadingDialog();
 				mTextPathTitle.setText(mCurrFolder.substring(mCurrFolder.lastIndexOf("/") + 1, mCurrFolder.length()));
 				if(fileInfos != null && fileInfos.size() > 0){
 					mLayoutContentPage.setVisibility(View.VISIBLE);
@@ -259,7 +259,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 				}
 			}
 		});
-		mAllFileLoadTask.execute(mCurrFolder);
+		mAllFileLoadTask.run(mCurrFolder);
 	}
 	
 	

@@ -56,4 +56,13 @@ public class AllFileLoadTask extends AsyncTask<String, Integer, Integer> {
 		mCallBack.onGetFiles(mAllFileInfos);
 	}
 	
+	
+	/**
+	 * 同步调用task
+	 * @param params
+	 */
+	public void run(String... params){
+		doInBackground(params);
+		mCallBack.onGetFiles(mAllFileInfos);
+	}
 }
