@@ -581,12 +581,6 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
             mp.setOnErrorListener(mOnErrorListener);
             mp.setOnCompletionListener(mcompleteListener);
             mp.setOnSeekCompleteListener(mseekListener);
-//            mp.setOnInfoListener(mInfoListener);
-//            mp.setOnFastBackwordCompleteListener(mFB);
-//            mp.setFastForwardCompleteListener(mFF);
-            
-            //获取音轨 字幕信息
-//            setAudioinfos(getmediaPlayerAdapter().getAudioInfos());
             setSubTrackInfo();
             if(getAudioinfos() == null)
             {
@@ -596,20 +590,19 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
             {
             	maudioInfoOfVidio = getAudioinfos().get(0);
             }
-            int iret = getmediaPlayerAdapter().getSubInfos(subinfos);
+           /* int iret = getmediaPlayerAdapter().getSubInfos(subinfos);
             if(iret != 0)
             {
                 Log.e(TAG, "get Subinfos failed, return null");
-            }
+            }*/
             
 //            videoOrigHeight = getVideoHeight();
 //            videoOrigWidth = getVideoWidth();
 //            Log.d(TAG, "onPrepared videoOrigHeight :" + videoOrigHeight + ", videoOrigWidth " + videoOrigWidth);            
-            if(mSH != null)
+       /*     if(mSH != null)
             {
-//                mSH.setFixedSize(getVideoWidth(), getVideoHeight());
                 A40HisiInvoke.setSubDisplay(mp, mSH);
-            }
+            }*/
             mCustomPrepareListener.onPrepared(getmediaPlayerAdapter());
             
         }
@@ -1025,7 +1018,8 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
             MediaPlayer.TrackInfo[] trackInfo = mMediaPlayer.getTrackInfo();
             int trackType = -1;
             int s = 1;
-            String language = null;            
+            String language = null;
+            //int subTitleId = 0;
             Log.d(TAG,"trackInfo.length = " + trackInfo.length);
             for (int i = 0; i < trackInfo.length; i++) 
             {
@@ -1045,9 +1039,30 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
                     audioinfos.add(audioInfo);
                     audioTrackMap.put(language, i);
                 }
+                //内置字幕
                 else if (trackType == MediaPlayer.TrackInfo.MEDIA_TRACK_TYPE_TIMEDTEXT)
                 {
+                	//这里获取的是字幕信息
+                	SubInfo subInfo  = new SubInfo();
+                	subInfo.setLanguage(trackInfo[i].getLanguage());
+                	subInfo.setFormat(trackInfo[i].getFormat().toString());
+                	subInfo.setSubid(i);
+                	subInfo.setIsExtra(false);
+                	//trackInfo[i].getLanguage();
+                	subinfos.add(subInfo);
                 }
+                //外挂字幕
+                else if(trackType == MediaPlayer.TrackInfo.MEDIA_TRACK_TYPE_SUBTITLE){
+                	//这里获取的是字幕信息
+                	SubInfo subInfo  = new SubInfo();
+                	subInfo.setLanguage(trackInfo[i].getLanguage());
+                	subInfo.setFormat(trackInfo[i].getFormat().toString());
+                	subInfo.setSubid(i);
+                	subInfo.setIsExtra(true);
+                	//trackInfo[i].getLanguage();
+                	subinfos.add(subInfo);
+                }
+                
             }
         }
     }

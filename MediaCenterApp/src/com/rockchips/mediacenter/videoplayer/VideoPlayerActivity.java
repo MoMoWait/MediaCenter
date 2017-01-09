@@ -34,9 +34,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.TimedText;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -358,7 +362,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         mCurrentDevice = (LocalDevice)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
         initVideoPlayPreferences();
         initViews();
-
+        //initEvent();
         // 初始化杜比的弹出视窗
         doblyPopWin = new DoblyPopWin(this);
 
@@ -483,6 +487,42 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         mToast = Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT);
     }
 
+    
+    private void initEvent(){
+    	MediaPlayer originMediaPlayer = mMediaPlayer.getOriginMediaPlayer();
+    	originMediaPlayer.setOnTimedTextListener(new  MediaPlayer.OnTimedTextListener() {
+			
+			@Override
+			public void onTimedText(MediaPlayer mp, TimedText text) {
+				if(mSubHolder != null){
+					Canvas canvas = null;
+					try {
+					    canvas = mSubHolder.lockCanvas();
+					    synchronized (mSubHolder) {
+					        //canvas.drawColor(Color.WHITE);
+					        //canvas.drawBitmap(enemy1, enemy1X, enemy1Y, null);
+					        Paint paint = new Paint();
+					        paint.setColor(Color.WHITE);
+					        float textWidth = paint.measureText(text.getText());
+					        float left = (SCREEN_WIDTH - textWidth) / 2;
+					        if(left < 0){
+					        	left = 0;
+					        }
+					        canvas.drawText(text.getText(), left, SCREEN_HEIGHT - SizeUtils.dp2px(VideoPlayerActivity.this, 40), paint);
+					        //canvas.drawText(text.getText(), Scr, 100, paint);
+					    }
+					} catch (Exception e) {
+					    Log.e(TAG, "run() lockCanvas()" + e);
+					} finally {
+					    if (canvas != null) {
+					        mSubHolder.unlockCanvasAndPost(canvas);
+					    }
+					}
+				}
+			}
+		});
+    }
+    
     @Override
     protected void onRestart()
     {
@@ -501,7 +541,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
         if (sub != null)
         {
-            subId = sub.getSubId();
+            //subId = sub.getSubId();
 //            soundId = sub.getSoundId();
             subNum = sub.getSubNum();
             soundNum = sub.getSoundNum();
@@ -1563,10 +1603,13 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         public void onPrepared(IMediaPlayerAdapter mp)
         {            
             mMediaPlayer = mp;
-            if (mVVAdapter.getSubtitleList() != null && mVVAdapter.getSubtitleList().size() > 0)
+         /*   if (mVVAdapter.getSubtitleList() != null && mVVAdapter.getSubtitleList().size() > 0)
             {
                 mVVAdapter.showSubtitle(true);
             }
+            */
+            
+            initEvent();
             
             if (!PlatformConfig.isSupportHisiMediaplayer())
             {
@@ -2147,10 +2190,10 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         if (isMenuNeedShow)
         {
             // Log.e("subinfolog", "onMenuOpened");
-            if (mVVAdapter.getSubtitleList().size() > 0)
+           /* if (mVVAdapter.getSubtitleList().size() > 0)
             {
                 subId = mVVAdapter.getCurrentSudId();
-            }
+            }*/
 
             if (mVVAdapter.getAudioinfos() != null && mVVAdapter.getAudioinfos().size() > 0)
             {
@@ -2201,10 +2244,10 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         if (isMenuNeedShow)
         {
             // Log.e("subinfolog", "onMenuOpened");
-            if (mVVAdapter.getSubtitleList().size() > 0)
+            /*if (mVVAdapter.getSubtitleList().size() > 0)
             {
                 subId = mVVAdapter.getCurrentSudId();
-            }
+            }*/
 
             if (mVVAdapter.getAudioinfos() != null && mVVAdapter.getAudioinfos().size() > 0)
             {
@@ -2420,51 +2463,53 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         MenuItemImpl item = null;
         String str = getApplication().getString(R.string.video_hint_subtitle_id);
 
-        int order = 0;
+        //int order = 0;
 
         if (mVVAdapter != null)
         {
             List<SubInfo> list1 = mVVAdapter.getSubtitleList();
-
-            if (list1 == null)
+            Log.i(TAG, "loadMenuSubTitle->list1:" + list1);
+            if (list1 == null || list1.size() == 0)
             {
-                Log.e(TAG, "loadMenuSubTitle get subtile list is null!");
+                Log.e(TAG, "loadMenuSubTitle get subtile list is null or empty!");
             }
             else
             {
                 for (int i = 0; i < list1.size(); i++)
                 {
-                    order = i;
+                   // order = i;
                     SubInfo tmp = list1.get(i);
 
                     if (tmp != null)
                     {
                         String title = getSubTitleName(tmp);
 
-                        item = new MenuItemImpl(this, 1, PopMenuSelectType.SUBTITLE_INNER_SET, R.drawable.video_menu_subtitile, 1, order, title);
+                        item = new MenuItemImpl(this, i, PopMenuSelectType.SUBTITLE_INNER_SET, R.drawable.video_menu_subtitile, 1, tmp.getSubid(), title);
                         itemImpls.add(item);
                     }
                     else
                     {
 
-                        item = new MenuItemImpl(this, 1, PopMenuSelectType.SUBTITLE_INNER_SET, R.drawable.video_menu_subtitile, 1, order, str + "."
+                        item = new MenuItemImpl(this, i, PopMenuSelectType.SUBTITLE_INNER_SET, R.drawable.video_menu_subtitile, 1, tmp.getSubid(), str + "."
                                 + String.valueOf(i + 1));
                         itemImpls.add(item);
                     }
+                   // order++;
                 }
-                order++;
+                
+                // 把播放模式面板加入到
+                menuCgy.setMenuItems(itemImpls);
+                menuCgy.setSelectIndex(subId);
+                mPopMenu.addMenuCategory(menuCgy);
             }
         }
 
         // 其它
-        item = new MenuItemImpl(this, 1, PopMenuSelectType.SUBTITLE_OUTTER_SET, R.drawable.video_menu_subtitile, 1, order, getResources().getString(
+      /*  item = new MenuItemImpl(this, 1, PopMenuSelectType.SUBTITLE_OUTTER_SET, R.drawable.video_menu_subtitile, 1, order, getResources().getString(
                 R.string.video_hint_subtitle_state_other));
-        itemImpls.add(item);
+        itemImpls.add(item);*/
 
-        // 把播放模式面板加入到
-        menuCgy.setMenuItems(itemImpls);
-        menuCgy.setSelectIndex(0);
-        mPopMenu.addMenuCategory(menuCgy);
+      
     }
 
     private int innerSubIndex = 0;
@@ -2517,12 +2562,12 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
      * 
      * @see [类、类#方法、类#成员]
      */
-    public void setSubtitle(int index)
+    public void setSubtitle(int trackIndex, int menuIndex)
     {
         Log.d(TAG, "subtitle 1 isMenuNeedShow:" + isMenuNeedShow);
         Log.d(TAG, "subtitle 1 subNum:" + subNum);
         // 防止重入
-        if (index == subId)
+        if (trackIndex == subId)
         {
             Log.d(TAG, "subtitle index == subId!");
             return;
@@ -2531,9 +2576,12 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         {
             if (mVVAdapter != null)
             {
-                Log.d(TAG, "subtitle 1 subNum:" + subNum);
+            	MediaPlayer mediaPlayer = mMediaPlayer.getOriginMediaPlayer();
+            	mediaPlayer.selectTrack(trackIndex);
+            	subId = menuIndex;
+               /* Log.d(TAG, "subtitle 1 subNum:" + subNum);
                 mVVAdapter.setSubId(index);
-                subId = mVVAdapter.getCurrentSudId();
+                subId = mVVAdapter.getCurrentSudId();*/
             }
 
         }
@@ -4291,6 +4339,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     @Override
     public void onSelectType(MenuItemImpl menuItem)
     {
+    	Log.i(TAG, "onSelectType");
         if (null == menuItem)
         {
             return;
@@ -4347,7 +4396,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             else if (mCurrSelectType == PopMenuSelectType.SUBTITLE_INNER_SET)
             {
                 Log.d(TAG, "set the subtitle = " + index);
-                setSubtitle(index);
+                setSubtitle(index, menuItem.getItemId());
             }
             else if (mCurrSelectType == PopMenuSelectType.SUBTITLE_OUTTER_SET)
             {

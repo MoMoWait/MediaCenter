@@ -7,6 +7,7 @@ import com.rockchips.mediacenter.portable.bean.AudioInfoOfVideo;
 import com.rockchips.mediacenter.portable.bean.SubInfo;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Parcel;
 import android.view.SurfaceHolder;
@@ -180,6 +181,12 @@ public interface IMediaPlayerAdapter {
 	boolean setAudioChannelMode(int channelMode);
 
 	boolean isDolbyEnabled();
+	
+	/**
+	 * 获取系统自带的MediaPlayer
+	 * @return
+	 */
+	MediaPlayer getOriginMediaPlayer();
 	
 	public static final int MEDIAPLAYER_GET_WHETHER_DOBLY = 972;
 }

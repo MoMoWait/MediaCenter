@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Parcel;
 import android.util.Log;
@@ -746,6 +747,10 @@ public class HisiMediaPlayerAdapter implements IMediaPlayerAdapter
 		}
 		Log.d(TAG, " getParcelParameter isDobly= " + isDobly);
 		return ((isDobly == 1) ? true : false);
+	}
+	
+	public MediaPlayer getOriginMediaPlayer(){
+		return null;
 	}
 
 }

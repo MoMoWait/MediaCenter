@@ -52,9 +52,12 @@ public class OrigMediaPlayerAdapter implements IMediaPlayerAdapter
 
     }
     
-    /**
-     * 获取视频中的音频信息
-     */
+    
+    
+    public MediaPlayer getOriginMediaPlayer(){
+    	return mediaplayer;
+    }
+    
     /**
      * 获取视频中的音频信息
      */
