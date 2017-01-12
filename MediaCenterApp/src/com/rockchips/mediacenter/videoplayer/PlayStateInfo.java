@@ -220,18 +220,18 @@ public class PlayStateInfo
          */
         if (playMode == Constant.MediaPlayMode.MP_MODE_ALL_CYC)
         {
-            return false;
-        }
-        
-        if (playMode == Constant.MediaPlayMode.MP_MODE_RONDOM)
-        {
             return true;
         }
         
-        if (playMode == Constant.MediaPlayMode.MP_MODE_SINGLE_CYC)
+        /*if (playMode == Constant.MediaPlayMode.MP_MODE_RONDOM)
         {
             return true;
-        }
+        }*/
+        
+     /*   if (playMode == Constant.MediaPlayMode.MP_MODE_SINGLE_CYC)
+        {
+            return true;
+        }*/
         
         return false;
     }
@@ -847,6 +847,8 @@ public class PlayStateInfo
             return null;
         }
         
+        if(playMode == Constant.MediaPlayMode.MP_MODE_SINGLE_CYC)
+        	return mCurrentMBI;
         synchronized (this)
         {
             while (mMediaList.size() > 0 && !isStop())

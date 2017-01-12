@@ -27,6 +27,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
 
+import android.R.anim;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -391,8 +392,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         }
         else
         {
-            // 不是myMedia过来的请求
-            setPlayMode(Constant.MediaPlayMode.MP_MODE_SINGLE);
+            // 不是myMedia过来的请求,默认全体循环
+            setPlayMode(Constant.MediaPlayMode.MP_MODE_ALL_CYC);
         }
 
         if (mUIHandler == null)
@@ -1048,8 +1049,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
      */
     private void showCannotPlayDialog(String tip, final boolean isNextPlay){
     	Log.i(TAG, "showCannotPlayDialog->tip:" + tip);
-    	if(mErrorTipDialog != null && mErrorTipDialog.isShowing())
-    		return;
+    	//if(mErrorTipDialog != null && mErrorTipDialog.isShowing())
+    	//	return;
     	mErrorTipDialog = new AlertDialog.Builder(this).setMessage(tip).setCancelable(false).create();
     	int displayTime = isNextPlay ? 1000 : 2000;
     	new Handler().postDelayed(new Runnable() {
@@ -1057,10 +1058,12 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 			@Override
 			public void run() {
 				if(isNextPlay){
+					 mErrorTipDialog.dismiss();
 					 mPlayListLayout.setCurrentPlayIndex(mPlayStateInfo.getCurrentIndex());
 		             setMediaData();
 		             play();
 				}else{
+					mErrorTipDialog.dismiss();
 					finishPlay();
 				}
 			}
@@ -1451,6 +1454,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     {
         public boolean onError(IMediaPlayerAdapter mp, int what, int extra)
         {
+        	//错误提示对话框已经存在，不再上报错误
+        	if(mErrorTipDialog != null && mErrorTipDialog.isShowing())
+        		return true;
             Log.d(TAG, "onErrorListener -- onError() Error Code:" + what + "  extra:" + extra);
             int messageId = R.string.VideoView_error_title;
             if (what == MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK) {
@@ -1890,6 +1896,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
     public void setPlayMode(int playMode)
     {
+    	//Log.i(TAG, "setPlayMode->stackTrace:" + android.util.Log.getStackTraceString(new Throwable()));
         mPlayStateInfo.setPlayMode(playMode);
     }
 
@@ -4439,8 +4446,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             else if (mCurrSelectType == PopMenuSelectType.CYCLE_PLAY_CLOSE)
             {
                 Log.d(TAG, "change to play single.");
-                setPlayMode(Constant.MediaPlayMode.MP_MODE_SINGLE);
-                PlayerStateRecorder.getInstance().put(PlayerStateRecorder.VIDEO_PLAY_MODE, Constant.MediaPlayMode.MP_MODE_SINGLE);
+                setPlayMode(Constant.MediaPlayMode.MP_MODE_SINGLE_CYC);
+                PlayerStateRecorder.getInstance().put(PlayerStateRecorder.VIDEO_PLAY_MODE, Constant.MediaPlayMode.MP_MODE_SINGLE_CYC);
                 saveCycPlayMode();
             }
             /** 设置字幕 **/
@@ -4593,7 +4600,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
     private static final String FIRST_START_VIDEOPLAY = "FIRST_START_VIDEOPLAY";
 
-    private static final int DEFAULT_CYCLE_PLAY_MODE_INDEX = Constant.MediaPlayMode.MP_MODE_SINGLE;
+    //默认列表循环播放
+    private static final int DEFAULT_CYCLE_PLAY_MODE_INDEX = Constant.MediaPlayMode.MP_MODE_ALL_CYC;
 
     private static final int DEFAULT_SCREEN_DISPLAYE_MODE_INDEX = Constant.ScreenMode.SCREEN_FULL;
 
@@ -4662,6 +4670,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 	
     private void onCompleteOperate(IMediaPlayerAdapter mp)
     {
+    	Log.i(TAG, "onCompleteOperate");
         /** liyang DTS2013051702993 **/
         // 本地播放视频文件，设置视频循环播放，影片播放完，在将要播放下一影片时，切换全屏播放模式或音轨或字幕时，停止运行。
         isMenuNeedShow = false;
@@ -4719,7 +4728,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             return;
         }
 
-        // 全体循环播放模式
+        // 单文件循环，全体循环播放模式
         Log.d(TAG, "onCompletion() -- getNextMediaInfo() --");
 
         VideoInfo mbi = getNextMediaInfo();
