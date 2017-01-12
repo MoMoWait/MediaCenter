@@ -30,6 +30,7 @@ import com.rockchips.mediacenter.videoplayer.InternalVideoPlayer;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.AsyncTask.Status;
 import android.text.TextUtils;
@@ -211,6 +212,11 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
             	updateOtherText(fileInfo);
             	if(!fileInfo.isLoadPreview()){
             		loadBitmapForAVFile(fileInfo);
+            	}else{
+            		previewBitmap = BitmapUtils.getScaledBitmapFromFile(fileInfo.getPriviewPhotoPath(), SizeUtils.dp2px(this, 280), SizeUtils.dp2px(this, 280));
+        			if(previewBitmap != null){
+        				mWidgetPreview.updateImage(previewBitmap);
+        			}
             	}
                 break;
             case ConstData.MediaType.IMAGE:
@@ -237,11 +243,11 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	 * 加载文件夹列表
 	 */
 	public void loadFiles(){
-		//DialogUtils.showLoadingDialog(this, false);
+		DialogUtils.showLoadingDialog(this, false);
 		mAllFileLoadTask = new AllFileLoadTask(new AllFileLoadTask.CallBack() {
 			@Override
 			public void onGetFiles(List<AllFileInfo> fileInfos) {
-				//DialogUtils.closeLoadingDialog();
+				DialogUtils.closeLoadingDialog();
 				mTextPathTitle.setText(mCurrFolder.substring(mCurrFolder.lastIndexOf("/") + 1, mCurrFolder.length()));
 				if(fileInfos != null && fileInfos.size() > 0){
 					mLayoutContentPage.setVisibility(View.VISIBLE);
@@ -259,7 +265,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 				}
 			}
 		});
-		mAllFileLoadTask.run(mCurrFolder);
+		mAllFileLoadTask.execute(mCurrFolder);
 	}
 	
 	
@@ -365,7 +371,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
     public void loadActivity(AllFileInfo allFileInfo){
     	int fileType = allFileInfo.getType();
     	if(fileType != ConstData.MediaType.AUDIO && fileType != ConstData.MediaType.VIDEO
-    			&& fileType != ConstData.MediaType.IMAGE){
+    			&& fileType != ConstData.MediaType.IMAGE && fileType != ConstData.MediaType.APK){
     		return;
     	}
         Intent intent = new Intent();
@@ -402,6 +408,12 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
             intent.putExtra(ConstData.IntentKey.IS_INTERNAL_PLAYER, true);
             intent.putExtra(ConstData.IntentKey.CURRENT_INDEX, newPosition);
             InternalImagePlayer.setMediaList(mediaInfoList, newPosition);
+        }else if(allFileInfo.getType() == ConstData.MediaType.APK){
+        	Intent installIntent = new Intent(Intent.ACTION_VIEW);
+        	installIntent.setDataAndType(Uri.fromFile(allFileInfo.getFile()), "application/vnd.android.package-archive");
+        	installIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        	startActivity(installIntent);
+        	return;
         }
         startActivityForResult(intent, START_PLAYER_REQUEST_CODE);
     }

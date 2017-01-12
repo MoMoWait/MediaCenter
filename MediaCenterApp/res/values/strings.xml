@@ -334,4 +334,14 @@
     <string name="enter_right_nfs_address">请输入正确的NFS地址</string>
     <string name="enter_right_samba_address">请输入正确的Samba地址</string>
     <string name="internel_storage">内部存储:</string>
+    <string name="VideoView_error_title">对不起, 不能播放此视频.</string>
+    <string name="invalid_url">对不起, 不支持此视频.</string>
+    <string name="VideoView_error_networkfail">对不起, 网络出现故障,不能播放此视频.</string>
+    <string name="MediaError_CopyRight">没有版权(DIVX/RMVB) </string>
+    <string name="MediaError_ChipDiff">硬件限制(NO CODEC)</string>
+    <string name="MediaError_HightBitrate">硬件能力集限制(Bitrate#100M)</string>
+    <string name="MediaError_NoCodec">没有找到解码器(Codec)</string>
+    <string name="MediaError_MPEG4">MPEG4最大支持1080P</string>
+    <string name="MediaError_10BIT">系统不支持1OBIT视频</string>
+    <string name="VideoView_error_text_unknown">对不起, 不能播放此视频.</string>
 </resources>

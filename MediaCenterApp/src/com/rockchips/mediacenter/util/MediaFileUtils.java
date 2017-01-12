@@ -71,6 +71,10 @@ public class MediaFileUtils {
 			return ConstData.MediaType.IMAGE;
 		}
 		
+		if(Arrays.binarySearch(ConstData.APK_SUFFIX, tailEx) >= 0){
+			return ConstData.MediaType.APK;
+		}
+		
 		return ConstData.MediaType.UNKNOWN_TYPE;
 	}
 	

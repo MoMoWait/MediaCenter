@@ -27,6 +27,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
@@ -50,6 +51,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.ServiceManager;
 import android.os.storage.IMountService;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -344,6 +346,11 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     private int mBufferUpdatePercent = 0;
     //end add by caochao for DTS2014111006777 媒体中心视频时概率性出现“该视频无法播放”
     private LocalDevice mCurrentDevice;
+    /**
+     * 错误提示对话框
+     */
+    private AlertDialog mErrorTipDialog;
+    
     protected void onCreate(Bundle savedInstanceState)
     {
         Log.d(TAG, "VideoPlayerActivity --> onCreate()--");
@@ -1034,6 +1041,33 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         mToast.show();
     }
 
+    /**
+     * 显示无法播放提示框
+     * @param tip
+     * @param isNextPlay
+     */
+    private void showCannotPlayDialog(String tip, final boolean isNextPlay){
+    	Log.i(TAG, "showCannotPlayDialog->tip:" + tip);
+    	if(mErrorTipDialog != null && mErrorTipDialog.isShowing())
+    		return;
+    	mErrorTipDialog = new AlertDialog.Builder(this).setMessage(tip).setCancelable(false).create();
+    	int displayTime = isNextPlay ? 1000 : 2000;
+    	new Handler().postDelayed(new Runnable() {
+			
+			@Override
+			public void run() {
+				if(isNextPlay){
+					 mPlayListLayout.setCurrentPlayIndex(mPlayStateInfo.getCurrentIndex());
+		             setMediaData();
+		             play();
+				}else{
+					finishPlay();
+				}
+			}
+		}, displayTime);
+    	mErrorTipDialog.show();
+    }
+    
     // 设置播放器缓冲图标
     private void setProgressBar(int arg)
     {
@@ -1418,19 +1452,39 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         public boolean onError(IMediaPlayerAdapter mp, int what, int extra)
         {
             Log.d(TAG, "onErrorListener -- onError() Error Code:" + what + "  extra:" + extra);
-
-            if (what == HiMediaPlayer.MEDIA_INFO_TIMEOUT || what == HiMediaPlayer.MEDIA_INFO_NETWORK)
-            {
-                Log.i(TAG, "time::: " + (System.currentTimeMillis() - timeOutBegin));
-                if (timeOutBegin > 0 && System.currentTimeMillis() - timeOutBegin >= PLAYER_TIMEOUT_MAX)
-                {
-                    setToast(getString(R.string.video_error));
-                    timeOutBegin = 0;
-                    finishPlay();
+            int messageId = R.string.VideoView_error_title;
+            if (what == MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK) {
+                messageId = R.string.invalid_url;
+            }else {
+                //LogUtil.LogPlayer(TAG,"Fatal Error: impl_err =" + impl_err);
+                switch (extra) {
+                    case ConstData.VIDEO_PLAY_ERROR_CODE.ERROR_NETWORK:
+                        messageId = R.string.VideoView_error_networkfail;
+                        break;
+                    case ConstData.VIDEO_PLAY_ERROR_CODE.ERROR_ID_COPYRIGHT_NO_RMVB_DIVX:
+                        messageId = R.string.MediaError_CopyRight;
+                        break;
+                    case ConstData.VIDEO_PLAY_ERROR_CODE.ERROR_ID_COPYRIGHT_DIFF_CHIP:
+                        messageId = R.string.MediaError_ChipDiff;
+                        break;
+                    case ConstData.VIDEO_PLAY_ERROR_CODE.ERROR_ID_TOO_HIGH_BITRATE:
+                        messageId = R.string.MediaError_HightBitrate;
+                        break;
+                    case ConstData.VIDEO_PLAY_ERROR_CODE.ERROR_ID_NO_CODEC:
+                        messageId = R.string.MediaError_NoCodec;
+                        break;
+                    case ConstData.VIDEO_PLAY_ERROR_CODE.ERROR_ID_VPU_MPEG4_ROSOLUTION:
+                        messageId = R.string.MediaError_MPEG4;
+                        break;
+                    case ConstData.VIDEO_PLAY_ERROR_CODE.ERROR_ID_10BIT_NOT_SUPPORT:
+                        messageId = R.string.MediaError_10BIT;
+                        break;
+                    default:
+                    	messageId = R.string.VideoView_error_text_unknown;
+                        break;
                 }
-                return true;
             }
-
+            
             // 播放失败时，菜单需要重新加载
             isMenuHasCreated = false;
             isMenuNeedShow = false;
@@ -1441,9 +1495,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
             // 隐藏杜比弹出框
             sendDoblyWinMsg(false);
-
-            // 不能播放的提示
-            setToast(getString(R.string.video_error));
 
             // modified by keke 2013.4.9 主要修改在u盘播放的时候拔掉U盘退出播放器
             // 暂时没有发现会影响到循环播放
@@ -1470,7 +1521,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             if (getPlayMode() == Constant.MediaPlayMode.MP_MODE_SINGLE || playerErrorTimes >= PLAYER_ERROR_TIMES_MAX)
             {
                 playerErrorTimes = 0;
-                finishPlay();
+                // 不能播放的提示
+                //setToast(getString(R.string.video_error));
+                showCannotPlayDialog(getString(messageId), false);
                 return true;
             }
 
@@ -1482,14 +1535,12 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             if (mbi == null)
             {
                 stopSyncSeekPos();
-                finishPlay();
+                showCannotPlayDialog(getString(messageId), false);
+                //finishPlay();
             }
             else
             {
-                mPlayListLayout.setCurrentPlayIndex(mPlayStateInfo.getCurrentIndex());
-                setMediaData();
-                // Log.e(TAG, "player is invoke3333");
-                play();
+            	showCannotPlayDialog(getString(messageId), true);
             }
 
             return true;

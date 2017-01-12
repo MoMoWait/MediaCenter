@@ -331,7 +331,16 @@
     <string name="add_samba_device">Add Samba device</string>
     <string name="ex_nfs_address">example:172.16.21.123:/home/szc/nfsTest</string>
     <string name="ex_samba_address">example://10.10.10.163/gf</string>
-     <string name="enter_right_nfs_address">Please enter right NFS address</string>
+    <string name="enter_right_nfs_address">Please enter right NFS address</string>
     <string name="enter_right_samba_address">Please enter right samba address</string>
-     <string name="internel_storage">Internel Storage:</string>
+    <string name="internel_storage">Internel Storage:</string>
+    <string name="MediaError_CopyRight">No CopyRight(DIVX/RMVB) </string>
+    <string name="VideoView_error_networkfail">Sorry, Network Failure.</string>
+    <string name="MediaError_ChipDiff">Hardware Restriction(NO CODEC)</string>
+    <string name="MediaError_HightBitrate">Capacity Set Limit(Bitrate#100M)</string>
+    <string name="MediaError_NoCodec">This Codec is Unavailable</string>
+    <string name="MediaError_MPEG4">MPEG4 Only Supports 1080p</string>
+    <string name="MediaError_10BIT">10BIT Video is not Supported</string>
+    <string name="invalid_url">Sorry, This Video Is Not Valid</string>
+    <string name="VideoView_error_text_unknown">Sorry, This Video Can Not Be Played.</string>
 </resources>

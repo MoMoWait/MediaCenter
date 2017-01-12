@@ -214,6 +214,22 @@ public class ConstData {
 		public String FALSE = "false";
 	}
 	
+	/**
+	 * 视频播放错误码
+	 * @author GaoFei
+	 *
+	 */
+	public interface VIDEO_PLAY_ERROR_CODE{
+		int ERROR_ID_COPYRIGHT_NO_RMVB_DIVX =0xF1;
+		int ERROR_ID_COPYRIGHT_DIFF_CHIP    =0xF2;    /*this chip not support this codecID*/
+		int ERROR_ID_TOO_HIGH_BITRATE       =0xF3;
+		int ERROR_ID_NO_CODEC               =0xF4;
+		int ERROR_ID_VPU_MPEG4_ROSOLUTION   =0xF5;    /*mpeg4 not support 4k*/
+	    int ERROR_ID_10BIT_NOT_SUPPORT      =0xF6;    /*3288 supp*/
+	    int ERROR_NETWORK                   = -11;
+	}
+	
+	
 	 // 音频格式后缀
     public static final String[] AUDIO_SUFFIX = {"mp3", "wma", "amr", "aac", "wav", "wave", "ogg", "mka", "ac3", "m4a", "ra", "flac",
         "ape", "mpa", "aif", "aiff", "at3p", "au", "snd", "dts", "rmi", "mid", "mp1", "mp2", "pcm", "lpcm", "l16",
@@ -228,6 +244,10 @@ public class ConstData {
     // 图片格式后缀
     public static final String[] IMAGE_SUFFIX = {"bmp", "gif", "png", "jpg", "jpeg", "jpe", "tiff", "tif", "pcd", "qti", "qtf", "qtif",
         "ico", "pnm", "ppm"};
+    
+    
+    //APK格式后缀
+    public static final String[] APK_SUFFIX = {"apk"};
     
     // 字幕格式后缀
     public static final String[] SUBTITLE_SUFFIX = {"ass", "lrc", "srt", "smi", "sub", "txt", "pgs", "dvb", "dvd"};
@@ -281,7 +301,11 @@ public class ConstData {
         public static final int CLOUDPHOTO = BASE + 14;
 
         public static final int CLOUDFRIEND = BASE + 15;
-
+        /**
+         * APK文件
+         */
+        public static final int APK = BASE + 16;
+        
         public static String getMediaTypeName(int type)
         {
             String strRet = "UNKNOWN_TYPE";

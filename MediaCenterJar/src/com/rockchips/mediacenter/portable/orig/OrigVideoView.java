@@ -10,6 +10,7 @@
 package com.rockchips.mediacenter.portable.orig;
 
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaFormat;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.WindowManager;
@@ -138,6 +140,7 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
     private Context mContext = null;
     private void init(Context context)
     {
+    	setErrorListener();
         mContext = context;
         if(mAudioManager == null)
             mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
@@ -158,6 +161,15 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
         setMeasuredDimension(videoOrigWidth, videoOrigHeight);
         
     }
+    
+    
+    @Override
+    public void setVideoURI(Uri uri) {
+    	super.setVideoURI(uri);
+    }
+    
+    
+ 
     
     private void initDisplayViewAttr()
     {
@@ -578,6 +590,7 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
             setmediaPlayerAdapter(mediaplayer);
             
             mp.setOnBufferingUpdateListener(mbufferingListener);
+            //setOnErrorListener(mOnErrorListener);
             mp.setOnErrorListener(mOnErrorListener);
             mp.setOnCompletionListener(mcompleteListener);
             mp.setOnSeekCompleteListener(mseekListener);
@@ -1073,4 +1086,19 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
     	return getmediaPlayerAdapter().isDolbyEnabled();
     }
 
+    
+    /**
+     * 这里通过反射屏蔽VideoView默认Error处理
+     */
+    public void setErrorListener(){
+    	try{
+    		Field errorListener = getClass().getSuperclass().getDeclaredField("mErrorListener");
+    		errorListener.setAccessible(true);
+    		errorListener.set(this, mOnErrorListener);
+    	}catch (Exception e){
+    		Log.i(TAG, "setErrorListener->exception:" + e);
+    	}
+    	
+    }
+    
 }

@@ -150,7 +150,7 @@ public class FileScanThread extends Thread{
 									++audioCount;
 								else if(localMediaFile.getType() == ConstData.MediaType.VIDEO)
 									++videoCount;
-								else 
+								else if(localMediaFile.getType() == ConstData.MediaType.IMAGE)
 									++imageCount;
 							}
 						}
