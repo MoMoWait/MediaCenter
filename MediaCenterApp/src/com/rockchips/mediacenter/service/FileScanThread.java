@@ -4,7 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import android.util.Log;
+import android.media.iso.ISOManager;
+import android.net.Uri;
+
 import com.rockchips.mediacenter.bean.LocalDevice;
 import com.rockchips.mediacenter.bean.LocalMediaFile;
 import com.rockchips.mediacenter.bean.LocalMediaFolder;
@@ -125,7 +127,13 @@ public class FileScanThread extends Thread{
 					continue;
 				for(File subFile : subFiles){
 					if(subFile.isDirectory()){
-						if(mIsOverMaxDirs){
+						//如果是蓝光文件夹
+						if(ISOManager.isBDDirectory(subFile.getPath())){
+							LocalMediaFile localMediaFile = MediaFileUtils.getBDMediaFile(subFile, mDevice);
+							mTmpFiles.add(localMediaFile);
+							++videoCount;
+						}
+						else if(mIsOverMaxDirs){
 							ScanDirectory scanDirectory = new ScanDirectory();
 							scanDirectory.setDeviceId(mDevice.getDeviceID());
 							scanDirectory.setPath(subFile.getPath());

@@ -3,8 +3,9 @@ package com.rockchips.mediacenter.modle.task;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
+import android.media.iso.ISOManager;
 import com.rockchips.mediacenter.bean.AllFileInfo;
+import com.rockchips.mediacenter.bean.LocalMediaFile;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.util.MediaFileUtils;
 
@@ -40,7 +41,12 @@ public class AllFileLoadTask extends AsyncTask<String, Integer, Integer> {
 					allFileInfo = new AllFileInfo();
 					allFileInfo.setFile(itemFile);
 					if(itemFile.isDirectory()){
-						allFileInfo.setType(ConstData.MediaType.FOLDER);
+						//如果是蓝光文件夹
+						if(ISOManager.isBDDirectory(itemFile.getPath())){
+							allFileInfo.setType(ConstData.MediaType.VIDEO);
+						}else{
+							allFileInfo.setType(ConstData.MediaType.FOLDER);
+						}
 					}else{
 						allFileInfo.setType(MediaFileUtils.getMediaTypeFromFile(itemFile));
 					}

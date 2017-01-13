@@ -139,7 +139,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
 		AllFileInfo allFileInfo = (AllFileInfo)parent.getAdapter().getItem(position);
-		if(allFileInfo.getFile().isDirectory()){
+		if(allFileInfo.getType() == ConstData.MediaType.FOLDER){
 			mCurrFolder = allFileInfo.getFile().getPath();
 			loadFiles();
 		}else{

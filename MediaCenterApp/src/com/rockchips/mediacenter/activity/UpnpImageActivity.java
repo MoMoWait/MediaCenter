@@ -188,9 +188,11 @@ public class UpnpImageActivity extends AppBaseActivity implements OnItemClickLis
 					mLayoutNoFiles.setVisibility(View.GONE);
 					mLocalMediaFolders = mediaFolders;
 					mGridAlbum.setVisibility(View.VISIBLE);
-					mGridAlbum.requestFocus();
 					mAlbumAdapter = new PhotoGridAdapter(UpnpImageActivity.this, R.layout.adapter_photo_grid_item, MediaFileUtils.getMediaInfoListFromUpnpFolders(mediaFolders, ConstData.MediaType.IMAGEFOLDER));
 					mGridAlbum.setAdapter(mAlbumAdapter);
+					mGridAlbum.setFocusable(true);
+					mGridAlbum.setFocusableInTouchMode(true);
+					mGridAlbum.requestFocus();
 					int selectIndex = 0;
 					if(mSelectMediaFolder != null){
 						selectIndex = getFolderIndex(mSelectMediaFolder, mediaFolders);
@@ -239,6 +241,9 @@ public class UpnpImageActivity extends AppBaseActivity implements OnItemClickLis
 					mLocalMediaInfos = MediaFileUtils.getMediaInfoListFromUpnpFileList(mediaFiles);
 					mPhotoAdapter = new PhotoGridAdapter(UpnpImageActivity.this,  R.layout.adapter_photo_grid_item, mLocalMediaInfos);
 					mGridImage.setAdapter(mPhotoAdapter);
+					mGridImage.setFocusable(true);
+					mGridImage.setFocusableInTouchMode(true);
+					mGridImage.requestFocus();
 					int selectIndex = 0;
 					if(mSelectFile != null){
 						selectIndex = getFileIndex(mSelectFile, mediaFiles);

@@ -1905,6 +1905,25 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         return mPlayStateInfo.getPlayMode();
     }
 
+    /**
+     * 获取3D模式
+     * @return
+     */
+    public int get3DMode(){
+    	return mPlayStateInfo.get3DMode();
+    }
+    
+    /**
+     * 设置3D模式
+     * @param mode
+     */
+    public void set3DMode(int mode){
+    	//使用Mediaplayer设置3D模式
+    	MediaPlayer mediaPlayer = mMediaPlayer.getOriginMediaPlayer();
+    	mediaPlayer.set3DMode(mode);
+    	mPlayStateInfo.set3DMode(mode);
+    }
+    
     /** l00174030；添加视屏的屏幕比例切换（自动切换、全屏拉伸、等比拉伸） **/
     public void setScreenMode(int screenMode)
     {
@@ -2451,6 +2470,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
         // 音轨菜单的显示项
         loadMenuSound();
+        
+        //加载3D模式
+        load3DMode();
     }
 
     /**
@@ -2462,19 +2484,25 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     {
         // 加载“播放模式”面板
         MenuCategory menuCgy = new MenuCategory();
-        menuCgy.setCategoryName(getResources().getString(R.string.video_menu_playmode));
+        menuCgy.setCategoryName(getResources().getString(R.string.play_mode));
         ArrayList<MenuItemImpl> itemImpls = new ArrayList<MenuItemImpl>();
         /* BEGIN: Modified by c00224451 for DTS2014021706506 2014/2/21 */
-        // 连续播放开启
-        MenuItemImpl item = new MenuItemImpl(this, 1, PopMenuSelectType.CYCLE_PLAY_OPEN, R.drawable.video_menu_subtitile, 1, 1, getResources()
-                .getString(R.string.video_hint_loop_open));
+        // 列表循环
+        MenuItemImpl item = new MenuItemImpl(this, 1, PopMenuSelectType.REPEAT_LIST, R.drawable.video_menu_subtitile, 1, 1, getResources()
+                .getString(R.string.repeat_list));
         itemImpls.add(item);
 
-        // 连续播放关闭
-        item = new MenuItemImpl(this, 1, PopMenuSelectType.CYCLE_PLAY_CLOSE, R.drawable.video_menu_subtitile, 1, 1, getResources().getString(
-                R.string.video_hint_loop_close));
+        // 单曲循环
+        item = new MenuItemImpl(this, 1, PopMenuSelectType.REPEAT_ONE, R.drawable.video_menu_subtitile, 1, 1, getResources().getString(
+                R.string.repeat_one));
         itemImpls.add(item);
 
+        
+        // 只播放当前，播放完之后退出
+        item = new MenuItemImpl(this, 1, PopMenuSelectType.SINGLE_PLAY, R.drawable.video_menu_subtitile, 1, 1, getResources().getString(
+                R.string.single_play));
+        itemImpls.add(item);
+        
         // 把播放模式面板加入到菜单
         menuCgy.setMenuItems(itemImpls);
 
@@ -2483,9 +2511,12 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         {
             menuCgy.setSelectIndex(0);
         }
-        else
+        else if(getPlayMode() == Constant.MediaPlayMode.MP_MODE_SINGLE_CYC)
         {
             menuCgy.setSelectIndex(1);
+        }
+        else {
+        	menuCgy.setSelectIndex(2);
         }
         /* BEGIN: Modified by c00224451 for DTS2014021706506 2014/2/21 */
 
@@ -2795,6 +2826,54 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         menuCgy.setMenuItems(itemImpls);
         menuCgy.setSelectIndex(soundId);
         mPopMenu.addMenuCategory(menuCgy);
+    }
+    
+    
+    /**
+     * 添加3D菜单
+     */
+    private void load3DMode(){
+        // 加载“3D”面板
+        MenuCategory menuCgy = new MenuCategory();
+        menuCgy.setCategoryName(getResources().getString(R.string.three_d_change));
+        ArrayList<MenuItemImpl> itemImpls = new ArrayList<MenuItemImpl>();
+        /* BEGIN: Modified by c00224451 for DTS2014021706506 2014/2/21 */
+        // 2D模式
+        MenuItemImpl item = new MenuItemImpl(this, 1, PopMenuSelectType.MODE_2D, R.drawable.video_menu_subtitile, 1, 1, getResources()
+                .getString(R.string.two_d));
+        itemImpls.add(item);
+
+        // MVC 3D模式
+        item = new MenuItemImpl(this, 1, PopMenuSelectType.MODE_MVC_3D, R.drawable.video_menu_subtitile, 1, 1, getResources().getString(
+                R.string.mvc_three_d));
+        itemImpls.add(item);
+
+        
+        // 左右3D模式
+        item = new MenuItemImpl(this, 1, PopMenuSelectType.MODE_SIDE_BY_SIDE_TO_3D, R.drawable.video_menu_subtitile, 1, 1, getResources().getString(
+                R.string.left_right_three_d));
+        itemImpls.add(item);
+        
+        // 上下3D模式
+        item = new MenuItemImpl(this, 1, PopMenuSelectType.MODE_TOP_BOTTOM_TO_3D, R.drawable.video_menu_subtitile, 1, 1, getResources().getString(
+                R.string.up_down_three_d));
+        itemImpls.add(item);
+        
+        // 左右2D模式
+        item = new MenuItemImpl(this, 1, PopMenuSelectType.MODE_SIDE_BY_SIDE_TO_2D, R.drawable.video_menu_subtitile, 1, 1, getResources().getString(
+                R.string.left_right_two_d));
+        itemImpls.add(item);
+        
+        // 上下2D模式
+        item = new MenuItemImpl(this, 1, PopMenuSelectType.MODE_TOP_BOTTOM_TO_2D, R.drawable.video_menu_subtitile, 1, 1, getResources().getString(
+                R.string.up_down_two_d));
+        itemImpls.add(item);
+        // 把播放模式面板加入到菜单
+        menuCgy.setMenuItems(itemImpls);
+        menuCgy.setSelectIndex(get3DMode());
+        // 把播放模式面板加入到菜单
+        mPopMenu.addMenuCategory(menuCgy);
+    
     }
 
     /**
@@ -4436,19 +4515,25 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         else
         {
             /** 播放模式 **/
-            if (mCurrSelectType == PopMenuSelectType.CYCLE_PLAY_OPEN)
+            if (mCurrSelectType == PopMenuSelectType.REPEAT_LIST)
             {
                 Log.d(TAG, "change to play loop.");
                 setPlayMode(Constant.MediaPlayMode.MP_MODE_ALL_CYC);
                 PlayerStateRecorder.getInstance().put(PlayerStateRecorder.VIDEO_PLAY_MODE, Constant.MediaPlayMode.MP_MODE_ALL_CYC);
                 saveCycPlayMode();
             }
-            else if (mCurrSelectType == PopMenuSelectType.CYCLE_PLAY_CLOSE)
+            else if (mCurrSelectType == PopMenuSelectType.REPEAT_ONE)
             {
-                Log.d(TAG, "change to play single.");
+                Log.d(TAG, "change to repeat one.");
                 setPlayMode(Constant.MediaPlayMode.MP_MODE_SINGLE_CYC);
                 PlayerStateRecorder.getInstance().put(PlayerStateRecorder.VIDEO_PLAY_MODE, Constant.MediaPlayMode.MP_MODE_SINGLE_CYC);
                 saveCycPlayMode();
+            }
+            else if(mCurrSelectType == PopMenuSelectType.SINGLE_PLAY){
+            	 Log.d(TAG, "change to single play.");
+                 setPlayMode(Constant.MediaPlayMode.MP_MODE_SINGLE);
+                 PlayerStateRecorder.getInstance().put(PlayerStateRecorder.VIDEO_PLAY_MODE, Constant.MediaPlayMode.MP_MODE_SINGLE);
+                 saveCycPlayMode();
             }
             /** 设置字幕 **/
             else if (mCurrSelectType == PopMenuSelectType.SUBTITLE_INNER_SET)
@@ -4495,6 +4580,20 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             {
                 Log.d(TAG, "set sound effect " + index);
                 setChannelMode(index);
+            }
+            /**3D模式*/
+            else if(mCurrSelectType == PopMenuSelectType.MODE_2D){
+            	set3DMode(ConstData.ThreeDMode.TWO_D);
+            }else if(mCurrSelectType == PopMenuSelectType.MODE_MVC_3D){
+            	set3DMode(ConstData.ThreeDMode.MVC_3D);
+            }else if(mCurrSelectType == PopMenuSelectType.MODE_TOP_BOTTOM_TO_3D){
+            	set3DMode(ConstData.ThreeDMode.UD_3D);
+            }else if(mCurrSelectType == PopMenuSelectType.MODE_SIDE_BY_SIDE_TO_3D){
+            	set3DMode(ConstData.ThreeDMode.LR_3D);
+            }else if(mCurrSelectType == PopMenuSelectType.MODE_SIDE_BY_SIDE_TO_2D){
+            	set3DMode(ConstData.ThreeDMode.LR_2D);
+            }else if(mCurrSelectType == PopMenuSelectType.MODE_TOP_BOTTOM_TO_2D){
+            	set3DMode(ConstData.ThreeDMode.UD_2D);
             }
             else
             {
@@ -4573,15 +4672,35 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         CHANNEL_MODE_SET, // 声道
 
         /************* 视频播放模式 **************/
-        CYCLE_PLAY_OPEN, // 开启循环播放
-        CYCLE_PLAY_CLOSE, // 关闭循环播放
-
+        //CYCLE_PLAY_OPEN, // 开启循环播放
+        //CYCLE_PLAY_CLOSE, // 关闭循环播放
+        
+        /**列表循环播放*/
+        REPEAT_LIST,
+        /**单曲循环播放*/
+        REPEAT_ONE,
+        /**单个播放*/
+        SINGLE_PLAY,
+        
         /************* 视频字幕设置 **************/
         SUBTITLE_INNER_SET, // 内置字幕设置
         SUBTITLE_OUTTER_SET, // 外挂字幕设置
 
         /************* 视频音轨 **************/
         TRACK_MODE_SET, // 音轨
+        
+        /**2D*/
+        MODE_2D,
+        /**MVC 3D*/
+        MODE_MVC_3D,
+        /**左右3D*/
+        MODE_SIDE_BY_SIDE_TO_3D,
+        /**上下3D*/
+        MODE_TOP_BOTTOM_TO_3D,
+        /**左右转2D*/
+        MODE_SIDE_BY_SIDE_TO_2D,
+        /**上下转2D*/
+        MODE_TOP_BOTTOM_TO_2D
     }
     
     // ===============[DTS2014102406965 /

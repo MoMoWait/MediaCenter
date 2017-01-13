@@ -56,5 +56,12 @@ public class AllFileInfo {
 	public void setPriviewPhotoPath(String priviewPhotoPath) {
 		this.priviewPhotoPath = priviewPhotoPath;
 	}
+	@Override
+	public String toString() {
+		return "AllFileInfo [file=" + file + ", type=" + type + ", duration="
+				+ duration + ", priviewPhotoPath=" + priviewPhotoPath
+				+ ", isLoadPreview=" + isLoadPreview + "]";
+	}
+	
 	
 }

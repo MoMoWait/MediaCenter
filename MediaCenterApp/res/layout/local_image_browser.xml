@@ -43,7 +43,8 @@
             android:verticalSpacing="10dp" 
             android:visibility="gone"
             android:paddingLeft="40dp"
-            android:paddingRight="40dp"/>
+            android:paddingRight="40dp"
+            android:listSelector="@drawable/common_list_background"/>
 
         <GridView
             android:id="@+id/grid_image"
@@ -57,7 +58,8 @@
             android:verticalSpacing="10dp" 
             android:visibility="gone"
             android:paddingLeft="40dp"
-            android:paddingRight="40dp"/>
+            android:paddingRight="40dp"
+            android:listSelector="@drawable/common_list_background"/>
 
         <include
             android:id="@+id/base_main_page"

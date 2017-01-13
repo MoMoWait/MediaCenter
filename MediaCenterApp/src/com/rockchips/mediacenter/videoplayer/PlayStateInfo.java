@@ -24,6 +24,7 @@ import android.os.HandlerThread;
 import com.rockchips.mediacenter.basicutils.constant.Constant;
 import com.rockchips.mediacenter.basicutils.util.IICLOG;
 import com.rockchips.mediacenter.basicutils.util.StringUtils;
+import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.videoplayer.data.VideoInfo;
 
 /**
@@ -53,6 +54,10 @@ public class PlayStateInfo
     
     private int playMode = Constant.MediaPlayMode.MP_MODE_SINGLE;
     
+    /**
+     * 默认2D
+     */
+    private int m3DMode = ConstData.ThreeDMode.TWO_D;
     private boolean bStop = false;
     
     private String mSenderClientUniq = null;
@@ -1178,5 +1183,21 @@ public class PlayStateInfo
     public void setCurrDevName(String mCurrDevName)
     {
         this.mCurrDevName = mCurrDevName;
+    }
+    
+    /**
+     * 设置3D模式
+     * @param mode
+     */
+    public void set3DMode(int mode){
+    	m3DMode = mode;
+    }
+    
+    /**
+     * 获取3D模式
+     * @return
+     */
+    public int get3DMode(){
+    	return m3DMode;
     }
 }

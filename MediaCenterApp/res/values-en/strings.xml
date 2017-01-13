@@ -343,4 +343,16 @@
     <string name="MediaError_10BIT">10BIT Video is not Supported</string>
     <string name="invalid_url">Sorry, This Video Is Not Valid</string>
     <string name="VideoView_error_text_unknown">Sorry, This Video Can Not Be Played.</string>
+    
+    <string name="repeat_list">Repeat all</string>
+    <string name="repeat_one">Repeat one</string>
+    <string name="single_play">Single</string>
+    <string name="play_mode">Play mode</string>
+    <string name="three_d_change">3D mode</string>
+    <string name="two_d">2D</string>
+    <string name="mvc_three_d">MVC 3D</string>
+    <string name="left_right_three_d">LR 3D</string>
+    <string name="up_down_three_d">UD 3D</string>
+    <string name="left_right_two_d">LR 2D</string>
+    <string name="up_down_two_d">UD 2D</string>
 </resources>

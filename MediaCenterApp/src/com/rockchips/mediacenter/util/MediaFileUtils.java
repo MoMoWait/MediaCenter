@@ -6,22 +6,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-
 import org.fourthline.cling.model.meta.RemoteDevice;
 import org.fourthline.cling.support.model.DIDLContent;
 import org.fourthline.cling.support.model.container.Container;
 import org.fourthline.cling.support.model.item.Item;
 import org.json.JSONArray;
-
 import momo.cn.edu.fjnu.androidutils.data.CommonValues;
 import momo.cn.edu.fjnu.androidutils.utils.JsonUtils;
-
 import android.R.integer;
 import android.os.Environment;
 import android.provider.SyncStateContract.Constants;
 import android.text.TextUtils;
 import android.util.Log;
-
+import android.media.iso.ISOManager;
 import com.rockchips.mediacenter.basicutils.constant.Constant;
 import com.rockchips.mediacenter.basicutils.util.HanziToPinyin;
 import com.rockchips.mediacenter.basicutils.util.HanziToPinyin.Token;
@@ -49,6 +46,10 @@ public class MediaFileUtils {
 	 * @return
 	 */
 	public static int getMediaTypeFromFile(File file){
+		//蓝光文件检测
+		if(file.isDirectory() && ISOManager.isBDDirectory(file.getPath())){
+			return ConstData.MediaType.VIDEO;
+		}
 		String path = file.getPath();
 		int dotIndex = path.lastIndexOf(".");
 		if(dotIndex < 0)
@@ -263,7 +264,6 @@ public class MediaFileUtils {
      * @return
      */
     public static LocalMediaFile getMediaFileFromFile(File file, LocalDevice device){
-    	//Log.i(TAG, "getMediaFileFromFile->file:" + file);
     	int currentMediaType = getMediaTypeFromFile(file);
     	if(currentMediaType == ConstData.MediaType.UNKNOWN_TYPE)
     		return null;
@@ -281,6 +281,28 @@ public class MediaFileUtils {
 		//localMediaFile.setDeviceID()
 		return localMediaFile;
     }
+    
+    /**
+     * 获取蓝光视频文件,与getMediaFileFromFile区别开来，为了提高扫描效率
+     * @param file
+     * @return
+     */
+    public static LocalMediaFile getBDMediaFile(File file, LocalDevice device){
+    	LocalMediaFile localMediaFile = new LocalMediaFile();
+    	localMediaFile.setDeviceID(device.getDeviceID());
+    	localMediaFile.setDevicetype(device.getDevices_type());
+    	localMediaFile.setLast_modify_date(file.lastModified() / 1000);
+    	localMediaFile.setName(file.getName());
+    	localMediaFile.setPath(file.getPath());
+    	localMediaFile.setPhysic_dev_id(device.getPhysic_dev_id());
+    	localMediaFile.setPinyin(getFullPinYin(file.getName()));
+    	localMediaFile.setSize(file.length());
+    	localMediaFile.setType(ConstData.MediaType.VIDEO);
+    	localMediaFile.setParentPath(file.getParentFile().getPath());
+		//localMediaFile.setDeviceID()
+		return localMediaFile;
+    }
+    
     
     /**
      * 从文件中获取媒体文件夹

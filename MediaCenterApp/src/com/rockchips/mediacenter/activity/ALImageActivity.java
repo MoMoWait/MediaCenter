@@ -184,9 +184,11 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 					mLayoutNoFiles.setVisibility(View.GONE);
 					mLocalMediaFolders = mediaFolders;
 					mGridAlbum.setVisibility(View.VISIBLE);
-					mGridAlbum.requestFocus();
 					mAlbumAdapter = new PhotoGridAdapter(ALImageActivity.this, R.layout.adapter_photo_grid_item, MediaFileUtils.getMediaInfoListFromFolders(mediaFolders));
 					mGridAlbum.setAdapter(mAlbumAdapter);
+					mGridAlbum.setFocusable(true);
+					mGridAlbum.setFocusableInTouchMode(true);
+					mGridAlbum.requestFocus();
 					int selectIndex = 0;
 					if(mSelectMediaFolder != null){
 						selectIndex = getFolderIndex(mSelectMediaFolder, mediaFolders);
@@ -231,10 +233,12 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 					mGridImage.setVisibility(View.VISIBLE);
 					mGridImage.requestFocus();
 					mLayoutNoFiles.setVisibility(View.GONE);
-					//mGridAlbum.setVisibility(View.GONE);
 					mLocalMediaInfos = MediaFileUtils.getMediaInfoList(mediaFiles);
 					mPhotoAdapter = new PhotoGridAdapter(ALImageActivity.this,  R.layout.adapter_photo_grid_item, mLocalMediaInfos);
 					mGridImage.setAdapter(mPhotoAdapter);
+					mGridImage.setFocusable(true);
+					mGridImage.setFocusableInTouchMode(true);
+					mGridImage.requestFocus();
 					int selectIndex = 0;
 					if(mSelectFile != null){
 						selectIndex = getFileIndex(mSelectFile, mediaFiles);

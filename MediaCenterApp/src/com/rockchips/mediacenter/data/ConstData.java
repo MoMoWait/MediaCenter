@@ -229,6 +229,19 @@ public class ConstData {
 	    int ERROR_NETWORK                   = -11;
 	}
 	
+	/**
+	 * 3D模式
+	 * @author GaoFei
+	 *
+	 */
+	public interface ThreeDMode{
+		int TWO_D = 0;
+		int MVC_3D = 1;
+		int LR_3D = 2;
+		int UD_3D = 3;
+		int LR_2D = 4;
+		int UD_2D = 5;
+	}
 	
 	 // 音频格式后缀
     public static final String[] AUDIO_SUFFIX = {"mp3", "wma", "amr", "aac", "wav", "wave", "ogg", "mka", "ac3", "m4a", "ra", "flac",

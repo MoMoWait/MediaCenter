@@ -344,4 +344,16 @@
     <string name="MediaError_MPEG4">MPEG4最大支持1080P</string>
     <string name="MediaError_10BIT">系统不支持1OBIT视频</string>
     <string name="VideoView_error_text_unknown">对不起, 不能播放此视频.</string>
+    
+    <string name="repeat_list">循环播放</string>
+    <string name="repeat_one">重复当前</string>
+    <string name="single_play">播放当前</string>
+    <string name="play_mode">播放模式</string>
+    <string name="three_d_change">3D切换</string>
+    <string name="two_d">2D</string>
+    <string name="mvc_three_d">MVC 3D</string>
+    <string name="left_right_three_d">左右3D</string>
+    <string name="up_down_three_d">上下3D</string>
+    <string name="left_right_two_d">左右2D</string>
+    <string name="up_down_two_d">上下2D</string>
 </resources>
