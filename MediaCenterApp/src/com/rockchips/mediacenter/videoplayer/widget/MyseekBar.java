@@ -333,6 +333,7 @@ public class MyseekBar extends AbsSeekBar
     
     public void setProgress(float progress)
     {
+    	Log.i("VideoKey", "MyseekBar->setProgress:" + progress);
         this.progress = progress;
     }
     
@@ -387,6 +388,7 @@ public class MyseekBar extends AbsSeekBar
 	@Override
     protected synchronized void onDraw(Canvas canvas)
     {
+    	Log.i("VideoKey", "onDraw");
         // zkf61715 
 //        if(playMode == PlayMode.PLAY_TRICK){
 //            Kscale = scale;
@@ -395,13 +397,18 @@ public class MyseekBar extends AbsSeekBar
         canvas.save();
 		/* BEGIN: Modified by s00211113 for DTS2014031902280  2014/03/19 */
         int available = this.getWidth();
+        Log.i("VideoKey", "onDraw->available:" + available);
 		/* END: Modified by s00211113 for DTS2014031902280  2014/03/19 */
         int thumbWidth = bdPlaying.getIntrinsicWidth() - getThumboffSet();
+        Log.i("VideoKey", "onDraw->thumbWidth:" + thumbWidth);
         int thumbHeight = bdPlaying.getIntrinsicHeight();
+        Log.i("VideoKey", "onDraw->thumbHeight:" + thumbHeight);
         // available -= thumbWidth;
         available += getThumbOffset() * 2;
         int thumbPos = (int)(scale * available);
+        Log.i("VideoKey", "onDraw->thumbPos:" + thumbPos);
         int thumbPos1 = (int)(Kscale * available);
+        Log.i("VideoKey", "onDraw->thumbPos1:" + thumbPos);
         int posi = (int)(Kscale * getMax());
         //Log.e("vvvv", "Kscale = " + Kscale + " time 1==" + timeFormat(posi));
         //Log.e("vvvv", "------scale =" + scale + "Kscale =" + Kscale);
@@ -416,7 +423,7 @@ public class MyseekBar extends AbsSeekBar
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(0X7f233619);
         paint.setAntiAlias(true);
-        RectF rectfbg = new RectF(0, seekbarLeftTop , this.getWidth(), seekbarLeftTop+SizeUtils.dp2px(context, 20));
+        RectF rectfbg = new RectF(0, 0 , getWidth(), getHeight());
         //canvas.drawRoundRect(rectfbg, 10, 10, paint);
         canvas.drawRect(rectfbg, paint);
         
@@ -433,12 +440,12 @@ public class MyseekBar extends AbsSeekBar
         {
             if (thumbPos > 0)
             {
-                imgSeekbar_Played = imgSeekbar_Played.createScaledBitmap(imgSeekbar_Played, thumbPos, SizeUtils.dp2px(context, 20), true);
+                imgSeekbar_Played = imgSeekbar_Played.createScaledBitmap(imgSeekbar_Played, thumbPos, getHeight(), true);
                 pos = thumbPos;
             }
             else
             {
-                imgSeekbar_Played = imgSeekbar_Played.createScaledBitmap(imgSeekbar_Played, 1, SizeUtils.dp2px(context, 20), true);
+                imgSeekbar_Played = imgSeekbar_Played.createScaledBitmap(imgSeekbar_Played, 1, getHeight(), true);
                 pos = 1;
             }
         }
@@ -580,6 +587,7 @@ public class MyseekBar extends AbsSeekBar
     
     void onKeyTouch()
     {
+    	Log.i("VideoKey", "onKeyTouch");
         if (mOnSeekBarChangeListener != null)
         {
             mOnSeekBarChangeListener.onKeyTounch(this);
@@ -589,15 +597,19 @@ public class MyseekBar extends AbsSeekBar
     // @Override
     public void onProgressRefresh(float scale, boolean fromUser)
     {
+    	Log.i("VideoKey", "MySeekBar->onProgressRefresh->scale:" + scale);
+    	Log.i("VideoKey", "MySeekBar->onProgressRefresh->fromUser:" + fromUser);
         if (mOnSeekBarChangeListener != null)
         {
             mOnSeekBarChangeListener.onProgressChanged(this, getProgress(), fromUser, (int)(Kscale * getMax()));
         }
         
         if (isFromNetwork) return;            
-        
+        Log.i("VideoKey", "MySeekBar->onProgressRefresh->canAccelerate:" + canAccelerate);
+        Log.i("VideoKey", "MySeekBar->onProgressRefresh->Xacceleration:" + Xacceleration);
         if (!canAccelerate && Xacceleration != 0 && Xacceleration != 1)
         {
+        	Log.i("VideoKey", "MySeekBar->onProgressRefresh->onKeyTouch");
             onKeyTouch();
         }
         else
@@ -745,7 +757,7 @@ public class MyseekBar extends AbsSeekBar
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
-    	Log.i(TAG, "onKeyDown->keyCode:" + keyCode);
+    	Log.i("VideoKey", "MySeekBar->onKeyDown->keyCode:" + keyCode);
         float Progress = 0;
         
         // Log.e(TAG, "scale --->" + scale + "Kscale--->" + Kscale + "X-->" +
@@ -804,6 +816,8 @@ public class MyseekBar extends AbsSeekBar
             }
             playMode = PlayMode.PLAY_SEEK;
         }
+        Log.i("VideoKey", "MySeekBar->onKeyDown->playMode:" + playMode);
+        Log.i("VideoKey", "MySeekBar->onKeyDown->isTrickBefore:" + isTrickBefore);
         
 //        if(!canAccelerate){
 //            Xupdate = true;
@@ -1080,6 +1094,8 @@ public class MyseekBar extends AbsSeekBar
     
     public void setProgress1(float Progress)
     {
+    	Log.i("VideoKey", "MySeekBar->setProgress1->progress:" + progress);
+    	
         if (Progress < 0)
         {
             Progress = 0;
@@ -1091,7 +1107,7 @@ public class MyseekBar extends AbsSeekBar
         scale = Progress / getMax();
         
         setProgress(Progress);
-        // Log.e(TAG, "*********************");
+        //触发onDraw方法调用，绘制SeekBar背景，进度
         postInvalidate();
         
         onProgressRefresh(scale, true);
@@ -1117,7 +1133,7 @@ public class MyseekBar extends AbsSeekBar
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event)
     {
-    	Log.i(TAG, "onKeyUp");
+    	Log.i("VideoKey", "MySeekBar->onKeyUp");
         if (isFromNetwork) return super.onKeyUp(keyCode, event);
         hasKeyUp = true;
         if(needSeek){
@@ -1199,6 +1215,8 @@ public class MyseekBar extends AbsSeekBar
                     	VideoPlayerActivity videoPlayerActivity = (VideoPlayerActivity)context;
                     	int totalDuration = videoPlayerActivity.getDuration();
                     	int currPlayPosition = videoPlayerActivity.getCurrentPosition();
+                    	Log.i("VideoKey","MySeekBar->onKeyUp->duration:" + totalDuration);
+                    	Log.i("VideoKey","MySeekBar->onKeyUp->position:" + currPlayPosition);
                     	if(currPlayPosition > 0 && totalDuration > 0){
                     		int targetPositon = currPlayPosition - SEEK_STEP_LENGTH;
                     		if(targetPositon < 0)
@@ -1253,6 +1271,7 @@ public class MyseekBar extends AbsSeekBar
      */
     public void setProgress2(final float Progress)
     {
+    	Log.i("VideoKey", "MySeekBar->setProgress2->progress:" + progress);
         // Log.e(TAG, "setProgress---->2" + Progress);
         
         setProgress1(Progress);
@@ -1452,69 +1471,10 @@ public class MyseekBar extends AbsSeekBar
     
     public void update()
     {
-//        // 刷新msg的内容
-//        //Log.e("onkey", "update sleep time");
-//        if (!isEnSure && Xacceleration != 0)
-//        {
-//            float Progress = 0;
-//            // fScale=(float) 1.0f/(getTotalTime()/normalTime);
-//            
-//            int hour = getHour((int)totalTime);
-//            
-//            if (totalTime < 300000)
-//            {
-//                float accScale = (float)0.004 * Math.abs(Xacceleration);
-//                
-//                /**修改者：l00174030；修改原因：小于45秒的视频快进时需要加速**/
-//                if (totalTime < 45000)
-//                {
-//                	Log.d(TAG, "totalTime < 30000, totalTime is " + totalTime);
-//                	accScale = (float)0.04 * Math.abs(Xacceleration);
-//                }
-//                
-//                if (Xacceleration < 0)
-//                {
-//                    Kscale -= accScale;
-//                }
-//                else
-//                {
-//                    Kscale += accScale;
-//                    if (Xacceleration != 1)
-//                    {
-//                        isOneFase = false;
-//                    }
-//                }
-//            }
-//            else
-//            {
-//                int tx = getAcc(hour);
-//                if (Xacceleration < 0)
-//                {
-//                    Kscale -= (float)500 * tx / totalTime;
-//                }
-//                else
-//                {
-//                    Kscale += (float)500 * tx / totalTime;
-//                    if (Xacceleration != 1)
-//                    {
-//                        isOneFase = false;
-//                    }
-//                }
-//            }
-//            
-//            if (Kscale < 0)
-//            {
-//                Kscale = 0;
-//            }
-//            else if (Kscale >= 1)
-//            {
-//                Kscale = 1;
-//            }
-//            Progress = scale * getMax();
-//            setProgress1(Progress);
-//        }
+    	Log.i("VideoKey", "update");
         if(Xacceleration != 0 || (Xacceleration != 1 && !canAccelerate) || isFromNetwork){
             if(!canAccelerate || isFromNetwork){
+            	Log.i("VideoKey", "update 1");
                 // zkf61715 不支持快进快退操作时
                 int tx = Math.abs(Xacceleration);
                 if (Xacceleration < 0)
@@ -1576,14 +1536,17 @@ public class MyseekBar extends AbsSeekBar
         }
         else
         {
+        	Log.i("VideoKey", "update 2");
             if (!isTrack)
             {
+            	Log.i("VideoKey", "update 21");
                 setPressed(false);
                 isOnkey = false;
                 postInvalidate();
             }
             else
             {
+            	Log.i("VideoKey", "update 22");
                 setPressed(true);
                 postInvalidate();
             }
@@ -1606,6 +1569,7 @@ public class MyseekBar extends AbsSeekBar
     {
         //Log.e("vvvv", "thumbPos1 ==" + thumbPos1 + "thumbPos ==" + thumbPos);
         //Log.e("vvvv", "Kscale ==" + Kscale + "scale ==" + scale);
+    	Log.i("VideoKey", "pressDraw");
         if (thumbPos1 < thumbPos)
         {
             /** 修改者：l00174030；修改原因：先画背景，在画进度条**/
@@ -1632,12 +1596,12 @@ public class MyseekBar extends AbsSeekBar
         if (pos < this.getWidth() - 20)
         {
             float[] radii = {0f,0f,0f,0f,0f,0f,0f,0f};
-            path.addRoundRect(new RectF(0, seekbarLeftTop, pos, SizeUtils.dp2px(context, 20)), radii, Path.Direction.CW);
+            path.addRoundRect(new RectF(0, seekbarLeftTop, pos, getHeight()), radii, Path.Direction.CW);
         }
         else
         {
             float[] radii = {0f,0f,0f,0f,0f,0f,0f,0f};
-            path.addRoundRect(new RectF(0, seekbarLeftTop, pos, SizeUtils.dp2px(context, 20)), radii, Path.Direction.CW);
+            path.addRoundRect(new RectF(0, seekbarLeftTop, pos, getHeight()), radii, Path.Direction.CW);
         }
         
         canvas.drawPath(path,paint);
@@ -1970,6 +1934,8 @@ public class MyseekBar extends AbsSeekBar
     /** 开始绘制 */
     public void playDraw(Canvas canvas, int thumbPos, int available)
     {
+    	Log.i("VideoKey", "playDraw->thumbPos:" + thumbPos);
+    	Log.i("VideoKey", "playDraw->available:" + available);
         /** 修改者：l00174030；修改原因：先画背景，在画进度条**/
         //canvas.drawBitmap(imgSeekbar_background, thumbPos, 38, paint);
 //        canvas.drawBitmap(imgSeekbar_Played, 0, seekbarLeftTop, paint);

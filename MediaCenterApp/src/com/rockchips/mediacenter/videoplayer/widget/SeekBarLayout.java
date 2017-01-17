@@ -188,6 +188,8 @@ public class SeekBarLayout extends RelativeLayout
 
     public void setAcceleCompl(boolean isAcceleCompl)
     {
+    	Log.i("VideoKey", "setAcceleCompl->isAcc:" + isAcceleCompl);
+    	Log.i("VideoKey", "setAcceleCompl->stackTrace::" + Log.getStackTraceString(new Throwable()));
         this.isAcceleCompl = isAcceleCompl;
     }
 
@@ -356,9 +358,7 @@ public class SeekBarLayout extends RelativeLayout
         // 按键操作快进时会回调此方法,通过此方法还可以控制快进的速率倍数，按确定键继续正常播放
         public void onKeyTounch(MyseekBar seekBar)
         {
-        	Log.i(TAG, "onKeyTounch");
-        	Log.i(TAG, "onKeyTounch->stackTrace:" + Log.getStackTraceString(new Throwable()));
-            // TODO Auto-generated method stub
+        	Log.i("VideoKey", "SeekBarLayout->onKeyTounch");
             // 网络视频不支持快进快退
             if (getmSeekBar().isFromNetwork())
             {
@@ -380,13 +380,14 @@ public class SeekBarLayout extends RelativeLayout
 
             if (!canAccelerate)
             {
-            	Log.i(TAG, "onKeyTounch->!canAccelerate");
+            	Log.i("VideoKey", "onKeyTounch->!canAccelerate");
                 switch (mSeekBar.getPlayMode())
                 {
                     case PlayMode.PLAY_TRICK:
-                        isAcceleCompl = false;
+                    	setAcceleCompl(false);
                         if (mSeekBar.isXupdate())
                         {
+                        	Log.i("VideoKey", "onKeyTounch->mSeekBar->isXupdate");
                             doAccerate(mSeekBar.isLeft());
                             mSeekBarPopWindowListener.onXChange(Xacceleration);
                             mSeekBar.setXupdate(false);
@@ -424,7 +425,7 @@ public class SeekBarLayout extends RelativeLayout
                             mSeekBar.setOnkey(false);
                             mSeekBar.setEnSure(false);
                             mSeekBarPopWindowListener.onXChange(Xacceleration);
-                            isAcceleCompl = false;
+                            setAcceleCompl(false);
                         }
                         break;
 
@@ -491,7 +492,7 @@ public class SeekBarLayout extends RelativeLayout
         // 拖动和通过左右键 操作快进的话，会回调此方法
         public void onProgressChanged(MyseekBar seekBar, int progress, boolean fromUser, int kprogress)
         {
-        	Log.i(TAG, "onProgressChanged");
+        	Log.i("VideoKey", "SeekBarLayout->onProgressChanged");
             // TODO Auto-generated method stub
             // Log.e(TAG, "seekbarlayout onProgressChanged" + progress + ":" +
             // kprogress);
@@ -705,6 +706,8 @@ public class SeekBarLayout extends RelativeLayout
      */
     public void doEnter()
     {
+    	Log.i("VideoKey", "doEnter");
+    	Log.i("VideoKey", "doEnter->isAcceleCompl:" + isAcceleCompl);
         if (mSeekBar.isFromNetwork())
         {
             doEnterNetwork();
@@ -892,12 +895,13 @@ public class SeekBarLayout extends RelativeLayout
      */
     public void seekto(int duration)
     {
+    	Log.i("VideoKey", "SeekBarLayout->isSeekBarEnd:" + isSeekBarEnd);
         if (isSeekBarEnd && (mSeekBar.getXacceleration() == 1 || mSeekBar.getXacceleration() == 0) && !mSeekBar.isLeft()
                 && mSeekBar.getPlayMode() == PlayMode.PLAY_SEEK)
         {
             return;
         }
-        Log.d("oxy", "seekto:  " + duration);
+        Log.d("VideoKey", "SeekBarLayout->seekto->duration:  " + duration);
         mCurrPos = duration;
 
         // Log.e(TAG, "seekto: " + duration + "--->time --" +
@@ -934,8 +938,7 @@ public class SeekBarLayout extends RelativeLayout
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event)
     {
-    	Log.i(TAG, "onKeyUp->keyCode:" + keyCode);
-        // TODO Auto-generated method stub
+    	Log.i("VideoKey", "SeekBarLayout->onKeyUp->keyCode:" + keyCode);
         if (mSeekBar.isFromNetwork())
         {
             return onKeyUpNetwork(keyCode, event);
@@ -990,7 +993,7 @@ public class SeekBarLayout extends RelativeLayout
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
-    	Log.i(TAG, "onKeyDown->keyCode:" + keyCode);
+    	Log.i("VideoKey", "SeekBarLayout->onKeyDown->keyCode:" + keyCode);
         // ���������ϵͳ���?��Ҫ��������¼�������������Ҳ������������?ԭ500ms����һ��)
         switch (keyCode)
         {
@@ -998,21 +1001,8 @@ public class SeekBarLayout extends RelativeLayout
             case KeyEvent.KEYCODE_VOLUME_DOWN:
                 return super.onKeyDown(keyCode, event);
         }
-
         long currentTime = System.currentTimeMillis();
-        // Log.e("onkey", "----->currentTime==" + currentTime + "--historyTime"
-        // + historyTime);
-
-        // Log.e("onkey", "----->cz==" + (currentTime - historyTime));
-        // modified by keke 在按键变化的时候不在考虑按键累计问题
-//        if ((currentTime - historyTime) < 50 && keyCode == lastKeyCode)
-//        {
-//            Log.e("onkey", "----->return " + keyCode);
-//            return true;
-//        }
-
         Log.i(TAG, "---onkeydown--1>KEYCODE_CODE =" + keyCode + "----lastkeycode = " + lastKeyCode);
-
         switch (keyCode)
         {
             case KeyEvent.KEYCODE_DPAD_LEFT:
@@ -1028,6 +1018,9 @@ public class SeekBarLayout extends RelativeLayout
                     setAcceleToEnd(false);
                     isSeekBarEnd = false;
                     hasKeyDown = true;
+                }else{
+                	//不处理网络设备
+                	return true;
                 }
                 Log.d("onkey", "----->KEYCODE_DPAD_LEFT" + isbPrepared() + mVideoView.isSeeking());
 
@@ -1051,6 +1044,8 @@ public class SeekBarLayout extends RelativeLayout
                 if (!mSeekBar.isFromNetwork())
                 {
                     hasKeyDown = true;
+                }else{
+                	return true;
                 }
                 Log.d("onkey", "----->KEYCODE_DPAD_RIGHT" + isbPrepared() + mVideoView.isSeeking());
                 if (isbPrepared() && !mVideoView.isSeeking())

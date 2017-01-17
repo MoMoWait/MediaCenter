@@ -201,12 +201,20 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     public static final int MSG_UI_VIDEOVIEW_SAVE_POS = 14;
 
     public static final int MSG_UI_VIDEOVIEW_MCSPLAY = 17;
-
+    /**
+     * 关闭错误对话框
+     */
+    public static final int MSG_CLOSE_ERROR_DIALOG = 22;
     // MAX MSG CODE ; for remove all messages
     public static final int MSG_UI_VIDEOVIEW_MAX = 30;
 
     protected static final int DELAY_TIME = 5000;
 
+    /**
+     * 是否播放下一首
+     */
+    public static String KEY_NEXT_PLAY = "is_next_play";
+    
     protected boolean bContinue = false;
 
     // 之前是否被用户暂停播放器（遥控器暂停、推送端暂停、甩屏端暂停）
@@ -424,7 +432,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         // creat VideoView
         if (mVV == null || mVVAdapter == null)
         {
-             canAccelerate = PlatformConfig.isSupportHisiMediaplayer();
+        	//支持海斯平台，就支持加速
+            canAccelerate = PlatformConfig.isSupportHisiMediaplayer();
             if (canAccelerate)
             {
                 mVV = (HisiVideoView) findViewById(R.id.vv);
@@ -517,7 +526,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 					        	left = 0;
 					        }
 					        canvas.drawText(text.getText(), left, SCREEN_HEIGHT - SizeUtils.dp2px(VideoPlayerActivity.this, 40), paint);
-					        //canvas.drawText(text.getText(), Scr, 100, paint);
 					    }
 					} catch (Exception e) {
 					    Log.e(TAG, "run() lockCanvas()" + e);
@@ -763,15 +771,14 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
-    	
-        Log.d(TAG, "onKeyDown, keyCode:" + keyCode + ", event:" + event);
-
+        Log.d("VideoKey", "VideoPlayerActivity->onKeyDown, keyCode:" + keyCode + ", event:" + event);
         // 对音量键不进行按键累积，避免调节音量出现卡顿
         switch (keyCode)
         {
             case KeyEvent.KEYCODE_MENU:
                 // menuOpened();
                 int x = mSbpw.getmSeekBar().getXacceleration();
+                Log.d("VideoKey", "VideoPlayerActivity->onKeyDown->acceleration:" + x);
                 if (x != 0 && x != 1)
                 {
                     play();
@@ -785,7 +792,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                     }
                     catch (InterruptedException e)
                     {
-                        Log.e(TAG, "onKeyDown, open menu ::: error");
+                        Log.e("VideoKey", "onKeyDown, open menu ::: error");
                     }
                 }
                 openBottomMenu();
@@ -826,7 +833,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             case KeyEvent.KEYCODE_DPAD_RIGHT:
             case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
                 mUIHandler.removeMessages(MSG_PROGRESS_CHANGED);
-
                 showPop();
                 break;
 
@@ -918,7 +924,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event)
     {
-    	Log.i(TAG, "onKeyUp->keyCode:" + keyCode);
+    	Log.i("VideoKey", "VideoPlayerActivity->onKeyUp->keyCode:" + keyCode);
         boolean retkeyup = mSbpw.onKeyUp(keyCode, event);
         mUIHandler.removeMessages(MSG_PROGRESS_CHANGED);
         mUIHandler.sendEmptyMessage(MSG_PROGRESS_CHANGED);
@@ -1047,28 +1053,22 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
      * @param tip
      * @param isNextPlay
      */
-    private void showCannotPlayDialog(String tip, final boolean isNextPlay){
+    private void showCannotPlayDialog(String tip, boolean isNextPlay){
     	Log.i(TAG, "showCannotPlayDialog->tip:" + tip);
+    	Log.i(TAG, "showCannotPlayDialog->isNextPlay:" + isNextPlay);
     	//if(mErrorTipDialog != null && mErrorTipDialog.isShowing())
     	//	return;
     	mErrorTipDialog = new AlertDialog.Builder(this).setMessage(tip).setCancelable(false).create();
-    	int displayTime = isNextPlay ? 1000 : 2000;
-    	new Handler().postDelayed(new Runnable() {
-			
-			@Override
-			public void run() {
-				if(isNextPlay){
-					 mErrorTipDialog.dismiss();
-					 mPlayListLayout.setCurrentPlayIndex(mPlayStateInfo.getCurrentIndex());
-		             setMediaData();
-		             play();
-				}else{
-					mErrorTipDialog.dismiss();
-					finishPlay();
-				}
-			}
-		}, displayTime);
     	mErrorTipDialog.show();
+    	int displayTime = isNextPlay ? 1000 : 2000;
+    	Message errorMessage = new Message();
+    	errorMessage.what = MSG_CLOSE_ERROR_DIALOG;
+    	Bundle bundle = new Bundle();
+    	bundle.putBoolean(KEY_NEXT_PLAY, isNextPlay);
+    	errorMessage.setData(bundle);
+    	mUIHandler.sendMessageDelayed(errorMessage, displayTime);
+    	//mUIHandler.sendEmptyMessageDelayed(MSG_CLOSE_ERROR_DIALOG, displayTime);
+    	
     }
     
     // 设置播放器缓冲图标
@@ -1249,6 +1249,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
         public void onXChange(int X)
         {
+        	Log.i("VideoKey", "onXChange->X:" + X);
             mUIHandler.removeMessages(MSG_HIDE_ACCELERATION);
 
             mUIHandler.setbAlwaysShowPopSeekbar(false);
@@ -1624,7 +1625,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                     mSbpw.Xacceleration = 0;
                     mSbpw.getmSeekBar().setXacceleration(0);
                     mSbpw.mSeekBarPopWindowListener.onXChange(0);
-                    mSbpw.setAcceleCompl(true);
+                    //mSbpw.setAcceleCompl(true);
                 }
                                 
                 Log.d(TAG, "OnSeekCompleteListener --- " + firstSeek);
@@ -1666,7 +1667,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             }
             */
             
-            initEvent();
+            //initEvent();
             
             if (!PlatformConfig.isSupportHisiMediaplayer())
             {
@@ -3719,20 +3720,21 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                     /****/
 
                     int newCurrPos = mVVAdapter.getCurrentPosition();
-                    Log.d(TAG, "MSG_SHOW_CONTROLER----" + mVVAdapter.isSeeking() + newCurrPos);
+                    Log.d("VideoKey", "MSG_SHOW_CONTROLER----" + mVVAdapter.isSeeking() + newCurrPos);
 
                     if (!mSbpw.getmSeekBar().isOnkey && !mVVAdapter.isSeeking())
                     {
                         int duration = mVVAdapter.getDuration();
-
+                        Log.i("VideoKey", "MSG_SHOW_CONTROLER->duration:" + duration);
                         if (duration != 0)
                         {
+                        	//比例,当前视频播放位置/视频时长
                             mSbpw.getmSeekBar().setKscale((float) newCurrPos / duration);
                         }
                     }
                     if (!mVVAdapter.isSeeking())
                     {
-                        Log.d(TAG, "MSG_SHOW_CONTROLER seek to " + newCurrPos);
+                        Log.d("VideoKey", "MSG_SHOW_CONTROLER seek to " + newCurrPos);
                         mSbpw.seekto(newCurrPos);
 
                     }
@@ -3835,6 +3837,20 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                 case MSG_DOBLY_HIDE:
                     doblyPopWin.hideDoblyWin();
                     break;
+                case MSG_CLOSE_ERROR_DIALOG:
+                	boolean isNextPlay = msg.getData().getBoolean(KEY_NEXT_PLAY);
+                	if(isNextPlay){
+    					if(mErrorTipDialog.isShowing())
+    						mErrorTipDialog.dismiss();
+    					 mPlayListLayout.setCurrentPlayIndex(mPlayStateInfo.getCurrentIndex());
+    		             setMediaData();
+    		             play();
+    				}else{
+    					if(mErrorTipDialog.isShowing())
+    						mErrorTipDialog.dismiss();
+    					finishPlay();
+    				}
+                	break;
                 default:
                     break;
             }
@@ -4731,6 +4747,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         mPreferences = getSharedPreferences(VIDEO_PLAY_SET, Context.MODE_PRIVATE);
         mEditor = mPreferences.edit();
 
+        //首次启动Activity，初始化配置
         if (mPreferences.getBoolean(FIRST_START_VIDEOPLAY, true))
         {
             Log.w(TAG, "================== init Video Play Preferences =======================");
