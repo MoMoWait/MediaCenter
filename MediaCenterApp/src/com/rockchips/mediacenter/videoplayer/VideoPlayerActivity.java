@@ -1659,7 +1659,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     private OnPreparedListener onPreparedListener = new OnPreparedListener()
     {
         public void onPrepared(IMediaPlayerAdapter mp)
-        {            
+        {       
+        	Log.i(TAG, "VideoPlayerActivity->onPrepared");
             mMediaPlayer = mp;
          /*   if (mVVAdapter.getSubtitleList() != null && mVVAdapter.getSubtitleList().size() > 0)
             {
@@ -3553,8 +3554,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
                         setbAlwaysShowPopSeekbar(false);
                         mVVAdapter.setOnCompletionListener(onCompletionListener);
+                        Log.i(TAG, "mVVAdapter.start()");
                         mVVAdapter.start();
-
+                        Log.i(TAG, "mVVAdapter.start()->stackTrace:" + android.util.Log.getStackTraceString(new Throwable()));
                         /**
                          * Mender:l00174030;Reason:when you pause & play, there is some wrong with the original model, set the video size to skip it.
                          **/

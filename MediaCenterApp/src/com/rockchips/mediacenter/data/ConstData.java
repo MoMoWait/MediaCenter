@@ -71,6 +71,8 @@ public class ConstData {
 		String EXTRA_NFS_INFO = "extra_nfs_info";
 		String EXTRA_SAMBA_INFO = "extra_samba_info";
 		String EXTRA_DEVICE_PATH = "extra_device_path";
+		String EXTRA_IS_ADD_SAMBA = "extra_is_add_samba";
+		String EXTRA_IS_ADD_NETWORK_DEVICE = "extra_is_add_network_device";
         /**
          * 获取媒体列表的key键
          */

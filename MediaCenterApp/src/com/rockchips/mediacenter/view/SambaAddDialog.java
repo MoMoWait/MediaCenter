@@ -91,7 +91,7 @@ public class SambaAddDialog extends AppBaseDialog{
 					}
 					
 				}else{
-					if(TextUtils.isEmpty(serverAddress)){
+					if(TextUtils.isEmpty(serverAddress) || TextUtils.isEmpty(userName) || TextUtils.isEmpty(password)){
 						ToastUtils.showToast(ResourceUtils.getString(R.string.enter_server_address));
 						return;
 					}

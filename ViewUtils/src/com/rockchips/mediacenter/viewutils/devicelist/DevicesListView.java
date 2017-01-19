@@ -113,7 +113,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
      * @param devicelist 设备列表
      * @see [类、类#方法、类#成员]
      */
-    public void setDevicesList(List<DeviceItem> devicelist)
+    public void setDevicesList(List<DeviceItem> devicelist, boolean isAddNetWork)
     {
         if (devicelist == null)
         {
@@ -132,7 +132,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         }
         else
         {
-            initFocus();
+            initFocus(isAddNetWork);
             mBInitFocus = true;
         }        
     }
@@ -262,7 +262,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         mTextViews[TEXTVIEW_THIRD].setBackgroundResource(R.drawable.current_select_device_background);
     }
 
-    private void initFocus()
+    private void initFocus(boolean isAddNetWork)
     {
         if (mDevicesList == null || mDeviceNum <= 1)
         {
@@ -270,8 +270,12 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         }
         else
         {
-            setCurrentFocus(1);
-        }        
+        	if(isAddNetWork)
+        		setCurrentFocus(mDeviceNum - 1);
+        	else
+        		setCurrentFocus(1);
+        }
+        Log.i(TAG, "initFocus->mFocusIndex:" + mFocusIndex);
     }
     
     public void setCurrentFocus(int focusIndex)
@@ -298,6 +302,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
                 mFocusIndex = mDevicesList.size() - 1;
             }
         }
+        Log.i(TAG, "adjustFocus->mFocusIndex:" + mFocusIndex);
         refreshFocusDeviceId();
 
     }

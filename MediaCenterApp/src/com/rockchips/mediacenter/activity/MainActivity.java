@@ -118,6 +118,14 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
      */
     private List<NFSInfo> mNFSList;
     
+    /**
+     * Smb匹配信息
+     */
+    private Map<String, SmbInfo> mSmbMap = new HashMap<String, SmbInfo>();
+    /**
+     * NFS匹配信息
+     */
+    private Map<String, NFSInfo> mNFSMap = new HashMap<String, NFSInfo>();
     private LinearLayout mLlNoDev;
 
     private static final int MEDIA_TYPE_FOLDER = 0;
@@ -200,6 +208,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     	mSmbList = readSmbInfos();
     	if(mNFSList != null && mNFSList.size() > 0){
     		for(NFSInfo nfsInfo : mNFSList){
+    			mNFSMap.put(nfsInfo.getLocalMountPath(), nfsInfo);
     			//设备挂载不成功，尝试挂载
     			if(!MountUtils.isMountSuccess(nfsInfo.getNetWorkPath(), nfsInfo.getLocalMountPath())){
     				mountNFSDevice(nfsInfo);
@@ -210,6 +219,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     	
     	if(mSmbList != null && mSmbList.size() > 0){
     		for(SmbInfo smbInfo : mSmbList){
+    			mSmbMap.put(smbInfo.getLocalMountPath(), smbInfo);
     			//设备挂载不成功，尝试挂载
     			if(!MountUtils.isMountSuccess(smbInfo.getNetWorkPath(), smbInfo.getLocalMountPath())){
     				mountSmbDevice(smbInfo);
@@ -230,14 +240,16 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     
     
     private void mountSmbDevice(SmbInfo smbInfo){
-    	Intent nfsMountIntent = new Intent(ConstData.BroadCastMsg.SAMBA_MOUNT);
-		nfsMountIntent.putExtra(ConstData.IntentKey.EXTRA_NFS_INFO, smbInfo);
-		LocalBroadcastManager.getInstance(MainActivity.this).sendBroadcast(nfsMountIntent);
+    	Intent smbMountIntent = new Intent(ConstData.BroadCastMsg.SAMBA_MOUNT);
+    	smbMountIntent.putExtra(ConstData.IntentKey.EXTRA_SAMBA_INFO, smbInfo);
+    	smbMountIntent.putExtra(ConstData.IntentKey.EXTRA_IS_ADD_NETWORK_DEVICE, false);
+		LocalBroadcastManager.getInstance(MainActivity.this).sendBroadcast(smbMountIntent);
     }
     
     private void mountNFSDevice(NFSInfo nfsInfo){
     	Intent nfsMountIntent = new Intent(ConstData.BroadCastMsg.NFS_MOUNT);
 		nfsMountIntent.putExtra(ConstData.IntentKey.EXTRA_NFS_INFO, nfsInfo);
+		nfsMountIntent.putExtra(ConstData.IntentKey.EXTRA_IS_ADD_NETWORK_DEVICE, false);
 		LocalBroadcastManager.getInstance(MainActivity.this).sendBroadcast(nfsMountIntent);
     }
     
@@ -451,9 +463,12 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
 						DialogUtils.closeLoadingDialog();
 						//Log.i(TAG, "showSambaAddDialog->mountResult:" + result);
 						if(result == ConstData.TaskExecuteResult.SUCCESS){
+							//提示挂载成功
+							ToastUtils.showToast(getString(R.string.mount_success));
 							//发送广播
 							Intent sambaMountIntent = new Intent(ConstData.BroadCastMsg.SAMBA_MOUNT);
 							sambaMountIntent.putExtra(ConstData.IntentKey.EXTRA_SAMBA_INFO, newSambaInfo);
+							sambaMountIntent.putExtra(ConstData.IntentKey.EXTRA_IS_ADD_NETWORK_DEVICE, true);
 							LocalBroadcastManager.getInstance(MainActivity.this).sendBroadcast(sambaMountIntent);
 						}else{
 							//提示挂载失败
@@ -486,7 +501,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     @Override
     protected void onResume()
     {
-        loadDeviceInfoList();
+        loadDeviceInfoList(false);
         registerDeviceUpDownListener();
         //devUpdate();
         super.onResume();
@@ -582,20 +597,16 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     /**
      * 加载所有挂载设备信息的列表
      */
-    public void loadDeviceInfoList(){
+    public void loadDeviceInfoList(boolean isAddNetWork){
     	LOG.i(TAG, "loadDeviceInfoList");
-    	devUpdate();
+    	devUpdate(isAddNetWork);
     	
     }
     
-    private void devUpdate()
+    private void devUpdate(boolean isAddNetWork)
     {
         List<LocalDevice> tmpList;
         mDevInfoList.clear();
-
-       // refreshNFSDevice();
-       // refreshSmbDevice();
-        
         LocalDeviceService deviceService = new LocalDeviceService();
         tmpList = deviceService.getAll(LocalDevice.class);
 		
@@ -615,10 +626,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
         }
 
         LOG.d(TAG, "devUpdate: mDevInfoList.size():" + mDevInfoList.size());
-
-        for(LocalDevice deviceInfo : mDevInfoList){
-        	//Log.i(TAG, "deviceInfo:" + deviceInfo);
-        }
         
         mLlNoDev.setVisibility(View.GONE);
         mDevicesListView.setOnDeviceSelectedListener(this);
@@ -636,12 +643,20 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
         for (int i = 0; i < mDevInfoList.size(); ++i)
         {
             LocalDevice info = mDevInfoList.get(i);
-            name = DeviceTypeStr.getDevTypeStr(this, info.getDevices_type()) + info.getPhysic_dev_id();
+            if(info.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_SMB ){
+            	name = DeviceTypeStr.getDevTypeStr(this, info.getDevices_type()) + mSmbMap.get(info.getMountPath()).getNetWorkPath() +
+            			"(" + info.getPhysic_dev_id() + ")" ;
+            }else if(info.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_NFS){
+            	name = DeviceTypeStr.getDevTypeStr(this, info.getDevices_type()) + mNFSMap.get(info.getMountPath()).getNetWorkPath() +
+            			"(" + info.getPhysic_dev_id() + ")" ;
+            }else{
+            	 name = DeviceTypeStr.getDevTypeStr(this, info.getDevices_type()) + info.getPhysic_dev_id();
+            }
             device = new DeviceItem(info, name, imageIds, textIds);
             mDeviceItemList.add(device);
         }
 
-        mDevicesListView.setDevicesList(mDeviceItemList);
+        mDevicesListView.setDevicesList(mDeviceItemList, isAddNetWork);
         mDevicesListView.notifyDataChanged();
     }
     
@@ -733,8 +748,11 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     	@Override
     	public void onReceive(Context context, Intent intent) {
     		//Log.i(TAG, "DeviceUpDownReceiver->onReceive");
-    		int deviceType = intent.getIntExtra(ConstData.IntentKey.EXTRA_DEVICE_TYPE, -1);
-    		loadDeviceInfoList();
+    		//int deviceType = intent.getIntExtra(ConstData.IntentKey.EXTRA_DEVICE_TYPE, -1);
+    		//设备路径
+    		//String devicePath = intent.getStringExtra(ConstData.IntentKey.EXTRA_DEVICE_PATH);
+    		boolean isAddNetWork = intent.getBooleanExtra(ConstData.IntentKey.EXTRA_IS_ADD_NETWORK_DEVICE, false);
+    		loadDeviceInfoList(isAddNetWork);
     	}
     }
     

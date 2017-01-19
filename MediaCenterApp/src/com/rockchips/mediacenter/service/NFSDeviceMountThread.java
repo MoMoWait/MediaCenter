@@ -10,9 +10,11 @@ import com.rockchips.mediacenter.util.MountUtils;
 public class NFSDeviceMountThread extends Thread{
 	private DeviceMonitorService mService;
 	private NFSInfo mInfo;
-	public NFSDeviceMountThread(DeviceMonitorService service, NFSInfo nfsInfo){
+	private boolean mIsAddNetWork;
+	public NFSDeviceMountThread(DeviceMonitorService service, NFSInfo nfsInfo, boolean isAddNetWork){
 		mService = service;
 		mInfo = nfsInfo;
+		mIsAddNetWork = isAddNetWork;
 	}
 	
 	@Override
@@ -20,10 +22,10 @@ public class NFSDeviceMountThread extends Thread{
 		if(mInfo != null){
 			if(MountUtils.mountNFS(mInfo)){
 				//mount NFS设备成功
-				mService.processMountMsg(mInfo.getLocalMountPath(), Environment.MEDIA_MOUNTED, ConstData.DeviceType.DEVICE_TYPE_NFS);
+				mService.processMountMsg(mInfo.getLocalMountPath(), Environment.MEDIA_MOUNTED, ConstData.DeviceType.DEVICE_TYPE_NFS, mIsAddNetWork);
 			}else{
 				//mount NFS设备失败
-				mService.processMountMsg(mInfo.getLocalMountPath(), Environment.MEDIA_UNMOUNTED, ConstData.DeviceType.DEVICE_TYPE_NFS);
+				mService.processMountMsg(mInfo.getLocalMountPath(), Environment.MEDIA_UNMOUNTED, ConstData.DeviceType.DEVICE_TYPE_NFS, mIsAddNetWork);
 			}
 		}
 	}

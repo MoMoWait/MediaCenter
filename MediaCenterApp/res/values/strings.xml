@@ -326,6 +326,7 @@
     <string name="read_samba_error">Samba设备数据被破坏，请重新添加Samba设备</string>
     <string name="check_network">请检查网络是否连接</string>
     <string name="mount_fail">挂载失败</string>
+    <string name="mount_success">挂载成功</string>
     <string name="add_network_device">添加网络设备</string>
     <string name="add_nfs_device">添加NFS设备</string>
     <string name="add_samba_device">添加Samba设备</string>

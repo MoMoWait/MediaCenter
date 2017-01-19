@@ -53,6 +53,7 @@ import com.rockchips.mediacenter.portable.listener.OnSeekCompleteListener;
  */
 public class OrigVideoView extends VideoView implements IVideoViewAdapter
 {
+	//private static final String TAG = "OrigVideoView";
     private IICLOG Log = IICLOG.getInstance();
     private WindowManager mWindowManager;
 
@@ -243,6 +244,7 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
 
     public void start()
     {
+    	Log.i(TAG, "start()");
         super.start();
         if(mAudioManager == null)
         {
@@ -283,7 +285,7 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
     /**Mender:l00174030;Reason:from android2.2 **/
     public boolean isSeeking = false;
 
-    private final String TAG = "DLNAVideoView";
+    private final String TAG = "OrigVideoView";
 
     public void isSeeking(boolean b)
     {

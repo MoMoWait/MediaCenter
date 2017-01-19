@@ -16,22 +16,22 @@ public class SambaDeviceMountThread extends Thread{
 	
 	private DeviceMonitorService mService;
 	private SmbInfo mInfo;
-	
-	public SambaDeviceMountThread(DeviceMonitorService service, SmbInfo smbInfo){
+	private boolean mIsAddNetwork;
+	public SambaDeviceMountThread(DeviceMonitorService service, SmbInfo smbInfo, boolean isAddNetWork){
 		mService = service;
 		mInfo = smbInfo;
-		
+		mIsAddNetwork = isAddNetWork;
 	}
 	
 	@Override
 	public void run() {
 		if(mInfo != null){
 			if(MountUtils.mountSamba(mInfo)){
-				//mount NFS设备成功
-				mService.processMountMsg(mInfo.getLocalMountPath(), Environment.MEDIA_MOUNTED, ConstData.DeviceType.DEVICE_TYPE_SMB);
+				//mount Samba设备成功
+				mService.processMountMsg(mInfo.getLocalMountPath(), Environment.MEDIA_MOUNTED, ConstData.DeviceType.DEVICE_TYPE_SMB, mIsAddNetwork);
 			}else{
-				//mount NFS设备失败
-				mService.processMountMsg(mInfo.getLocalMountPath(), Environment.MEDIA_UNMOUNTED, ConstData.DeviceType.DEVICE_TYPE_SMB);
+				//mount Samba设备失败
+				mService.processMountMsg(mInfo.getLocalMountPath(), Environment.MEDIA_UNMOUNTED, ConstData.DeviceType.DEVICE_TYPE_SMB, mIsAddNetwork);
 			}
 		}
 	}

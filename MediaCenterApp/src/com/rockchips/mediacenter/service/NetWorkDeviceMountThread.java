@@ -19,6 +19,7 @@ import momo.cn.edu.fjnu.androidutils.utils.StorageUtils;
 /**
  * @author GaoFei
  * 网络设备（Samba，NFS）挂载处理
+ * 挂载已经挂载过的samba，nfs设备
  */
 public class NetWorkDeviceMountThread extends Thread{
 	private DeviceMonitorService mService;
@@ -46,10 +47,10 @@ public class NetWorkDeviceMountThread extends Thread{
 				NFSInfo nfsInfo = nfsIterator.next();
 				if(MountUtils.mountNFS(nfsInfo)){
 					//挂载成功
-					mService.processMountMsg(nfsInfo.getLocalMountPath(), Environment.MEDIA_MOUNTED, ConstData.DeviceType.DEVICE_TYPE_NFS);
+					mService.processMountMsg(nfsInfo.getLocalMountPath(), Environment.MEDIA_MOUNTED, ConstData.DeviceType.DEVICE_TYPE_NFS, false);
 				}else{
 					//挂载失败
-					mService.processMountMsg(nfsInfo.getLocalMountPath(), Environment.MEDIA_UNMOUNTED, ConstData.DeviceType.DEVICE_TYPE_NFS);
+					mService.processMountMsg(nfsInfo.getLocalMountPath(), Environment.MEDIA_UNMOUNTED, ConstData.DeviceType.DEVICE_TYPE_NFS, false);
 					nfsIterator.remove();
 				}
 			}
@@ -77,10 +78,10 @@ public class NetWorkDeviceMountThread extends Thread{
 				SmbInfo smbInfo = smbIterator.next();
 				if(MountUtils.mountSamba(smbInfo)){
 					//挂载成功
-					mService.processMountMsg(smbInfo.getLocalMountPath(), Environment.MEDIA_MOUNTED, ConstData.DeviceType.DEVICE_TYPE_SMB);
+					mService.processMountMsg(smbInfo.getLocalMountPath(), Environment.MEDIA_MOUNTED, ConstData.DeviceType.DEVICE_TYPE_SMB, false);
 				}else{
 					//挂载失败
-					mService.processMountMsg(smbInfo.getLocalMountPath(), Environment.MEDIA_UNMOUNTED, ConstData.DeviceType.DEVICE_TYPE_SMB);
+					mService.processMountMsg(smbInfo.getLocalMountPath(), Environment.MEDIA_UNMOUNTED, ConstData.DeviceType.DEVICE_TYPE_SMB, false);
 					smbIterator.remove();
 				}
 			}

@@ -1,10 +1,7 @@
 package com.rockchips.mediacenter.service;
 
 import java.util.List;
-
 import android.os.Environment;
-import android.util.Log;
-
 import com.rockchips.mediacenter.bean.LocalDevice;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.modle.db.LocalDeviceService;
@@ -49,18 +46,18 @@ public class LocalDeviceMountThread extends Thread{
 		//服务重启，添加USB设备
 		if(allUsbPaths != null && allUsbPaths.size() > 0){
 			for(String usbPath : allUsbPaths){
-				mService.processMountMsg(usbPath, Environment.MEDIA_MOUNTED, ConstData.DeviceType.DEVICE_TYPE_U);
+				mService.processMountMsg(usbPath, Environment.MEDIA_MOUNTED, ConstData.DeviceType.DEVICE_TYPE_U, false);
 			}
 		}
 		//添加SD卡
 		if(allSdCardPaths != null && allSdCardPaths.size() > 0){
 			for(String sdCardPath : allSdCardPaths){
-				mService.processMountMsg(sdCardPath, Environment.MEDIA_MOUNTED, ConstData.DeviceType.DEVICE_TYPE_SD);
+				mService.processMountMsg(sdCardPath, Environment.MEDIA_MOUNTED, ConstData.DeviceType.DEVICE_TYPE_SD, false);
 			}
 		}
 		
 		//添加内部存储
-		mService.processMountMsg(internelStoragePath, Environment.MEDIA_MOUNTED, ConstData.DeviceType.DEVICE_TYPE_INTERNEL_STORAGE);
+		mService.processMountMsg(internelStoragePath, Environment.MEDIA_MOUNTED, ConstData.DeviceType.DEVICE_TYPE_INTERNEL_STORAGE, false);
 	
 	}
 }

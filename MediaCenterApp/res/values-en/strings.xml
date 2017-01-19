@@ -326,6 +326,7 @@
     <string name="read_samba_error">The samba device data is lost,please add samba device info again</string>
     <string name="check_network">Please check network</string>
     <string name="mount_fail">Mount failed</string>
+    <string name="mount_success">Mount success</string>
     <string name="add_network_device">Add network devices</string>
     <string name="add_nfs_device">Add NFS device</string>
     <string name="add_samba_device">Add Samba device</string>

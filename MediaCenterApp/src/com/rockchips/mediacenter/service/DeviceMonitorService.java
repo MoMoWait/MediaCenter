@@ -68,7 +68,7 @@ import android.util.Log;
 public class DeviceMonitorService extends Service {
 
 	public static final String TAG = DeviceMonitorService.class.getSimpleName();
-	public static final int DELAY_MESSAGE_TIME = 2000;
+	public static final int DELAY_MESSAGE_TIME = 1000;
 	private MonitorBinder mBinder;
 	private StorageManager mStorageManager;
 	private MountListener mountListener;
@@ -271,9 +271,7 @@ public class DeviceMonitorService extends Service {
 	 * @param state
 	 * @param deviceType
 	 */
-	public synchronized void processMountMsg(String path, String state, int deviceType) {
-		//Log.i(TAG, "processMountMsg->path:" + path);
-		//Log.i(TAG, "processMountMsg->state:" + state);
+	public synchronized void processMountMsg(String path, String state, int deviceType, boolean isAddNetWork) {
 		synchronized (mountMsgs) {
 			LocalDeviceService localDeviceService = new LocalDeviceService();
 			LocalMediaFileService mediaFileService = new LocalMediaFileService();
@@ -307,76 +305,14 @@ public class DeviceMonitorService extends Service {
 				message.what = DeviceMountMsgs.DEVICE_DOWN;
 			}
 			message.arg1 = deviceType;
+			message.arg2 = (isAddNetWork ? 1 : 0);
 			message.obj = path;
 			mDeviceHandler.sendMessageDelayed(message, DELAY_MESSAGE_TIME);
 			mountMsgs.put(path, state.equals(Environment.MEDIA_MOUNTED));
 		}
 
 	}
-
-	/**
-	 * 处理NFS设备消息挂载信息
-	 * 
-	 * @param nfsList
-	 */
-	public synchronized void processNFSDevicesMountMsg(List<NFSInfo> nfsList) {
-		mNFSList = nfsList;
-		if (nfsList != null && nfsList.size() > 0) {
-			LocalDeviceService deviceService = new LocalDeviceService();
-			for (NFSInfo itemInfo : nfsList) {
-				LocalDevice nfsDevice = deviceService.getDeviceByPath(itemInfo
-						.getLocalMountPath());
-				if (nfsDevice == null
-						&& MountUtils.isMountSuccess(itemInfo.getNetWorkPath(),
-								itemInfo.getLocalMountPath()))
-					processMountMsg(itemInfo.getLocalMountPath(),
-							Environment.MEDIA_MOUNTED, ConstData.DeviceType.DEVICE_TYPE_NFS);
-				else if (nfsDevice != null
-						&& !MountUtils.isMountSuccess(
-								itemInfo.getNetWorkPath(),
-								itemInfo.getLocalMountPath())) {
-					processMountMsg(itemInfo.getLocalMountPath(),
-							Environment.MEDIA_UNMOUNTED, ConstData.DeviceType.DEVICE_TYPE_NFS);
-				} else {
-
-				}
-			}
-		}
-	}
-
-	/**
-	 * 处理Samba设备挂载信息
-	 * 
-	 * @param smbList
-	 */
-	public synchronized void processSambaDevicesMountMsg(List<SmbInfo> smbList) {
-		mSmbList = smbList;
-		if (smbList != null && smbList.size() > 0) {
-			LocalDeviceService deviceService = new LocalDeviceService();
-			for (SmbInfo itemInfo : smbList) {
-				LocalDevice sambaDevice = deviceService
-						.getDeviceByPath(itemInfo.getLocalMountPath());
-				//Log.i(TAG,
-				//		"processSambaDevicesMountMsg->itemInfo->localMountPath:"
-				//				+ itemInfo.getLocalMountPath());
-				if (sambaDevice == null
-						&& MountUtils.isMountSuccess(itemInfo.getNetWorkPath(),
-								itemInfo.getLocalMountPath())) {
-					processMountMsg(itemInfo.getLocalMountPath(),
-							Environment.MEDIA_MOUNTED, ConstData.DeviceType.DEVICE_TYPE_SMB);
-				} else if (sambaDevice != null
-						&& !MountUtils.isMountSuccess(
-								itemInfo.getNetWorkPath(),
-								itemInfo.getLocalMountPath())) {
-					processMountMsg(itemInfo.getLocalMountPath(),
-							Environment.MEDIA_UNMOUNTED, ConstData.DeviceType.DEVICE_TYPE_SMB);
-				} else {
-
-				}
-			}
-		}
-	}
-
+	
 	public  boolean isMounted(String path) {
 		synchronized (mCurrProcessMsgs) {
 			if(mCurrProcessMsgs.get(path) == null)
@@ -621,7 +557,7 @@ public class DeviceMonitorService extends Service {
 			//Log.i(TAG, "path =" + path + "   " + "oldState=" + oldState + "   "
 			//		+ "newState=" + newState);
 			if(newState.equals(Environment.MEDIA_MOUNTED) || newState.equals(Environment.MEDIA_UNMOUNTED)){
-				processMountMsg(path, newState, ConstData.DeviceType.DEVICE_TYPE_SD);
+				processMountMsg(path, newState, ConstData.DeviceType.DEVICE_TYPE_SD, false);
 			}
 				
 		}
@@ -693,6 +629,7 @@ public class DeviceMonitorService extends Service {
 			Intent intent = new Intent();
 			intent.putExtra(ConstData.IntentKey.EXTRA_DEVICE_TYPE, msg.arg1);
 			intent.putExtra(ConstData.IntentKey.EXTRA_DEVICE_PATH, (String)msg.obj);
+			intent.putExtra(ConstData.IntentKey.EXTRA_IS_ADD_NETWORK_DEVICE, msg.arg2 == 1);
 			switch (msg.what) {
 			case DeviceMountMsgs.DEVICE_UP:
 				intent.setAction(ConstData.BroadCastMsg.DEVICE_UP);
@@ -723,11 +660,13 @@ public class DeviceMonitorService extends Service {
 			//Log.i(TAG, "NetWorkDeviceMountReceiver->receive action:" + action);
 			if(action.equals(ConstData.BroadCastMsg.NFS_MOUNT)){
 				NFSInfo nfsInfo = (NFSInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_NFS_INFO);
-				NFSDeviceMountThread nfsDeviceMountThread = new NFSDeviceMountThread(DeviceMonitorService.this, nfsInfo);
+				boolean isAddNetWork = intent.getBooleanExtra(ConstData.IntentKey.EXTRA_IS_ADD_NETWORK_DEVICE, false);
+				NFSDeviceMountThread nfsDeviceMountThread = new NFSDeviceMountThread(DeviceMonitorService.this, nfsInfo, isAddNetWork);
 				mMountNetWorkDeviceService.execute(nfsDeviceMountThread);
 			}else if(action.equals(ConstData.BroadCastMsg.SAMBA_MOUNT)){
 				SmbInfo smbInfo = (SmbInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_SAMBA_INFO);
-				SambaDeviceMountThread sambaDeviceMountThread = new SambaDeviceMountThread(DeviceMonitorService.this, smbInfo);
+				boolean isAddNetWork = intent.getBooleanExtra(ConstData.IntentKey.EXTRA_IS_ADD_NETWORK_DEVICE, false);
+				SambaDeviceMountThread sambaDeviceMountThread = new SambaDeviceMountThread(DeviceMonitorService.this, smbInfo, isAddNetWork);
 				mMountNetWorkDeviceService.execute(sambaDeviceMountThread);
 			}else if(action.equals(ConstData.BroadCastMsg.REFRESH_NETWORK_DEVICE)){
 				//刷新网络设备

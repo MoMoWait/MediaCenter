@@ -2,6 +2,8 @@ package com.rockchips.mediacenter.modle.task;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import android.media.iso.ISOManager;
 import com.rockchips.mediacenter.bean.AllFileInfo;
@@ -53,6 +55,17 @@ public class AllFileLoadTask extends AsyncTask<String, Integer, Integer> {
 					mAllFileInfos.add(allFileInfo);
 				}
 			}
+		}
+		if(mAllFileInfos.size() > 1){
+			Collections.sort(mAllFileInfos, new Comparator<AllFileInfo>() {
+
+				@Override
+				public int compare(AllFileInfo lhs, AllFileInfo rhs) {
+					if(lhs.getFile().isDirectory() && rhs.getFile().isFile())
+						return -1;
+					return 0;
+				}
+			});
 		}
 		return null;
 	}
