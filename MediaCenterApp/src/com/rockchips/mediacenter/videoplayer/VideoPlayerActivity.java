@@ -71,6 +71,9 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 import java.io.File;
 
+import org.xutils.x;
+import org.xutils.view.annotation.ViewInject;
+
 import momo.cn.edu.fjnu.androidutils.data.CommonValues;
 import momo.cn.edu.fjnu.androidutils.utils.DeviceInfoUtils;
 import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
@@ -141,16 +144,11 @@ import com.rockchips.mediacenter.viewutils.timeseek.TimeSeekDialog.OnTimeSeekLis
 public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectTypeListener
 {
     private static final String TAG = "VideoPlayerActivity";
-
-    private SeekBarLayout mSbpw = null;
-
     //
     // /**修改者：l00174030；修改原因：把2.2的移植到应用层来做 **/
     // private DLNAVideoView mVV = null;
     // 增加4.2兼容
     private IVideoViewAdapter mVVAdapter = null;
-
-    private View mVV = null;
 
     // MIN MSG CODE ; for remove all messages
     public static final int MSG_UI_VIDEOVIEW_MIN = 0;
@@ -223,11 +221,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     // 提示
     private Toast mToast = null;
 
-    /**
-     * 等待进度
-     */
-    private ProgressBar mCircleProgressBar = null;
-
     private UIHandler mUIHandler = null;
 
     // zkf61715 seek为假异步，为避免响应超时，需要在子线程中执行seek操作
@@ -272,13 +265,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
     private TranslateAnimation mSlideOut = null;
 
-    private SurfaceView mSubSurface;
-
     private SurfaceHolder mSubHolder;
 
     private IMediaPlayerAdapter mMediaPlayer;
-
-    private RelativeLayout myvideo;
 
     private SubObject sub;
 
@@ -307,9 +296,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
     // 菜单是否已被创建
     private boolean isMenuHasCreated = false;
-
-    /** 修改者：l00174030；修改原因：时间控件和控制条一起显示 **/
-    private TimeLayout tiemLayout = null;
 
     // playlist列表显示的控件
     private PlayListShowLayoutBase mPlayListLayout;
@@ -359,7 +345,18 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
      * 错误提示对话框
      */
     private AlertDialog mErrorTipDialog;
-    
+    @ViewInject(R.id.vv)
+    private View mVV = null;
+    @ViewInject(R.id.video_layout)
+    private RelativeLayout myvideo;
+    @ViewInject(R.id.subtitle)
+    private SurfaceView mSubSurface;
+    @ViewInject(R.id.seekbarlayout)
+    private SeekBarLayout mSbpw;
+    @ViewInject(R.id.timeLayout)
+    private TimeLayout tiemLayout;
+    @ViewInject(R.id.circleProgressBar)
+    private ProgressBar mCircleProgressBar;
     protected void onCreate(Bundle savedInstanceState)
     {
         Log.d(TAG, "VideoPlayerActivity --> onCreate()--");
@@ -428,21 +425,11 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     private void initViews()
     {
         Log.d(TAG, "onCreate ---> initViews--");
-        myvideo = (RelativeLayout) findViewById(R.id.video_layout);
         // creat VideoView
         if (mVV == null || mVVAdapter == null)
         {
         	//支持海斯平台，就支持加速
             canAccelerate = PlatformConfig.isSupportHisiMediaplayer();
-            if (canAccelerate)
-            {
-                mVV = (HisiVideoView) findViewById(R.id.vv);
-            }
-            else
-            {
-                mVV = (OrigVideoView) findViewById(R.id.vv);
-            }
-
             mVVAdapter = (IVideoViewAdapter) mVV;
             mVVAdapter.setOnErrorListener(onErrorListener);
             mVVAdapter.setOnPreparedListener(onPreparedListener);
@@ -453,12 +440,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             mVVAdapter.setOnFastForwardCompleteListener(onFastForwardCompleteListener);
             mVVAdapter.setOnBufferingUpdateListener(onBufferingUpdateListener);
         }
-
-        // subtitle
-        if (mSubSurface == null)
-        {
-            mSubSurface = (SurfaceView) findViewById(R.id.subtitle);
-        }
         if (mSubHolder == null)
         {
             mSubHolder = mSubSurface.getHolder();
@@ -468,11 +449,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
        // mSubHolder.setFixedSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
         mVVAdapter.setSubSurfaceHolder(mSubHolder);
-
-        if (mSbpw == null)
-        {
-            mSbpw = (SeekBarLayout) findViewById(R.id.seekbarlayout);
-        }
 
         mPlayListLayout = new PlayListShowLayout(this, mPlayStateInfo);
         mPlayListLayout.setOnItemClickListener(mPlaylistItemclickListener);
@@ -488,8 +464,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         mbi = getCurrentMediaInfo();
 
         mSbpw.setMmbi(mbi);
-
-        tiemLayout = (TimeLayout) findViewById(R.id.timeLayout);
         // 初始时不显示
         if (tiemLayout != null)
         {
@@ -3069,8 +3043,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         {
             setContentView(R.layout.video_video_fullscreen);
         }
-
-        mCircleProgressBar = (ProgressBar) findViewById(R.id.circleProgressBar);
+        x.view().inject(this);
     }
 
     @Override

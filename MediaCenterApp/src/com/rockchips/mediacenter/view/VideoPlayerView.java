@@ -1,14 +1,4 @@
-/**
- * 
- * com.rockchips.iptv.stb.dlna.widget
- * DLNAVideoView.java
- * 
- * 2011-12-17-下午07:01:43
- * Copyright 2011 Huawei Technologies Co., Ltd
- * 
- */
-package com.rockchips.mediacenter.portable.orig;
-
+package com.rockchips.mediacenter.view;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -17,42 +7,23 @@ import java.util.List;
 import java.util.Map;
 import android.app.Service;
 import android.content.Context;
-import android.media.AudioManager;
-import android.media.AudioManager.OnAudioFocusChangeListener;
-import android.media.MediaFormat;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.WindowManager;
 import android.widget.VideoView;
-
-import com.rockchips.mediacenter.basicutils.util.IICLOG;
-import com.rockchips.mediacenter.portable.IMediaPlayerAdapter;
-import com.rockchips.mediacenter.portable.IVideoViewAdapter;
+import  com.rockchips.android.airsharing.util.IICLOG;
+import com.rockchips.mediacenter.service.IVideoPlayer;
 import com.rockchips.mediacenter.portable.bean.AudioInfoOfVideo;
 import com.rockchips.mediacenter.portable.bean.SubInfo;
-import com.rockchips.mediacenter.portable.listener.OnBufferingUpdateListener;
-import com.rockchips.mediacenter.portable.listener.OnCompleteListener;
-import com.rockchips.mediacenter.portable.listener.OnErrorListener;
-import com.rockchips.mediacenter.portable.listener.OnFastBackwordCompleteListener;
-import com.rockchips.mediacenter.portable.listener.OnFastForwardCompleteListener;
-import com.rockchips.mediacenter.portable.listener.OnInfoListener;
-import com.rockchips.mediacenter.portable.listener.OnPreparedListener;
-import com.rockchips.mediacenter.portable.listener.OnSeekCompleteListener;
-
-
 /**
- * 
- * DLNAVideoView
- * 
- * 2011-12-17 下午07:01:43
- * 
- * @version 1.0.0
- * 
+ * @author GaoFei
+ * 视频播放组件
  */
-public class OrigVideoView extends VideoView implements IVideoViewAdapter
-{
+public class VideoPlayerView extends VideoView {
+
+
 	//private static final String TAG = "OrigVideoView";
     private IICLOG Log = IICLOG.getInstance();
     private WindowManager mWindowManager;
@@ -86,21 +57,17 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
     public String[] mSubFormat = {"ASS", "LRC", "SRT", "SMI", "SUB", "TXT", "PGS", "DVB", "DVD"};
 
     private MediaPlayer  mMediaPlayer = null;
-
-    OnBufferingUpdateListener onBufferingUpdateListener= null;
-    OnErrorListener onErrorListener= null;
-//    OnInfoListener onInfoListener= null;
-//    OnPreparedListener onPreparedListener= null;
-//    OnSeekCompleteListener onSeekCompleteListener= null;
-    OnCompleteListener onCompleteListener= null;
-    
+    /**Mender:l00174030;Reason:from android2.2 **/
+    public boolean isSeeking = false;
+    private final String TAG = "OrigVideoView";
     SurfaceHolder mSH = null;
     
     private int maxWidth;
     private int maxHeight;
     private int  videoOrigWidth;
     private int videoOrigHeight;
-            
+    private IVideoPlayer mPlayer;
+    private AudioInfoOfVideo maudioInfoOfVidio;
     /**
      *constructor DLNAVideoView.
      *
@@ -108,7 +75,7 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
      * @param attrs
      * @param defStyle
      */
-    public OrigVideoView(Context context, AttributeSet attrs, int defStyle)
+    public VideoPlayerView(Context context, AttributeSet attrs, int defStyle)
     {
         super(context, attrs, defStyle);
 
@@ -121,7 +88,7 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
      * @param context
      * @param attrs
      */
-    public OrigVideoView(Context context, AttributeSet attrs)
+    public VideoPlayerView(Context context, AttributeSet attrs)
     {
         super(context, attrs);
         init(context);
@@ -132,7 +99,7 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
      *
      * @param context
      */
-    public OrigVideoView(Context context)
+    public VideoPlayerView(Context context)
     {
         super(context);
         init(context);
@@ -141,14 +108,11 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
     private Context mContext = null;
     private void init(Context context)
     {
-    	//setErrorListener();
     	setOnErrorListener(mOnErrorListener);
+    	setOnPreparedListener(mPreparedListener);
+    	setOnCompletionListener(mcompleteListener);
+    	setOnInfoListener(mInfoListener);
         mContext = context;
-        
-        if(mediaplayer == null)
-        {
-            mediaplayer =  new OrigMediaPlayerAdapter(context);
-        }
         initDisplayViewAttr();       
     }
           
@@ -165,11 +129,17 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
     
     @Override
     public void setVideoURI(Uri uri) {
+    	//此时VideoView会调用
     	super.setVideoURI(uri);
+    	Log.i(TAG, "setVideoURI->uri:" + uri);
     }
     
-    
- 
+    /**
+     * 设置VideoPlayer接口器
+     */
+    public void setIVideoPlayer(IVideoPlayer player){
+    	mPlayer = player;
+    }
     
     private void initDisplayViewAttr()
     {
@@ -187,14 +157,10 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
         }
         height += navigationBarHeight;
         setDisplayH(height);
-        
         maxWidth = width;
         maxHeight = height;
         videoOrigWidth = width;
         videoOrigHeight = height;
-        
-        //        }
-        //        
         Log.d(TAG, "onMeasure height :" + height + ", width " + width);
     }
 
@@ -238,7 +204,8 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
         return mDisplayW;
     }
 
-    
+
+
     public void start()
     {
     	Log.i(TAG, "start()");
@@ -248,7 +215,6 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
     public void pause()
     {
         super.pause();
-      
     }
 
     public void stopPlayback()
@@ -257,19 +223,14 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
         mMediaPlayer = null;
         
         super.stopPlayback();
-       
     }
 
     public void resume() 
     {
         super.resume();
+        Log.i(TAG, "resume");
     }
 
-
-    /**Mender:l00174030;Reason:from android2.2 **/
-    public boolean isSeeking = false;
-
-    private final String TAG = "OrigVideoView";
 
     public void isSeeking(boolean b)
     {
@@ -281,78 +242,41 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
         return isSeeking;
     }
 
-    private OnInfoListener mOnInfoListener;
     private MediaPlayer.OnInfoListener mInfoListener = new MediaPlayer.OnInfoListener()
     {
         public boolean onInfo(MediaPlayer mp, int what, int extra)
         {
-            if (mOnInfoListener != null)
+            if (mPlayer != null)
             {
-                return mOnInfoListener.onInfo(getmediaPlayerAdapter(), what, extra);
+                return mPlayer.onInfo(mp, what, extra);
             }
             return true;
         }
     };
-    public void setOnInfoListener(OnInfoListener l)
-    {
-        mOnInfoListener = l;
-        super.setOnInfoListener(mInfoListener);
-    }
+   
 
-    private OnSeekCompleteListener mOnSeekCompleteListener;
-    OnSeekCompleteListener mSeekCompleteListener = new OnSeekCompleteListener()
-    {
-
-        public void onSeekComplete(IMediaPlayerAdapter mp)
-        {
-            // TODO Auto-generated method stub
-            //          mCurrentState = STATE_PLAYBACK_COMPLETED;
-            //          mTargetState = STATE_PLAYBACK_COMPLETED;
-            Log.e(TAG, "seekTo  is complete---->" + isSeeking);
-            //            if (mMediaController != null)
-            //            {
-            //                mMediaController.hide();
-            //            }
-            if (mOnSeekCompleteListener != null)
-            {
-                mOnSeekCompleteListener.onSeekComplete(mp);
-            }
-            isSeeking(false);
-            Log.e(TAG, "seekTo  is complete  posistion---->" + getCurrentPosition());
-
-        }
-    };
     private MediaPlayer.OnSeekCompleteListener mseekListener = new MediaPlayer.OnSeekCompleteListener()
     {
-        public void onSeekComplete(MediaPlayer arg0)
+        public void onSeekComplete(MediaPlayer mp)
         {
-            if (mOnSeekCompleteListener != null)
+            if (mPlayer != null)
             {
-                mOnSeekCompleteListener.onSeekComplete(getmediaPlayerAdapter());
+                mPlayer.onSeekComplete(mp);
+                isSeeking(false);
             }
         }
     };
-    public void setOnSeekCompleteListener(OnSeekCompleteListener l)
-    {
-        mOnSeekCompleteListener = l;
-    }
 
-    private OnCompleteListener mOnCompleteListener;
     private MediaPlayer.OnCompletionListener mcompleteListener = new MediaPlayer.OnCompletionListener()
     {
-        public void onCompletion(MediaPlayer arg0)
+        public void onCompletion(MediaPlayer mp)
         {
-            if (mOnCompleteListener != null)
+            if (mPlayer != null)
             {
-                mOnCompleteListener.onCompletion(getmediaPlayerAdapter());
+                mPlayer.onCompletion(mp);
             }
         }
     };
-    public void setOnCompletionListener(OnCompleteListener l)
-    {
-        mOnCompleteListener = l;
-    }
-
     
     
     /**
@@ -527,51 +451,20 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
     /**end**/
 
     private boolean mPausedByTransientLossOfFocus = false;
-
-    private OnAudioFocusChangeListener mAudioFocusListener = new OnAudioFocusChangeListener() {
-        public void onAudioFocusChange(int focusChange) {
-            switch (focusChange) {
-                case AudioManager.AUDIOFOCUS_LOSS:
-                    mPausedByTransientLossOfFocus = true;
-                    OrigVideoView.super.pause();
-                    break;
-                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                    mPausedByTransientLossOfFocus = true;
-                    OrigVideoView.super.pause();
-                    break;
-                case AudioManager.AUDIOFOCUS_GAIN:
-                    if (mPausedByTransientLossOfFocus) {
-                        mPausedByTransientLossOfFocus = false;
-                        OrigVideoView.super.start();
-                    }    
-                    break;
-            }    
-            //updatePlayPause();
-        }                                                                                                              
-    };
-        
-
-    
     private List<AudioInfoOfVideo> audioinfos = new ArrayList<AudioInfoOfVideo>();
     private Map<String, Integer> audioTrackMap = new HashMap<String, Integer>();
     private List<SubInfo> subinfos = new ArrayList<SubInfo>();
     
     private boolean mIsPrepared = false;
-    private OnPreparedListener mCustomPrepareListener = null;
     
-    private OrigMediaPlayerAdapter mediaplayer = null;
     MediaPlayer.OnPreparedListener mPreparedListener = new MediaPlayer.OnPreparedListener()
     {
         public void onPrepared(MediaPlayer mp)
         {
+        	Log.i(TAG, "onPrepared");
             mIsPrepared = true;
             mMediaPlayer = mp;
-            mediaplayer.setMediaPlayer(mp);
-            setmediaPlayerAdapter(mediaplayer);
             mp.setOnBufferingUpdateListener(mbufferingListener);
-            mp.setOnErrorListener(mOnErrorListener);
-            mp.setOnCompletionListener(mcompleteListener);
             mp.setOnSeekCompleteListener(mseekListener);
             setSubTrackInfo();
             if(getAudioinfos() == null)
@@ -582,31 +475,11 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
             {
             	maudioInfoOfVidio = getAudioinfos().get(0);
             }
-           /* int iret = getmediaPlayerAdapter().getSubInfos(subinfos);
-            if(iret != 0)
-            {
-                Log.e(TAG, "get Subinfos failed, return null");
-            }*/
-            
-//            videoOrigHeight = getVideoHeight();
-//            videoOrigWidth = getVideoWidth();
-//            Log.d(TAG, "onPrepared videoOrigHeight :" + videoOrigHeight + ", videoOrigWidth " + videoOrigWidth);            
-       /*     if(mSH != null)
-            {
-                A40HisiInvoke.setSubDisplay(mp, mSH);
-            }*/
-            mCustomPrepareListener.onPrepared(getmediaPlayerAdapter());
             
         }
     };
 
     
-    public void setOnPreparedListener(OnPreparedListener l)
-    {
-        mCustomPrepareListener = l;
-        super.setOnPreparedListener(mPreparedListener);
-    }
-
     private boolean isReady()
     {
         if(mMediaPlayer != null && mIsPrepared)
@@ -617,197 +490,41 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
         return false;
     }
     
-    @Override
-    public int getCurrentSoundId()
-    {
-        if(!isReady())
-        {
-            return -1;
-        }
-        
-        return getmediaPlayerAdapter().getCurrentSndId();
-    }
-
-    @Override
-    public int getCurrentSudId()
-    {
-        if(!isReady())
-        {
-            return -1;
-        }
-        
-        return getmediaPlayerAdapter().getCurrentSubId();
-    }
-
-    @Override
-    public IMediaPlayerAdapter getmediaPlayerAdapter()
-    {
-        return mediaplayer;
-    }
-
-    @Override
-    public OnBufferingUpdateListener getonBufferingUpdateListener()
-    {
-        return onBufferingUpdateListener;
-        
-    }
-
-    @Override
-    public OnErrorListener getonErrorListener()
-    {
-        return onErrorListener;
-    }
-
-    @Override
-    public OnInfoListener getonInfoListener()
-    {
-        return mOnInfoListener;
-    }
-
-    @Override
-    public OnPreparedListener getonPreparedListener()
-    {
-        return mCustomPrepareListener;
-    }
-
-    @Override
-    public OnSeekCompleteListener getonSeekCompleteListener()
-    {
-        return mOnSeekCompleteListener;
-    }
-
-    @Override
+    
+    
+    
     public List<SubInfo> getSubtitleList()
     {
          return subinfos;
     }
-
-    @Override
-    public int getVideoHeight()
-    {
-        if(!isReady())
-        {
-            return -1;
-        }
-        
-        return getmediaPlayerAdapter().getVideoHeight();
-    }
-
-    @Override
-    public int getVideoWidth()
-    {
-        if(!isReady())
-        {
-            return -1;
-        }
-        
-        return getmediaPlayerAdapter().getVideoWidth();
-    }
-
-    @Override
-    public boolean isSubtitleShowing()
-    {
-        if(!isReady())
-        {
-            return false;
-        }
-        
-        return getmediaPlayerAdapter().isSubtitleShowing();
-    }
-
-
-    @Override
-    public void setmediaPlayerAdapter(IMediaPlayerAdapter newVal)
-    {
-        mediaplayer = (OrigMediaPlayerAdapter)newVal;
-    }
+    
 
     private MediaPlayer.OnBufferingUpdateListener mbufferingListener = new MediaPlayer.OnBufferingUpdateListener()
     {
         @Override
-        public void onBufferingUpdate(MediaPlayer arg0, int percent)
+        public void onBufferingUpdate(MediaPlayer mp, int percent)
         {
-            if (onBufferingUpdateListener != null)
+            if (mPlayer != null)
             {
-                onBufferingUpdateListener.onBufferingUpdate(getmediaPlayerAdapter(), percent);
+                mPlayer.onBufferingUpdate(mp, percent);
             }
         }
     };
-    @Override
-    public void setOnBufferingUpdateListener(OnBufferingUpdateListener newVal)
-    {
-        onBufferingUpdateListener = newVal;
-    }
-
-    @Override
-    public void setOnErrorListener(OnErrorListener newVal)
-    {
-        onErrorListener = newVal;
-        //super.setOnErrorListener(mOnErrorListener);
-    }
-
+    
     private MediaPlayer.OnErrorListener mOnErrorListener = new MediaPlayer.OnErrorListener()
     {
         
         @Override
         public boolean onError(MediaPlayer mp, int what, int extra)
         {
-            if(onErrorListener != null)
+            if(mPlayer != null)
             {
-                if(getmediaPlayerAdapter() == null)
-                {
-                    mediaplayer.setMediaPlayer(mp);
-                    setmediaPlayerAdapter(mediaplayer);
-                }
-                
-                onErrorListener.onError(getmediaPlayerAdapter(), what, extra);
+                mPlayer.onError(mp, what, extra);
             }
             return true;
         }
     };
-//    
-//    private com.hisilicon.android.mediaplayer.HiMediaPlayer.OnFastForwardCompleteListener mFF = new HiMediaPlayer.OnFastForwardCompleteListener()
-//    {
-//        
-//        @Override
-//        public void onFastForwardComplete(HiMediaPlayer mp)
-//        {
-//            if(mOnFastForwardCompleteListener != null)
-//            {
-//                if(getmediaPlayerAdapter() == null)
-//                {
-//                    mediaplayer.setmediaPlayer(mp);
-//                    setmediaPlayerAdapter(mediaplayer);
-//                }
-//                
-//                mOnFastForwardCompleteListener.onFastForwardComplete(getmediaPlayerAdapter());
-//            }
-//        }
-//
-//    };
-//    
-//    private com.hisilicon.android.mediaplayer.HiMediaPlayer.OnFastBackwordCompleteListener mFB = new HiMediaPlayer.OnFastBackwordCompleteListener()
-//    {
-//        
-//        @Override
-//        public void onFastBackwordComplete(HiMediaPlayer mp)
-//        {
-//            if(mOnFastBackwordCompleteListener != null)
-//            {
-//                if(getmediaPlayerAdapter() == null)
-//                {
-//                    mediaplayer.setmediaPlayer(mp);
-//                    setmediaPlayerAdapter(mediaplayer);
-//                }
-//                
-//                mOnFastBackwordCompleteListener.onFastBackwordComplete(getmediaPlayerAdapter());
-//            }
-//        }
-//
-//    };
-//    
-//    
-    @Override
+    
     public void setOutRange(int left, int top, int w, int h)
     {
         if(!isReady())
@@ -816,17 +533,12 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
             return ;
         }
         
-//        int i = getmediaPlayerAdapter().setScreenOutRange(left, top, w, h);
-//        
         Log.d(TAG, "setOutRange left :" + left + ", top " + top + ", w : " + w + ", h : " + h); 
-//        setScreenScale(w, h);        
-//        getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);        
         videoOrigWidth = w;
         videoOrigHeight = h;
         this.requestLayout();
     }
 
-    @Override
     public void setSoundId(int id)
     {
         if(!isReady())
@@ -845,12 +557,11 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
         Log.d(TAG, "setSoundId id = " + index + ", language = " + language);
         
         maudioInfoOfVidio = getAudioinfos().get(id);
-        int i = getmediaPlayerAdapter().setSoundId(index);
+        //int i = getmediaPlayerAdapter().setSoundId(index);
         
-        Log.d(TAG, "setSoundId return :"+i);
+        //Log.d(TAG, "setSoundId return :"+i);
     }
 
-    @Override
     public void setSubId(int id)
     {
         if(!isReady())
@@ -858,12 +569,11 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
             return ;
         }
         
-        int i = getmediaPlayerAdapter().setSubId(id);
+        //int i = getmediaPlayerAdapter().setSubId(id);
         
-        Log.d(TAG, "setSubId return :"+i);
+       // Log.d(TAG, "setSubId return :"+i);
     }
 
-    @Override
     public void showSubtitle(boolean show)
     {
         if(!isReady())
@@ -873,9 +583,9 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
         
         int flag = show?0:1;
         
-        int i = getmediaPlayerAdapter().enableSubtitle(flag);
+        //int i = getmediaPlayerAdapter().enableSubtitle(flag);
         
-        Log.d(TAG, "showSubtitle return :"+i);
+        //Log.d(TAG, "showSubtitle return :"+i);
         
     }
 
@@ -887,21 +597,13 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
         return audioinfos;
     }
     
-    private AudioInfoOfVideo maudioInfoOfVidio= null;
+    
     public AudioInfoOfVideo getCurrentAudioinfos()
     {
     	return maudioInfoOfVidio;
     }
-
-//    /**
-//     * @param 对audioinfos进行赋值
-//     */
-//    public void setAudioinfos(List<AudioInfoOfVideo> audioinfos)
-//    {
-//        this.audioinfos = audioinfos;
-//        
-//    }
-
+    
+    
     
     /**
      *设置ｓｕｒｆａｃｅ宽高 
@@ -918,29 +620,16 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
             return -1;
         }
         
-        return mediaplayer.setScreenScale(w, h);
+        //return mediaplayer.setScreenScale(w, h);
+        return 0;
     }
 
-    @Override
     public void setSubSurfaceHolder(SurfaceHolder sh)
     {
         mSH = sh;
     }
     
-    private OnFastForwardCompleteListener mOnFastForwardCompleteListener = null;
-    private OnFastBackwordCompleteListener mOnFastBackwordCompleteListener = null;
-    @Override
-    public void setOnFastForwardCompleteListener(OnFastForwardCompleteListener l)
-    {
-        mOnFastForwardCompleteListener = l;
-    }
-
-    @Override
-    public void setOnBackForwardCompleteListener(OnFastBackwordCompleteListener l)
-    {
-        mOnFastBackwordCompleteListener = l;
-    }
-
+    
     public int setSpeed(int i)
     {
         if(!isReady())
@@ -948,26 +637,26 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
             return -1;
         }
         
-       return mediaplayer.setSpeed(i);
+       //return mediaplayer.setSpeed(i);
+        return 0;
     }
 
     /* BEGIN: Added by r00178559 for AR-0000698413 2014/02/13 */
-    @Override
     public boolean setAudioChannelMode(int channelMode)
     {
-        return getmediaPlayerAdapter().setAudioChannelMode(channelMode);
+        //return getmediaPlayerAdapter().setAudioChannelMode(channelMode);
+    	return true;
     }
     /* END: Added by r00178559 for AR-0000698413 2014/02/13 */
 
     /* BEGIN: Added by c00224451 for  AR-0000698413 外挂字幕  2014/2/24 */
-    @Override
     public int setSubPath(String path)
     {        
-        return getmediaPlayerAdapter().setSubPath(path);
+        //return getmediaPlayerAdapter().setSubPath(path);
+    	return 0;
     }
     /* END: Added by c00224451 for  AR-0000698413 外挂字幕  2014/2/24 */
     
-    @Override
     public int getBufferSizeStatus()
     {
         // TODO Auto-generated method stub
@@ -975,10 +664,10 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
         {
             return -1;
         }
-        return mediaplayer.getBufferSizeStatus();
+        //return mediaplayer.getBufferSizeStatus();
+        return 0;
     }
 
-    @Override
     public int getBufferTimeStatus()
     {
         // TODO Auto-generated method stub
@@ -986,7 +675,8 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
         {
             return -1;
         }
-        return mediaplayer.getBufferTimeStatus();
+        //return mediaplayer.getBufferTimeStatus();
+        return 0;
     }
     
     
@@ -1059,10 +749,11 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
         }
     }
     
-    @Override
+    
     public boolean isDolbyEnabled()
     {
-    	return getmediaPlayerAdapter().isDolbyEnabled();
+    	//return getmediaPlayerAdapter().isDolbyEnabled();
+    	return false;
     }
 
     
@@ -1080,4 +771,5 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
     	
     }
     
+
 }
