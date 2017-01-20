@@ -1,5 +1,6 @@
 package com.rockchips.mediacenter.util;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -17,8 +18,10 @@ public class ValidUtils {
 	 * @return
 	 */
 	public static boolean isSambaAddress(String address){
-		String patter = "^//(\\d{1,3}\\.){3}\\d{1,3}(/[^(/\\)]+)*$";
-		return Pattern.matches(patter, address);
+		String regx = "^//(\\d{1,3}\\.){3}\\d{1,3}(/[^(/\\)]+)*$";
+		Pattern pattern = Pattern.compile(regx);
+		Matcher matcher = pattern.matcher(address);
+		return matcher.matches();
 		//Pattern.matches(regularExpression, input)
 		//return false;
 	}

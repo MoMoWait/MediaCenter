@@ -514,10 +514,12 @@ public class DeviceMonitorService extends Service {
 					// 启动文件扫描线程
 					LocalDeviceService deviceService = new LocalDeviceService();
 					LocalDevice device = deviceService.getDeviceByPath(path);
+					if(device != null){
+						mScanDeviceService.execute(new FileScanThread(DeviceMonitorService.this, device));
+					}
 					//Log.i(TAG, "MountThread->run->device:" + device);
 					//Log.i(TAG, "execute FileScanThread");
-					mScanDeviceService.execute(new FileScanThread(
-							DeviceMonitorService.this, device));
+					
 				}
 				
 				// processSambaDevicesMountMsg(mSmbList);

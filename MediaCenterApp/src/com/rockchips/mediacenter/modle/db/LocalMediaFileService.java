@@ -113,4 +113,20 @@ public class LocalMediaFileService extends AppBeanService<LocalMediaFile> {
 		}
 		return mediaFiles;
 	}
+	
+	/**
+	 * 根据文件类型和设备ID获取媒体文件信息
+	 * @param mediaType
+	 * @return
+	 */
+	public List<LocalMediaFile> getFilesByMediaTypeAndDeviceId(int mediaType, String deviceId){
+		List<LocalMediaFile> mediaFiles = new ArrayList<LocalMediaFile>();
+		try {
+			mediaFiles = MediaCenterApplication.mDBManager.selector(LocalMediaFile.class).where("type", "=" , mediaType)
+					.and("deviceID", "=", deviceId).findAll();
+		} catch (DbException e) {
+			e.printStackTrace();
+		}
+		return mediaFiles;
+	}
 }

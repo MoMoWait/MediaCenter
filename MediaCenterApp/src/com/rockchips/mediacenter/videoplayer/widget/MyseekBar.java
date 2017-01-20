@@ -136,7 +136,7 @@ public class MyseekBar extends AbsSeekBar
     private static final int ACCELERATE_BASE_DURATION = 8000;
     
     /**fly.gao 快进，快退步长度,单位毫秒*/
-    private static final int SEEK_STEP_LENGTH = 5000;
+    private static final int SEEK_STEP_LENGTH = 10000;
     
     // zkf61715 是否支持快进快退
     private boolean canAccelerate = true;

@@ -30,12 +30,13 @@ public class FileLoadTask extends AsyncTask<String, Integer, Integer> {
 		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 		String parentPath = params[0];
 		int mediaType = Integer.parseInt(params[1]);
+		String deviceID = params[2];
 		LocalMediaFileService fileService = new LocalMediaFileService();
-		if(params.length == 2){
+		if(params.length == 3){
 			if(!TextUtils.isEmpty(parentPath))
 				mFiles = fileService.getFilesByParentPath(parentPath, mediaType);
 			else
-				mFiles = fileService.getFilesByMediaType(mediaType);
+				mFiles = fileService.getFilesByMediaTypeAndDeviceId(mediaType, deviceID);
 		}else{
 			int maxCount = Integer.parseInt(params[2]);
 			mFiles = fileService.getFilesByParentPath(parentPath, mediaType, maxCount);

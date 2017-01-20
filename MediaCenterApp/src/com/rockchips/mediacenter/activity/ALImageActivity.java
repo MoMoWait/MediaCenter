@@ -260,7 +260,7 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 			}
 		});
     	
-    	mFileLoadTask.execute(mediaFolder.getPath(), "" + ConstData.MediaType.IMAGE);
+    	mFileLoadTask.execute(mediaFolder.getPath(), "" + ConstData.MediaType.IMAGE, mCurrDevice.getDeviceID());
 	}
 
 	

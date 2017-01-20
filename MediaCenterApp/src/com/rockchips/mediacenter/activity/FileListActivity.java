@@ -215,6 +215,7 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
     	mPregressLoading.setVisibility(View.GONE);
     	mCurrMediaType = getIntent().getIntExtra(ConstData.IntentKey.EXTRAL_MEDIA_TYPE, -1);
     	mCurrDevice = (LocalDevice)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
+    	Log.i(TAG, "initDataAndView->mCurrDevice:" + mCurrDevice);
     	if(mCurrMediaType == ConstData.MediaType.AUDIOFOLDER)
     		loadFolders();
     	else
@@ -366,13 +367,13 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
 		});
     	
     	if(mCurrMediaType == ConstData.MediaType.FOLDER){
-    		mFileLoadTask.execute(mediaFolder.getPath(), "-1");
+    		mFileLoadTask.execute(mediaFolder.getPath(), "-1", mCurrDevice.getDeviceID());
     	}else if(mCurrMediaType == ConstData.MediaType.AUDIOFOLDER){
-    		mFileLoadTask.execute(mediaFolder.getPath(), "" + ConstData.MediaType.AUDIO);
+    		mFileLoadTask.execute(mediaFolder.getPath(), "" + ConstData.MediaType.AUDIO, mCurrDevice.getDeviceID());
     	}else if(mCurrMediaType == ConstData.MediaType.IMAGEFOLDER){
-    		mFileLoadTask.execute(mediaFolder.getPath(), "" + ConstData.MediaType.IMAGE);
+    		mFileLoadTask.execute(mediaFolder.getPath(), "" + ConstData.MediaType.IMAGE, mCurrDevice.getDeviceID());
     	}else if(mCurrMediaType == ConstData.MediaType.VIDEOFOLDER){
-    		mFileLoadTask.execute(mediaFolder.getPath(), "" + ConstData.MediaType.VIDEO);
+    		mFileLoadTask.execute(mediaFolder.getPath(), "" + ConstData.MediaType.VIDEO, mCurrDevice.getDeviceID());
     	}
 	}
 	

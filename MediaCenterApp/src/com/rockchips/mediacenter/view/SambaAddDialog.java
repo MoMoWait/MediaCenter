@@ -64,6 +64,7 @@ public class SambaAddDialog extends AppBaseDialog{
 
 	@Override
 	public void initData() {
+		mEditServerAddress.setText("//10.10.10.130/share");
 		//mEditServerAddress.setText("//10.10.10.164/Marshmallow_Repository");
 		//mEditUserName.setText("sdk");
 		//mEditPassword.setText("839919");
@@ -91,8 +92,13 @@ public class SambaAddDialog extends AppBaseDialog{
 					}
 					
 				}else{
-					if(TextUtils.isEmpty(serverAddress) || TextUtils.isEmpty(userName) || TextUtils.isEmpty(password)){
+					if(TextUtils.isEmpty(serverAddress)){
 						ToastUtils.showToast(ResourceUtils.getString(R.string.enter_server_address));
+						return;
+					}
+					
+					if(!ValidUtils.isSambaAddress(serverAddress)){
+						ToastUtils.showToast(ResourceUtils.getString(R.string.enter_right_samba_address));
 						return;
 					}
 				}
