@@ -80,4 +80,11 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
+    <style name="Loading_Dialog_Style" parent="android:style/Theme.Dialog">
+         <!--是否浮现在activity之上-->  
+        <item name="android:windowIsFloating">true</item>  
+        <!--是否模糊-->  
+        <item name="android:backgroundDimEnabled">false</item>  
+    </style>
+    
 </resources>

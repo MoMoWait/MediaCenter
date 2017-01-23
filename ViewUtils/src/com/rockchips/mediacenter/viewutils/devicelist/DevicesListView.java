@@ -128,13 +128,15 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         // 添加
         if (mBInitFocus)
         {
-            adjustFocus();
+            adjustFocus(isAddNetWork);
         }
         else
         {
             initFocus(isAddNetWork);
             mBInitFocus = true;
-        }        
+        }
+        
+        
     }
     
     public void notifyDataChanged()
@@ -239,7 +241,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
     {
         mDevicesList = new ArrayList<DeviceItem>();
 
-        adjustFocus();
+        adjustFocus(false);
 
         refreshDevicesName();
 
@@ -288,7 +290,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
      * <一句话功能简述>调整焦点 <功能详细描述>
      * @see [类、类#方法、类#成员]
      */
-    private void adjustFocus()
+    private void adjustFocus(boolean isAddNetWork)
     {
         if (mDevicesList == null || mDeviceNum <= 1)
         {
@@ -296,15 +298,18 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         }
         else
         {
-            refreshFocusIdByFocusDeviceId();
-            if (mFocusIndex >= mDevicesList.size())
-            {
-                mFocusIndex = mDevicesList.size() - 1;
+            if(isAddNetWork)
+            	mFocusIndex = mDevicesList.size() - 1;
+            else{
+            	refreshFocusIdByFocusDeviceId();
+            	 if (mFocusIndex >= mDevicesList.size())
+                 {
+                     mFocusIndex = mDevicesList.size() - 1;
+                 }
             }
         }
         Log.i(TAG, "adjustFocus->mFocusIndex:" + mFocusIndex);
         refreshFocusDeviceId();
-
     }
 
     /** 获取焦点设备 */

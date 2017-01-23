@@ -33,7 +33,13 @@ public class LoadingDialog extends Dialog {
         this.mContext=context;		//this.context=context;
     }
 
+    public LoadingDialog(Context context, int theme, boolean cancelable) {
+        super(context, theme);
+        this.mContext=context;
+        this.isCancelable = cancelable;
+    }
 
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -398,6 +398,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
 			public void onGetNFSInfo(NFSInfo nfsInfo) {
 				mNFSList = readNFSInfos();
 				mNFSList.add(nfsInfo);
+				mNFSMap.put(nfsInfo.getLocalMountPath(), nfsInfo);
 				final NFSInfo newNfsInfo = nfsInfo;
 				//存储至SharedPreference
 				try{
@@ -443,6 +444,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
 			public void onGetSambaInfo(SmbInfo smbInfo) {
 				mSmbList = readSmbInfos();
 				mSmbList.add(smbInfo);
+				mSmbMap.put(smbInfo.getLocalMountPath(), smbInfo);
 				final SmbInfo  newSambaInfo = smbInfo;
 				//存储至SharedPreference
 				try{
@@ -658,6 +660,10 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
 
         mDevicesListView.setDevicesList(mDeviceItemList, isAddNetWork);
         mDevicesListView.notifyDataChanged();
+        if(isAddNetWork){
+        	onKeyDown(KeyEvent.KEYCODE_DPAD_UP, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_UP));
+        	onKeyDown(KeyEvent.KEYCODE_DPAD_DOWN, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_DOWN));
+        }
     }
     
     /**
@@ -750,8 +756,10 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     		//Log.i(TAG, "DeviceUpDownReceiver->onReceive");
     		//int deviceType = intent.getIntExtra(ConstData.IntentKey.EXTRA_DEVICE_TYPE, -1);
     		//设备路径
-    		//String devicePath = intent.getStringExtra(ConstData.IntentKey.EXTRA_DEVICE_PATH);
+    		String devicePath = intent.getStringExtra(ConstData.IntentKey.EXTRA_DEVICE_PATH);
     		boolean isAddNetWork = intent.getBooleanExtra(ConstData.IntentKey.EXTRA_IS_ADD_NETWORK_DEVICE, false);
+    		Log.i(TAG, "DeviceUpDownReceiver->devicePath:" + devicePath);
+    		Log.i(TAG, "DeviceUpDownReceiver->isAddNetWork:" + isAddNetWork);
     		loadDeviceInfoList(isAddNetWork);
     	}
     }

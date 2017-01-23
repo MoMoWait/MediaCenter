@@ -15,6 +15,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
 import android.os.RemoteException;
 import android.util.Log;
 
@@ -43,6 +44,13 @@ public class MediaCenterApplication extends BaseApplication
     public void onCreate()
     {
         super.onCreate();
+        try{
+            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            Log.i(TAG, "versionName:" + packageInfo.versionName);
+        }catch (Exception e){
+        	Log.i(TAG, "getVersionName->exception:" + e);
+        }
+    
         ActivityExitUtils.clearActivities();
         //初始化xutils3框架
         x.Ext.init(this);

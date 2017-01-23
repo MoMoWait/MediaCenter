@@ -321,6 +321,9 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
             case ConstData.MediaType.DEVICE:
                 resId = R.drawable.icon_preview_disk;
                 break;
+            case ConstData.MediaType.APK:
+            	resId = R.drawable.icon_apk_preview;
+            	break;
             default:
                 resId = R.drawable.icon_preview_unknow;
                 break;

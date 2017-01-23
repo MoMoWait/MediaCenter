@@ -53,7 +53,9 @@ public class AllFileListAdapter extends ArrayAdapter<AllFileInfo> {
 			holder.imgFileIcon.setImageResource(R.drawable.icon_local_image);
 		}else if(fileType == ConstData.MediaType.FOLDER){
 			holder.imgFileIcon.setImageResource(R.drawable.icon_local_folder);
-		}else if(fileType == ConstData.MediaType.APK || fileType == ConstData.MediaType.UNKNOWN_TYPE){
+		}else if(fileType == ConstData.MediaType.APK){
+			holder.imgFileIcon.setImageResource(R.drawable.icon_file_apk);
+		}else{
 			holder.imgFileIcon.setImageResource(R.drawable.unknow_file_type);
 		}
 		holder.textFileName.setText(allFileInfo.getFile().getName());
