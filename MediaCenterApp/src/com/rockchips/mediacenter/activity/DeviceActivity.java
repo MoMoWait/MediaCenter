@@ -38,13 +38,13 @@ public class DeviceActivity extends AppBaseActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        registerDeviceChangeBroadcastReceiver();
+        //registerDeviceChangeBroadcastReceiver();
     }
 
     @Override
     protected void onDestroy()
     {
-        unRegisterDeviceChangeBroadcastReceiver();
+        //unRegisterDeviceChangeBroadcastReceiver();
         super.onDestroy();
     }
 

@@ -46,6 +46,7 @@ public class AppBaseActivity extends Activity{
 		super.onResume();
 		if(getClass() != MainActivity.class){
 			IntentFilter deviceUpDownFilter = new IntentFilter();
+			//注册设备下线广播
 			deviceUpDownFilter.addAction(ConstData.BroadCastMsg.DEVICE_DOWN);
 			LocalBroadcastManager.getInstance(this).registerReceiver(mDeviceUpDownReceiver, deviceUpDownFilter);
 		}

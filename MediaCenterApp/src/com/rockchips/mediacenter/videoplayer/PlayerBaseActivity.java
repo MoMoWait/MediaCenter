@@ -24,6 +24,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -31,6 +32,7 @@ import android.view.WindowManager;
 import com.rockchips.mediacenter.basicutils.bean.LocalDeviceInfo;
 import com.rockchips.mediacenter.basicutils.constant.Constant;
 import com.rockchips.mediacenter.basicutils.util.StringUtils;
+import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.activity.DeviceActivity;
 import com.rockchips.mediacenter.playerclient.MediaCenterPlayerClient;
 import com.rockchips.mediacenter.videoplayer.data.VideoInfo;
@@ -47,7 +49,7 @@ import com.rockchips.mediacenter.viewutils.menu.BottomPopMenu.VolumeKeyListener;
 */
 public abstract class PlayerBaseActivity extends DeviceActivity
 {
-    private static final String TAG = "MediaCenterApp";
+    private static final String TAG = "PlayerBaseActivity";
     
     /*
      * 标示播放的是否为来自Media Center Service的数据
@@ -144,20 +146,6 @@ public abstract class PlayerBaseActivity extends DeviceActivity
         {
             mbAR = false;
         }
-        
-        // 全屏
-     /*   if (Integer.parseInt(Build.VERSION.SDK) < 14)
-        {
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            requestWindowFeature(Window.FEATURE_NO_TITLE);
-        }
-        else
-        {
-            requestWindowFeature(Window.FEATURE_NO_TITLE);
-            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
-            getWindow().getDecorView().setSystemUiVisibility(View.INVISIBLE);
-        }*/
-        
         // 加载资源
         loadResource();
         
@@ -297,20 +285,20 @@ public abstract class PlayerBaseActivity extends DeviceActivity
         ArrayList<Bundle> mediaBaseList = intent.getParcelableArrayListExtra(Constant.IntentKey.MEDIA_INFO_LIST);
         
         //获取当前播放索引
-        int playIndex = intent.getIntExtra(Constant.IntentKey.CURRENT_INDEX, 0);
+        int playIndex = intent.getIntExtra(ConstData.IntentKey.CURRENT_INDEX, 0);
         
         //获取客户端唯一标识
-        String senderClientUniq = intent.getStringExtra(Constant.IntentKey.UNIQ);
+        String senderClientUniq = intent.getStringExtra(ConstData.IntentKey.UNIQ);
         
-        boolean isInternalPlayer = intent.getBooleanExtra(Constant.IntentKey.IS_INTERNAL_PLAYER, false);
+        boolean isInternalPlayer = intent.getBooleanExtra(ConstData.IntentKey.IS_INTERNAL_PLAYER, false);
         
-        if (StringUtils.isNotEmpty(senderClientUniq))
+        if (!TextUtils.isEmpty(senderClientUniq))
         {
             setSenderClientUniq(senderClientUniq);
         }
         else
         {
-            setSenderClientUniq(Constant.ClientTypeUniq.UNKNOWN_UNIQ);
+            setSenderClientUniq(ConstData.ClientTypeUniq.UNKNOWN_UNIQ);
         }
         
         // 创建备份列表
@@ -379,112 +367,6 @@ public abstract class PlayerBaseActivity extends DeviceActivity
                 return;
             }
         }
-        else
-        {
-            // 搜索出来的文件进行播放
-            Log.i(TAG, "data: " + intent.getData());
-            
-            String mediaInfo = intent.getStringExtra("MediaInfo");
-            String mediaName = intent.getStringExtra("MediaName");
-            
-            Log.i(TAG, "parseInputIntent ---> mediaInfo: " + mediaInfo);
-            Log.i(TAG, "parseInputIntent ---> mediaName: " + mediaName);
-            
-            if (StringUtils.isNotEmpty(mediaInfo) && StringUtils.isNotEmpty(mediaName))
-            {
-                // 都不为空，认为是搜索出来的
-                String artist = intent.getStringExtra("Artist");
-                String title = intent.getStringExtra("Title");
-                String album = intent.getStringExtra("Album");
-                int deviceType = intent.getIntExtra("DeviceType", Constant.DeviceType.DEVICE_TYPE_UNKNOWN);
-                Log.d(TAG, "parseInputIntent ---> artist:" + artist);
-                Log.d(TAG, "parseInputIntent ---> title:" + title);
-                Log.d(TAG, "parseInputIntent ---> deviceType:" + deviceType);
-                Log.d(TAG, "parseInputIntent ---> album:" + album);
-                
-                VideoInfo mbi = new VideoInfo();
-                mbi.setmData(mediaInfo);
-                mbi.setmPhysicId("ANDROID_SYSTEM");
-                
-                // 设置设备类型
-                mbi.setmDeviceType(deviceType);
-                
-                // 设置艺术家、标题和唱片集，便于音乐播放器搜索歌词
-                mbi.setmArtist(artist);                
-                mbi.setmAlbum(album);
-                if (mediaName != null && mediaName.contains("."))
-                {
-                    // 如果搜索传递过来的有文件后缀名，去掉后缀名
-                    Log.d(TAG, "parseInputIntent ---> Before delete the file suffix, mediaName:" + mediaName);
-                    mediaName = StringUtils.getFileName(mediaName);
-                    Log.d(TAG, "parseInputIntent ---> After delete the file suffix, mediaName:" + mediaName);
-                }
-                
-                mbi.setmFileName(mediaName);
-//                mbi.setDisplayName(mediaName);
-                mediaBaseList = new ArrayList<Bundle>();
-                
-                Bundle bundle = mbi.compress();
-                mediaBaseList.add(bundle);
-                
-                Log.i(TAG, "parseInputIntent ---> MediaBaseInfo: " + mbi.toString());
-            }
-            else
-            {
-                Uri httpUri = intent.getData();
-                
-                if (httpUri == null)
-                {
-                    //输入的数据无效
-                    Log.i(TAG, "parseInputIntent: MCS DATA and HTTP URI are invalidate");
-                    
-                    finish();
-                    return;
-                }
-                
-                String struri = httpUri.toString();
-                //
-                if (struri.startsWith("file://"))
-                {
-                    try
-                    {
-                        struri = Uri.parse(struri).getPath();
-                    }
-                    catch (Exception e)
-                    {
-                        struri = struri.substring("file://".length());
-                    }
-                }
-                VideoInfo mbi = new VideoInfo();
-                mbi.setmData(struri);
-                mbi.setmPhysicId("ANDROID_SYSTEM");
-                
-                mbi.setmDeviceType(getDeviceType(struri));
-                
-                // 从uri中获取文件名
-                String strDisplayName = StringUtils.getFileName(struri);
-                
-                // 如果无法获取就用url表示
-                if (strDisplayName == null)
-                {
-                    strDisplayName = struri;
-                }
-                
-                mbi.setmFileName(strDisplayName);
-                
-                mbi.setmFileType(getMediaType());
-                
-                mediaBaseList = new ArrayList<Bundle>();
-                
-                Bundle bundle = mbi.compress();
-                mediaBaseList.add(bundle);
-                
-                Log.i(TAG, mbi.toString());
-            }
-            
-            bMCSMode = false;
-        }
-        
         // 保存输入参数
 //        if (mPlayStateInfo != null)
 //        {

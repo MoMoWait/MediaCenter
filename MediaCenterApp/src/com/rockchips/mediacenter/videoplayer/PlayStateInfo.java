@@ -20,6 +20,7 @@ import java.util.Set;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.HandlerThread;
+import android.text.TextUtils;
 
 import com.rockchips.mediacenter.basicutils.constant.Constant;
 import com.rockchips.mediacenter.basicutils.util.IICLOG;
@@ -821,7 +822,7 @@ public class PlayStateInfo
     
     private boolean hasReUpdated(String uriStr)
     {
-        return (StringUtils.isNotEmpty(uriStr) && uriStr.endsWith("?dlna=mov"));
+        return (!TextUtils.isEmpty(uriStr) && uriStr.endsWith("?dlna=mov"));
     }
     private static final String []MimiTypeArray = {"video/quicktime", "video/mov", "video/mp4","video/3gpp","video/3gp"};
     private boolean isNetMimeType(String mimeType)

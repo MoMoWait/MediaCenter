@@ -656,4 +656,94 @@ public class ConstData {
     	int SUCCESS = 1;
     	int FAILED = 0;
     }
+    
+    /**
+     * 视频播放时时，UI消息
+     * @author GaoFei
+     *
+     */
+	public interface VideoPlayUIMsg {
+		int MSG_UI_VIDEOVIEW_MIN = 0;
+
+		int MSG_PROGRESS_CHANGED = 0;
+
+		int MSG_HIDE_CONTROLER = 1;
+
+		int MSG_SHOW_CONTROLER = 2;
+
+		int MSG_SYNC_SEEK_POS = 3;
+
+		int MSG_SYNC_SEEK = 4;
+
+		int MSG_STOP_SYNC_SEEK = 5;
+		/**
+		 * 当前播放的媒体下线，播放下一个
+		 */
+		int MSG_CURRENT_DOWN_PLAY_NEXT = 6;
+
+		int MSG_UI_PROCESSBAR = 7;
+
+		int MSG_UI_VIDEOVIEW_SETDATA = 8;
+
+		int MSG_UI_VIDEOVIEW_STOP = 9;
+
+		int MSG_UI_VIDEOVIEW_PAUSE = 10;
+
+		int MSG_UI_VIDEOVIEW_PLAY = 11;
+
+		int MSG_UI_VIDEOVIEW_REVERSE_STATE = 12;
+
+		int MSG_UI_VIDEOVIEW_SEEK_TO = 13;
+
+		int MSG_UI_VIDEOVIEW_SAVE_POS = 14;
+
+		int MSG_UI_VIDEOVIEW_MCSPLAY = 17;
+
+		int MSG_HIDE_ACCELERATION = 15;
+
+		int MSG_SHOW_ACCELERATION = 16;
+
+		int MSG_SHOW_PROGRESS = 18;
+
+		int MSG_HIDE_PROGRESS = 19;
+
+		int MSG_MCS_PLAY = 20;
+
+		int MSG_MCS_HIDEMODE = 21;
+		/**
+		 * 关闭错误对话框
+		 */
+		int MSG_CLOSE_ERROR_DIALOG = 22;
+		// MAX MSG CODE ; for remove all messages
+		  // 添加杜比的弹出消息
+	    int MSG_DOBLY_SHOW = 23;
+
+	    int MSG_DOBLY_HIDE = 24;
+	    int MSG_HIDE_HINT = 25; // hide the hint container
+		int MSG_UI_VIDEOVIEW_MAX = 30;
+	}
+	
+	
+    public interface ClientTypeUniq
+    {
+        /**
+         * UNKNOWN
+         */
+        String UNKNOWN_UNIQ = "com.rockchips.iptv.dlna.UNKNOWN";
+
+        /**
+         * DMS客户端的唯一标识
+         */
+        public static final String DMS_UNIQ = "com.rockchips.iptv.dlna.DMSClient";
+
+        /**
+         * 推送端的唯一标识
+         */
+        public static final String PUSH_UNIQ = "com.rockchips.iptv.dlna.PushClient";
+
+        /**
+         * 甩屏端的唯一标识
+         */
+        public static final String SYN_UINQ = "com.rockchips.iptv.dlna.SynClient";
+    }
 }

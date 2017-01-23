@@ -89,9 +89,6 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
 
     OnBufferingUpdateListener onBufferingUpdateListener= null;
     OnErrorListener onErrorListener= null;
-//    OnInfoListener onInfoListener= null;
-//    OnPreparedListener onPreparedListener= null;
-//    OnSeekCompleteListener onSeekCompleteListener= null;
     OnCompleteListener onCompleteListener= null;
     
     SurfaceHolder mSH = null;
@@ -582,19 +579,6 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
             {
             	maudioInfoOfVidio = getAudioinfos().get(0);
             }
-           /* int iret = getmediaPlayerAdapter().getSubInfos(subinfos);
-            if(iret != 0)
-            {
-                Log.e(TAG, "get Subinfos failed, return null");
-            }*/
-            
-//            videoOrigHeight = getVideoHeight();
-//            videoOrigWidth = getVideoWidth();
-//            Log.d(TAG, "onPrepared videoOrigHeight :" + videoOrigHeight + ", videoOrigWidth " + videoOrigWidth);            
-       /*     if(mSH != null)
-            {
-                A40HisiInvoke.setSubDisplay(mp, mSH);
-            }*/
             mCustomPrepareListener.onPrepared(getmediaPlayerAdapter());
             
         }
