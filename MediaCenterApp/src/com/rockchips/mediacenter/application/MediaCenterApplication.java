@@ -18,16 +18,10 @@ import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.os.RemoteException;
 import android.util.Log;
-
-import com.rockchips.android.airsharing.api.ConnectionListener;
-import com.rockchips.android.airsharing.api.HwServer;
-import com.rockchips.android.airsharing.client.MediaBrowserClient;
-import com.rockchips.android.airsharing.listener.IDlnaDmcCallbackListener;
 import com.rockchips.mediacenter.api.localImp.LocalDeviceManager;
 import com.rockchips.mediacenter.basicutils.bean.LocalDeviceInfo;
 import com.rockchips.mediacenter.basicutils.constant.Constant;
 import com.rockchips.mediacenter.basicutils.util.IICLOG;
-import com.rockchips.mediacenter.common.MediaInfoConvertor;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.service.DeviceMonitorService;
 import com.rockchips.mediacenter.util.ActivityExitUtils;

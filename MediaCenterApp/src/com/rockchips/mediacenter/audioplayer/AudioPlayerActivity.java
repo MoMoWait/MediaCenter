@@ -66,10 +66,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
-
 import com.hisilicon.android.mediaplayer.HiMediaPlayer;
-import com.rockchips.android.airsharing.api.dlna.dmc.bean.DlnaBaseObjectInfo;
-import com.rockchips.android.airsharing.api.dlna.dmc.common.EDlnaSortType;
 import com.rockchips.mediacenter.R;
 import com.rockchips.mediacenter.api.localImp.LocalDeviceManager;
 import com.rockchips.mediacenter.basicutils.bean.LocalDeviceInfo;
@@ -87,7 +84,6 @@ import com.rockchips.mediacenter.basicutils.util.Lyric;
 import com.rockchips.mediacenter.basicutils.util.SearchLrc;
 import com.rockchips.mediacenter.basicutils.util.StringUtils;
 import com.rockchips.mediacenter.basicutils.util.UriTexture;
-import com.rockchips.mediacenter.common.MediaInfoConvertor;
 import com.rockchips.mediacenter.common.PlayStateInfo;
 import com.rockchips.mediacenter.config.PlatformConfig;
 import com.rockchips.mediacenter.portable.IMediaPlayerAdapter;

@@ -532,6 +532,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     @Override
     protected void onPause()
     {
+        super.onPause();
+        if(isInPictureInPictureMode())
+            return;
         Log.d(TAG, "VideoPlayerActivity --> onPause() --1 --");
         if (doblyPopWin != null)
         {
@@ -577,7 +580,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         {
             Log.e(TAG, "There is something wrong with the Mediaplayer, maybe more than one stop.");
         }
-        super.onPause();
     }
 
 //    @Override
@@ -590,6 +592,19 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     @Override
     protected void onDestroy()
     {
+        if(isInPictureInPictureMode()){
+            super.onDestroy();
+            if (null != mMediaPlayer)
+            {
+                try{
+                    mMediaPlayer.release();
+                }catch (Exception e){
+                    Log.i(TAG, "VideoPlayer->onDestory->release->exception:" + e);
+                }
+                mMediaPlayer = null;
+            }
+            return;
+        }
         Log.d(TAG, "VideoPlayerActivity --> onDestroy()--");
         passIntentForVideoBrowser();
         timer.cancel();
@@ -788,6 +803,13 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         return retkeyup;
     }
 
+    
+    @Override
+    protected void onNewIntent(Intent intent) {
+        Log.i(TAG, "onNewIntent");
+        setIntent(intent);
+    }
+    
     private void preProgram()
     {
         Log.d(TAG, "preProgram() --IN--");
@@ -2071,6 +2093,11 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             mBottomPopMenu.add(1, BottomMenuSelectType.TIME_SEEK, R.drawable.time_seek, 1, 1, getResources().getString(R.string.time_seek));
             mBottomPopMenu.add(2, BottomMenuSelectType.PLAY_SEETING, R.drawable.menu_icon_settings, 2, 2,
                     getResources().getString(R.string.play_settings));
+            if(android.os.Build.VERSION.SDK_INT >= 24){
+                mBottomPopMenu.add(3, BottomMenuSelectType.PIC_TO_PIC, R.drawable.menu_icon_pip, 3, 3,
+                        getResources().getString(R.string.pip));
+            }
+            
         }
     }
 
@@ -3232,7 +3259,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                         mVVAdapter.setOnCompletionListener(onCompletionListener);
                         Log.i(TAG, "mVVAdapter.start()");
                         mVVAdapter.start();
-                        Log.i(TAG, "mVVAdapter.start()->stackTrace:" + android.util.Log.getStackTraceString(new Throwable()));
+                        //Log.i(TAG, "mVVAdapter.start()->stackTrace:" + android.util.Log.getStackTraceString(new Throwable()));
                         /**
                          * Mender:l00174030;Reason:when you pause & play, there is some wrong with the original model, set the video size to skip it.
                          **/
@@ -4146,6 +4173,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             mBottomPopMenu.dismiss();
             menuOpened();
         }
+        else if(mCurrSelectType == BottomMenuSelectType.PIC_TO_PIC){
+            enterPictureInPictureMode();
+        }
 
         else
         {
@@ -4293,7 +4323,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     public enum BottomMenuSelectType
     {
         TIME_SEEK, // 底部菜单定位时间功能
-        PLAY_SEETING // 底部菜单播放设置功能
+        PLAY_SEETING, // 底部菜单播放设置功能
+        PIC_TO_PIC // 画中画功能
     }
 
     public enum PopMenuSelectType

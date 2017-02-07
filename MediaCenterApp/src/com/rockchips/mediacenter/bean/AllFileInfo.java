@@ -1,10 +1,11 @@
 package com.rockchips.mediacenter.bean;
 import java.io.File;
+import java.io.Serializable;
 /**
  * @author GaoFei
  * 文件列表
  */
-public class AllFileInfo {
+public class AllFileInfo implements Serializable{
 	/**
 	 * 文件相关信息
 	 */

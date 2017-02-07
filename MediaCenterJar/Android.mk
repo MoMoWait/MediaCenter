@@ -10,7 +10,7 @@ ALL_DEFAULT_INSTALLED_MODULES += $(LOCAL_PACKAGE_NAME)
 LOCAL_SRC_FILES := $(call all-subdir-java-files)
 #LOCAL_SRC_FILES += src/com/rockchips/mediacenter/aidl/IDlnaFileShareService.aidl
 
-LOCAL_STATIC_JAVA_LIBRARIES := BasicUtils
-LOCAL_JAVA_LIBRARIES := HiMediaPlayer
+LOCAL_STATIC_JAVA_LIBRARIES := BasicUtils HiMediaPlayer
+#LOCAL_JAVA_LIBRARIES := HiMediaPlayer
 
 include $(BUILD_STATIC_JAVA_LIBRARY)

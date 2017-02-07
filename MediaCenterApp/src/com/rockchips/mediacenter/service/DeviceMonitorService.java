@@ -21,6 +21,8 @@ import org.fourthline.cling.android.AndroidUpnpServiceImpl;
 import org.fourthline.cling.model.meta.RemoteDevice;
 import org.fourthline.cling.registry.DefaultRegistryListener;
 import org.fourthline.cling.registry.Registry;
+
+import com.rockchips.mediacenter.bean.AllFileInfo;
 import com.rockchips.mediacenter.bean.LocalDevice;
 import com.rockchips.mediacenter.bean.NFSInfo;
 import com.rockchips.mediacenter.bean.SmbInfo;
@@ -82,6 +84,10 @@ public class DeviceMonitorService extends Service {
 	 * 单线程池服务，用于挂载Samba设备，NFS设备
 	 */
 	private ExecutorService mMountNetWorkDeviceService;
+	/**
+	 * 单线程池服务，加载音频和视频文件的预览图
+	 */
+	private ExecutorService mAVPreviewLoadService;
 	private MountThread mountThread;
 	private boolean isMountRuning = true;
 	private List<NFSInfo> mNFSList;
@@ -90,6 +96,10 @@ public class DeviceMonitorService extends Service {
 	 * 网络设备挂载监听器
 	 */
 	private NetWorkDeviceMountReceiver mNetWorkDeviceMountReceiver;
+	/**
+	 * 音频，视频缩列图加载监听器
+	 */
+	private AVPreviewLoadReceiver mPreviewLoadReceiver;
 	/**
 	 * 获取接UPNP口服务
 	 */
@@ -137,7 +147,6 @@ public class DeviceMonitorService extends Service {
 	
 	@Override
 	public void onCreate() {
-		//Log.i(TAG, "onCreate");
 		initData();
 		attachService();
 		initStorage();
@@ -146,7 +155,6 @@ public class DeviceMonitorService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		//Log.i(TAG, "onStartCommand");
 		attachService();
 		return START_STICKY;
 	}
@@ -161,6 +169,7 @@ public class DeviceMonitorService extends Service {
 	@Override
 	public void onDestroy() {
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mNetWorkDeviceMountReceiver);
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(mPreviewLoadReceiver);
 		if (mStorageManager != null)
 			mStorageManager.unregisterListener(mountListener);
 		unBindServices();
@@ -172,7 +181,9 @@ public class DeviceMonitorService extends Service {
 	 * 初始化数据
 	 */
 	private void initData() {
+	    mAVPreviewLoadService = Executors.newSingleThreadExecutor();
 		mMountNetWorkDeviceService = Executors.newSingleThreadExecutor();
+		mPreviewLoadReceiver = new AVPreviewLoadReceiver();
 		mNetWorkDeviceMountReceiver = new NetWorkDeviceMountReceiver();
 		mDeviceHandler = new MountDeviceHandler();
 		mRegistryListener = new UpnpRegistryListener();
@@ -186,13 +197,10 @@ public class DeviceMonitorService extends Service {
 
 			@Override
 			public void onServiceDisconnected(ComponentName name) {
-				//Log.i(TAG, "DeviceMonitorService->component name:" + name.getClass().getName());
-				//Log.i(TAG, "DeviceMonitorService->mUpnpConnection onServiceDisconnected:" + name);
 			}
 
 			@Override
 			public void onServiceConnected(ComponentName name, IBinder service) {
-				//Log.i(TAG, "DeviceMonitorService->mUpnpConnection on ServiceConnected");
 				mUpnpService = (AndroidUpnpService) service;
 				if(mUpnpSearchTask != null && mUpnpSearchTask.getStatus() == Status.RUNNING)
 					mUpnpSearchTask.cancel(true);
@@ -241,6 +249,7 @@ public class DeviceMonitorService extends Service {
 		netWorkDeviceMountFilter.addAction(ConstData.BroadCastMsg.REFRESH_ALL_DEVICES);
 		netWorkDeviceMountFilter.addAction(ConstData.BroadCastMsg.CHECK_NETWORK);
 		LocalBroadcastManager.getInstance(this).registerReceiver(mNetWorkDeviceMountReceiver, netWorkDeviceMountFilter);
+		LocalBroadcastManager.getInstance(this).registerReceiver(mPreviewLoadReceiver, new IntentFilter(ConstData.BroadCastMsg.LOAD_AV_BITMAP));
 	}
 
 	/**
@@ -685,5 +694,21 @@ public class DeviceMonitorService extends Service {
 			}
 		}
 		
+	}
+	
+	/**
+	 * 音频，视频文件预览加载接收器
+	 * @author GaoFei
+	 *
+	 */
+	class AVPreviewLoadReceiver extends BroadcastReceiver{
+	    public void onReceive(Context context, Intent intent) {
+	        String action = intent.getAction();
+	        if(action.equals(ConstData.BroadCastMsg.LOAD_AV_BITMAP)){
+	            AllFileInfo allFileInfo = (AllFileInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_ALL_FILE_INFO);
+	            //将线程推入队列
+	            mAVPreviewLoadService.execute(new AVPreviewLoadThread(allFileInfo, DeviceMonitorService.this));
+	        }
+	    };
 	}
 }

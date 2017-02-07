@@ -28,7 +28,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    
+    <uses-permission android:name="android.permission.REMOVE_TASKS" />
     
     <application
         android:name="com.rockchips.mediacenter.application.MediaCenterApplication"
@@ -39,7 +39,8 @@
         <meta-data
             android:name="inputmode"
             android:value="keyboard" />
-        <activity android:name="com.rockchips.mediacenter.activity.AllFileListActivity"/>
+        <activity 
+            android:name="com.rockchips.mediacenter.activity.AllFileListActivity"/>
         <activity android:name="com.rockchips.mediacenter.activity.AllUpnpFileListActivity"/>
         <activity 
             android:name="com.rockchips.mediacenter.activity.UpnpFileListActivity"/>
@@ -121,9 +122,13 @@
         </activity>
         <activity
             android:name="com.rockchips.mediacenter.videoplayer.InternalVideoPlayer"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:exported="false"
             android:label="@string/title_activity_video_player"
-            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen"
+            android:resizeableActivity="true" 
+            android:supportsPictureInPicture="true"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="com.rockchips.mediacenter.videoplayer.InternalVideoPlayer" />
 

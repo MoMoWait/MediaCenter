@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.media.AudioManager;
@@ -155,8 +157,12 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
     {  
     	Log.i(TAG, "onMeasure->videoOrigWidth:" + videoOrigWidth);
     	Log.i(TAG, "onMeasure->videoOrigHeight:" + videoOrigHeight);
-        setMeasuredDimension(videoOrigWidth, videoOrigHeight);
-        
+    	boolean isInPictureMode = ((Activity)mContext).isInPictureInPictureMode();
+    	if(isInPictureMode)
+    	    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    	else
+    	    setMeasuredDimension(videoOrigWidth, videoOrigHeight);
+        //super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
     
     

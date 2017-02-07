@@ -357,4 +357,5 @@
     <string name="up_down_three_d">上下3D</string>
     <string name="left_right_two_d">左右2D</string>
     <string name="up_down_two_d">上下2D</string>
+    <string name="pip">画中画</string>
 </resources>

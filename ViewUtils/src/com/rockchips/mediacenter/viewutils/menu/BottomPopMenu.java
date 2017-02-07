@@ -36,7 +36,7 @@ import android.widget.TextView;
 import com.rockchips.mediacenter.viewutils.R;
 
 /***
- * SR-0000382162 媒体中心USB外接设备的内容展示 AR-0000698365媒体文件的删
+ * SR-0000382162 底部弹出菜单
  * @author zwx160481
  * @version 1.0
  * 
@@ -48,69 +48,69 @@ public class BottomPopMenu extends PopupWindow
     private static final String TAG = "BottomMenu";
 
     /**
-     * 自动隐藏菜单
+     * 鑷姩闅愯棌鑿滃崟
      */
     private static final int MSG_UI_DISMISS = 101;
 
     /**
-     * 自动隐藏时间 默认为5秒
+     * 鑷姩闅愯棌鏃堕棿 榛樿涓�5绉�
      */
     private static final int DISMISS_TIME = 3000;
 
     /**
-     * 底部弹出菜单栏间隔 px
+     * 搴曢儴寮瑰嚭鑿滃崟鏍忛棿闅� px
      */
     private int mBottomY;
 
     /**
-     * 底部弹出菜单栏间隔 px
+     * 搴曢儴寮瑰嚭鑿滃崟鏍忛棿闅� px
      */
     private int mBottomX;
 
     /**
-     * 上下文
+     * 涓婁笅鏂�
      */
     private Context mContext;
 
     /**
-     * UI主线程与子线程交互Handler
+     * UI涓荤嚎绋嬩笌瀛愮嚎绋嬩氦浜扝andler
      */
     private Handler mHandler = new UIHandler();
 
     private OnSelectTypeListener mOnSelectTypeListener;    
 
     /**
-     * BaseActivity 实现类的引用
+     * BaseActivity 瀹炵幇绫荤殑寮曠敤
      */
     // private OnSelectDisplayTypeListener mOnSelectDisplayTypeListener;
 
     /**
-     * 菜单栏按钮布局
+     * 鑿滃崟鏍忔寜閽竷灞�
      **/
     private View mButtonLayout;
 
     /**
-     * 按钮之间的距离 默认为10dip
+     * 鎸夐挳涔嬮棿鐨勮窛绂� 榛樿涓�10dip
      **/
     private static final int MENU_BUTTON_GAP = 50;
 
     /**
-     * menu 按钮字体颜色 有默认值
+     * menu 鎸夐挳瀛椾綋棰滆壊 鏈夐粯璁ゅ��
      */
     private int mButtonTextColor;
 
     /**
-     * 菜单栏按钮正常状态时的背景,默认不为空
+     * 鑿滃崟鏍忔寜閽甯哥姸鎬佹椂鐨勮儗鏅�,榛樿涓嶄负绌�
      */
     private BitmapDrawable mMenuButtonNormalBg;
 
     /**
-     * 音频控制
+     * 闊抽鎺у埗
      */
     private AudioManager mAudioManager;
 
     /**
-     * 布局文件实例化
+     * 甯冨眬鏂囦欢瀹炰緥鍖�
      */
     private LayoutInflater mInflater;
 
@@ -119,7 +119,7 @@ public class BottomPopMenu extends PopupWindow
     private OnMenuListener mOnMenuListener;
 
     /**
-     * 菜单监听回调接口
+     * 鑿滃崟鐩戝惉鍥炶皟鎺ュ彛
      * @author s00211113
      * 
      */
@@ -138,7 +138,7 @@ public class BottomPopMenu extends PopupWindow
     private VolumeKeyListener mVolumeKeyListener;
 
     /**
-     * 菜单构造函数，加载默认背景和布局
+     * 鑿滃崟鏋勯�犲嚱鏁帮紝鍔犺浇榛樿鑳屾櫙鍜屽竷灞�
      */
     public BottomPopMenu(Context context)
     {
@@ -161,13 +161,13 @@ public class BottomPopMenu extends PopupWindow
         @SuppressWarnings("deprecation")
         int width = wm.getDefaultDisplay().getWidth();
         //BitmapDrawable drawbleBg = (BitmapDrawable) context.getResources().getDrawable(R.drawable.option_bg);
-        this.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#292930"))); // 设置TabMenu菜单背景
+        this.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#292930"))); // 璁剧疆TabMenu鑿滃崟鑳屾櫙
         this.setWidth(width);
         //this.setHeight(drawbleBg.getBitmap().getHeight());
         //fly.gao
         this.setHeight(SizeUtils.dp2px(mContext, 136));
         //this.setAnimationStyle(R.style.MenuAnimation);
-        this.setFocusable(true); // menu菜单获得焦点 如果没有获得焦点menu菜单中的控件事件无法响应
+        this.setFocusable(true); // menu鑿滃崟鑾峰緱鐒︾偣 濡傛灉娌℃湁鑾峰緱鐒︾偣menu鑿滃崟涓殑鎺т欢浜嬩欢鏃犳硶鍝嶅簲
 
         mMenuView = new MenuView(context);
         this.setContentView(mMenuView);
@@ -182,15 +182,15 @@ public class BottomPopMenu extends PopupWindow
     }
 
     /**
-     * 增加菜单项
-     * @param id Item的ID标志
-     * @param selectType 标识item的，设置枚举类型
-     * @param iconresId 资源图片ID
-     * @param groupId 分组id
-     * @param order 标志同组的显示顺序的id 数值越小越靠前显示
-     * @param title item的标题
+     * 澧炲姞鑿滃崟椤�
+     * @param id Item鐨処D鏍囧織
+     * @param selectType 鏍囪瘑item鐨勶紝璁剧疆鏋氫妇绫诲瀷
+     * @param iconresId 璧勬簮鍥剧墖ID
+     * @param groupId 鍒嗙粍id
+     * @param order 鏍囧織鍚岀粍鐨勬樉绀洪『搴忕殑id 鏁板�艰秺灏忚秺闈犲墠鏄剧ず
+     * @param title item鐨勬爣棰�
      * 
-     * @return 生成的Item Menu
+     * @return 鐢熸垚鐨処tem Menu
      */
     public MenuItem add(int id, Object selectType, int iconresId, int groupId, int order, String title)
     {
@@ -198,7 +198,7 @@ public class BottomPopMenu extends PopupWindow
     }
 
     /**
-     * 添加当前显示菜单项
+     * 娣诲姞褰撳墠鏄剧ず鑿滃崟椤�
      */
     public void addCurrentMenu(ArrayList<MenuItemImpl> list)
     {
@@ -206,7 +206,7 @@ public class BottomPopMenu extends PopupWindow
     }
 
     /**
-     * 计时自动隐藏菜单
+     * 璁℃椂鑷姩闅愯棌鑿滃崟
      */
     private void dismissDelay()
     {
@@ -215,8 +215,8 @@ public class BottomPopMenu extends PopupWindow
     }
 
     /**
-     * 显示菜单
-     * @param parent 菜单显示需要一个parent，建议是Activity的第一个布局View
+     * 鏄剧ず鑿滃崟
+     * @param parent 鑿滃崟鏄剧ず闇�瑕佷竴涓猵arent锛屽缓璁槸Activity鐨勭涓�涓竷灞�View
      */
     public void show(View parent)
     {
@@ -228,7 +228,7 @@ public class BottomPopMenu extends PopupWindow
     }
 
     /**
-     * 隐藏
+     * 闅愯棌
      */
     public void hide()
     {
@@ -236,7 +236,7 @@ public class BottomPopMenu extends PopupWindow
     }
 
     /**
-     * 安全的dismisse
+     * 瀹夊叏鐨刣ismisse
      **/
     @Override
     public void dismiss()
@@ -253,7 +253,7 @@ public class BottomPopMenu extends PopupWindow
     }
 
     /**
-     * 设置当前菜单Item项
+     * 璁剧疆褰撳墠鑿滃崟Item椤�
      */
     public void setCurrentMenuItem(int id)
     {
@@ -261,7 +261,7 @@ public class BottomPopMenu extends PopupWindow
     }
 
     /**
-     * 获取当前菜单Item项
+     * 鑾峰彇褰撳墠鑿滃崟Item椤�
      */
     public int getCurrentMenuItem()
     {
@@ -279,7 +279,7 @@ public class BottomPopMenu extends PopupWindow
     }
 
     /**
-     * 菜单项被选择的回调接口
+     * 鑿滃崟椤硅閫夋嫨鐨勫洖璋冩帴鍙�
      * @author s00211113
      * 
      */
@@ -289,7 +289,7 @@ public class BottomPopMenu extends PopupWindow
     }
 
     /**
-     * MenuView布局
+     * MenuView甯冨眬
      * @author s00211113
      * 
      */
@@ -316,7 +316,7 @@ public class BottomPopMenu extends PopupWindow
         private static final int ANIMATION_DURATION = 200;
 
         /**
-         * MenuView构造函数， 菜单上mLayout装载Item，mFocusAnimView承载Item选中时背景
+         * MenuView鏋勯�犲嚱鏁帮紝 鑿滃崟涓妋Layout瑁呰浇Item锛宮FocusAnimView鎵胯浇Item閫変腑鏃惰儗鏅�
          * @param context
          */
         private MenuView(Context context)
@@ -342,12 +342,12 @@ public class BottomPopMenu extends PopupWindow
         }
 
         /**
-         * 增加菜单项
-         * @param id Item的ID标志
-         * @param iconresId 资源图片ID
-         * @param groupId 所属组id
-         * @param order 显示顺序
-         * @return 生成的Item Menu
+         * 澧炲姞鑿滃崟椤�
+         * @param id Item鐨処D鏍囧織
+         * @param iconresId 璧勬簮鍥剧墖ID
+         * @param groupId 鎵�灞炵粍id
+         * @param order 鏄剧ず椤哄簭
+         * @return 鐢熸垚鐨処tem Menu
          * 
          */
         public MenuItem add(int id, Object selectType, int iconresId, int groupId, int order, String title)
@@ -384,7 +384,7 @@ public class BottomPopMenu extends PopupWindow
                     textView.setTextColor(mButtonTextColor);
 
                     mButtonLayout.setTag(item);
-                   /* if (mMenuButtonNormalBg != null)// 设置按钮正常的背景颜色
+                   /* if (mMenuButtonNormalBg != null)// 璁剧疆鎸夐挳姝ｅ父鐨勮儗鏅鑹�
                     {
                         mButtonLayout.setBackgroundDrawable(mMenuButtonNormalBg);
                     }*/
@@ -403,7 +403,7 @@ public class BottomPopMenu extends PopupWindow
         }
 
         /**
-         * 过滤添加MenuItem 如果是同一组的则只显示order最小的，
+         * 杩囨护娣诲姞MenuItem 濡傛灉鏄悓涓�缁勭殑鍒欏彧鏄剧ずorder鏈�灏忕殑锛�
          * @param menuItemImpl
          * */
         @SuppressWarnings("deprecation")
@@ -435,7 +435,7 @@ public class BottomPopMenu extends PopupWindow
                 {
                     mLayout.addView(mButtonLayout, p);
                 }
-                else if (childCount > 0)// 同组button处理
+                else if (childCount > 0)// 鍚岀粍button澶勭悊
                 {
                     boolean hasSameGid = false;
                     for (int i = 0; i < childCount; i++)
@@ -461,7 +461,7 @@ public class BottomPopMenu extends PopupWindow
         }
 
         /**
-         * 清空所有的Item项
+         * 娓呯┖鎵�鏈夌殑Item椤�
          */
         public void clear()
         {
@@ -470,12 +470,12 @@ public class BottomPopMenu extends PopupWindow
             mLayout.removeAllViews();
             mbNeedLayout = true;
 
-            this.requestLayout(); // 调用此方法，要求parent
-                                  // view重新调用他的onMeasure,onLayout来对重新设置自己位置
+            this.requestLayout(); // 璋冪敤姝ゆ柟娉曪紝瑕佹眰parent
+                                  // view閲嶆柊璋冪敤浠栫殑onMeasure,onLayout鏉ュ閲嶆柊璁剧疆鑷繁浣嶇疆
         }
 
         /**
-         * 按键监听事件
+         * 鎸夐敭鐩戝惉浜嬩欢
          */
         private OnKeyListener mKeyListener = new OnKeyListener()
         {
@@ -492,7 +492,7 @@ public class BottomPopMenu extends PopupWindow
 
                         mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FX_FOCUS_NAVIGATION_UP);
 
-                        // 向Sender端回传媒体中心播放器的音量值
+                        // 鍚慡ender绔洖浼犲獟浣撲腑蹇冩挱鏀惧櫒鐨勯煶閲忓��
                         if (mVolumeKeyListener != null)
                         {
                             Log.d(TAG, "DLNAMenu report the volume to sender");
@@ -508,7 +508,7 @@ public class BottomPopMenu extends PopupWindow
                         }
                         mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FX_FOCUS_NAVIGATION_UP);
 
-                        // 向Sender端回传媒体中心播放器的音量值
+                        // 鍚慡ender绔洖浼犲獟浣撲腑蹇冩挱鏀惧櫒鐨勯煶閲忓��
                         if (mVolumeKeyListener != null)
                         {
                             Log.d(TAG, "DLNAMenu report the volume to sender");
@@ -536,9 +536,9 @@ public class BottomPopMenu extends PopupWindow
                         mHandler.removeMessages(MSG_UI_DISMISS);
 
                         mHandler.sendEmptyMessageDelayed(MSG_UI_DISMISS, DISMISS_TIME);
-                        // 点击有效Item
+                        // 鐐瑰嚮鏈夋晥Item
                         clickFocusItem();
-                        // 改变menuItem
+                        // 鏀瑰彉menuItem
                         changeItemMenu();
                         return true;
                     }
@@ -559,13 +559,13 @@ public class BottomPopMenu extends PopupWindow
                         return true;
                     }
                 }
-                dismissDelay(); // 按键重新计时隐藏菜单
+                dismissDelay(); // 鎸夐敭閲嶆柊璁℃椂闅愯棌鑿滃崟
                 return false;
             }
         };
 
         /**
-         * 点击监听事件
+         * 鐐瑰嚮鐩戝惉浜嬩欢
          */
         private OnTouchListener mTouchListener = new OnTouchListener()
         {
@@ -609,7 +609,7 @@ public class BottomPopMenu extends PopupWindow
                     setCurrentFocusItem(idx);
 
                     hide();
-                    // 点击有效Item
+                    // 鐐瑰嚮鏈夋晥Item
                     clickFocusItem();
                     changeItemMenu();
                 }
@@ -617,7 +617,7 @@ public class BottomPopMenu extends PopupWindow
             }
         };
 
-        // 点击有效Item
+        // 鐐瑰嚮鏈夋晥Item
         private void clickFocusItem()
         {
             if (mCurrentItemIndex >= 0 && mCurrentItemIndex < mItems.size())
@@ -631,7 +631,7 @@ public class BottomPopMenu extends PopupWindow
         }
 
         /**
-         * 当menuItem 是由一组过滤条件组合成的时候，点击切换icon和文字提示
+         * 褰搈enuItem 鏄敱涓�缁勮繃婊ゆ潯浠剁粍鍚堟垚鐨勬椂鍊欙紝鐐瑰嚮鍒囨崲icon鍜屾枃瀛楁彁绀�
          */
         protected void changeItemMenu()
         {
@@ -677,7 +677,7 @@ public class BottomPopMenu extends PopupWindow
         }
 
         /**
-         * 按小到大排序
+         * 鎸夊皬鍒板ぇ鎺掑簭
          * */
         private class SortByOrder implements Comparator<MenuItemImpl>
         {
@@ -698,8 +698,8 @@ public class BottomPopMenu extends PopupWindow
         }
 
         /**
-         * 切换聚焦Item， 可实现动画效果
-         * @param newIdx 新的聚焦item的Index
+         * 鍒囨崲鑱氱劍Item锛� 鍙疄鐜板姩鐢绘晥鏋�
+         * @param newIdx 鏂扮殑鑱氱劍item鐨処ndex
          */
         private void changeFocusItem(int newIdx)
         {
@@ -725,8 +725,8 @@ public class BottomPopMenu extends PopupWindow
         }
 
         /**
-         * 动画方式切换聚焦
-         * @param newIdx：新的聚焦Item的Index
+         * 鍔ㄧ敾鏂瑰紡鍒囨崲鑱氱劍
+         * @param newIdx锛氭柊鐨勮仛鐒tem鐨処ndex
          */
         private void setCurrentFocusItemByAnim(int newIdx)
         {
@@ -735,7 +735,7 @@ public class BottomPopMenu extends PopupWindow
             //showFocusBackgroundAt(mCurrentItemIndex);
             int xoffset = newView.getLeft() - currentView.getLeft();
             int yoffset = newView.getTop() - currentView.getTop();
-            // 做焦点移动的动画效果在此处实现
+            // 鍋氱劍鐐圭Щ鍔ㄧ殑鍔ㄧ敾鏁堟灉鍦ㄦ澶勫疄鐜�
             mCurrentItemIndex = newIdx;
             showFocusBackgroundAt(mCurrentItemIndex);
             if (mOnMenuListener != null)
@@ -772,7 +772,7 @@ public class BottomPopMenu extends PopupWindow
                 }
                 else
                 {
-                    // 正在布局菜单项，等布局完了再显示聚焦的光标
+                    // 姝ｅ湪甯冨眬鑿滃崟椤癸紝绛夊竷灞�瀹屼簡鍐嶆樉绀鸿仛鐒︾殑鍏夋爣
                     mbNeedLayout = true;
                 }
             }
@@ -781,7 +781,7 @@ public class BottomPopMenu extends PopupWindow
 
         public int getCurrentMenuItem()
         {
-            // 点击有效Item
+            // 鐐瑰嚮鏈夋晥Item
             if (mCurrentItemIndex >= 0 && mCurrentItemIndex < mItems.size())
             {
                 return mItems.get(mCurrentItemIndex).getItemId();
@@ -793,7 +793,7 @@ public class BottomPopMenu extends PopupWindow
         }
 
         /**
-         * 获取当前菜单所有Item项
+         * 鑾峰彇褰撳墠鑿滃崟鎵�鏈塈tem椤�
          */
         public ArrayList<MenuItemImpl> getCurrentMenuItemImpl()
         {
@@ -825,7 +825,7 @@ public class BottomPopMenu extends PopupWindow
         }
 
         /**
-         * 必须重写此方法，requestLayout()才有效
+         * 蹇呴』閲嶅啓姝ゆ柟娉曪紝requestLayout()鎵嶆湁鏁�
          * */
         @Override
         protected void onLayout(boolean changed, int l, int t, int r, int b)
@@ -847,7 +847,7 @@ public class BottomPopMenu extends PopupWindow
     }
 
     /**
-     * 关闭菜单handler
+     * 鍏抽棴鑿滃崟handler
      * @author s00211113
      * 
      */
@@ -870,13 +870,13 @@ public class BottomPopMenu extends PopupWindow
     }
 
     /**
-     * Menu处于焦点并按下音量键时的回调接口
+     * Menu澶勪簬鐒︾偣骞舵寜涓嬮煶閲忛敭鏃剁殑鍥炶皟鎺ュ彛
      * @author s00211113
      * 
      */
     public interface VolumeKeyListener
     {
-        // 向Sender端回传媒体中心播放器的音量
+        // 鍚慡ender绔洖浼犲獟浣撲腑蹇冩挱鏀惧櫒鐨勯煶閲�
         void reportVolumeToSender();
     }
 

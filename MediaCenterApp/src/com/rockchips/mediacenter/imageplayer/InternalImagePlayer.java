@@ -24,9 +24,6 @@ import android.os.Message;
 import android.view.KeyEvent;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.rockchips.android.airsharing.api.dlna.dmc.bean.DlnaBaseObjectInfo;
-import com.rockchips.android.airsharing.api.dlna.dmc.common.EDlnaSortType;
 import com.rockchips.mediacenter.R;
 import com.rockchips.mediacenter.api.localImp.LocalDeviceManager;
 import com.rockchips.mediacenter.basicutils.bean.LocalDeviceInfo;
@@ -36,7 +33,6 @@ import com.rockchips.mediacenter.basicutils.constant.Constant.EBrowerType;
 import com.rockchips.mediacenter.basicutils.constant.Constant.MediaType;
 import com.rockchips.mediacenter.basicutils.util.IICLOG;
 import com.rockchips.mediacenter.basicutils.util.StringUtils;
-import com.rockchips.mediacenter.common.MediaInfoConvertor;
 import com.rockchips.mediacenter.common.PlayStateInfo;
 import com.rockchips.mediacenter.activity.MainActivity;
 import com.rockchips.mediacenter.audioplayer.BackgroundAudioPreviewWidget;

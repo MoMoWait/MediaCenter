@@ -73,6 +73,7 @@ public class ConstData {
 		String EXTRA_DEVICE_PATH = "extra_device_path";
 		String EXTRA_IS_ADD_SAMBA = "extra_is_add_samba";
 		String EXTRA_IS_ADD_NETWORK_DEVICE = "extra_is_add_network_device";
+		String EXTRA_ALL_FILE_INFO = "extra_all_file_info";
         /**
          * 获取媒体列表的key键
          */
@@ -582,6 +583,8 @@ public class ConstData {
     	String REFRESH_NETWORK_DEVICE = "com.rockchip.mediacenter.refresh_network_device";
     	String REFRESH_ALL_DEVICES = "com.rockchip.mediacenter.refresh_all_devices";
     	String CHECK_NETWORK = "com.rockchip.mediacenter.check_network";
+    	String LOAD_AV_BITMAP = "com.rockchip.mediacenter.load_av_bitmap";
+    	String REFRESH_AV_PREVIEW = "com.rockchip.mediacenter.refresh_av_preview";
     }
     
     public enum EBrowerType

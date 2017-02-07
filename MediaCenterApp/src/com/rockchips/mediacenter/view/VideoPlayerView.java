@@ -13,10 +13,10 @@ import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.WindowManager;
 import android.widget.VideoView;
-import  com.rockchips.android.airsharing.util.IICLOG;
 import com.rockchips.mediacenter.service.IVideoPlayer;
 import com.rockchips.mediacenter.portable.bean.AudioInfoOfVideo;
 import com.rockchips.mediacenter.portable.bean.SubInfo;
+import android.util.Log;
 /**
  * @author GaoFei
  * 视频播放组件
@@ -25,7 +25,6 @@ public class VideoPlayerView extends VideoView {
 
 
 	//private static final String TAG = "OrigVideoView";
-    private IICLOG Log = IICLOG.getInstance();
     private WindowManager mWindowManager;
 
     private int mDisplayW = 0;
@@ -120,8 +119,6 @@ public class VideoPlayerView extends VideoView {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
     {  
-    	Log.i(TAG, "onMeasure->videoOrigWidth:" + videoOrigWidth);
-    	Log.i(TAG, "onMeasure->videoOrigHeight:" + videoOrigHeight);
         setMeasuredDimension(videoOrigWidth, videoOrigHeight);
         
     }
@@ -131,7 +128,6 @@ public class VideoPlayerView extends VideoView {
     public void setVideoURI(Uri uri) {
     	//此时VideoView会调用
     	super.setVideoURI(uri);
-    	Log.i(TAG, "setVideoURI->uri:" + uri);
     }
     
     /**
@@ -153,7 +149,6 @@ public class VideoPlayerView extends VideoView {
         int resourceId = mContext.getResources().getIdentifier("navigation_bar_height", "dimen", "android");
         if (resourceId > 0) {
             navigationBarHeight = mContext.getResources().getDimensionPixelSize(resourceId);
-            Log.i(TAG, "onCreate->navigationBarHeight:" + navigationBarHeight);
         }
         height += navigationBarHeight;
         setDisplayH(height);
@@ -161,7 +156,6 @@ public class VideoPlayerView extends VideoView {
         maxHeight = height;
         videoOrigWidth = width;
         videoOrigHeight = height;
-        Log.d(TAG, "onMeasure height :" + height + ", width " + width);
     }
 
     /**
@@ -208,7 +202,6 @@ public class VideoPlayerView extends VideoView {
 
     public void start()
     {
-    	Log.i(TAG, "start()");
         super.start();
     }
 
@@ -228,7 +221,6 @@ public class VideoPlayerView extends VideoView {
     public void resume() 
     {
         super.resume();
-        Log.i(TAG, "resume");
     }
 
 
@@ -461,7 +453,6 @@ public class VideoPlayerView extends VideoView {
     {
         public void onPrepared(MediaPlayer mp)
         {
-        	Log.i(TAG, "onPrepared");
             mIsPrepared = true;
             mMediaPlayer = mp;
             mp.setOnBufferingUpdateListener(mbufferingListener);

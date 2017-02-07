@@ -23,16 +23,26 @@ import com.rockchips.mediacenter.modle.task.AllFileLoadTask;
 import com.rockchips.mediacenter.modle.task.FileLoadTask;
 import com.rockchips.mediacenter.modle.task.FileMediaDataLoadTask;
 import com.rockchips.mediacenter.modle.task.FolderLoadTask;
+import com.rockchips.mediacenter.util.APKUtils;
+import com.rockchips.mediacenter.util.ActivityUtils;
 import com.rockchips.mediacenter.util.DialogUtils;
 import com.rockchips.mediacenter.util.MediaFileUtils;
 import com.rockchips.mediacenter.utils.GetDateUtil;
 import com.rockchips.mediacenter.videoplayer.InternalVideoPlayer;
+
+import android.app.ActivityManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.AsyncTask.Status;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -124,6 +134,11 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	 */
 	private String mLastSelectPath;
 	
+	/**
+	 * 更新音频或视频预览图监听器
+	 */
+	private RefreshAVPreviewReceiver mRefreshAVPreviewReceiver;
+	
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -172,6 +187,17 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 		return super.onKeyDown(keyCode, event);
 	}
 	
+	@Override
+	protected void onResume() {
+	    super.onResume();
+	    LocalBroadcastManager.getInstance(this).registerReceiver(mRefreshAVPreviewReceiver, new IntentFilter(ConstData.BroadCastMsg.REFRESH_AV_PREVIEW));
+	}
+	
+	@Override
+	protected void onPause() {
+	    super.onPause();
+	    LocalBroadcastManager.getInstance(this).unregisterReceiver(mRefreshAVPreviewReceiver);
+	}
 	
 	@Override
 	protected void onDestroy() {
@@ -180,10 +206,11 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		//loadFiles(mSelectFolder, true);
 	}
 	
+	
     public void initDataAndView(){
+        mRefreshAVPreviewReceiver = new RefreshAVPreviewReceiver();
     	mPregressLoading.setVisibility(View.GONE);
     	mCurrMediaType = getIntent().getIntExtra(ConstData.IntentKey.EXTRAL_MEDIA_TYPE, -1);
     	mCurrDevice = (LocalDevice)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
@@ -225,6 +252,15 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
     				mWidgetPreview.updateImage(previewBitmap);
     			}
             	updateOtherText(fileInfo);
+                break;
+            case ConstData.MediaType.APK:
+                Drawable apkDrawable = APKUtils.getApkIcon(this, fileInfo.getFile().getPath());
+                if(apkDrawable != null){
+                    previewBitmap = ((BitmapDrawable)apkDrawable).getBitmap();
+                    if(previewBitmap != null){
+                        mWidgetPreview.updateImage(previewBitmap);
+                    }
+                }
                 break;
         }  
 	
@@ -404,6 +440,18 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
             intent.setClass(this, InternalVideoPlayer.class);
             intent.putExtra(ConstData.IntentKey.CURRENT_INDEX, newPosition);
             InternalVideoPlayer.setMediaList(mediaInfoList, newPosition);
+            //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            if(android.os.Build.VERSION.SDK_INT >= 24){
+                //关闭PIP页面
+                //ActivityManager activityManager = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
+                List<Integer> videoPlayerTaskIds = ActivityUtils.getTaskIds(getPackageName() + "/" + InternalVideoPlayer.class.getName());
+                if(videoPlayerTaskIds != null && videoPlayerTaskIds.size() > 0){
+                    ActivityUtils.removeAllTask(videoPlayerTaskIds);
+                }
+            }
+            
+            //activityManager.getAppTasks()
+            
         }
         else if (allFileInfo.getType() == ConstData.MediaType.IMAGE)
         {
@@ -507,7 +555,11 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
      * @param allFileInfo
      */
     private void loadBitmapForAVFile(AllFileInfo allFileInfo){
-    	if(mBitmapLoadTask != null && mBitmapLoadTask.getStatus() == Status.RUNNING)
+        //此处直接发送广播出去,服务接受后开始获取缩列图
+        Intent loadIntent = new Intent(ConstData.BroadCastMsg.LOAD_AV_BITMAP);
+        loadIntent.putExtra(ConstData.IntentKey.EXTRA_ALL_FILE_INFO, allFileInfo);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(loadIntent);
+    	/*if(mBitmapLoadTask != null && mBitmapLoadTask.getStatus() == Status.RUNNING)
     		mBitmapLoadTask.cancel(true);
     	mBitmapLoadTask = new AVBitmapLoadTask(new AVBitmapLoadTask.CallBack() {
 			
@@ -518,7 +570,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 				}
 			}
 		});
-    	mBitmapLoadTask.execute(allFileInfo);
+    	mBitmapLoadTask.execute(allFileInfo);*/
     }
     
     /**
@@ -538,5 +590,24 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 			}
 		}
 		return position;
+	}
+	
+	
+	/**
+	 * 
+	 * @author GaoFei
+	 * 更新音频或视频文件预览图监听器
+	 */
+	class RefreshAVPreviewReceiver extends BroadcastReceiver{
+	    @Override
+	    public void onReceive(Context context, Intent intent) {
+	        String action = intent.getAction();
+	        if(action.equals(ConstData.BroadCastMsg.REFRESH_AV_PREVIEW)){
+	            //更新预览图
+	            AllFileInfo allFileInfo = (AllFileInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_ALL_FILE_INFO);
+	            if(allFileInfo.getFile().getPath().equals(mCurrentFileInfo.getFile().getPath()))
+	                refreshPreview(allFileInfo);
+	        }
+	    }
 	}
 }

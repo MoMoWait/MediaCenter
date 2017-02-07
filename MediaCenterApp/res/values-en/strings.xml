@@ -356,4 +356,5 @@
     <string name="up_down_three_d">UD 3D</string>
     <string name="left_right_two_d">LR 2D</string>
     <string name="up_down_two_d">UD 2D</string>
+    <string name="pip">PIP</string>
 </resources>
