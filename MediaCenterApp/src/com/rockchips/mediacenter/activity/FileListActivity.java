@@ -67,6 +67,7 @@ import com.rockchips.mediacenter.modle.task.FileMediaDataLoadTask;
 import com.rockchips.mediacenter.modle.task.FolderLoadTask;
 import com.rockchips.mediacenter.retrieve.RetrieveCompleteListener;
 import com.rockchips.mediacenter.retrieve.RetrieveInfoManager;
+import com.rockchips.mediacenter.util.ActivityUtils;
 import com.rockchips.mediacenter.util.DialogUtils;
 import com.rockchips.mediacenter.util.MediaFileUtils;
 import com.rockchips.mediacenter.util.SystemUiHider;
@@ -538,6 +539,13 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
             intent.setClass(this, InternalVideoPlayer.class);
             intent.putExtra(ConstData.IntentKey.CURRENT_INDEX, newPosition);
             InternalVideoPlayer.setMediaList(mediaInfoList, newPosition);
+            if(android.os.Build.VERSION.SDK_INT >= 24){
+                //关闭PIP页面
+                List<Integer> videoPlayerTaskIds = ActivityUtils.getTaskIds(getPackageName() + "/" + InternalVideoPlayer.class.getName());
+                if(videoPlayerTaskIds != null && videoPlayerTaskIds.size() > 0){
+                    ActivityUtils.removeAllTask(videoPlayerTaskIds);
+                }
+            }
         }
         else if (mediaFile.getType() == ConstData.MediaType.IMAGE)
         {

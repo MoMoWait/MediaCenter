@@ -17,7 +17,7 @@ import com.rockchips.mediacenter.modle.db.LocalMediaFileService;
 import com.rockchips.mediacenter.modle.db.LocalMediaFolderService;
 import com.rockchips.mediacenter.modle.db.ScanDirectoryService;
 import com.rockchips.mediacenter.util.MediaFileUtils;
-
+import android.util.Log;
 /**
  * 文件扫描线程
  * @author GaoFei
@@ -70,7 +70,8 @@ public class FileScanThread extends Thread{
 	
 	@Override
 	public void run() {
-		//Log.i(TAG, "FileScanThread start");
+		long startTime = System.currentTimeMillis();
+		Log.i(TAG, "FileScanThread start time:" + startTime);
 		while(!mScanDirectory.isEmpty()){
 			mIsMounted = mService.isMounted(mPath);
 			if(!mIsMounted){
@@ -213,6 +214,9 @@ public class FileScanThread extends Thread{
 		mDevice.setHas_scaned(true);
 		LocalDeviceService localDeviceService = new LocalDeviceService();
 		localDeviceService.update(mDevice);
+		long endTime = System.currentTimeMillis();
+		Log.i(TAG, "FileScanThread end time:" + endTime);
+		Log.i(TAG, "FileScanThread total time:" + (endTime - startTime) / 1000 + "s");
 		//Log.i(TAG, "FileScanThread end");
 	}
 	

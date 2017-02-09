@@ -1,6 +1,7 @@
 package com.rockchips.mediacenter.view;
 import java.io.File;
 import java.util.Random;
+import java.util.UUID;
 
 import momo.cn.edu.fjnu.androidutils.utils.ResourceUtils;
 import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
@@ -60,7 +61,7 @@ public class NFSAddDialog extends AppBaseDialog{
 
 	@Override
 	public void initData() {
-		//mEditServerAddress.setText("121.40.183.83:/home/nfs");
+		mEditServerAddress.setText("120.24.18.183:/home/nfs");
 	}
 
 	@Override
@@ -81,9 +82,9 @@ public class NFSAddDialog extends AppBaseDialog{
 				}
 				
 				NFSInfo nfsInfo = new NFSInfo();
-				String currStrTime = String.valueOf(System.currentTimeMillis());
-				currStrTime = currStrTime.substring(currStrTime.length() - 4);
-				String mountPath = ConstData.INNER_SD_DIR +  "/" + currStrTime;
+				String uuidPathName = UUID.randomUUID().toString();
+                uuidPathName = uuidPathName.substring(uuidPathName.length() - 8, uuidPathName.length());
+				String mountPath = ConstData.NETWORK_DEVICE_MOUNT_DIR +  "/" + uuidPathName;
 				int randomNum = new Random().nextInt(10000);
 				//mountPath += randomNum;
 				while(FileUtils.isExist(Environment.getExternalStorageDirectory(), mountPath + randomNum))

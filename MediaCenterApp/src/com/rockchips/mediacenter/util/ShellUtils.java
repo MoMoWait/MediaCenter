@@ -17,15 +17,17 @@ public class ShellUtils {
 	 * 执行mount命令获取返回结果
 	 * @return
 	 */
-	public static List<String> getMountMsgs(){
+	public synchronized static List<String> getMountMsgs(){
 		String line = null;
 		List<String> strlist = new ArrayList<String>();
 		try {
+		    //存在挂死的可能性
 			Process pro = Runtime.getRuntime().exec("mount");
 			BufferedReader br = new BufferedReader(new InputStreamReader(pro.getInputStream()));
 			while ((line = br.readLine())!=null){
 				strlist.add(line);
 			}
+			pro.waitFor();
 		}catch (Exception e) {
 			e.printStackTrace();
 			//Log.i(TAG, "getMountMsg->" + e);

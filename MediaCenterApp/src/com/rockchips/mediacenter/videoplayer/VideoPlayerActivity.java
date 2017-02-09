@@ -36,6 +36,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -52,6 +54,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.ServiceManager;
 import android.os.storage.IMountService;
+import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -60,6 +63,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.TextureView;
 import android.view.View;
 import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
@@ -68,6 +72,7 @@ import android.widget.PopupMenu;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import java.io.File;
 
@@ -77,6 +82,7 @@ import org.xutils.view.annotation.ViewInject;
 import momo.cn.edu.fjnu.androidutils.data.CommonValues;
 import momo.cn.edu.fjnu.androidutils.utils.DeviceInfoUtils;
 import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
+import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
 
 import com.hisilicon.android.hibdinfo.HiBDInfo;
 import com.hisilicon.android.mediaplayer.HiMediaPlayer;
@@ -289,6 +295,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     private TimeLayout tiemLayout;
     @ViewInject(R.id.circleProgressBar)
     private ProgressBar mCircleProgressBar;
+    @ViewInject(R.id.text_subtitle)
+    private TextView mTextSubtitle;
+    
     protected void onCreate(Bundle savedInstanceState)
     {
         Log.d(TAG, "VideoPlayerActivity --> onCreate()--");
@@ -307,7 +316,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         mCurrentDevice = (LocalDevice)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
         initVideoPlayPreferences();
         initViews();
-        //initEvent();
         // 初始化杜比的弹出视窗
         doblyPopWin = new DoblyPopWin(this);
 
@@ -340,7 +348,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
         bIsPausedByUser = false;
 
-        initExtSubTitleInBackground();
+        //initExtSubTitleInBackground();
     }
 
     private void initViews()
@@ -389,39 +397,21 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         mSlideIn = new TranslateAnimation(-0, 0, -75, 0);
         mSlideIn.setDuration(500);
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+        
     }
 
     
     private void initEvent(){
+        mTextSubtitle.setVisibility(View.GONE);
     	MediaPlayer originMediaPlayer = mMediaPlayer.getOriginMediaPlayer();
     	originMediaPlayer.setOnTimedTextListener(new  MediaPlayer.OnTimedTextListener() {
 			
 			@Override
 			public void onTimedText(MediaPlayer mp, TimedText text) {
-				if(mSubHolder != null){
-					Canvas canvas = null;
-					try {
-					    canvas = mSubHolder.lockCanvas();
-					    synchronized (mSubHolder) {
-					        //canvas.drawColor(Color.WHITE);
-					        //canvas.drawBitmap(enemy1, enemy1X, enemy1Y, null);
-					        Paint paint = new Paint();
-					        paint.setColor(Color.WHITE);
-					        float textWidth = paint.measureText(text.getText());
-					        float left = (SCREEN_WIDTH - textWidth) / 2;
-					        if(left < 0){
-					        	left = 0;
-					        }
-					        canvas.drawText(text.getText(), left, SCREEN_HEIGHT - SizeUtils.dp2px(VideoPlayerActivity.this, 40), paint);
-					    }
-					} catch (Exception e) {
-					    Log.e(TAG, "run() lockCanvas()" + e);
-					} finally {
-					    if (canvas != null) {
-					        mSubHolder.unlockCanvasAndPost(canvas);
-					    }
-					}
-				}
+				Log.i(TAG, "onTimedText->text:" + text.getText());
+			    mTextSubtitle.setVisibility(View.VISIBLE);
+			    mTextSubtitle.setText(Html.fromHtml(text.getText()));
+			    //mTextSubtitle.setVisibility(View.VISIBLE);
 			}
 		});
     }
@@ -590,17 +580,18 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 //    }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+    }
+    
+    
+    @Override
     protected void onDestroy()
     {
         if(isInPictureInPictureMode()){
             super.onDestroy();
             if (null != mMediaPlayer)
             {
-                try{
-                    mMediaPlayer.release();
-                }catch (Exception e){
-                    Log.i(TAG, "VideoPlayer->onDestory->release->exception:" + e);
-                }
                 mMediaPlayer = null;
             }
             return;
@@ -1496,7 +1487,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             }
             */
             
-            //initEvent();
+            initEvent();
             
             if (!PlatformConfig.isSupportHisiMediaplayer())
             {

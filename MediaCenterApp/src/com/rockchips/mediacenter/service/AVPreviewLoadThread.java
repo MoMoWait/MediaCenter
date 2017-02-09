@@ -39,7 +39,7 @@ public class AVPreviewLoadThread extends Thread {
     
     @Override
     public void run() {
-        Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+        //Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         if(mAllFileInfo.isLoadPreview())
             return;
         /**

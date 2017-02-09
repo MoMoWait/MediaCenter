@@ -418,9 +418,12 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
 					protected void onPostExecute(Integer result) {
 						DialogUtils.closeLoadingDialog();
 						if(result == ConstData.TaskExecuteResult.SUCCESS){
+						    //提示挂载成功
+						    ToastUtils.showToast(getString(R.string.mount_success));
 							//发送广播
 							Intent nfsMountIntent = new Intent(ConstData.BroadCastMsg.NFS_MOUNT);
 							nfsMountIntent.putExtra(ConstData.IntentKey.EXTRA_NFS_INFO, newNfsInfo);
+							nfsMountIntent.putExtra(ConstData.IntentKey.EXTRA_IS_ADD_NETWORK_DEVICE, true);
 							LocalBroadcastManager.getInstance(MainActivity.this).sendBroadcast(nfsMountIntent);
 						}else{
 							//提示挂载失败

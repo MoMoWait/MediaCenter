@@ -19,6 +19,10 @@ import java.util.Map;
 import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PixelFormat;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaFormat;
@@ -88,7 +92,7 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
     public String[] mSubFormat = {"ASS", "LRC", "SRT", "SMI", "SUB", "TXT", "PGS", "DVB", "DVD"};
 
     private MediaPlayer  mMediaPlayer = null;
-
+    //private Paint mTextPaint;
     OnBufferingUpdateListener onBufferingUpdateListener= null;
     OnErrorListener onErrorListener= null;
     OnCompleteListener onCompleteListener= null;
@@ -140,7 +144,9 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
     private Context mContext = null;
     private void init(Context context)
     {
-    	//setErrorListener();
+        //mTextPaint = new Paint();
+        //mTextPaint.setTextSize(100);
+        //mTextPaint.setColor(Color.RED);
     	setOnErrorListener(mOnErrorListener);
         mContext = context;
         
@@ -171,7 +177,14 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
     	super.setVideoURI(uri);
     }
     
-    
+/*    @Override
+    protected void onDraw(Canvas canvas) {
+        SurfaceHolder holder = getHolder();
+        if(holder != null)
+            holder.setFormat(PixelFormat.RGBA_8888);
+        Log.i(TAG, "onDraw");
+        canvas.drawText("I love you", 100, 100, mTextPaint);
+    }*/
  
     
     private void initDisplayViewAttr()
