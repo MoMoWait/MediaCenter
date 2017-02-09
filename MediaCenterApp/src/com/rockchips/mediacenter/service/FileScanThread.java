@@ -70,6 +70,8 @@ public class FileScanThread extends Thread{
 	
 	@Override
 	public void run() {
+		//if(!ConstData.Config.IS_SCAN_LOCAL_FILE)
+		//	return;
 		long startTime = System.currentTimeMillis();
 		Log.i(TAG, "FileScanThread start time:" + startTime);
 		while(!mScanDirectory.isEmpty()){

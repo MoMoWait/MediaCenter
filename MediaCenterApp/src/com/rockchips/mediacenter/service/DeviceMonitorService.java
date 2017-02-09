@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -87,7 +88,11 @@ public class DeviceMonitorService extends Service {
 	/**
 	 * 单线程池服务，加载音频和视频文件的预览图
 	 */
-	private ExecutorService mAVPreviewLoadService;
+	private ThreadPoolExecutor mAVPreviewLoadService;
+	/**
+	 * 单线程池服务，加载图片的预览图
+	 */
+	private ThreadPoolExecutor mPhotoPreviewLoadService;
 	private MountThread mountThread;
 	private boolean isMountRuning = true;
 	private List<NFSInfo> mNFSList;
@@ -99,7 +104,7 @@ public class DeviceMonitorService extends Service {
 	/**
 	 * 音频，视频缩列图加载监听器
 	 */
-	private AVPreviewLoadReceiver mPreviewLoadReceiver;
+	private PreviewLoadReceiver mPreviewLoadReceiver;
 	/**
 	 * 获取接UPNP口服务
 	 */
@@ -180,9 +185,10 @@ public class DeviceMonitorService extends Service {
 	 * 初始化数据
 	 */
 	private void initData() {
-	    mAVPreviewLoadService = Executors.newSingleThreadExecutor();
+	    mAVPreviewLoadService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
+	    mPhotoPreviewLoadService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
 		mMountNetWorkDeviceService = Executors.newSingleThreadExecutor();
-		mPreviewLoadReceiver = new AVPreviewLoadReceiver();
+		mPreviewLoadReceiver = new PreviewLoadReceiver();
 		mNetWorkDeviceMountReceiver = new NetWorkDeviceMountReceiver();
 		mDeviceHandler = new MountDeviceHandler();
 		mRegistryListener = new UpnpRegistryListener();
@@ -248,7 +254,10 @@ public class DeviceMonitorService extends Service {
 		netWorkDeviceMountFilter.addAction(ConstData.BroadCastMsg.REFRESH_ALL_DEVICES);
 		netWorkDeviceMountFilter.addAction(ConstData.BroadCastMsg.CHECK_NETWORK);
 		LocalBroadcastManager.getInstance(this).registerReceiver(mNetWorkDeviceMountReceiver, netWorkDeviceMountFilter);
-		LocalBroadcastManager.getInstance(this).registerReceiver(mPreviewLoadReceiver, new IntentFilter(ConstData.BroadCastMsg.LOAD_AV_BITMAP));
+		IntentFilter previewLoadFilter = new IntentFilter();
+		previewLoadFilter.addAction(ConstData.BroadCastMsg.LOAD_AV_BITMAP);
+		previewLoadFilter.addAction(ConstData.BroadCastMsg.LOAD_PHOTO_PREVIEW);
+		LocalBroadcastManager.getInstance(this).registerReceiver(mPreviewLoadReceiver, previewLoadFilter);
 	}
 
 	/**
@@ -700,13 +709,17 @@ public class DeviceMonitorService extends Service {
 	 * @author GaoFei
 	 *
 	 */
-	class AVPreviewLoadReceiver extends BroadcastReceiver{
+	class PreviewLoadReceiver extends BroadcastReceiver{
 	    public void onReceive(Context context, Intent intent) {
 	        String action = intent.getAction();
 	        if(action.equals(ConstData.BroadCastMsg.LOAD_AV_BITMAP)){
 	            AllFileInfo allFileInfo = (AllFileInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_ALL_FILE_INFO);
 	            //将线程推入队列
-	            mAVPreviewLoadService.execute(new AVPreviewLoadThread(allFileInfo, DeviceMonitorService.this));
+	            mAVPreviewLoadService.execute(new AVPreviewLoadThread(allFileInfo, DeviceMonitorService.this, ConstData.THREAD_PRIORITY--));
+	        }else if(action.equals(ConstData.BroadCastMsg.LOAD_PHOTO_PREVIEW)){
+	        	 AllFileInfo allFileInfo = (AllFileInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_ALL_FILE_INFO);
+		         //将线程推入队列
+		         mPhotoPreviewLoadService.execute(new PhotoPreviewLoadThread(allFileInfo, DeviceMonitorService.this, ConstData.THREAD_PRIORITY--));
 	        }
 	    };
 	}

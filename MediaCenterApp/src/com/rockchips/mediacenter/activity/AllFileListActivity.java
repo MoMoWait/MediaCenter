@@ -247,10 +247,15 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
             	}
                 break;
             case ConstData.MediaType.IMAGE:
-            	previewBitmap = BitmapUtils.getScaledBitmapFromFile(fileInfo.getFile().getPath(), SizeUtils.dp2px(this, 280), SizeUtils.dp2px(this, 280));
-    			if(previewBitmap != null){
-    				mWidgetPreview.updateImage(previewBitmap);
-    			}
+            	//previewBitmap = BitmapUtils.getScaledBitmapFromFile(fileInfo.getFile().getPath(), SizeUtils.dp2px(this, 280), SizeUtils.dp2px(this, 280));
+            	if(!fileInfo.isLoadPreview()){
+            		loadPreviewForPhoto(fileInfo);
+            	}else{
+            		previewBitmap = BitmapUtils.getScaledBitmapFromFile(fileInfo.getPriviewPhotoPath(), SizeUtils.dp2px(this, 280), SizeUtils.dp2px(this, 280));
+        			if(previewBitmap != null){
+        				mWidgetPreview.updateImage(previewBitmap);
+        			}
+            	}
             	updateOtherText(fileInfo);
                 break;
             case ConstData.MediaType.APK:
@@ -559,18 +564,17 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
         Intent loadIntent = new Intent(ConstData.BroadCastMsg.LOAD_AV_BITMAP);
         loadIntent.putExtra(ConstData.IntentKey.EXTRA_ALL_FILE_INFO, allFileInfo);
         LocalBroadcastManager.getInstance(this).sendBroadcast(loadIntent);
-    	/*if(mBitmapLoadTask != null && mBitmapLoadTask.getStatus() == Status.RUNNING)
-    		mBitmapLoadTask.cancel(true);
-    	mBitmapLoadTask = new AVBitmapLoadTask(new AVBitmapLoadTask.CallBack() {
-			
-			@Override
-			public void onFinished(AllFileInfo allFileInfo) {
-				if(allFileInfo == mCurrentFileInfo){
-					refreshPreview(allFileInfo);
-				}
-			}
-		});
-    	mBitmapLoadTask.execute(allFileInfo);*/
+    }
+    
+    /**
+     * 获取图片的预览图
+     * @param allFileInfo
+     */
+    private void loadPreviewForPhoto(AllFileInfo allFileInfo){
+    	//此处直接发送广播出去,服务接受后开始获取缩列图
+        Intent loadIntent = new Intent(ConstData.BroadCastMsg.LOAD_PHOTO_PREVIEW);
+        loadIntent.putExtra(ConstData.IntentKey.EXTRA_ALL_FILE_INFO, allFileInfo);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(loadIntent);
     }
     
     /**

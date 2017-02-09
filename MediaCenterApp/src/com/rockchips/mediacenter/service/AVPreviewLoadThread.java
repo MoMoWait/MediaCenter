@@ -26,15 +26,17 @@ import com.rockchips.mediacenter.data.ConstData;
  * @author GaoFei
  * 音频/视频文件预览图加载线程
  */
-public class AVPreviewLoadThread extends Thread {
+public class AVPreviewLoadThread extends Thread implements Comparable<AVPreviewLoadThread>{
     private static final String TAG = "AVPreviewLoadThread";
     
     private AllFileInfo mAllFileInfo;
     private DeviceMonitorService mService;
+    private int mPriority;
     private boolean isOOM;
-    public AVPreviewLoadThread(AllFileInfo fileInfo, DeviceMonitorService service){
+    public AVPreviewLoadThread(AllFileInfo fileInfo, DeviceMonitorService service, int priority){
         mAllFileInfo = fileInfo;
         mService = service;
+        mPriority = priority;
     }
     
     @Override
@@ -124,5 +126,14 @@ public class AVPreviewLoadThread extends Thread {
         duration = String.format("%02d:%02d:%02d", hour, minute, second);
         return duration;
     }
+
+	@Override
+	public int compareTo(AVPreviewLoadThread o) {
+		if(mPriority < o.mPriority)
+			return -1;
+		else if(mPriority == o.mPriority)
+			return 0;
+		return 1;
+	}
 
 }

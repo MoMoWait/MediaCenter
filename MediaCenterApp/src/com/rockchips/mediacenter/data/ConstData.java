@@ -3,6 +3,8 @@ package com.rockchips.mediacenter.data;
 
 import java.util.Arrays;
 
+import android.R.bool;
+
 import momo.cn.edu.fjnu.androidutils.data.CommonValues;
 import momo.cn.edu.fjnu.androidutils.utils.PackageUtils;
 /**
@@ -13,6 +15,8 @@ public class ConstData {
 	
 	public static final String DB_NAME = "mediacenter.db";
 	public static final int DB_VERSION = 1;
+	/**全局线程优先级*/
+	public static int THREAD_PRIORITY = Integer.MAX_VALUE;
 	//public static final String DB_DIRECTORY = Environment.getExternalStorageDirectory() + "/" + PackageUtils.getPackageName();
 	public static final String DB_DIRECTORY = CommonValues.application.getFilesDir() + "/" + PackageUtils.getPackageName();
 	public static final String CACHE_IMAGE_DIRECTORY = DB_DIRECTORY + "/" + "imgcache";
@@ -585,6 +589,7 @@ public class ConstData {
     	String CHECK_NETWORK = "com.rockchip.mediacenter.check_network";
     	String LOAD_AV_BITMAP = "com.rockchip.mediacenter.load_av_bitmap";
     	String REFRESH_AV_PREVIEW = "com.rockchip.mediacenter.refresh_av_preview";
+    	String LOAD_PHOTO_PREVIEW = "com.rockchip.mediacenter.load_photo_preview";
     }
     
     public enum EBrowerType
@@ -748,5 +753,10 @@ public class ConstData {
          * 甩屏端的唯一标识
          */
         public static final String SYN_UINQ = "com.rockchips.iptv.dlna.SynClient";
+    }
+    
+    
+    public interface Config{
+    	boolean IS_SCAN_LOCAL_FILE = false; 
     }
 }
