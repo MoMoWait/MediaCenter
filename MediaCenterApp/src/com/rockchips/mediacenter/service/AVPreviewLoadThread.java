@@ -24,7 +24,7 @@ import com.rockchips.mediacenter.data.ConstData;
 
 /**
  * @author GaoFei
- * 音频/视频文件预览图加载线程
+ * 文件浏览时音频/视频文件预览图加载线程
  */
 public class AVPreviewLoadThread extends Thread implements Comparable<AVPreviewLoadThread>{
     private static final String TAG = "AVPreviewLoadThread";

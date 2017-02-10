@@ -13,7 +13,10 @@ import momo.cn.edu.fjnu.androidutils.utils.BitmapUtils;
 import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaFormat;
@@ -23,6 +26,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -52,6 +56,7 @@ import com.rockchips.mediacenter.adapter.FolderListAdapter;
 import com.rockchips.mediacenter.adapter.UpnpFolderListAdapter;
 import com.rockchips.mediacenter.audioplayer.InternalAudioPlayer;
 import com.rockchips.mediacenter.audioplayer.SongInfo;
+import com.rockchips.mediacenter.bean.AllFileInfo;
 import com.rockchips.mediacenter.bean.LocalDevice;
 import com.rockchips.mediacenter.bean.LocalMediaFile;
 import com.rockchips.mediacenter.bean.LocalMediaFolder;
@@ -133,7 +138,10 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
 	 * 媒体文件元数据获取器
 	 */
 	private FileMediaDataLoadTask mMediaDataLoadTask;
-	
+	/**
+	 * 刷新预览图广播接收器
+	 */
+	private RefreshPreviewReceiver mPreviewReceiver;
 	private Bitmap mOldBitmap;
 	
     @Override
@@ -194,6 +202,18 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
 		return super.onKeyDown(keyCode, event);
 	}
 	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		LocalBroadcastManager.getInstance(this).registerReceiver(mPreviewReceiver, new IntentFilter(ConstData.BroadCastMsg.REFRESH_LOCAL_MEDIA_AV_PREVIEW));
+	}
+	
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(mPreviewReceiver);
+	}
 	
 	@Override
 	protected void onDestroy() {
@@ -213,6 +233,7 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
 	}
 	
     public void initDataAndView(){
+    	mPreviewReceiver = new RefreshPreviewReceiver();
     	mPregressLoading.setVisibility(View.GONE);
     	mCurrMediaType = getIntent().getIntExtra(ConstData.IntentKey.EXTRAL_MEDIA_TYPE, -1);
     	mCurrDevice = (LocalDevice)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
@@ -243,9 +264,11 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
     		//更新头部信息
     		mTextFileName.setText(mediaFile.getName());
     		Bitmap previewBitmap = null;
-    		if(mediaFile.getType() == ConstData.MediaType.IMAGE)
+    		//此处需要改成异步加载
+/*    		if(mediaFile.getType() == ConstData.MediaType.IMAGE)
     			previewBitmap = BitmapUtils.getScaledBitmapFromFile(mediaFile.getPath(), SizeUtils.dp2px(this, 280), SizeUtils.dp2px(this, 280));
-    		else if(!TextUtils.isEmpty(mediaFile.getPreviewPhotoPath())){
+    		else */
+    		if(!TextUtils.isEmpty(mediaFile.getPreviewPhotoPath())){
     			previewBitmap = BitmapUtils.getScaledBitmapFromFile(mediaFile.getPreviewPhotoPath(),  SizeUtils.dp2px(this, 280), SizeUtils.dp2px(this, 280));
     		}
             if(previewBitmap != null)
@@ -641,7 +664,7 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
      * @param mediaFile
      */
     private void loadExtraMediaInfo(LocalMediaFile mediaFile){
-    	if(mMediaDataLoadTask != null && mMediaDataLoadTask.getStatus() == Status.RUNNING)
+    	/*if(mMediaDataLoadTask != null && mMediaDataLoadTask.getStatus() == Status.RUNNING)
     		mMediaDataLoadTask.cancel(true);
     	mMediaDataLoadTask = new FileMediaDataLoadTask(new FileMediaDataLoadTask.CallBack(){
     		@Override
@@ -653,7 +676,29 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
     		};
     	});
     	
-    	mMediaDataLoadTask.execute(mediaFile);
+    	mMediaDataLoadTask.execute(mediaFile);*/
+    	Intent loadMediaIntent = new Intent(ConstData.BroadCastMsg.LOAD_LOCAL_MEDIA_FILE_PREVIEW);
+    	loadMediaIntent.putExtra(ConstData.IntentKey.EXTRA_LOCAL_MEDIA_FILE, mediaFile);
+    	LocalBroadcastManager.getInstance(this).sendBroadcast(loadMediaIntent);
     }
+    
+	/**
+	 * 
+	 * @author GaoFei
+	 * 更新音频,视频文件预览图监听器
+	 */
+	class RefreshPreviewReceiver extends BroadcastReceiver{
+	    @Override
+	    public void onReceive(Context context, Intent intent) {
+	        String action = intent.getAction();
+	        if(action.equals(ConstData.BroadCastMsg.REFRESH_LOCAL_MEDIA_AV_PREVIEW)){
+	            //更新预览图
+	            LocalMediaFile localMediaFile = (LocalMediaFile)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_LOCAL_MEDIA_FILE);
+	            if(mCurrentFocusFile.getPath().equals(localMediaFile.getPath()) && !isShowFolder())
+	                refreshPreview(mCurrentFocusPosition);
+	        }
+	        
+	    }
+	}
 }
 

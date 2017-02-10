@@ -1,10 +1,12 @@
 package com.rockchips.mediacenter.bean;
 
+import java.io.Serializable;
+
 import org.xutils.db.annotation.Column;
 import org.xutils.db.annotation.Table;
 
 @Table(name="LocalMediaFile")
-public class LocalMediaFile {
+public class LocalMediaFile implements Serializable{
 	@Column(isId = true, autoGen = true, name="fileId")
 	private int fileId;
 	@Column(name="name")

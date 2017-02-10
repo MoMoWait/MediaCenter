@@ -25,6 +25,7 @@ import org.fourthline.cling.registry.Registry;
 
 import com.rockchips.mediacenter.bean.AllFileInfo;
 import com.rockchips.mediacenter.bean.LocalDevice;
+import com.rockchips.mediacenter.bean.LocalMediaFile;
 import com.rockchips.mediacenter.bean.NFSInfo;
 import com.rockchips.mediacenter.bean.SmbInfo;
 import com.rockchips.mediacenter.data.ConstData;
@@ -93,6 +94,10 @@ public class DeviceMonitorService extends Service {
 	 * 单线程池服务，加载图片的预览图
 	 */
 	private ThreadPoolExecutor mPhotoPreviewLoadService;
+	/**
+	 * 单线程池服务，音频，视频分类下预览图加载
+	 */
+	private ThreadPoolExecutor mLocalMediaPreviewService;
 	private MountThread mountThread;
 	private boolean isMountRuning = true;
 	private List<NFSInfo> mNFSList;
@@ -187,6 +192,7 @@ public class DeviceMonitorService extends Service {
 	private void initData() {
 	    mAVPreviewLoadService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
 	    mPhotoPreviewLoadService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
+	    mLocalMediaPreviewService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
 		mMountNetWorkDeviceService = Executors.newSingleThreadExecutor();
 		mPreviewLoadReceiver = new PreviewLoadReceiver();
 		mNetWorkDeviceMountReceiver = new NetWorkDeviceMountReceiver();
@@ -257,6 +263,7 @@ public class DeviceMonitorService extends Service {
 		IntentFilter previewLoadFilter = new IntentFilter();
 		previewLoadFilter.addAction(ConstData.BroadCastMsg.LOAD_AV_BITMAP);
 		previewLoadFilter.addAction(ConstData.BroadCastMsg.LOAD_PHOTO_PREVIEW);
+		previewLoadFilter.addAction(ConstData.BroadCastMsg.LOAD_LOCAL_MEDIA_FILE_PREVIEW);
 		LocalBroadcastManager.getInstance(this).registerReceiver(mPreviewLoadReceiver, previewLoadFilter);
 	}
 
@@ -720,6 +727,10 @@ public class DeviceMonitorService extends Service {
 	        	 AllFileInfo allFileInfo = (AllFileInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_ALL_FILE_INFO);
 		         //将线程推入队列
 		         mPhotoPreviewLoadService.execute(new PhotoPreviewLoadThread(allFileInfo, DeviceMonitorService.this, ConstData.THREAD_PRIORITY--));
+	        }else if(action.equals(ConstData.BroadCastMsg.LOAD_LOCAL_MEDIA_FILE_PREVIEW)){
+	        	LocalMediaFile localMediaFile = (LocalMediaFile)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_LOCAL_MEDIA_FILE);
+	        	///将线程推入队列
+	        	mLocalMediaPreviewService.execute(new FileAVMediaDataLoadThread(localMediaFile, DeviceMonitorService.this, ConstData.THREAD_PRIORITY--));
 	        }
 	    };
 	}

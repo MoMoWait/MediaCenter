@@ -42,7 +42,7 @@ public class PhotoPreviewLoadThread extends Thread implements Comparable<PhotoPr
             mAllFileInfo.setLoadPreview(true);
             mAllFileInfo.setPriviewPhotoPath(savePath);
             //发送广播
-            Intent previewIntent = new Intent(ConstData.BroadCastMsg.REFRESH_AV_PREVIEW);
+            Intent previewIntent = new Intent(ConstData.BroadCastMsg.REFRESH_PHOTO_PREVIEW);
             previewIntent.putExtra(ConstData.IntentKey.EXTRA_ALL_FILE_INFO, mAllFileInfo);
             LocalBroadcastManager.getInstance(mService).sendBroadcast(previewIntent);
         }

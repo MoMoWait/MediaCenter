@@ -137,7 +137,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	/**
 	 * 更新音频或视频预览图监听器
 	 */
-	private RefreshAVPreviewReceiver mRefreshAVPreviewReceiver;
+	private RefreshPreviewReceiver mRefreshPreviewReceiver;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -190,13 +190,16 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	@Override
 	protected void onResume() {
 	    super.onResume();
-	    LocalBroadcastManager.getInstance(this).registerReceiver(mRefreshAVPreviewReceiver, new IntentFilter(ConstData.BroadCastMsg.REFRESH_AV_PREVIEW));
+	    IntentFilter refershFilter  = new IntentFilter();
+	    refershFilter.addAction(ConstData.BroadCastMsg.REFRESH_AV_PREVIEW);
+	    refershFilter.addAction(ConstData.BroadCastMsg.REFRESH_PHOTO_PREVIEW);
+	    LocalBroadcastManager.getInstance(this).registerReceiver(mRefreshPreviewReceiver, refershFilter);
 	}
 	
 	@Override
 	protected void onPause() {
 	    super.onPause();
-	    LocalBroadcastManager.getInstance(this).unregisterReceiver(mRefreshAVPreviewReceiver);
+	    LocalBroadcastManager.getInstance(this).unregisterReceiver(mRefreshPreviewReceiver);
 	}
 	
 	@Override
@@ -210,7 +213,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	
 	
     public void initDataAndView(){
-        mRefreshAVPreviewReceiver = new RefreshAVPreviewReceiver();
+        mRefreshPreviewReceiver = new RefreshPreviewReceiver();
     	mPregressLoading.setVisibility(View.GONE);
     	mCurrMediaType = getIntent().getIntExtra(ConstData.IntentKey.EXTRAL_MEDIA_TYPE, -1);
     	mCurrDevice = (LocalDevice)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
@@ -600,18 +603,19 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	/**
 	 * 
 	 * @author GaoFei
-	 * 更新音频或视频文件预览图监听器
+	 * 更新音频,视频，图片的文件预览图监听器
 	 */
-	class RefreshAVPreviewReceiver extends BroadcastReceiver{
+	class RefreshPreviewReceiver extends BroadcastReceiver{
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
 	        String action = intent.getAction();
-	        if(action.equals(ConstData.BroadCastMsg.REFRESH_AV_PREVIEW)){
+	        if(action.equals(ConstData.BroadCastMsg.REFRESH_AV_PREVIEW) || action.equals(ConstData.BroadCastMsg.REFRESH_PHOTO_PREVIEW)){
 	            //更新预览图
 	            AllFileInfo allFileInfo = (AllFileInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_ALL_FILE_INFO);
 	            if(allFileInfo.getFile().getPath().equals(mCurrentFileInfo.getFile().getPath()))
 	                refreshPreview(allFileInfo);
 	        }
+	        
 	    }
 	}
 }
