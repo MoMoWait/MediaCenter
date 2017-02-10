@@ -594,6 +594,8 @@ public class ConstData {
     	String REFRESH_PHOTO_PREVIEW = "com.rockchip.mediacenter.refresh_photo_preview";
     	String LOAD_PHOTO_PREVIEW = "com.rockchip.mediacenter.load_photo_preview";
     	String LOAD_LOCAL_MEDIA_FILE_PREVIEW = "com.rockchip.mediacenter.load_local_media_file_preview";
+    	String PAUSE_DEVICE_FILE_SCAN = "com.rockchip.mediacenter.pause_device_file_scan";
+    	String CONTINUE_DEVICE_FILE_SCAN = "com.rockchip.mediacenter.continue_device_file_scan";
     }
     
     public enum EBrowerType
@@ -760,7 +762,46 @@ public class ConstData {
     }
     
     
-    public interface Config{
-    	boolean IS_SCAN_LOCAL_FILE = false; 
+    /**
+     * 设备扫描状态
+     * @author GaoFei
+     *
+     */
+    public interface DeviceScanStatus{
+    	//初始化状态
+    	int INITIAL = 0;
+    	//正在扫描
+    	int SCANNING = 1;
+    	//暂停扫描
+    	int PAUSE = 2;
+    	//完成扫描
+    	int FINISHED = 3;
+    }
+    
+    /**
+     * Activity返回码
+     * @author GaoFei
+     *
+     */
+    public interface ActivityResultCode{
+    	int CONTINUE_SCAN_DEVICE_FILE = 2000;
+    }
+    
+    /**
+     * Activity请求码
+     * @author GaoFei
+     *
+     */
+    public interface ActivityRequestCode{
+    	int REQUEST_VIDEO_PLAYER = 2000;
+    	int REQUEST_MUSIC_PLAYER = 2001;
+    }
+    /**
+     * Activity
+     * @author GaoFei
+     *
+     */
+    public interface ActivityAction{
+    	String INSTALL_APK = "com.rockchips.mediacenter.INSTALL_APP";
     }
 }

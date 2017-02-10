@@ -16,6 +16,13 @@ public class ScanDirectory {
 	private String path;
 	@Column(name = "deviceId")
 	private String deviceId;
+	public ScanDirectory(String path, String deviceId){
+		this.path = path;
+		this.deviceId = deviceId;
+	}
+	public ScanDirectory(){
+		
+	}
 	public int getDirectoryId() {
 		return directoryId;
 	}

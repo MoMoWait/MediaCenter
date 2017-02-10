@@ -31,7 +31,7 @@ import android.widget.TextView.OnEditorActionListener;
 import com.rockchips.mediacenter.viewutils.R;
 
 /**
- * 设备列表
+ * 璁惧鍒楄〃
  * @author s00211113
  * 
  */
@@ -53,34 +53,34 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
 
     private Object mFocusDeviceObject;
 
-    // 初始化动画的标志
+    // 鍒濆鍖栧姩鐢荤殑鏍囧織
     private boolean mBInitAnima;
 
-    // 动画是否处于停止
+    // 鍔ㄧ敾鏄惁澶勪簬鍋滄
     private boolean mBStopAnimation = true;
 
-    // 初始化焦点
+    // 鍒濆鍖栫劍鐐�
     private boolean mBInitFocus;
 
-    // 搜索框
+    // 鎼滅储妗�
     private EditText mEditText;
 
     private ImageView mIvSearchFocus;
 
     private InputMethodManager mImm;
 
-    // 焦点对应设备数据集合的位置index
+    // 鐒︾偣瀵瑰簲璁惧鏁版嵁闆嗗悎鐨勪綅缃甶ndex
     private int mFocusIndex = 1;
 
-    // 焦点设备的分类显示组件
+    // 鐒︾偣璁惧鐨勫垎绫绘樉绀虹粍浠�
     private DeviceItemView mDeviceItem;
 
-    // 设备名称显示载体
+    // 璁惧鍚嶇О鏄剧ず杞戒綋
     private TextView[] mTextViews;
 
     private static final long ANIMTE_TIME = 600;
 
-    // 焦点设备是否处于收缩失去焦点状体
+    // 鐒︾偣璁惧鏄惁澶勪簬鏀剁缉澶卞幓鐒︾偣鐘朵綋
     private boolean mBDeviceItemScale;
 
     private int mDeviceNum;
@@ -109,9 +109,9 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
     }
 
     /**
-     * 赋值并且添加view显示
-     * @param devicelist 设备列表
-     * @see [类、类#方法、类#成员]
+     * 璧嬪�煎苟涓旀坊鍔爒iew鏄剧ず
+     * @param devicelist 璁惧鍒楄〃
+     * @see [绫汇�佺被#鏂规硶銆佺被#鎴愬憳]
      */
     public void setDevicesList(List<DeviceItem> devicelist, boolean isAddNetWork)
     {
@@ -125,7 +125,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         mDevicesList.clear();
         mDevicesList.addAll(devicelist);
 
-        // 添加
+        // 娣诲姞
         if (mBInitFocus)
         {
             adjustFocus(isAddNetWork);
@@ -145,9 +145,9 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
     }
 
     /**
-     * <一句话功能简述>返回设备个数 <功能详细描述>
+     * <涓�鍙ヨ瘽鍔熻兘绠�杩�>杩斿洖璁惧涓暟 <鍔熻兘璇︾粏鎻忚堪>
      * @return
-     * @see [类、类#方法、类#成员]
+     * @see [绫汇�佺被#鏂规硶銆佺被#鎴愬憳]
      */
     public int getDeviceNum()
     {
@@ -245,11 +245,11 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
 
         refreshDevicesName();
 
-        // 放大获得焦点的设备名称
+        // 鏀惧ぇ鑾峰緱鐒︾偣鐨勮澶囧悕绉�
         ScaleAnimation focusDeviceScaleAnim = new ScaleAnimation(1.0F, FOCUS_SCALE_RATE, 1.0F, FOCUS_SCALE_RATE);
         focusDeviceScaleAnim.setDuration(0);
 
-        // 添加设备第一次缩放动画
+        // 娣诲姞璁惧绗竴娆＄缉鏀惧姩鐢�
         Animation focusDeviceTransAnim = new TranslateAnimation(0, TRANSLATE_TO_X, 0, 0);
         focusDeviceScaleAnim.setDuration(0);
 
@@ -259,7 +259,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         initAnimationSet.addAnimation(focusDeviceTransAnim);
         initAnimationSet.addAnimation(focusDeviceScaleAnim);
 
-        // mTextViews[3]为焦点设备显示载体
+        // mTextViews[3]涓虹劍鐐硅澶囨樉绀鸿浇浣�
         mTextViews[TEXTVIEW_THIRD].setAnimation(initAnimationSet);
         mTextViews[TEXTVIEW_THIRD].setBackgroundResource(R.drawable.current_select_device_background);
     }
@@ -287,8 +287,8 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
     }
 
     /**
-     * <一句话功能简述>调整焦点 <功能详细描述>
-     * @see [类、类#方法、类#成员]
+     * <涓�鍙ヨ瘽鍔熻兘绠�杩�>璋冩暣鐒︾偣 <鍔熻兘璇︾粏鎻忚堪>
+     * @see [绫汇�佺被#鏂规硶銆佺被#鎴愬憳]
      */
     private void adjustFocus(boolean isAddNetWork)
     {
@@ -312,7 +312,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         refreshFocusDeviceId();
     }
 
-    /** 获取焦点设备 */
+    /** 鑾峰彇鐒︾偣璁惧 */
     public DeviceItem getFocusDevice()
     {
         if (mFocusIndex >= mDevicesList.size() || mDevicesList.size() == 0)
@@ -322,7 +322,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         return mDevicesList.get(mFocusIndex);
     }
 
-    // 初始动画。由于动画需要用到View的属性值，所以动画需要在所有View初始化完毕之后，才能初始化。
+    // 鍒濆鍔ㄧ敾銆傜敱浜庡姩鐢婚渶瑕佺敤鍒癡iew鐨勫睘鎬у�硷紝鎵�浠ュ姩鐢婚渶瑕佸湪鎵�鏈塚iew鍒濆鍖栧畬姣曚箣鍚庯紝鎵嶈兘鍒濆鍖栥��
     private void initAnimation()
     {
         initDownAnimation();
@@ -331,16 +331,16 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
 
     }
 
-    // 焦点设备名称缩放率
+    // 鐒︾偣璁惧鍚嶇О缂╂斁鐜�
     private static final float FOCUS_SCALE_RATE = 1.5f;
 
-    // 分类海报画廊的Y坐标
+    // 鍒嗙被娴锋姤鐢诲粖鐨刌鍧愭爣
     private static final int GY = 250;
 
-    // 下移距离
+    // 涓嬬Щ璺濈
     private static final int DOWN_MOVE_DISTANCE = 200;
 
-    // 上移距离
+    // 涓婄Щ璺濈
     private static final int UP_MOVE_DISTANCE = 50;
 
     private AnimatorSet mGalleryAnimatorSetDown;
@@ -355,7 +355,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
 
     private AnimationSet mFiveViewSetDown;
 
-    // 只有一个设备时的动画
+    // 鍙湁涓�涓澶囨椂鐨勫姩鐢�
     private AnimationSet mSecondViewSetDownOne;
 
     private AnimationSet mFourthViewSetDownOne;
@@ -368,11 +368,11 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
 
     private static final float FADEIN_ALPHA_TO = 1f;
 
-    // 初始化下滚动画
+    // 鍒濆鍖栦笅婊氬姩鐢�
     private void initDownAnimation()
     {
         int setIdx = 1;
-        // Gallery alpha动画
+        // Gallery alpha鍔ㄧ敾
         ObjectAnimator fadeOutAnim = ObjectAnimator.ofFloat(mDeviceItem, "alpha", FADEOUT_ALPHA_FROM, FADEOUT_ALPHA_TO);
         fadeOutAnim.setDuration(ANIMTE_TIME / 2);
 
@@ -390,7 +390,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         mGalleryAnimatorSetDown.play(fadeInAnim).with(tranInAnim);
         mGalleryAnimatorSetDown.play(fadeOutAnim).before(fadeInAnim);
 
-        // 第一个设备动画
+        // 绗竴涓澶囧姩鐢�
         Animation firstViewTranAnim = new TranslateAnimation(0, 0, -(mTextViews[setIdx].getY() - mTextViews[setIdx - 1].getY()), 0);
         firstViewTranAnim.setDuration(ANIMTE_TIME);
 
@@ -403,7 +403,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         mFirstViewSetDown.addAnimation(firstViewTranAnim);
         mFirstViewSetDown.addAnimation(firstViewAlphaAnim);
 
-        // 第二个设备动画
+        // 绗簩涓澶囧姩鐢�
         setIdx++;
         Animation secondViewTranAnim = new TranslateAnimation(0, 0, -(mTextViews[setIdx].getY() - mTextViews[setIdx - 1].getY()), 0);
         secondViewTranAnim.setDuration(ANIMTE_TIME);
@@ -417,7 +417,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         mSecondViewSetDown.addAnimation(secondViewTranAnim);
         mSecondViewSetDown.addAnimation(secondViewAlphaAnim);
 
-        // 第三个设备动画
+        // 绗笁涓澶囧姩鐢�
         setIdx++;
         Animation thirdViewTranAnim = new TranslateAnimation(0, TRANSLATE_TO_X, -(mTextViews[setIdx].getY() - mTextViews[setIdx - 1].getY()), 0);
         thirdViewTranAnim.setDuration(ANIMTE_TIME);
@@ -453,7 +453,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         mThirdViewSetDown.addAnimation(thirdViewScaleAnima);
         mThirdViewSetDown.addAnimation(thirdViewAlphaAnim);
 
-        // 第四个设备动画
+        // 绗洓涓澶囧姩鐢�
         setIdx++;
         Animation fourthViewTranAnim = new TranslateAnimation(TRANSLATE_TO_X, 0, -(mTextViews[setIdx].getY() - mTextViews[setIdx - 1].getY())
                 / FOCUS_SCALE_RATE, 0);
@@ -472,7 +472,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         mFourthViewSetDown.addAnimation(fourthViewScaleAnima);
         mFourthViewSetDown.addAnimation(fourthViewAlphaAnim);
 
-        // 第五个设备动画
+        // 绗簲涓澶囧姩鐢�
         setIdx++;
         Animation fiveViewTranAnim = new TranslateAnimation(0, 0, -(mTextViews[setIdx].getY() - mTextViews[setIdx - 1].getY()), 0);
         fiveViewTranAnim.setDuration(ANIMTE_TIME);
@@ -486,7 +486,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         mFiveViewSetDown.addAnimation(fiveViewTranAnim);
         mFiveViewSetDown.addAnimation(fiveViewAlphaAnim);
 
-        // ------------只有一个设备时的动画------------
+        // ------------鍙湁涓�涓澶囨椂鐨勫姩鐢�------------
         Animation secondViewAlphaAnimOne = new AlphaAnimation(0.0f, 0.2f);
         secondViewAlphaAnimOne.setDuration(ANIMTE_TIME);
         mSecondViewSetDownOne = new AnimationSet(true);
@@ -520,11 +520,11 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
 
     private AnimationSet mFiveViewSetUp;
 
-    // 初始化上滚动画
+    // 鍒濆鍖栦笂婊氬姩鐢�
     private void initUpAnimation()
     {
         int setIdx = 1;
-        // Gallery alpha动画
+        // Gallery alpha鍔ㄧ敾
         ObjectAnimator fadeOutAnim = ObjectAnimator.ofFloat(mDeviceItem, "alpha", 1f, 0f);
         fadeOutAnim.setDuration(ANIMTE_TIME / 2);
         // fadeOutAnim.setInterpolator(new DecelerateInterpolator());
@@ -544,7 +544,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         mGalleryAnimatorSetUp.play(fadeInAnim).with(tranInAnim);
         mGalleryAnimatorSetUp.play(fadeOutAnim).before(fadeInAnim);
 
-        // 第零个设备动画
+        // 绗浂涓澶囧姩鐢�
         Animation zeroViewTranAnim = new TranslateAnimation(0, 0, mTextViews[setIdx].getY() - mTextViews[setIdx - 1].getY(), 0);
         zeroViewTranAnim.setDuration(ANIMTE_TIME);
 
@@ -557,7 +557,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         mZeroViewSetUp.addAnimation(zeroViewTranAnim);
         mZeroViewSetUp.addAnimation(zeroViewAlphaAnim);
 
-        // 第一个设备动画
+        // 绗竴涓澶囧姩鐢�
         setIdx++;
         Animation firstViewTranAnim = new TranslateAnimation(0, 0, mTextViews[setIdx].getY() - mTextViews[setIdx - 1].getY(), 0);
         firstViewTranAnim.setDuration(ANIMTE_TIME);
@@ -571,7 +571,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         mFirstViewSetUp.addAnimation(firstViewAlphaAnim);
         mFirstViewSetUp.addAnimation(firstViewTranAnim);
 
-        // 第二个设备动画
+        // 绗簩涓澶囧姩鐢�
         setIdx++;
         Animation secondViewTranAnim = new TranslateAnimation(TRANSLATE_TO_X * FOCUS_SCALE_RATE, 0, mTextViews[setIdx].getY() - mTextViews[setIdx - 1].getY(), 0);
         secondViewTranAnim.setDuration(ANIMTE_TIME);
@@ -589,7 +589,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         mSecondViewSetUp.addAnimation(secondViewTranAnim);
         mSecondViewSetUp.addAnimation(secondViewAlphaAnim);
 
-        // 第三个设备动画
+        // 绗笁涓澶囧姩鐢�
         setIdx++;
         Animation thirdViewTranAnim = new TranslateAnimation(0, TRANSLATE_TO_X, mTextViews[setIdx].getY() - mTextViews[setIdx - 1].getY(), 0);
         thirdViewTranAnim.setDuration(ANIMTE_TIME);
@@ -626,7 +626,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         mThirdViewSetUp.addAnimation(thirdViewAlphaAnim);
         mThirdViewSetUp.addAnimation(thirdViewScaleAnima);
 
-        // 第四个设备动画
+        // 绗洓涓澶囧姩鐢�
         setIdx++;
         Animation fourthViewTranAnim = new TranslateAnimation(0, 0, mTextViews[setIdx].getY() - mTextViews[setIdx - 1].getY(), 0);
         fourthViewTranAnim.setDuration(ANIMTE_TIME);
@@ -643,18 +643,18 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
 
     private AnimationSet mDeviceNameZoomInSet;
 
-    // 设备item放大
+    // 璁惧item鏀惧ぇ
     private AnimationSet mDeviceItemZoomInSet;
 
     private AnimationSet mDeviceNameZoomOutSet;
 
-    // 设备item缩小
+    // 璁惧item缂╁皬
     private AnimationSet mDeviceItemZoomOutSet;
 
     private void initDeviceItemFocusAnimation()
     {
-        // --------焦点项获得焦点放大动画----------
-        // 设备名动画
+        // --------鐒︾偣椤硅幏寰楃劍鐐规斁澶у姩鐢�----------
+        // 璁惧鍚嶅姩鐢�
         Animation nameScaleAnima = new ScaleAnimation(1f, FOCUS_SCALE_RATE, 1f, FOCUS_SCALE_RATE);
         nameScaleAnima.setDuration(ANIMTE_TIME);
         Animation nameTranAnim = new TranslateAnimation(0, TRANSLATE_TO_X * FOCUS_SCALE_RATE, 0, 0);
@@ -670,7 +670,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         mDeviceNameZoomInSet.addAnimation(nameAlphaAnim);
         mDeviceNameZoomInSet.addAnimation(nameTranAnim);
 
-        // 设备item动画
+        // 璁惧item鍔ㄧ敾
         Animation scaleAnima = new ScaleAnimation(0.9f, 1f, 0.9f, 1f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         scaleAnima.setDuration(ANIMTE_TIME);
 
@@ -703,8 +703,8 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         mDeviceItemZoomInSet.addAnimation(scaleAnima);
         mDeviceItemZoomInSet.addAnimation(alphaAnim);
 
-        // --------焦点项获得焦点缩小动画----------
-        // 设备名动画
+        // --------鐒︾偣椤硅幏寰楃劍鐐圭缉灏忓姩鐢�----------
+        // 璁惧鍚嶅姩鐢�
         nameScaleAnima = new ScaleAnimation(FOCUS_SCALE_RATE, 1f, FOCUS_SCALE_RATE, 1f);
         nameScaleAnima.setDuration(ANIMTE_TIME);
 
@@ -721,7 +721,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         mDeviceNameZoomOutSet.addAnimation(nameAlphaAnim);
         mDeviceNameZoomOutSet.addAnimation(nameTranAnim);
 
-        // 设备item动画
+        // 璁惧item鍔ㄧ敾
         scaleAnima = new ScaleAnimation(1f, 0.9f, 1f, 0.9f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         scaleAnima.setDuration(ANIMTE_TIME);
 
@@ -807,7 +807,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
 
             case KeyEvent.KEYCODE_DPAD_CENTER:
             case KeyEvent.KEYCODE_ENTER:
-                // 所有选中（onKeyDown）和点中（onSingleTapUp）事件,都在 DeviceItemView2类中处理。
+                // 鎵�鏈夐�変腑锛坥nKeyDown锛夊拰鐐逛腑锛坥nSingleTapUp锛変簨浠�,閮藉湪 DeviceItemView2绫讳腑澶勭悊銆�
                 mDeviceItem.onKeyDown(keyCode, event);
                 break;
 
@@ -824,7 +824,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         if (v.getId() == R.id.deviceSearch)
         {
             requestSearchFocus();
-            // 弹出软键盘
+            // 寮瑰嚭杞敭鐩�
             mImm.showSoftInput(mEditText, 0);
         }
     }
@@ -962,7 +962,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         deviceItemZoomIn();
     }
 
-    /** 设备Item放大 */
+    /** 璁惧Item鏀惧ぇ */
     private void deviceItemZoomIn()
     {
         if (!mBInitAnima)
@@ -971,7 +971,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
             mBInitAnima = true;
         }
 
-        // 焦点设备处于缩小状态时才放大
+        // 鐒︾偣璁惧澶勪簬缂╁皬鐘舵�佹椂鎵嶆斁澶�
         if (mBDeviceItemScale)
         {
             mTextViews[TEXTVIEW_THIRD].startAnimation(mDeviceNameZoomInSet);
@@ -979,7 +979,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         }
     }
 
-    /** 设备Item缩小 */
+    /** 璁惧Item缂╁皬 */
     private void deviceItemZoomOut()
     {
         if (!mBInitAnima)
@@ -988,7 +988,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
             mBInitAnima = true;
         }
 
-        // 焦点设备还没缩小时才缩小
+        // 鐒︾偣璁惧杩樻病缂╁皬鏃舵墠缂╁皬
         if (!mBDeviceItemScale)
         {
             mTextViews[TEXTVIEW_THIRD].startAnimation(mDeviceNameZoomOutSet);
@@ -1005,7 +1005,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
             mBInitAnima = true;
         }
 
-        // 焦点向下滚动一位
+        // 鐒︾偣鍚戜笅婊氬姩涓�浣�
         if (mFocusIndex > 0)
         {
             mFocusIndex--;
@@ -1016,7 +1016,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
             return;
         }
 
-        // 更换数据
+        // 鏇存崲鏁版嵁
         refreshDevicesName();
 
         if (getDeviceNum() == 1)
@@ -1052,7 +1052,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
             mTextViews[TEXTVIEW_FOURTH].setAlpha(1f);
             mTextViews[TEXTVIEW_FIVE].setAlpha(1f);
 
-            // 播放动画
+            // 鎾斁鍔ㄧ敾
             mBStopAnimation = false;
             mTextViews[TEXTVIEW_FIRST].startAnimation(mFirstViewSetDown);
             mTextViews[TEXTVIEW_SECOND].startAnimation(mSecondViewSetDown);
@@ -1114,7 +1114,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
             mTextViews[TEXTVIEW_THIRD].setAlpha(1f);
             mTextViews[TEXTVIEW_FOURTH].setAlpha(1f);
 
-            // 播放动画
+            // 鎾斁鍔ㄧ敾
             mBStopAnimation = false;
             mTextViews[TEXTVIEW_ZERO].startAnimation(mZeroViewSetUp);
             mTextViews[TEXTVIEW_FIRST].startAnimation(mFirstViewSetUp);
@@ -1127,12 +1127,12 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
     }
 
     /**
-     * <一句话功能简述>刷新设备的显示位置 <功能详细描述>
-     * @see [类、类#方法、类#成员]
+     * <涓�鍙ヨ瘽鍔熻兘绠�杩�>鍒锋柊璁惧鐨勬樉绀轰綅缃� <鍔熻兘璇︾粏鎻忚堪>
+     * @see [绫汇�佺被#鏂规硶銆佺被#鎴愬憳]
      */
     private void refreshDevicesName()
     {
-        // 避免出现空指针的极限情况 ouxiaoyong
+        // 閬垮厤鍑虹幇绌烘寚閽堢殑鏋侀檺鎯呭喌 ouxiaoyong
         if (mDeviceItem == null)
         {
             return;
@@ -1145,7 +1145,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
             mTextViews[TEXTVIEW_THIRD].setText("");
             mTextViews[TEXTVIEW_FOURTH].setText("");
             mTextViews[TEXTVIEW_FIVE].setText("");
-            // 避免出现空指针的极限情况 ouxiaoyong
+            // 閬垮厤鍑虹幇绌烘寚閽堢殑鏋侀檺鎯呭喌 ouxiaoyong
             if (mDeviceItem == null)
             {
                 return;
@@ -1154,13 +1154,13 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         }
         else
         {
-            // 避免出现空指针的极限情况 ouxiaoyong
+            // 閬垮厤鍑虹幇绌烘寚閽堢殑鏋侀檺鎯呭喌 ouxiaoyong
             if (mDeviceItem == null)
             {
                 return;
             }
             mDeviceItem.setVisibility(View.VISIBLE);
-            // 把焦点设备的数据设置到分类item中
+            // 鎶婄劍鐐硅澶囩殑鏁版嵁璁剧疆鍒板垎绫籭tem涓�
             mDeviceItem.setDeviceItem(getFocusDevice());
 
             int dSize = mDevicesList.size();
@@ -1181,7 +1181,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
 
     public void recycle()
     {
-        // 回收设备分类显示海报
+        // 鍥炴敹璁惧鍒嗙被鏄剧ず娴锋姤
         if (mDeviceItem != null)
         {
             mDeviceItem.recycle();

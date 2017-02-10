@@ -16,6 +16,8 @@ import java.util.UUID;
 import org.xutils.db.annotation.Column;
 import org.xutils.db.annotation.Table;
 
+import com.rockchips.mediacenter.data.ConstData;
+
 import android.os.Bundle;
 
 
@@ -43,6 +45,11 @@ public class LocalDevice implements Serializable
 	private String mountPath;
 	@Column(name="has_scaned")
 	private boolean has_scaned;
+	/**
+	 * 扫描状态
+	 */
+	@Column(name="scanStatus")
+	private int scanStatus = ConstData.DeviceScanStatus.INITIAL;
 	public int getDevices_type() {
 		return devices_type;
 	}
@@ -91,13 +98,19 @@ public class LocalDevice implements Serializable
 	public void setDeviceID(String deviceID) {
 		this.deviceID = deviceID;
 	}
+	public int getScanStatus() {
+		return scanStatus;
+	}
+	public void setScanStatus(int scanStatus) {
+		this.scanStatus = scanStatus;
+	}
 	@Override
 	public String toString() {
-		return "LocalDeviceInfo [deviceID=" + deviceID + ", devices_type="
+		return "LocalDevice [deviceID=" + deviceID + ", devices_type="
 				+ devices_type + ", size=" + size + ", used=" + used
 				+ ", free=" + free + ", physic_dev_id=" + physic_dev_id
 				+ ", mountPath=" + mountPath + ", has_scaned=" + has_scaned
-				+ "]";
+				+ ", scanStatus=" + scanStatus + "]";
 	}
 	
 	

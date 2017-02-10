@@ -209,6 +209,11 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(requestCode == ConstData.ActivityRequestCode.REQUEST_VIDEO_PLAYER){
+			//启动继续扫描
+			Intent scanIntent = new Intent(ConstData.BroadCastMsg.CONTINUE_DEVICE_FILE_SCAN);
+			LocalBroadcastManager.getInstance(this).sendBroadcast(scanIntent);
+		}
 	}
 	
 	
@@ -437,6 +442,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
         		break;
         	}
         }
+        int requestCode = START_PLAYER_REQUEST_CODE;
         if (allFileInfo.getType() == ConstData.MediaType.AUDIO)
         {
             intent.setClass(this, InternalAudioPlayer.class);
@@ -445,6 +451,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
         }
         else if (allFileInfo.getType() == ConstData.MediaType.VIDEO)
         {
+        	requestCode = ConstData.ActivityRequestCode.REQUEST_VIDEO_PLAYER;
             intent.setClass(this, InternalVideoPlayer.class);
             intent.putExtra(ConstData.IntentKey.CURRENT_INDEX, newPosition);
             InternalVideoPlayer.setMediaList(mediaInfoList, newPosition);
@@ -456,9 +463,10 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
                 if(videoPlayerTaskIds != null && videoPlayerTaskIds.size() > 0){
                     ActivityUtils.removeAllTask(videoPlayerTaskIds);
                 }
-            }
-            
-            //activityManager.getAppTasks()
+            }            
+            //此时发送暂停扫描广播
+            Intent pasueScanIntent = new Intent(ConstData.BroadCastMsg.PAUSE_DEVICE_FILE_SCAN);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(pasueScanIntent);
             
         }
         else if (allFileInfo.getType() == ConstData.MediaType.IMAGE)
@@ -474,7 +482,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
         	startActivity(installIntent);
         	return;
         }
-        startActivityForResult(intent, START_PLAYER_REQUEST_CODE);
+        startActivityForResult(intent, requestCode);
     }
     
     private static final int INDEX_OF_SPLIT_01 = -1;

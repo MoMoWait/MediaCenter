@@ -357,4 +357,5 @@
     <string name="left_right_two_d">LR 2D</string>
     <string name="up_down_two_d">UD 2D</string>
     <string name="pip">PIP</string>
+    <string name="apk_install_tip">Enter file to install</string>
 </resources>

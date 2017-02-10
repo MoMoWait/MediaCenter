@@ -3,8 +3,11 @@ package com.rockchips.mediacenter.viewutils.devicelist;
 import momo.cn.edu.fjnu.androidutils.data.CommonValues;
 import momo.cn.edu.fjnu.androidutils.utils.DeviceInfoUtils;
 import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
+import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Camera;
 import android.graphics.Canvas;
@@ -22,10 +25,11 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.rockchips.mediacenter.viewutils.R;
+import com.rockchips.mediacenter.viewutils.data.ConstData;
 import com.rockchips.mediacenter.viewutils.utils.ImageHelper;
 
 /**
- * 设备列表项
+ * 璁惧鍒楄〃椤�
  * @author s00211113
  * 
  */
@@ -41,7 +45,7 @@ public class DeviceItemView extends View implements OnGestureListener
 
     private static final int ANIMATIONING_MSG_WHAT = 2;
 
-    // 动画结束后刷新控件
+    // 鍔ㄧ敾缁撴潫鍚庡埛鏂版帶浠�
     private static final int ANIMATIONING_REFRESH_MSG = 3;
 
     private static final int COUNTVISIABLE = 4;
@@ -57,14 +61,14 @@ public class DeviceItemView extends View implements OnGestureListener
     private static final int NAMESIZE = 20;
 
     /**
-     * 4张分类海报
+     * 4寮犲垎绫绘捣鎶�
      */
     private Bitmap[] mIconReflectedImage = new Bitmap[COUNTVISIABLE];
 
     private static final float REFLECTRATESIZE = 0.3f;
 
     /**
-     * 临时变量，右边阴影，左边阴影
+     * 涓存椂鍙橀噺锛屽彸杈归槾褰憋紝宸﹁竟闃村奖
      */
     private Bitmap mDdestBmp, mRightShadowBmp, mLeftShadowBmp;
 
@@ -81,19 +85,20 @@ public class DeviceItemView extends View implements OnGestureListener
 
     private int mAlpha;
 
-    private boolean mRightKey = true;
+    private boolean mRightKey = false;
     private boolean mLeftKey = false;
     private boolean mBeFristLoading = true;
-
+    /**第一次绘制*/
+    private boolean mIsFirstDraw = true;
     private Canvas mCanvas;
     
     /**
-     * 手势识别
+     * 鎵嬪娍璇嗗埆
      * */
     private GestureDetector mGestureDetector;
 
     private boolean mBMoving;
-
+    
     private static final int TRANSLATE_OFFSET_X_PLUS = 52;
 
     private static final float SCALEOFFSET_PLUS = 0.08f;
@@ -101,7 +106,6 @@ public class DeviceItemView extends View implements OnGestureListener
     private static final int ALPHA_PLUS = 50;
 
     private static final int ANIMATION_DELAY_TIME = 40;
-
     private static final int[] IMAGEIDS =
     {  R.drawable.file_icon, R.drawable.photo_icon, R.drawable.music_icon, R.drawable.video_icon};
 
@@ -209,10 +213,10 @@ public class DeviceItemView extends View implements OnGestureListener
         mLeftShadowBmp = ImageHelper.createBitmap(getContext(), R.drawable.left_shadow, BITMAP_WIDTH_SHADOW, BITMAP_HEIGHT);
         mRightShadowBmp = ImageHelper.createBitmap(getContext(), R.drawable.right_shadow, BITMAP_WIDTH_SHADOW, BITMAP_HEIGHT);
 
-        // 加载图片
+        // 鍔犺浇鍥剧墖
         loadImages();
 
-        // 生成图片高度：原图高+倒影高
+        // 鐢熸垚鍥剧墖楂樺害锛氬師鍥鹃珮+鍊掑奖楂�
         mBitmapHeight = BITMAP_HEIGHT * (1 + REFLECTRATESIZE);
 
     }
@@ -223,19 +227,19 @@ public class DeviceItemView extends View implements OnGestureListener
 
         for (int i = 0, len = IMAGEIDS.length; i < len; i++)
         {
-            // 加载图片
+            // 鍔犺浇鍥剧墖
             srcBitmap = ImageHelper.createBitmap(mContext, IMAGEIDS[i], BITMAP_WIDTH, BITMAP_HEIGHT);
 
             if (srcBitmap != null)
             {
-                // 生成倒影图片
+                // 鐢熸垚鍊掑奖鍥剧墖
                 mIconReflectedImage[i] = ImageHelper.createReflectedImage(srcBitmap, REFLECTRATESIZE);
     
-                // 在图片上添加文字
+                // 鍦ㄥ浘鐗囦笂娣诲姞鏂囧瓧
                 ImageHelper.addText(mIconReflectedImage[i], mContext.getString(TEXTIDS[i]), NAMESIZE, Color.WHITE, BITMAP_WIDTH / 2, BITMAP_HEIGHT
                         - NAMESIZE);
     
-                // 释放源图片
+                // 閲婃斁婧愬浘鐗�
                 srcBitmap.recycle();
                 srcBitmap = null;
             }
@@ -329,7 +333,7 @@ public class DeviceItemView extends View implements OnGestureListener
     	
     	canvas.restore();
     	
-    	//当前偏移量
+    	//褰撳墠鍋忕Щ閲�
     	mOffset = (4 + mOffset - 1) % 4;
     	
     	canvas.save();
@@ -340,9 +344,9 @@ public class DeviceItemView extends View implements OnGestureListener
     }
 
     /**
-     * <一句话功能简述>海报绘制顺序：1432 <功能详细描述>
+     * <涓�鍙ヨ瘽鍔熻兘绠�杩�>娴锋姤缁樺埗椤哄簭锛�1432 <鍔熻兘璇︾粏鎻忚堪>
      * @param canvas
-     * @see [类、类#方法、类#成员]
+     * @see [绫汇�佺被#鏂规硶銆佺被#鎴愬憳]
      */
     private void leftMove(Canvas canvas)
     {
@@ -364,7 +368,7 @@ public class DeviceItemView extends View implements OnGestureListener
     	
     	canvas.restore();
     	
-    	//当前偏移量
+    	//褰撳墠鍋忕Щ閲�
     	mOffset = (++mOffset) % 4;
     	
     	canvas.save();
@@ -423,10 +427,10 @@ public class DeviceItemView extends View implements OnGestureListener
 
     public void recycle()
     {
-        // 释放海报图片
+        // 閲婃斁娴锋姤鍥剧墖
         recycleReflectedImage();
 
-        // 释放阴影图片
+        // 閲婃斁闃村奖鍥剧墖
         if (mLeftShadowBmp != null)
         {
             mLeftShadowBmp.recycle();
@@ -440,7 +444,7 @@ public class DeviceItemView extends View implements OnGestureListener
         }
     }
 
-    /** 释放海报图片 */
+    /** 閲婃斁娴锋姤鍥剧墖 */
     private void recycleReflectedImage()
     {
         if (mIconReflectedImage == null || mIconReflectedImage.length == 0)
@@ -464,11 +468,10 @@ public class DeviceItemView extends View implements OnGestureListener
     
     
     /**
-     * 第一次绘制时调用
+     * 绗竴娆＄粯鍒舵椂璋冪敤
      * @param canvas
      */
     public void initDraw(Canvas canvas){
-    	
     	int offsetX = (SCREEN_WIDTH - BITMAP_WIDTH * 4) / 2;
     	
     	canvas.save();
@@ -484,10 +487,20 @@ public class DeviceItemView extends View implements OnGestureListener
     	canvas.scale(1.2f, 1.2f, BITMAP_WIDTH / 2, BITMAP_HEIGHT / 2);
     	canvas.drawBitmap(mIconReflectedImage[1], 0, 0, null);
     	canvas.restore();
+    	
+    	Activity currentActivity = (Activity)mContext;
+    	Intent currIntent = currentActivity.getIntent();
+    	if(mIsFirstDraw && currIntent != null && ConstData.ActivityAction.INSTALL_APK.equals(currIntent.getAction())){
+    		mIsFirstDraw = false;
+    		rightMove(canvas);
+    		ToastUtils.showToast(mContext.getResources().getString(R.string.apk_install_tip));
+    	}
+    		
+    	
     }
     
     /**
-     * 初始化基本数据
+     * 鍒濆鍖栧熀鏈暟鎹�
      */
     public void initData(){
     	mOffset = 1;

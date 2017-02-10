@@ -230,6 +230,13 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
 		else{
 			loadVideoFiles(true);
 		}
+		
+		
+		if(requestCode == ConstData.ActivityRequestCode.REQUEST_VIDEO_PLAYER){
+			//启动继续扫描
+			Intent scanIntent = new Intent(ConstData.BroadCastMsg.CONTINUE_DEVICE_FILE_SCAN);
+			LocalBroadcastManager.getInstance(this).sendBroadcast(scanIntent);
+		}
 	}
 	
     public void initDataAndView(){
@@ -551,6 +558,7 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
         		break;
         	}
         }
+        int requestCode = START_PLAYER_REQUEST_CODE;
         if (mediaFile.getType() == ConstData.MediaType.AUDIO)
         {
             intent.setClass(this, InternalAudioPlayer.class);
@@ -559,6 +567,7 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
         }
         else if (mediaFile.getType() == ConstData.MediaType.VIDEO)
         {
+        	requestCode = ConstData.ActivityRequestCode.REQUEST_VIDEO_PLAYER;
             intent.setClass(this, InternalVideoPlayer.class);
             intent.putExtra(ConstData.IntentKey.CURRENT_INDEX, newPosition);
             InternalVideoPlayer.setMediaList(mediaInfoList, newPosition);
@@ -569,6 +578,9 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
                     ActivityUtils.removeAllTask(videoPlayerTaskIds);
                 }
             }
+            //此时发送暂停扫描广播
+            Intent pasueScanIntent = new Intent(ConstData.BroadCastMsg.PAUSE_DEVICE_FILE_SCAN);
+            LocalBroadcastManager.getInstance(this).sendBroadcast(pasueScanIntent);
         }
         else if (mediaFile.getType() == ConstData.MediaType.IMAGE)
         {
@@ -577,7 +589,7 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
             intent.putExtra(ConstData.IntentKey.CURRENT_INDEX, newPosition);
             InternalImagePlayer.setMediaList(mediaInfoList, newPosition);
         }
-        startActivityForResult(intent, START_PLAYER_REQUEST_CODE);
+        startActivityForResult(intent, requestCode);
     }
     
     private static final int INDEX_OF_SPLIT_01 = -1;

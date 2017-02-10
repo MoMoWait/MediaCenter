@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 import android.media.iso.ISOManager;
 import android.net.Uri;
-
 import com.rockchips.mediacenter.bean.LocalDevice;
 import com.rockchips.mediacenter.bean.LocalMediaFile;
 import com.rockchips.mediacenter.bean.LocalMediaFolder;
@@ -19,7 +18,7 @@ import com.rockchips.mediacenter.modle.db.ScanDirectoryService;
 import com.rockchips.mediacenter.util.MediaFileUtils;
 import android.util.Log;
 /**
- * 文件扫描线程
+ * 本地设备文件扫描线程
  * @author GaoFei
  *
  */
@@ -27,11 +26,13 @@ public class FileScanThread extends Thread{
 	public static final String TAG = FileScanThread.class.getSimpleName();
 	private DeviceMonitorService mService;
 	private boolean mIsMounted;
+	private int mScanStatus;
 	private String mPath;
 	private LocalDevice mDevice;
 	private LocalMediaFileService mediaFileService;
 	private LocalMediaFolderService mediaFolderService;
 	private ScanDirectoryService mScanDirectoryService;
+	private LocalDeviceService mLocalDeviceService;
 	/**
 	 * 是否超过最大目录限制
 	 */
@@ -51,7 +52,7 @@ public class FileScanThread extends Thread{
 	/**
 	 * 扫描的目录列表
 	 */
-	private LinkedList<File> mScanDirectory = new LinkedList<File>();
+	private LinkedList<ScanDirectory> mScanDirectories = new LinkedList<ScanDirectory>();
 	/**
 	 * 暂存目录
 	 */
@@ -61,21 +62,34 @@ public class FileScanThread extends Thread{
 		this.mDevice = device;
 		this.mPath = device.getMountPath();
 		this.mIsMounted = true;
-		mScanDirectory.add(new File(mPath));
+		if(device.getScanStatus() == ConstData.DeviceScanStatus.INITIAL)
+			mScanDirectories.add(new ScanDirectory(mPath, mDevice.getDeviceID()));
 		mediaFileService = new LocalMediaFileService();
 		mediaFolderService = new LocalMediaFolderService();
 		mScanDirectoryService = new ScanDirectoryService();
+		mLocalDeviceService = new LocalDeviceService();
 	}
 	
 	
 	@Override
 	public void run() {
-		//if(!ConstData.Config.IS_SCAN_LOCAL_FILE)
-		//	return;
+		mScanStatus = mDevice.getScanStatus();
+		if(mScanStatus == ConstData.DeviceScanStatus.SCANNING || mScanStatus == ConstData.DeviceScanStatus.FINISHED)
+			return;
+		//当前是暂停状态，重新从数据库装入数据
+		if(mScanStatus == ConstData.DeviceScanStatus.PAUSE){
+			Log.i(TAG, "scan device from pause:" + mPath);
+			loadScanDirectoriesFromDB();
+		}
+		//当前正在扫描
+		mScanStatus = ConstData.DeviceScanStatus.SCANNING;
+		//修改当前扫描状态
+		mService.setScanStatus(mPath, mScanStatus);
 		long startTime = System.currentTimeMillis();
 		Log.i(TAG, "FileScanThread start time:" + startTime);
-		while(!mScanDirectory.isEmpty()){
+		while(!mScanDirectories.isEmpty()){
 			mIsMounted = mService.isMounted(mPath);
+			mScanStatus = mService.getScanStatus(mPath);
 			if(!mIsMounted){
 				//操作数据库，直接删除所有已经存在数据库的数据
 				mediaFileService.deleteFilesByPhysicId(mDevice.getPhysic_dev_id());
@@ -83,7 +97,23 @@ public class FileScanThread extends Thread{
 				mScanDirectoryService.deleteDirectoriesByDeviceId(mDevice.getDeviceID());
 				return;
 			}
-			
+			//暂停扫描
+			if(mScanStatus == ConstData.DeviceScanStatus.PAUSE){
+				Log.i(TAG, "pause scan device path:" + mPath);
+				//文件入库
+				mediaFileService.saveOrUpdateAll(mTmpFiles);
+				mTmpFiles.clear();
+				//文件夹入库
+				mediaFolderService.saveOrUpdateAll(mTmpFolders);
+				mTmpFolders.clear();
+				//将扫描目录存储至数据库
+				mScanDirectoryService.saveAll(mTmpDirectory);
+				mScanDirectoryService.saveAll(mScanDirectories);
+				//修改设备的扫描状态并存入数据库
+				mDevice.setScanStatus(ConstData.DeviceScanStatus.PAUSE);
+				mLocalDeviceService.update(mDevice);
+				return;
+			}
 			if(mTmpFiles.size() >= 100){
 				//入库
 				mediaFileService.saveOrUpdateAll(mTmpFiles);
@@ -95,28 +125,16 @@ public class FileScanThread extends Thread{
 				mediaFolderService.saveOrUpdateAll(mTmpFolders);
 				mTmpFolders.clear();
 			}
-			if(mScanDirectory.size() > MAX_DIRS){
+			if(mScanDirectories.size() > MAX_DIRS){
 				//超过了最大缓存目录标记
 				mIsOverMaxDirs = true;
-			}else if(mScanDirectory.size() < MAX_DIRS / 2){
+			}else if(mScanDirectories.size() < MAX_DIRS / 2){
 				//设置最大缓存标记为false
 				mIsOverMaxDirs = false;
 				//从数据库拿出数据
-				List<ScanDirectory> dbDirectories = mScanDirectoryService.getDirectoriesByDeviceId(mDevice.getDeviceID(), MAX_DIRS - mScanDirectory.size());
-				if(dbDirectories != null && dbDirectories.size() > 0){
-					for(ScanDirectory itemDirectory : dbDirectories){
-						mScanDirectory.add(new File(itemDirectory.getPath()));
-					}
-					
-					//Log.i(TAG, "dbDirecories:" + dbDirectories);
-					//删除数据库中对应的数据
-					mScanDirectoryService.deleteAll(dbDirectories);
-				}
-				
+				loadScanDirectoriesFromDB();
 			}
-			
-			
-			File dirFile = mScanDirectory.remove();
+			File dirFile = new File(mScanDirectories.remove().getPath());
 			//Log.i(TAG, "FileScanThread->run->dirFile:" + dirFile);
 			//Log.i(TAG, "FileScanThread->run->dirFile->exists:" + dirFile.exists());
 			if(dirFile != null && dirFile.exists()){
@@ -148,7 +166,7 @@ public class FileScanThread extends Thread{
 							}
 						}else{
 							//文件夹加入扫描队列
-							mScanDirectory.add(subFile);
+							mScanDirectories.add(new ScanDirectory(subFile.getPath(), mDevice.getDeviceID()));
 						}
 						
 					}else{
@@ -199,6 +217,7 @@ public class FileScanThread extends Thread{
 		}
 		
 		mIsMounted = mService.isMounted(mPath);
+		mScanStatus = mService.getScanStatus(mPath);
 		if(!mIsMounted){
 			//操作数据库，直接删除所有已经存在数据库的数据
 			mediaFileService.deleteFilesByPhysicId(mDevice.getPhysic_dev_id());
@@ -206,7 +225,6 @@ public class FileScanThread extends Thread{
 			mScanDirectoryService.deleteDirectoriesByDeviceId(mDevice.getDeviceID());
 			return;
 		}
-		
 		//文件入库
 		mediaFileService.saveOrUpdateAll(mTmpFiles);
 		mTmpFiles.clear();
@@ -214,13 +232,29 @@ public class FileScanThread extends Thread{
 		mediaFolderService.saveOrUpdateAll(mTmpFolders);
 		mTmpFolders.clear();
 		mDevice.setHas_scaned(true);
-		LocalDeviceService localDeviceService = new LocalDeviceService();
-		localDeviceService.update(mDevice);
+		//扫描完成
+		mDevice.setScanStatus(ConstData.DeviceScanStatus.FINISHED);
+		mLocalDeviceService.update(mDevice);
 		long endTime = System.currentTimeMillis();
 		Log.i(TAG, "FileScanThread end time:" + endTime);
 		Log.i(TAG, "FileScanThread total time:" + (endTime - startTime) / 1000 + "s");
 		//Log.i(TAG, "FileScanThread end");
 	}
 	
+	
+	/**
+	 * 从数据库中装载数据
+	 */
+	private void loadScanDirectoriesFromDB(){
+		//从数据库拿出部分数据
+		List<ScanDirectory> dbDirectories = mScanDirectoryService.getDirectoriesByDeviceId(mDevice.getDeviceID(), MAX_DIRS - mScanDirectories.size());
+		if(dbDirectories != null && dbDirectories.size() > 0){
+			for(ScanDirectory itemDirectory : dbDirectories){
+				mScanDirectories.add(itemDirectory);
+			}
+			//删除数据库中对应的数据
+			mScanDirectoryService.deleteAll(dbDirectories);
+		}
+	}
 	
 }

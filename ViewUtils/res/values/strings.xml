@@ -16,4 +16,5 @@
     <string name="list_finish_left_tip">请按</string>
     <string name="no_album">没有发现相片，将为你播放系统自带相片！</string>
     <string name="media_center">媒体中心</string>
+    <string name="apk_install_tip">进入文件，选择安装</string>
 </resources>
