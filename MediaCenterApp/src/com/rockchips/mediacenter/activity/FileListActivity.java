@@ -143,7 +143,6 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
 	 */
 	private RefreshPreviewReceiver mPreviewReceiver;
 	private Bitmap mOldBitmap;
-	
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -230,14 +229,14 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
 		else{
 			loadVideoFiles(true);
 		}
-		
-		
 		if(requestCode == ConstData.ActivityRequestCode.REQUEST_VIDEO_PLAYER){
+		    Log.i(TAG, "FileListActivity->continue scan file");
 			//启动继续扫描
 			Intent scanIntent = new Intent(ConstData.BroadCastMsg.CONTINUE_DEVICE_FILE_SCAN);
 			LocalBroadcastManager.getInstance(this).sendBroadcast(scanIntent);
 		}
 	}
+	
 	
     public void initDataAndView(){
     	mPreviewReceiver = new RefreshPreviewReceiver();
@@ -315,10 +314,14 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
 	 */
 	public void loadFolders(){
 		DialogUtils.showLoadingDialog(this, false);
+		startTimer(ConstData.MAX_LOAD_FILES_TIME);
     	mFolderLoadTask = new FolderLoadTask(new FolderLoadTask.Callback() {
 			@Override
 			public void onSuccess(List<LocalMediaFolder> mediaFiles) {
+			    endTimer();
 				DialogUtils.closeLoadingDialog();
+				if(isOverTimer())
+				    return;
 				mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id());
 				//Log.i(TAG, "onSuccess->mediaFiles:" + mediaFiles);
 				if(mediaFiles != null && mediaFiles.size() > 0){
@@ -359,10 +362,14 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
 	 */
 	public void loadFiles(final LocalMediaFolder mediaFolder, final boolean isBack){
 		DialogUtils.showLoadingDialog(this, false);
+		startTimer(ConstData.MAX_LOAD_FILES_TIME);
     	mFileLoadTask = new FileLoadTask(new FileLoadTask.Callback() {
 			@Override
 			public void onSuccess(List<LocalMediaFile> mediaFiles) {
+			    endTimer();
 				DialogUtils.closeLoadingDialog();
+				if(isOverTimer())
+				    return;
 				if(mCurrMediaType == ConstData.MediaType.AUDIOFOLDER)
 					mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id() + ">" + mediaFolder.getName());
 				else

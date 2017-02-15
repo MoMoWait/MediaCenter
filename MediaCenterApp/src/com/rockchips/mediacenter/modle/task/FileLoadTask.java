@@ -8,12 +8,14 @@ import com.rockchips.mediacenter.modle.db.LocalMediaFileService;
 
 import android.os.AsyncTask;
 import android.text.TextUtils;
+import android.util.Log;
 
 /**
  * @author GaoFei
  * 文件列表加载任务
  */
 public class FileLoadTask extends AsyncTask<String, Integer, Integer> {
+    private static final String TAG = FileLoadTask.class.getSimpleName();
 	public interface Callback{
 		void onSuccess(List<LocalMediaFile> mediaFolders);
 		void onFailed();
@@ -22,11 +24,13 @@ public class FileLoadTask extends AsyncTask<String, Integer, Integer> {
 	private Callback mCallback;
 	private List<LocalMediaFile> mFiles;
 	public FileLoadTask(Callback callback){
+	    Log.i(TAG, "FileLoadTask");
 		mCallback = callback;
 	}
 	
 	@Override
 	protected Integer doInBackground(String... params) {
+	    Log.i(TAG, "FileLoadTask->doInBackgreound");
 		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
 		String parentPath = params[0];
 		int mediaType = Integer.parseInt(params[1]);

@@ -2,9 +2,12 @@ package com.rockchips.mediacenter.activity;
 
 import java.util.List;
 
+import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
+
 import com.rockchips.mediacenter.bean.LocalDevice;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.util.ActivityExitUtils;
+import com.rockchips.mediacenter.util.DialogUtils;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -12,19 +15,33 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-
+import com.rockchips.mediacenter.R;
 /**
  * @author GaoFei
  * App基本Activity
  */
 public class AppBaseActivity extends Activity{
-	
+	private static final String TAG = "AppBaseActivity";
 	private DeviceUpDownReceiver mDeviceUpDownReceiver;
 	private LocalDevice mCurrDevice;
+    /**
+     * 定时器处理
+     */
+    private Handler mTimeHandler;
+    /**
+     * 定时器任务
+     */
+    private TimerTask mTimerTask;
+    /**
+     * 是否超时
+     */
+    private boolean mIsOverTime;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -39,6 +56,8 @@ public class AppBaseActivity extends Activity{
 	private void initData(){
 		mCurrDevice = (LocalDevice)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
 		mDeviceUpDownReceiver = new DeviceUpDownReceiver();
+		mTimeHandler = new Handler();
+		mTimerTask = new TimerTask();
 	}
 	
 	@Override
@@ -99,6 +118,40 @@ public class AppBaseActivity extends Activity{
 		});
 	}
 	
+	
+	/**
+	 * 启动定时器
+	 * @param time 处罚时间
+	 */
+	public void startTimer(long time){
+	    mIsOverTime = false;
+	    mTimeHandler.postDelayed(mTimerTask, time);
+	}
+	
+	/**
+	 * 结束定时器
+	 */
+	public void endTimer(){
+	    mTimeHandler.removeCallbacks(mTimerTask);
+	}
+	
+	/**
+	 * 定时器回调方法
+	 */
+	public void onTimerArrive(){
+	    mIsOverTime = true;
+	    DialogUtils.closeLoadingDialog();
+	    ToastUtils.showToast(getString(R.string.load_over_time));
+	}
+	
+	/**
+	 * 是否超时
+	 * @return
+	 */
+	public boolean isOverTimer(){
+	    return mIsOverTime;
+	}
+	
 	class DeviceUpDownReceiver extends BroadcastReceiver{
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -117,4 +170,16 @@ public class AppBaseActivity extends Activity{
 			}
 		}
 	}
+	
+	/**
+     * 定时器任务
+     * @author GaoFei
+     *
+     */
+    class TimerTask implements Runnable{
+        @Override
+        public void run() {
+           onTimerArrive();
+        }
+    }
 }

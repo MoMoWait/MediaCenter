@@ -4,6 +4,7 @@ package com.rockchips.mediacenter.data;
 import java.util.Arrays;
 
 import android.R.bool;
+import android.R.integer;
 
 import momo.cn.edu.fjnu.androidutils.data.CommonValues;
 import momo.cn.edu.fjnu.androidutils.utils.PackageUtils;
@@ -15,8 +16,16 @@ public class ConstData {
 	
 	public static final String DB_NAME = "mediacenter.db";
 	public static final int DB_VERSION = 1;
+	/**
+	 * 最大加载文件时间
+	 */
+	public static long MAX_LOAD_FILES_TIME = 20 * 1000L;
 	/**全局线程优先级*/
 	public static int THREAD_PRIORITY = Integer.MAX_VALUE;
+	/**
+	 * PIP播放视频时，是否显示字幕
+	 */
+	public static final String PROPERTY_PIP_SUBTITLE = "mediacenter.pip.subitile";
 	//public static final String DB_DIRECTORY = Environment.getExternalStorageDirectory() + "/" + PackageUtils.getPackageName();
 	public static final String DB_DIRECTORY = CommonValues.application.getFilesDir() + "/" + PackageUtils.getPackageName();
 	public static final String CACHE_IMAGE_DIRECTORY = DB_DIRECTORY + "/" + "imgcache";

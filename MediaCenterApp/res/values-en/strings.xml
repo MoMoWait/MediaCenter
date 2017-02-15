@@ -358,4 +358,5 @@
     <string name="up_down_two_d">UD 2D</string>
     <string name="pip">PIP</string>
     <string name="apk_install_tip">Enter file to install</string>
+     <string name="load_over_time">Load over time,please try again</string>
 </resources>

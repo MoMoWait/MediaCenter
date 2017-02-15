@@ -359,4 +359,5 @@
     <string name="up_down_two_d">上下2D</string>
     <string name="pip">画中画</string>
     <string name="apk_install_tip">进入文件，选择安装</string>
+    <string name="load_over_time">加载超时，请重试</string>
 </resources>

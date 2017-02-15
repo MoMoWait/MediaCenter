@@ -113,7 +113,6 @@ public class UpnpFileListActivity extends AppBaseActivity  implements OnItemSele
 	private int mFileSelection = 0;
 	private ImageOptions mImageOptions;
 	private UpnpFileMediaDataLoadTask mUpnpFileMediaDataLoadTask;
-	
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -187,6 +186,7 @@ public class UpnpFileListActivity extends AppBaseActivity  implements OnItemSele
 		else
 			loadVideoFiles(true);
 	}
+	
 	
     public void initDataAndView(){
     	mPregressLoading.setVisibility(View.GONE);
@@ -276,10 +276,14 @@ public class UpnpFileListActivity extends AppBaseActivity  implements OnItemSele
 	 */
 	public void loadFolders(){
 		DialogUtils.showLoadingDialog(this, false);
+		startTimer(ConstData.MAX_LOAD_FILES_TIME);
     	mFolderLoadTask = new UpnpFolderLoadTask(new UpnpFolderLoadTask.Callback() {
 			@Override
 			public void onSuccess(List<UpnpFolder> mediaFolders) {
+			    endTimer();
 				DialogUtils.closeLoadingDialog();
+				if(isOverTimer())
+				    return;
 				mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id());
 				if(mediaFolders != null && mediaFolders.size() > 0){
 					mLayoutContentPage.setVisibility(View.VISIBLE);
@@ -319,10 +323,14 @@ public class UpnpFileListActivity extends AppBaseActivity  implements OnItemSele
 	 */
 	public void loadFiles(final UpnpFolder mediaFolder, final boolean isBack){
 		DialogUtils.showLoadingDialog(this, false);
+		startTimer(ConstData.MAX_LOAD_FILES_TIME);
     	mFileLoadTask = new UpnpFileLoadTask(new UpnpFileLoadTask.Callback() {
 			@Override
 			public void onSuccess(List<UpnpFile> mediaFiles) {
+			    endTimer();
 				DialogUtils.closeLoadingDialog();
+				if(isOverTimer())
+				    return;
 				if(mCurrMediaType == ConstData.MediaType.AUDIOFOLDER)
 					mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id() + ">" + mediaFolder.getName());
 				else

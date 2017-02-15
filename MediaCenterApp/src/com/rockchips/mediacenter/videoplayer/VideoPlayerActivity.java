@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TreeMap;
-
 import android.R.anim;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -134,7 +133,7 @@ import com.rockchips.mediacenter.viewutils.menu.PopMenu;
 import com.rockchips.mediacenter.viewutils.timelayout.TimeLayout;
 import com.rockchips.mediacenter.viewutils.timeseek.TimeSeekDialog;
 import com.rockchips.mediacenter.viewutils.timeseek.TimeSeekDialog.OnTimeSeekListener;
-
+import android.os.SystemProperties;
 /**
  * 
  * VideoPlayerActivity
@@ -408,6 +407,10 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 			
 			@Override
 			public void onTimedText(MediaPlayer mp, TimedText text) {
+			    if(text == null){
+			        mTextSubtitle.setVisibility(View.GONE);
+			        return;
+			    }
 				Log.i(TAG, "onTimedText->text:" + text.getText());
 			    mTextSubtitle.setVisibility(View.VISIBLE);
 			    mTextSubtitle.setText(Html.fromHtml(text.getText()));
@@ -631,6 +634,32 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         super.onDestroy();
     }
 
+    
+    /**
+     * 画中画模式改变监听器
+     */
+    @Override
+    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode) {
+        Log.i(TAG, "onPictureInPictureModeChanged->isInPictureInPictureMode:" + isInPictureInPictureMode);
+        MediaPlayer originMediaPlayer = mMediaPlayer.getOriginMediaPlayer();
+        if(isInPictureInPictureMode){
+            //当前是画中画模式,设置关闭字幕(使用属性控制)
+            String strIsPipSubtitleDisplay = SystemProperties.get(ConstData.PROPERTY_PIP_SUBTITLE, "false");
+            if("false".equals(strIsPipSubtitleDisplay) && originMediaPlayer != null)
+                originMediaPlayer.setSubtitleVisible(false);
+        }else{
+            savePositionNow();
+            //开启字幕
+            if(originMediaPlayer != null)
+                try{
+                    originMediaPlayer.setSubtitleVisible(true);
+                }catch (Exception e) {
+                    Log.i(TAG, "setSubtitleVisible->exception:");
+                }
+                
+        }
+    }
+    
     /**
      * 处理按键堆积
      */
@@ -1560,11 +1589,40 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             /** liyang DTS2013051702993 **/
             // 本地播放视频文件，设置视频循环播放，影片播放完，在将要播放下一影片时，切换全屏播放模式或音轨或字幕时，停止运行。
             isMenuNeedShow = true;
-
+            //重置视频字幕显示
+            resetSubtitleVisible();
             play();
         }
     };
 
+    
+    /**
+     * 重置视频字幕显示
+     */
+    private void resetSubtitleVisible(){
+        //仅支持7.1平台
+        if(!isSupportPIPMode())
+            return;
+        MediaPlayer originMediaPlayer = mMediaPlayer.getOriginMediaPlayer();
+        if(isInPictureInPictureMode()){
+            String strIsPipSubtitleDisplay = SystemProperties.get(ConstData.PROPERTY_PIP_SUBTITLE, "false");
+            if("false".equals(strIsPipSubtitleDisplay) && originMediaPlayer != null)
+                originMediaPlayer.setSubtitleVisible(false);
+        }else{
+            originMediaPlayer.setSubtitleVisible(true);
+        }
+            
+    }
+    
+    
+    /**
+     * 当前系统是否支持PIP模式
+     * @return
+     */
+    private boolean isSupportPIPMode(){
+        return android.os.Build.VERSION.SDK_INT >= 24;
+    }
+    
     /**
      * 展示杜比标志 <功能详细描述>
      * @see [类、类#方法、类#成员]
@@ -2084,7 +2142,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             mBottomPopMenu.add(1, BottomMenuSelectType.TIME_SEEK, R.drawable.time_seek, 1, 1, getResources().getString(R.string.time_seek));
             mBottomPopMenu.add(2, BottomMenuSelectType.PLAY_SEETING, R.drawable.menu_icon_settings, 2, 2,
                     getResources().getString(R.string.play_settings));
-            if(android.os.Build.VERSION.SDK_INT >= 24){
+            if(isSupportPIPMode()){
                 mBottomPopMenu.add(3, BottomMenuSelectType.PIC_TO_PIC, R.drawable.menu_icon_pip, 3, 3,
                         getResources().getString(R.string.pip));
             }
@@ -3072,23 +3130,15 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                     timeOutBegin = 0;
 					//end add by caochao for DTS2014111006777 媒体中心视频时概率性出现“该视频无法播放”
                     mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_HIDE_ACCELERATION);
-
                     mSbpw.setbPrepared(false);
-
                     if (mVV == null)
                     {
                         return;
                     }
-
-
                     mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_HIDE_ACCELERATION);
-
                     String strurl = (String) (msg.obj);
-
                     Log.d(TAG, "MSG_UI_VIDEOVIEW_SETDATA url = " + strurl);
-
 //                    progressGone();
-
                     if (StringUtils.isNotEmpty(strurl))
                     {
                         // 设置开始播放时，先回给Sender端播放位置0
@@ -3250,12 +3300,13 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                         mVVAdapter.setOnCompletionListener(onCompletionListener);
                         Log.i(TAG, "mVVAdapter.start()");
                         mVVAdapter.start();
+                        //这里设置字幕是否显示
+                        
                         //Log.i(TAG, "mVVAdapter.start()->stackTrace:" + android.util.Log.getStackTraceString(new Throwable()));
                         /**
                          * Mender:l00174030;Reason:when you pause & play, there is some wrong with the original model, set the video size to skip it.
                          **/
                         pauseToPlay();
-
                         removeMessages(ConstData.VideoPlayUIMsg.MSG_PROGRESS_CHANGED);
                         sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_PROGRESS_CHANGED);
 
@@ -4165,6 +4216,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             menuOpened();
         }
         else if(mCurrSelectType == BottomMenuSelectType.PIC_TO_PIC){
+            mBottomPopMenu.dismiss();
             enterPictureInPictureMode();
         }
 

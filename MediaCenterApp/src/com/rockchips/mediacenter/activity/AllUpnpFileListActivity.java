@@ -85,7 +85,6 @@ import com.rockchips.mediacenter.basicutils.bean.LocalMediaInfo;
  */
 public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSelectedListener, OnItemClickListener{
 
-
 	public static final String TAG = "AllUpnpFileListActivity";
 	protected static final int START_PLAYER_REQUEST_CODE = 99;
 	@ViewInject(R.id.text_path_title)
@@ -393,91 +392,6 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
 		DialogUtils.showLoadingDialog(AllUpnpFileListActivity.this, false);
 		mCurrFileBrowser = new FileBrowser(mDirectoryService, mCurrContainer.getId(), BrowseFlag.DIRECT_CHILDREN, "*", 0, 100000L, mSortCriterions);
 		mUpnpService.getControlPoint().execute(mCurrFileBrowser);
-/*    	mFolderLoadTask = new UpnpFolderLoadTask(new UpnpFolderLoadTask.Callback() {
-			@Override
-			public void onSuccess(List<UpnpFolder> mediaFolders) {
-				DialogUtils.closeLoadingDi/////////////////();
-				mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id());
-				if(mediaFolders != null && mediaFolders.size() > 0){
-					mLayoutContentPage.setVisibility(View.VISIBLE);
-					mLayoutNoFiles.setVisibility(View.GONE);
-					mListFile.requestFocus();
-					mFolderAdapter = new UpnpFolderListAdapter(UpnpFileListActivity.this, R.layout.adapter_file_list_item, mediaFolders);
-					mListFile.setAdapter(mFolderAdapter);
-					if(mSelectFolder != null){
-						int lastSelctIndex = getFolderIndex(mSelectFolder, mediaFolders);
-						if(lastSelctIndex >= 0){
-							mListFile.setSelection(lastSelctIndex);
-						}else{
-							mListFile.setSelection(0);
-						}
-					}else{
-						mListFile.setSelection(0);
-					}
-				}else{
-					mLayoutContentPage.setVisibility(View.GONE);
-					mLayoutNoFiles.setVisibility(View.VISIBLE);
-				}
-			}
-			
-			@Override
-			public void onFailed() {
-				DialogUtils.closeLoadingDialog();
-			}
-		});*/
-    	
-    	//mFolderLoadTask.execute(mCurrDevice.getDeviceID(), "" + mCurrMediaType);
-	}
-	
-	/**
-	 * 加载文件列表
-	 * @param mediaFolder 父目录  
-	 * @param isBack      是否从其他Activity返回
-	 */
-	public void loadFiles(final UpnpFolder mediaFolder, final boolean isBack){
-		DialogUtils.showLoadingDialog(this, false);
-    	mFileLoadTask = new UpnpFileLoadTask(new UpnpFileLoadTask.Callback() {
-			@Override
-			public void onSuccess(List<UpnpFile> mediaFiles) {
-				DialogUtils.closeLoadingDialog();
-				mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id() + ">" + mediaFolder.getName());
-				//Log.i(TAG, "loadFiles->onSuccess->mediaFiles:" + mediaFiles);
-				if(mediaFiles != null && mediaFiles.size() > 0){
-					mLayoutContentPage.setVisibility(View.VISIBLE);
-					mLayoutNoFiles.setVisibility(View.GONE);
-					//mFileAdapter = new UpnpFileListAdapter(UpnpFileListActivity.this, R.layout.adapter_file_list_item, mediaFiles);
-					mListFile.setAdapter(mFileAdapter);
-					//从其他Activity返回
-					if(isBack && mSelectFile != null){
-						int lastSelectIndex = getFileIndex(mSelectFile, mediaFiles);
-						if(lastSelectIndex >= 0)
-							mListFile.setSelection(lastSelectIndex);
-						else
-							mListFile.setSelection(0);
-					}else{
-						mListFile.setSelection(0);
-					}
-				}else{
-					mLayoutContentPage.setVisibility(View.GONE);
-					mLayoutNoFiles.setVisibility(View.VISIBLE);
-				}
-			}
-			
-			@Override
-			public void onFailed() {
-				DialogUtils.closeLoadingDialog();
-			}
-		});
-    	
-    	if(mCurrMediaType == ConstData.MediaType.FOLDER){
-    		mFileLoadTask.execute(mCurrDevice.getDeviceID(), mediaFolder.getItmeId(), "-1");
-    	}else if(mCurrMediaType == ConstData.MediaType.AUDIOFOLDER){
-    		mFileLoadTask.execute(mCurrDevice.getDeviceID(), mediaFolder.getItmeId(), "" + ConstData.MediaType.AUDIO);
-    	}else if(mCurrMediaType == ConstData.MediaType.IMAGEFOLDER){
-    		mFileLoadTask.execute(mCurrDevice.getDeviceID(), mediaFolder.getItmeId(), "" + ConstData.MediaType.IMAGE);
-    	}else if(mCurrMediaType == ConstData.MediaType.VIDEOFOLDER){
-    		mFileLoadTask.execute(mCurrDevice.getDeviceID(), mediaFolder.getItmeId(), "" + ConstData.MediaType.VIDEO);
-    	}
 	}
 	
 	

@@ -104,7 +104,6 @@ public class UpnpImageActivity extends AppBaseActivity implements OnItemClickLis
 	 * 当前选中的目录
 	 */
 	private UpnpFolder mSelectMediaFolder;
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -158,6 +157,7 @@ public class UpnpImageActivity extends AppBaseActivity implements OnItemClickLis
 		}
 	}
 	
+	
 	public void initDataAndView(){
 		mCurrMediaType = getIntent().getIntExtra(ConstData.IntentKey.EXTRAL_MEDIA_TYPE, -1);
     	mCurrDevice = (LocalDevice)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
@@ -177,10 +177,14 @@ public class UpnpImageActivity extends AppBaseActivity implements OnItemClickLis
 	 */
 	public void loadFolders(){
 		DialogUtils.showLoadingDialog(this, false);
+		startTimer(ConstData.MAX_LOAD_FILES_TIME);
     	mFolderLoadTask = new UpnpFolderLoadTask(new UpnpFolderLoadTask.Callback() {
 			@Override
 			public void onSuccess(List<UpnpFolder> mediaFolders) {
+			    endTimer();
 				DialogUtils.closeLoadingDialog();
+				if(isOverTimer())
+				    return;
 				mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id());
 				//Log.i(TAG, "onSuccess->mediaFolders:" + mediaFolders);
 				mGridImage.setVisibility(View.GONE);
@@ -225,10 +229,14 @@ public class UpnpImageActivity extends AppBaseActivity implements OnItemClickLis
 	 */
 	public void loadFiles(final UpnpFolder mediaFolder){
 		DialogUtils.showLoadingDialog(this, false);
+		startTimer(ConstData.MAX_LOAD_FILES_TIME);
     	mFileLoadTask = new UpnpFileLoadTask(new UpnpFileLoadTask.Callback() {
 			@Override
 			public void onSuccess(List<UpnpFile> mediaFiles) {
+			    endTimer();
 				DialogUtils.closeLoadingDialog();
+				if(isOverTimer())
+				    return;
 				mLocalMediaFiles = mediaFiles;
 				mGridAlbum.setVisibility(View.GONE);
 				mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id() + ">" + mediaFolder.getName());

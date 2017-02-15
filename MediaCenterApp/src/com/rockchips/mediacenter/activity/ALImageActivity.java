@@ -100,7 +100,6 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 	 * 当前选中的目录
 	 */
 	private LocalMediaFolder mSelectMediaFolder;
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -173,10 +172,14 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 	 */
 	public void loadFolders(){
 		DialogUtils.showLoadingDialog(this, false);
+		startTimer(ConstData.MAX_LOAD_FILES_TIME);
     	mFolderLoadTask = new FolderLoadTask(new FolderLoadTask.Callback() {
 			@Override
 			public void onSuccess(List<LocalMediaFolder> mediaFolders) {
+			    endTimer();
 				DialogUtils.closeLoadingDialog();
+				if(isOverTimer())
+				    return;
 				mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id());
 				//Log.i(TAG, "onSuccess->mediaFolders:" + mediaFolders);
 				mGridImage.setVisibility(View.GONE);
@@ -221,10 +224,14 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 	 */
 	public void loadFiles(final LocalMediaFolder mediaFolder){
 		DialogUtils.showLoadingDialog(this, false);
+		startTimer(ConstData.MAX_LOAD_FILES_TIME);
     	mFileLoadTask = new FileLoadTask(new FileLoadTask.Callback() {
 			@Override
 			public void onSuccess(List<LocalMediaFile> mediaFiles) {
+			    endTimer();
 				DialogUtils.closeLoadingDialog();
+				if(isOverTimer())
+				    return;
 				mLocalMediaFiles = mediaFiles;
 				mGridAlbum.setVisibility(View.GONE);
 				mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id() + ">" + mediaFolder.getName());

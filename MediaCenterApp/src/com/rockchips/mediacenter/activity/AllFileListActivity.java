@@ -42,6 +42,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.AsyncTask.Status;
+import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -138,7 +139,6 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	 * 更新音频或视频预览图监听器
 	 */
 	private RefreshPreviewReceiver mRefreshPreviewReceiver;
-	
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -293,10 +293,15 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	 */
 	public void loadFiles(){
 		DialogUtils.showLoadingDialog(this, false);
+		//开启定时器
+		startTimer(ConstData.MAX_LOAD_FILES_TIME);
 		mAllFileLoadTask = new AllFileLoadTask(new AllFileLoadTask.CallBack() {
 			@Override
 			public void onGetFiles(List<AllFileInfo> fileInfos) {
+			    endTimer();
 				DialogUtils.closeLoadingDialog();
+				if(isOverTimer())
+				    return;
 				mTextPathTitle.setText(mCurrFolder.substring(mCurrFolder.lastIndexOf("/") + 1, mCurrFolder.length()));
 				if(fileInfos != null && fileInfos.size() > 0){
 					mLayoutContentPage.setVisibility(View.VISIBLE);
@@ -626,4 +631,6 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	        
 	    }
 	}
+	
+	
 }

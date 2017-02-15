@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
+
 import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
@@ -163,12 +165,18 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
     {  
     	Log.i(TAG, "onMeasure->videoOrigWidth:" + videoOrigWidth);
     	Log.i(TAG, "onMeasure->videoOrigHeight:" + videoOrigHeight);
-    	boolean isInPictureMode = ((Activity)mContext).isInPictureInPictureMode();
-    	if(isInPictureMode)
-    	    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    	else
+    	if(android.os.Build.VERSION.SDK_INT < 24){
     	    setMeasuredDimension(videoOrigWidth, videoOrigHeight);
-        //super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    	}else {
+    	    boolean isInPictureMode = ((Activity)mContext).isInPictureInPictureMode();
+            //Log.i(TAG, "240dp->px:" + SizeUtils.dp2px(mContext, 240));
+            //Log.i(TAG, "135dp->px:" + SizeUtils.dp2px(mContext, 135));
+    	    if(isInPictureMode)
+                setMeasuredDimension(SizeUtils.dp2px(mContext, 240), SizeUtils.dp2px(mContext, 135));
+            else
+                setMeasuredDimension(videoOrigWidth, videoOrigHeight);
+    	}
+    	
     }
     
     
@@ -177,15 +185,6 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
     	super.setVideoURI(uri);
     }
     
-/*    @Override
-    protected void onDraw(Canvas canvas) {
-        SurfaceHolder holder = getHolder();
-        if(holder != null)
-            holder.setFormat(PixelFormat.RGBA_8888);
-        Log.i(TAG, "onDraw");
-        canvas.drawText("I love you", 100, 100, mTextPaint);
-    }*/
- 
     
     private void initDisplayViewAttr()
     {
@@ -996,10 +995,21 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
     @Override
     public void layout(int l, int t, int r, int b)
     {
-    	Log.i(TAG, "layout");
+    /*	Log.i(TAG, "layout->l:" + l);
+    	Log.i(TAG, "layout->t:" + t);
+    	Log.i(TAG, "layout->r:" + r);
+    	Log.i(TAG, "layout->b:" + b);*/
         int left = (maxWidth - videoOrigWidth) / 2;
         int top = (maxHeight - videoOrigHeight) / 2;
-        super.layout(left, top, left + videoOrigWidth, top + videoOrigHeight);        
+        if(android.os.Build.VERSION.SDK_INT < 24)
+            super.layout(left, top, left + videoOrigWidth, top + videoOrigHeight);
+        else{
+            boolean isInPictureMode = ((Activity)mContext).isInPictureInPictureMode();
+            if(isInPictureMode)
+                super.layout(0, 0, SizeUtils.dp2px(mContext, 240), SizeUtils.dp2px(mContext, 135));
+            else
+                super.layout(left, top, left + videoOrigWidth, top + videoOrigHeight);
+        }
     }
         
     private void setSubTrackInfo()

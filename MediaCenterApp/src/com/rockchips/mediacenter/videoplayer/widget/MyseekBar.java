@@ -1167,6 +1167,8 @@ public class MyseekBar extends AbsSeekBar
                     	VideoPlayerActivity videoPlayerActivity = (VideoPlayerActivity)context;
                     	int totalDuration = videoPlayerActivity.getDuration();
                     	int currPlayPosition = videoPlayerActivity.getCurrentPosition();
+                    	Log.i("VideoKey","MySeekBar->onKeyUp->duration:" + totalDuration);
+                        Log.i("VideoKey","MySeekBar->onKeyUp->position:" + currPlayPosition);
                     	if(currPlayPosition > 0 && totalDuration > 0){
                     		int targetPositon = currPlayPosition + SEEK_STEP_LENGTH;
                     		if(targetPositon > totalDuration)

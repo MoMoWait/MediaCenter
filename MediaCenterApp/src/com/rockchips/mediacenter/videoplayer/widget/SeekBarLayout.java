@@ -189,7 +189,6 @@ public class SeekBarLayout extends RelativeLayout
     public void setAcceleCompl(boolean isAcceleCompl)
     {
     	Log.i("VideoKey", "setAcceleCompl->isAcc:" + isAcceleCompl);
-    	Log.i("VideoKey", "setAcceleCompl->stackTrace::" + Log.getStackTraceString(new Throwable()));
         this.isAcceleCompl = isAcceleCompl;
     }
 

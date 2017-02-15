@@ -16,15 +16,19 @@ public class DialogUtils {
     private static LoadingDialog mLoadingDialog;
     /**显示载入对话框*/
     public static void showLoadingDialog(Context context,boolean isCancelable) {
-
+        closeLoadingDialog();
         mLoadingDialog = new LoadingDialog(context, R.style.Loading_Dialog_Style, isCancelable);
         mLoadingDialog.show();
     }
+    
+    
     /**关闭载入对话框*/
     public static void closeLoadingDialog() {
-
-        if (mLoadingDialog != null && mLoadingDialog.isShowing())
+        if (mLoadingDialog != null && mLoadingDialog.isShowing()){
             mLoadingDialog.dismiss();
+            mLoadingDialog = null;
+        }
     }
+    
 
 }
