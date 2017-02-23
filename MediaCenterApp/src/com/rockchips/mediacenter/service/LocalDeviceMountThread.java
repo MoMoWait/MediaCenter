@@ -16,7 +16,7 @@ import com.rockchips.mediacenter.util.StorageUtils;
  */
 public class LocalDeviceMountThread extends Thread{
 	
-	public static final String TAG = LocalDeviceMountThread.class.getSimpleName();
+	public static final String TAG = "LocalDeviceMountThread";
 	private DeviceMonitorService mService;
 	
 	public LocalDeviceMountThread(DeviceMonitorService service){

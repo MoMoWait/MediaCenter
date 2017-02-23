@@ -29,6 +29,7 @@ import android.os.Process;
 import com.rockchips.mediacenter.basicutils.bean.LocalMediaInfo;
 import com.rockchips.mediacenter.basicutils.constant.Constant;
 import com.rockchips.mediacenter.basicutils.util.StringUtils;
+import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.portable.IMediaPlayerAdapter;
 import com.rockchips.mediacenter.activity.DeviceActivity;
 import com.rockchips.mediacenter.playerclient.MediaCenterPlayerClient;
@@ -45,7 +46,7 @@ import com.rockchips.mediacenter.playerclient.MediaCenterPlayerClient;
  */
 public abstract class PlayerBaseActivity extends DeviceActivity
 {
-    private static final String TAG = "MediaCenterApp";
+    private static final String TAG = "AudioPlayer_Base";
 
     /*
      * 标示播放的是否为来自Media Center Service的数据
@@ -103,7 +104,10 @@ public abstract class PlayerBaseActivity extends DeviceActivity
     protected AudioPlayStateInfo mAudioPlayStateInfo;
     private static List<Bundle> mStBundleList;
     private static int mStCurrentIndex;
-
+    /**
+     * 从其他应用跳转至媒体中心的音乐播放器
+     */
+    protected Uri mExtraUri;
     private Handler mConnectListenerHandler = new Handler()
     {
         public void handleMessage(Message msg)
@@ -414,6 +418,8 @@ public abstract class PlayerBaseActivity extends DeviceActivity
             }
             else
             {// 第三方文件管理软件点击进入的.
+            	
+            	mExtraUri = intent.getData();
                 Uri httpUri = intent.getData();
 
                 if (httpUri == null)
@@ -425,7 +431,7 @@ public abstract class PlayerBaseActivity extends DeviceActivity
 
                 String struri = httpUri.toString();
                 //
-                if (struri.startsWith("file://"))
+          /*      if (struri.startsWith("file://"))
                 {
                     try
                     {
@@ -436,13 +442,17 @@ public abstract class PlayerBaseActivity extends DeviceActivity
                         struri = struri.substring("file://".length());
                     }
                 }
-
+*/
                 LocalMediaInfo mbi = new LocalMediaInfo();
                 mbi.setmData(struri);
 //                mbi.setDeviceId("ANDROID_SYSTEM");
-
-                mbi.setmDeviceType(getDeviceType(struri));
-
+                int deviceType = getDeviceType(struri);
+                mbi.setmDeviceType(deviceType);
+                Log.i(TAG, "parseInputIntent->extraDeviceType:" + deviceType);
+                if(deviceType == ConstData.DeviceType.DEVICE_TYPE_OTHER){
+                	mbi.setUrl(httpUri.toString());
+                }
+                
                 // modify by w00184463 2012-7-3 begin
                 String strDisplayName = null;
                 // 从intent中获取 适用于C02Launcher启动音乐播放器
@@ -512,9 +522,11 @@ public abstract class PlayerBaseActivity extends DeviceActivity
         {
             return Constant.DeviceType.DEVICE_TYPE_DMS;
         }
-        else
+        else if(str.startsWith("file"))
         {
             return Constant.DeviceType.DEVICE_TYPE_U;
+        }else{
+        	return ConstData.DeviceType.DEVICE_TYPE_OTHER;
         }
     }
 

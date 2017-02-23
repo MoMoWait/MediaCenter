@@ -358,5 +358,12 @@
     <string name="up_down_two_d">UD 2D</string>
     <string name="pip">PIP</string>
     <string name="apk_install_tip">Enter file to install</string>
-     <string name="load_over_time">Load over time,please try again</string>
+    <string name="load_over_time">Load over time,please try again</string>
+    <string name="file_op_copy">Copy</string>
+    <string name="file_op_delete">Delete</string>
+    <string name="file_op_move">Move</string>
+    <string name="file_op_paste">Paste</string>
+    <string name="file_op_rename">Rename</string>
+    <string name="enter_new_file_name">Enter new file name</string>
+    <string name="no_svq">No SVQ</string>  
 </resources>

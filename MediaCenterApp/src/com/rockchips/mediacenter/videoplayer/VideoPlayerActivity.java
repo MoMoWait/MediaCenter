@@ -41,6 +41,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
+import android.icu.text.BreakIterator;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.TimedText;
@@ -313,6 +314,11 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         }
         SCREEN_HEIGHT = DeviceInfoUtils.getScreenHeight(CommonValues.application) + navigationBarHeight;
         mCurrentDevice = (LocalDevice)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
+        if(mExtraVideoUri != null){
+        	mCurrentDevice = new LocalDevice();
+        	mCurrentDevice.setDevices_type(ConstData.DeviceType.DEVICE_TYPE_OTHER);
+        }
+        	
         initVideoPlayPreferences();
         initViews();
         // 初始化杜比的弹出视窗
@@ -401,6 +407,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
     
     private void initEvent(){
+        final String CRLF = System.getProperty("line.separator");
         mTextSubtitle.setVisibility(View.GONE);
     	MediaPlayer originMediaPlayer = mMediaPlayer.getOriginMediaPlayer();
     	originMediaPlayer.setOnTimedTextListener(new  MediaPlayer.OnTimedTextListener() {
@@ -412,8 +419,13 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 			        return;
 			    }
 				Log.i(TAG, "onTimedText->text:" + text.getText());
+				String subTitle = text.getText();
+				subTitle = subTitle.replace(CRLF, "<br/>");
 			    mTextSubtitle.setVisibility(View.VISIBLE);
-			    mTextSubtitle.setText(Html.fromHtml(text.getText()));
+			    if(android.os.Build.VERSION.SDK_INT < 24)
+			        mTextSubtitle.setText(Html.fromHtml(subTitle));
+			    else
+			        mTextSubtitle.setText(Html.fromHtml(subTitle,  Html.FROM_HTML_MODE_COMPACT));
 			    //mTextSubtitle.setVisibility(View.VISIBLE);
 			}
 		});
@@ -470,7 +482,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         /** 把设置URL从oncreate地方下移到此处 **/
         // 设置视频源以及seek位置
         setMediaData();
-
         isFromNetwork = isNetWorkVideo(getCurMediaUrl());
         mSbpw.getmSeekBar().setFromNetwork(isFromNetwork);
 
@@ -634,6 +645,13 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         super.onDestroy();
     }
 
+     
+    @Override
+    public void finish() {
+    	Log.i(TAG, "finish->stackTrace:" + android.util.Log.getStackTraceString(new Throwable()));
+    	super.finish();
+    }
+    
     
     /**
      * 画中画模式改变监听器
@@ -1286,10 +1304,12 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
     private void progressGone()
     {
-        if (mCircleProgressBar.getVisibility() == View.VISIBLE)
+    	 setProgressBar(View.GONE);
+    	
+      /*  if (mCircleProgressBar.getVisibility() == View.VISIBLE)
         {
             mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_HIDE_PROGRESS);
-        }        
+        }      */  
     }
 
     private OnCompleteListener onCompletionListener = new OnCompleteListener()
@@ -1323,6 +1343,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                     case ConstData.VIDEO_PLAY_ERROR_CODE.ERROR_ID_COPYRIGHT_NO_RMVB_DIVX:
                         messageId = R.string.MediaError_CopyRight;
                         break;
+                    case ConstData.VIDEO_PLAY_ERROR_CODE.ERROR_ID_COPYRIGHT_NO_SVQ:
+                    	 messageId = R.string.no_svq;
+                    	break;
                     case ConstData.VIDEO_PLAY_ERROR_CODE.ERROR_ID_COPYRIGHT_DIFF_CHIP:
                         messageId = R.string.MediaError_ChipDiff;
                         break;
@@ -1859,7 +1882,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         mSbpw.resetSeekbar();
         mVVAdapter.isSeeking(false);
         String strUrl = mbi.getUrl();
-
         if (!StringUtils.isEmpty(strUrl))
         {
             stopSyncSeekPos();
@@ -3167,7 +3189,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 						}else{
 							uri = Uri.parse(Uri.encode(strurl));
 						}
-						if(mCurrentDevice.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_DMS)
+						if(mCurrentDevice.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_DMS || 
+								mCurrentDevice.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_OTHER)
 							uri = Uri.parse(strurl);
                         // mVV.setVideoPath(strurl);
                         Log.e(TAG, "要播放的视频URL为 ：" + String.valueOf(uri));
@@ -3183,7 +3206,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                         progressGone();
                     }
                     // 播放下一个视频时，初始任然为全屏
-                    setScreenMode(Constant.ScreenMode.SCREEN_FULL);
+                    setScreenMode(Constant.ScreenMode.SCREEN_SCALE);
                     // 播放另外的视频时菜单需要消失重置
                     if (mPopMenu != null && mPopMenu.isShowing())
                     {
@@ -3581,6 +3604,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                 	if(isNextPlay){
     					if(mErrorTipDialog.isShowing())
     						mErrorTipDialog.dismiss();
+    					if(mExtraVideoUri != null)
+    						finishPlay();
     					 mPlayListLayout.setCurrentPlayIndex(mPlayStateInfo.getCurrentIndex());
     		             setMediaData();
     		             play();
@@ -3736,6 +3761,23 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         {
             return;
         }
+        
+        double widthScale = SCREEN_WIDTH * 1.0 / width;
+        double heightScale = SCREEN_HEIGHT * 1.0 / height;
+        //等比长度
+        int scaleWidth = width;
+        //等比高度
+        int scaleHeight = height;
+        if (widthScale > heightScale)
+        {
+            scaleWidth = (int) (heightScale * width);
+            scaleHeight = SCREEN_HEIGHT;
+        }
+        else
+        {
+            scaleWidth = SCREEN_WIDTH;
+            scaleHeight = (int) (widthScale * height);
+        }
         switch (getScreenMode())
         {
             case Constant.ScreenMode.SCREEN_FULL:
@@ -3743,25 +3785,23 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                 height = SCREEN_HEIGHT;
                 break;
             case Constant.ScreenMode.SCREEN_ORIGINAL:
+                Log.i(TAG, "screenMode: SCREEN ORIGINAL");
+                if(width > SCREEN_WIDTH || height > SCREEN_HEIGHT){
+                    //此时等比拉伸视频
+                    width = scaleWidth;
+                    height = scaleHeight;
+                }
                 break;
             case Constant.ScreenMode.SCREEN_SCALE:
-                double widthScale = SCREEN_WIDTH * 1.0 / width;
-                double heightScale = SCREEN_HEIGHT * 1.0 / height;
-                if (widthScale > heightScale)
-                {
-                    width = (int) (heightScale * width);
-                    height = SCREEN_HEIGHT;
-                }
-                else
-                {
-                    width = SCREEN_WIDTH;
-                    height = (int) (widthScale * height);
-                }
+                width = scaleWidth;
+                height = scaleHeight;
                 break;
             default:
                 break;
         }
-
+        
+        
+        
         int l = (SCREEN_WIDTH - width) / 2;
         int t = (SCREEN_HEIGHT - height) / 2;
         Log.d(TAG, "l,t,w,h:" + l + " " + t + " " + width + " " + height);
@@ -4276,12 +4316,12 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             }
             else if (mCurrSelectType == PopMenuSelectType.SCREEN_DISPLAY_ORIGINAL)
             {
-                Log.d(TAG, "set the screen full");
+                Log.d(TAG, "set the screen original");
                 setScreenM(Constant.ScreenMode.SCREEN_ORIGINAL);
             }
             else if (mCurrSelectType == PopMenuSelectType.SCREEN_DISPLAY_SCALE)
             {
-                Log.d(TAG, "set the screen full");
+                Log.d(TAG, "set the screen scale");
                 setScreenM(Constant.ScreenMode.SCREEN_SCALE);
             }
             else if (mCurrSelectType == PopMenuSelectType.CHANNEL_MODE_SET)

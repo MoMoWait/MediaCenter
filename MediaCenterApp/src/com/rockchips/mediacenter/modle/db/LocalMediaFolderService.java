@@ -48,7 +48,8 @@ public class LocalMediaFolderService extends AppBeanService<LocalMediaFolder> {
 		List<LocalMediaFolder> allMediaFolders = new ArrayList<LocalMediaFolder>();
 		try {
 			 allMediaFolders = MediaCenterApplication.mDBManager.selector(LocalMediaFolder.class)
-					 .where("folderType", "=", floderType).and("deviceID", "=", deviceId).findAll();
+					 .where("folderType", "=", floderType).and("deviceID", "=", deviceId).orderBy("path", false)
+					 .findAll();
 		} catch (Exception e) {
 			//no handle
 		}
@@ -65,7 +66,8 @@ public class LocalMediaFolderService extends AppBeanService<LocalMediaFolder> {
 		List<LocalMediaFolder> allMediaFolders = new ArrayList<LocalMediaFolder>();
 		try {
 			 allMediaFolders = MediaCenterApplication.mDBManager.selector(LocalMediaFolder.class)
-					 .where("folderType", "=", floderType).and("deviceID", "=", deviceId).limit(maxCount).findAll();
+					 .where("folderType", "=", floderType).and("deviceID", "=", deviceId).
+					 orderBy("path", false).limit(maxCount).findAll();
 		} catch (Exception e) {
 			//no handle
 		}

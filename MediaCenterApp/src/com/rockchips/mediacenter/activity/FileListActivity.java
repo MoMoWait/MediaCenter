@@ -229,12 +229,12 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
 		else{
 			loadVideoFiles(true);
 		}
-		if(requestCode == ConstData.ActivityRequestCode.REQUEST_VIDEO_PLAYER){
+		/*if(requestCode == ConstData.ActivityRequestCode.REQUEST_VIDEO_PLAYER){
 		    Log.i(TAG, "FileListActivity->continue scan file");
 			//启动继续扫描
 			Intent scanIntent = new Intent(ConstData.BroadCastMsg.CONTINUE_DEVICE_FILE_SCAN);
 			LocalBroadcastManager.getInstance(this).sendBroadcast(scanIntent);
-		}
+		}*/
 	}
 	
 	
@@ -586,8 +586,8 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
                 }
             }
             //此时发送暂停扫描广播
-            Intent pasueScanIntent = new Intent(ConstData.BroadCastMsg.PAUSE_DEVICE_FILE_SCAN);
-            LocalBroadcastManager.getInstance(this).sendBroadcast(pasueScanIntent);
+            //Intent pasueScanIntent = new Intent(ConstData.BroadCastMsg.PAUSE_DEVICE_FILE_SCAN);
+            //LocalBroadcastManager.getInstance(this).sendBroadcast(pasueScanIntent);
         }
         else if (mediaFile.getType() == ConstData.MediaType.IMAGE)
         {

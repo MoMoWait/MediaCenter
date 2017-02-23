@@ -45,6 +45,9 @@ LOCAL_STATIC_JAVA_LIBRARIES += slf4j-jdk14-1.6.1
 LOCAL_STATIC_JAVA_LIBRARIES += httpclient-4.2.2
 LOCAL_PROGUARD_ENABLED := disabled
 
+LOCAL_JNI_SHARED_LIBRARIES := libmediacenter-jni
 include $(BUILD_PACKAGE)
+include $(LOCAL_PATH)/jni/Android.mk
+include $(call all-makefiles-under,$(LOCAL_PATH))
+#include $(LOCAL_PATH)/libs/Common.mk
 
-include $(LOCAL_PATH)/libs/Common.mk

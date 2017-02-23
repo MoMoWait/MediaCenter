@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,6 +17,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import momo.cn.edu.fjnu.androidutils.utils.NetWorkUtils;
+import momo.cn.edu.fjnu.androidutils.utils.StorageUtils;
 
 import org.fourthline.cling.android.AndroidUpnpService;
 import org.fourthline.cling.android.AndroidUpnpServiceImpl;
@@ -37,9 +39,8 @@ import com.rockchips.mediacenter.modle.db.ScanDirectoryService;
 import com.rockchips.mediacenter.modle.db.UpnpFileService;
 import com.rockchips.mediacenter.modle.db.UpnpFolderService;
 import com.rockchips.mediacenter.util.MediaFileUtils;
+import com.rockchips.mediacenter.util.MediaUtils;
 import com.rockchips.mediacenter.util.MountUtils;
-import com.rockchips.mediacenter.util.StorageUtils;
-
 import android.R.integer;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -50,6 +51,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.FileObserver;
 import android.os.Handler;
@@ -71,7 +73,7 @@ import android.util.Log;
  */
 public class DeviceMonitorService extends Service {
 
-	public static final String TAG = DeviceMonitorService.class.getSimpleName();
+	public static final String TAG = "DeviceMonitorService";
 	public static final int DELAY_MESSAGE_TIME = 1000;
 	private MonitorBinder mBinder;
 	private StorageManager mStorageManager;
@@ -90,6 +92,10 @@ public class DeviceMonitorService extends Service {
 	 * 单线程池服务，用于挂载Samba设备，NFS设备
 	 */
 	private ExecutorService mMountNetWorkDeviceService;
+	/**
+	 * 本地设备上下线处理线程池
+	 */
+	private ExecutorService mLocalDeviceUpDownProcessService;
 	/**
 	 * 单线程池服务，加载音频和视频文件的预览图
 	 */
@@ -153,6 +159,16 @@ public class DeviceMonitorService extends Service {
 	 * 是否有网络
 	 */
 	private boolean isHaveNetwork;
+	
+	/**
+	 * 是否有视频播放
+	 */
+	private boolean isHaveVideoPlay;
+	/**
+	 * 本地设备监听列表
+	 */
+	private List<LocalDeviceListener> mLocalDeviceListeners;
+	
 	/**
 	 * 设备上下线消息
 	 * @author GaoFei
@@ -161,6 +177,16 @@ public class DeviceMonitorService extends Service {
 	interface DeviceMountMsgs{
 		int DEVICE_UP = 1;
 		int DEVICE_DOWN = 2;
+	}
+	
+	/**
+	 * 本地设备监听器
+	 * @author GaoFei
+	 *
+	 */
+	public interface LocalDeviceListener{
+		//设备上下线
+		void onDeviceUpOrDown(Message message);
 	}
 	
 	@Override
@@ -202,7 +228,8 @@ public class DeviceMonitorService extends Service {
 	    mAVPreviewLoadService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
 	    mPhotoPreviewLoadService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
 	    mLocalMediaPreviewService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
-		mMountNetWorkDeviceService = Executors.newSingleThreadExecutor();
+	    mLocalDeviceUpDownProcessService = Executors.newSingleThreadExecutor();
+	    mMountNetWorkDeviceService = Executors.newSingleThreadExecutor();
 		mPreviewLoadReceiver = new PreviewLoadReceiver();
 		mNetWorkDeviceMountReceiver = new NetWorkDeviceMountReceiver();
 		mScanStatusReceiver = new ScanStatusReceiver();
@@ -213,7 +240,7 @@ public class DeviceMonitorService extends Service {
 		mountListener = new MountListener();
 		mScanDeviceService = new ThreadPoolExecutor(5, 5, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 		mountThread = new MountThread();
-
+		mLocalDeviceListeners = new LinkedList<DeviceMonitorService.LocalDeviceListener>();
 		mUpnpConnection = new ServiceConnection() {
 
 			@Override
@@ -306,6 +333,27 @@ public class DeviceMonitorService extends Service {
 	}
 	
 	/**
+	 * 注册本地设备监听
+	 * @param listener
+	 */
+	public void registerLocalDeviceListener(LocalDeviceListener listener){
+		mLocalDeviceListeners.add(listener);
+		Log.i(TAG, "mLocalDeviceListeners->size():" + mLocalDeviceListeners.size());
+	}
+	
+	
+	/**
+	 * 取消本地监听
+	 */
+	public void unRegisterLocalDeviceListener(LocalDeviceListener listener){
+		if(mLocalDeviceListeners != null && mLocalDeviceListeners.size() > 0){
+			mLocalDeviceListeners.remove(listener);
+		}
+		Log.i(TAG, "mLocalDeviceListeners->size():" + mLocalDeviceListeners.size());
+	}
+	
+	
+	/**
 	 * 处理U盘，SD卡，移动硬盘，Samba设备，NFS设备，DLNA设备的挂载，卸载信息
 	 * @param path
 	 * @param state
@@ -313,11 +361,10 @@ public class DeviceMonitorService extends Service {
 	 */
 	public synchronized void processMountMsg(String path, String state, int deviceType, boolean isAddNetWork) {
 		synchronized (mountMsgs) {
-			LocalDeviceService localDeviceService = new LocalDeviceService();
 			LocalMediaFileService mediaFileService = new LocalMediaFileService();
 			LocalMediaFolderService folderService = new LocalMediaFolderService();
 			ScanDirectoryService scanDirectoryService = new ScanDirectoryService();
-			Message message = new Message();
+			LocalDeviceService localDeviceService = new LocalDeviceService();
 			/**
 			 * 根据挂载路径搜索数据库对应的设备
 			 */
@@ -333,7 +380,7 @@ public class DeviceMonitorService extends Service {
 				 */
 				scanDirectoryService.deleteDirectoriesByDeviceId(device.getDeviceID());
 			}
-			
+			Message message = new Message();
 			if (state.equals(Environment.MEDIA_MOUNTED)) {
 				device = MediaFileUtils.getLocalDeviceFromFile(new File(path));
 				if(device != null){
@@ -347,10 +394,46 @@ public class DeviceMonitorService extends Service {
 			message.arg1 = deviceType;
 			message.arg2 = (isAddNetWork ? 1 : 0);
 			message.obj = path;
-			mDeviceHandler.sendMessageDelayed(message, DELAY_MESSAGE_TIME);
+			mDeviceHandler.sendMessage(message);
 			mountMsgs.put(path, state.equals(Environment.MEDIA_MOUNTED));
 		}
 
+	}
+	
+	/**
+	 * 处理本地设备（U盘，SD卡，移动硬盘的挂载/卸载事件）
+	 */
+	public void processLocalDeviceMountMsg(String path, String state, int deviceType, boolean isAddNetWork){
+		LocalDeviceService localDeviceService = new LocalDeviceService();
+		LocalDevice device = localDeviceService.getDeviceByPath(path);
+		if(device != null){
+			localDeviceService.delete(device);
+			//需要开启线程处理
+			mLocalDeviceUpDownProcessService.execute(new LocalDeviceUpDownProcessThread(device));
+		}
+		
+		if(state.equals(Environment.MEDIA_MOUNTED)){
+			device = MediaFileUtils.getLocalDeviceFromFile(new File(path));
+			localDeviceService.save(device);
+		}
+		
+		synchronized (mountMsgs) {
+			mountMsgs.put(path, state.equals(Environment.MEDIA_MOUNTED));
+		}
+		Message message = new Message();
+		if (state.equals(Environment.MEDIA_MOUNTED)) {
+			message.what = DeviceMountMsgs.DEVICE_UP;
+			
+		}else{
+			message.what = DeviceMountMsgs.DEVICE_DOWN;
+		}
+		message.arg1 = deviceType;
+		message.arg2 = (isAddNetWork ? 1 : 0);
+		message.obj = path;
+		//通知上下线
+		for(LocalDeviceListener listener : mLocalDeviceListeners)
+			listener.onDeviceUpOrDown(message);
+		mDeviceHandler.sendMessage(message);
 	}
 	
 	public boolean isMounted(String path) {
@@ -547,6 +630,15 @@ public class DeviceMonitorService extends Service {
 		return mRemoteDevices;
 	}
 	
+	
+	/**
+	 * 是否有视频播放
+	 * @return
+	 */
+	public boolean isHaveVideoPlay(){
+	    return isHaveVideoPlay;
+	}
+	
 	/**
 	 * 循环监测挂载队列的数据
 	 * 
@@ -594,6 +686,10 @@ public class DeviceMonitorService extends Service {
 					searchUpnpDevice();
 				}
 				
+				isHaveVideoPlay = MediaUtils.hasMediaClient();
+				
+				//Log.i(TAG, "haveVideoPlay:" + isHaveVideoPlay);
+				
 				try {
 					Thread.sleep(1000);
 				} catch (Exception e) {
@@ -619,10 +715,11 @@ public class DeviceMonitorService extends Service {
 
 		public void onStorageStateChanged(String path, String oldState,
 				String newState) {
-			//Log.i(TAG, "path =" + path + "   " + "oldState=" + oldState + "   "
-			//		+ "newState=" + newState);
 			if(newState.equals(Environment.MEDIA_MOUNTED) || newState.equals(Environment.MEDIA_UNMOUNTED)){
-				processMountMsg(path, newState, ConstData.DeviceType.DEVICE_TYPE_SD, false);
+				Log.i(TAG, "path =" + path + "   " + "oldState=" + oldState + "   " + "newState=" + newState);
+				Log.i(TAG, "currentTime:" + System.currentTimeMillis());
+				processLocalDeviceMountMsg(path, newState, ConstData.DeviceType.DEVICE_TYPE_SD, false);
+				//processMountMsg(path, newState, ConstData.DeviceType.DEVICE_TYPE_SD, false);
 			}
 				
 		}

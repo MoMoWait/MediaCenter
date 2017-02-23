@@ -20,6 +20,9 @@ public class NFSDeviceMountThread extends Thread{
 	@Override
 	public void run() {
 		if(mInfo != null){
+			//如果NFS已经mount成功，直接返回
+			if(MountUtils.isMountSuccess(mInfo.getNetWorkPath(), mInfo.getLocalMountPath()))
+				return;
 			if(MountUtils.mountNFS(mInfo)){
 				//mount NFS设备成功
 				mService.processMountMsg(mInfo.getLocalMountPath(), Environment.MEDIA_MOUNTED, ConstData.DeviceType.DEVICE_TYPE_NFS, mIsAddNetWork);

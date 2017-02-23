@@ -339,8 +339,7 @@ public abstract class PlayerBaseActivity extends DeviceActivity
             setSenderClientUniq(Constant.ClientTypeUniq.UNKNOWN_UNIQ);
         }
         
-        mbInternalPlayer = intent.getBooleanExtra(
-				Constant.IntentKey.IS_INTERNAL_PLAYER, false);
+        mbInternalPlayer = intent.getBooleanExtra(Constant.IntentKey.IS_INTERNAL_PLAYER, false);
 		Log.d(TAG, "isInternalPlayer is : " + mbInternalPlayer);
 		
 		//如果是媒体中心内置播放器，则不启动服务

@@ -40,7 +40,8 @@
             android:name="inputmode"
             android:value="keyboard" />
         <activity 
-            android:name="com.rockchips.mediacenter.activity.AllFileListActivity"/>
+            android:name="com.rockchips.mediacenter.activity.AllFileListActivity"
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen"/>
         <activity android:name="com.rockchips.mediacenter.activity.AllUpnpFileListActivity"/>
         <activity 
             android:name="com.rockchips.mediacenter.activity.UpnpFileListActivity"/>
@@ -84,8 +85,20 @@
         <activity
             android:name="com.rockchips.mediacenter.audioplayer.InternalAudioPlayer"
             android:exported="false"
-            android:label="@string/title_activity_audio_player"
+            android:label="@string/app_name"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
+            
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="content" />
+                <data android:host="media" />
+                <data android:mimeType="audio/*" />
+                <data android:mimeType="application/ogg" />
+                <data android:mimeType="application/x-ogg" />
+                <data android:mimeType="application/itunes" />
+            </intent-filter>
+            
             <intent-filter>
                 <action android:name="com.rockchips.mediacenter.audioplayer.InternalAudioPlayer" />
 
@@ -101,6 +114,19 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="com.android.camera.action.REVIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="" />
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:scheme="content" />
+                <data android:scheme="file" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+            
         </activity>
         <activity
             android:name="com.rockchips.mediacenter.imageplayer.ImagePlayerActivity"
@@ -119,19 +145,50 @@
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
             <intent-filter>
                 <action android:name="com.rockchips.mediacenter.videoplayer.VideoPlayerActivity" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
             android:name="com.rockchips.mediacenter.videoplayer.InternalVideoPlayer"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:exported="false"
-            android:label="@string/title_activity_video_player"
+            android:label="@string/app_name"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen"
             android:resizeableActivity="true" 
             android:supportsPictureInPicture="true"
             android:launchMode="singleTask">
+            <intent-filter android:priority="10">
+                <action android:name   = "android.intent.action.VIEW" />
+                <category android:name = "android.intent.category.DEFAULT" />
+                <data android:mimeType = "video/*" />
+            </intent-filter>
+            <intent-filter android:priority="10" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="rtsp" />
+            </intent-filter>
+            <intent-filter android:priority="10">
+                <action android:name   = "android.intent.action.VIEW" />
+                <category android:name = "android.intent.category.DEFAULT" />
+                <category android:name = "android.intent.category.BROWSABLE" />
+                <data android:scheme   = "http" />
+            </intent-filter>
+            <intent-filter android:priority="10" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="rtsp" />
+                <data android:mimeType = "video/*" />
+            </intent-filter>
+            <intent-filter android:priority="10">
+                <action android:name   = "android.intent.action.VIEW" />
+                <category android:name = "android.intent.category.DEFAULT" />
+                <category android:name = "android.intent.category.BROWSABLE" />
+                <data android:scheme   = "http" />
+                <data android:mimeType = "video/*" />
+            </intent-filter>
+            
             <intent-filter>
                 <action android:name="com.rockchips.mediacenter.videoplayer.InternalVideoPlayer" />
 

@@ -160,6 +160,14 @@ public class UpnpFileScanThread extends Thread {
 			
 			
 			if(mContainers.isEmpty()){
+			    try{
+	                while(mService.isHaveVideoPlay()){
+	                    //睡眠1s
+	                    Thread.sleep(1000);
+	                }
+	            }catch (Exception e){
+	                Log.i(TAG, "UpnpFileScanThread->exception:" + e);
+	            }
 				if(isWaitTenSecond){
 					//表示已经等待10s，退出线程
 					isServiceRunning = false;
@@ -170,7 +178,7 @@ public class UpnpFileScanThread extends Thread {
 					isWaitTenSecond = true;
 					continue;
 				}catch (Exception e){
-					//Log.i(TAG, "UpnpFileScanThread->run exception:" + e);
+					Log.i(TAG, "UpnpFileScanThread->waitSecond:" + e);
 				}
 			}else{
 				isWaitTenSecond = false;

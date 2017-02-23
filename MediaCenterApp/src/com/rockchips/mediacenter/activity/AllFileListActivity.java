@@ -3,7 +3,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import momo.cn.edu.fjnu.androidutils.utils.BitmapUtils;
+import momo.cn.edu.fjnu.androidutils.utils.JsonUtils;
 import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
+import momo.cn.edu.fjnu.androidutils.utils.StorageUtils;
+
 import org.xutils.x;
 import org.xutils.view.annotation.ViewInject;
 
@@ -22,10 +25,12 @@ import com.rockchips.mediacenter.modle.task.AVBitmapLoadTask;
 import com.rockchips.mediacenter.modle.task.AllFileLoadTask;
 import com.rockchips.mediacenter.modle.task.FileLoadTask;
 import com.rockchips.mediacenter.modle.task.FileMediaDataLoadTask;
+import com.rockchips.mediacenter.modle.task.FileOpTask;
 import com.rockchips.mediacenter.modle.task.FolderLoadTask;
 import com.rockchips.mediacenter.util.APKUtils;
 import com.rockchips.mediacenter.util.ActivityUtils;
 import com.rockchips.mediacenter.util.DialogUtils;
+import com.rockchips.mediacenter.util.FileOpUtils;
 import com.rockchips.mediacenter.util.MediaFileUtils;
 import com.rockchips.mediacenter.utils.GetDateUtil;
 import com.rockchips.mediacenter.videoplayer.InternalVideoPlayer;
@@ -55,7 +60,11 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
+
+import com.rockchips.mediacenter.view.FileOpDialog;
+import com.rockchips.mediacenter.view.FileRenameDialog;
 import com.rockchips.mediacenter.viewutils.preview.PreviewWidget;
 import com.rockchips.mediacenter.R;
 import com.rockchips.mediacenter.basicutils.util.ResLoadUtil;
@@ -67,7 +76,7 @@ import com.rockchips.mediacenter.basicutils.bean.LocalMediaInfo;
  * @author GaoFei
  * 所有文件浏览页面
  */
-public class AllFileListActivity extends AppBaseActivity implements OnItemSelectedListener, OnItemClickListener{
+public class AllFileListActivity extends AppBaseActivity implements OnItemSelectedListener, OnItemClickListener, OnItemLongClickListener,FileOpDialog.Callback{
 
 	public static final String TAG = "FileListActivity";
 	protected static final int START_PLAYER_REQUEST_CODE = 99;
@@ -139,6 +148,14 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	 * 更新音频或视频预览图监听器
 	 */
 	private RefreshPreviewReceiver mRefreshPreviewReceiver;
+	/**
+	 * 文件操作任务
+	 */
+	private FileOpTask mFileOpTask;
+	/**
+	 * 文件重命名对话框
+	 */
+	private FileRenameDialog mRenameDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -162,6 +179,14 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 		}
 	}
 
+	
+	@Override
+	public boolean onItemLongClick(AdapterView<?> parent, View view,
+			int position, long id) {
+		//new FileOpDialog(this, (AllFileInfo)parent.getItemAtPosition(position), this).show();
+		return false;
+	}
+	
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position,
 			long id) {
@@ -174,6 +199,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 		
 	}
 	
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if(keyCode == KeyEvent.KEYCODE_BACK){
@@ -209,15 +235,84 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if(requestCode == ConstData.ActivityRequestCode.REQUEST_VIDEO_PLAYER){
+		/*if(requestCode == ConstData.ActivityRequestCode.REQUEST_VIDEO_PLAYER){
 			//启动继续扫描
 			Intent scanIntent = new Intent(ConstData.BroadCastMsg.CONTINUE_DEVICE_FILE_SCAN);
 			LocalBroadcastManager.getInstance(this).sendBroadcast(scanIntent);
-		}
+		}*/
 	}
 	
 	
+	
+	@Override
+	public void onCopy(AllFileInfo allFileInfo) {
+		//拷贝文件,存储当前待拷贝文件
+		StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.COPY_FILE_PATH, allFileInfo.getFile().getPath());
+		//接切信息设为空
+		StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.MOVE_FILE_PATH, "");
+	}
+
+
+	@Override
+	public void onDelete(AllFileInfo allFileInfo) {
+		mFileOpTask = new FileOpTask(new FileOpTask.CallBack() {
+			
+			@Override
+			public void onFinish() {
+				DialogUtils.closeLoadingDialog();
+				loadFiles();
+			}
+		});
+		mFileOpTask.setOpMode(ConstData.FileOpMode.DELETE);
+		DialogUtils.showLoadingDialog(this, false);
+		mFileOpTask.execute(allFileInfo);
+	}
+
+
+	@Override
+	public void onMove(AllFileInfo allFileInfo) {
+		StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.MOVE_FILE_PATH, allFileInfo.getFile().getPath());
+		StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.COPY_FILE_PATH,"");
+	}
+
+
+	@Override
+	public void onPaste(AllFileInfo allFileInfo) {
+		//黏贴文件
+		mFileOpTask = new FileOpTask(new FileOpTask.CallBack() {
+			
+			@Override
+			public void onFinish() {
+				DialogUtils.closeLoadingDialog();
+				loadFiles();
+			}
+		});
+		mFileOpTask.setOpMode(ConstData.FileOpMode.PASTE);
+		DialogUtils.showLoadingDialog(this, false);
+		mFileOpTask.execute(allFileInfo);
+	}
+
+
+	@Override
+	public void onRename(AllFileInfo allFileInfo) {
+		if(mRenameDialog == null){
+			mRenameDialog = new FileRenameDialog(this, allFileInfo, new FileRenameDialog.Callback() {
+				
+				@Override
+				public void onFinish() {
+					loadFiles();
+				}
+			});
+		}else{
+			mRenameDialog.setAllFileInfo(allFileInfo);
+		}
+		mRenameDialog.show();
+	}
+	
     public void initDataAndView(){
+    	//重置复制，剪切数据
+    	StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.COPY_FILE_PATH, "");
+    	StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.MOVE_FILE_PATH, "");
         mRefreshPreviewReceiver = new RefreshPreviewReceiver();
     	mPregressLoading.setVisibility(View.GONE);
     	mCurrMediaType = getIntent().getIntExtra(ConstData.IntentKey.EXTRAL_MEDIA_TYPE, -1);
@@ -230,6 +325,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
     public void initEvent(){
     	mListFile.setOnItemClickListener(this);
     	mListFile.setOnItemSelectedListener(this);
+    	mListFile.setOnItemLongClickListener(this);
     }
     
     private void refreshPreview(AllFileInfo fileInfo)
@@ -470,8 +566,8 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
                 }
             }            
             //此时发送暂停扫描广播
-            Intent pasueScanIntent = new Intent(ConstData.BroadCastMsg.PAUSE_DEVICE_FILE_SCAN);
-            LocalBroadcastManager.getInstance(this).sendBroadcast(pasueScanIntent);
+            //Intent pasueScanIntent = new Intent(ConstData.BroadCastMsg.PAUSE_DEVICE_FILE_SCAN);
+            //LocalBroadcastManager.getInstance(this).sendBroadcast(pasueScanIntent);
             
         }
         else if (allFileInfo.getType() == ConstData.MediaType.IMAGE)
@@ -631,6 +727,5 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	        
 	    }
 	}
-	
 	
 }

@@ -61,7 +61,7 @@ public class NFSAddDialog extends AppBaseDialog{
 
 	@Override
 	public void initData() {
-		mEditServerAddress.setText("120.24.18.183:/home/nfs");
+		//mEditServerAddress.setText("120.24.18.183:/home/nfs");
 	}
 
 	@Override

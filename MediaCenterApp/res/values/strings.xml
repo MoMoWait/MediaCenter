@@ -360,4 +360,11 @@
     <string name="pip">画中画</string>
     <string name="apk_install_tip">进入文件，选择安装</string>
     <string name="load_over_time">加载超时，请重试</string>
+    <string name="file_op_copy">复制</string>
+    <string name="file_op_delete">删除</string>
+    <string name="file_op_move">剪切</string>
+    <string name="file_op_paste">粘帖</string>
+    <string name="file_op_rename">重命名</string> 
+    <string name="enter_new_file_name">输入新文件名</string>
+    <string name="no_svq">没有SVQ版权</string>  
 </resources>

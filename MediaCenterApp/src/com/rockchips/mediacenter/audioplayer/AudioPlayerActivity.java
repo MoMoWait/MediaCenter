@@ -1,23 +1,6 @@
-/*
- * 版    权:  Huawei Technologies Co., Ltd. Copyright YYYY-YYYY,  All rights reserved
- * 描    述:  <描述>
- * 修 改 人:  s00203507
- * 修改时间:  2013-3-6
- * 跟踪单号:  <跟踪单号>
- * 修改单号:  <修改单号>
- * 修改内容:  <修改内容>
- *
- * ===========================================================================<br>
- * 【2014.03.04:09:52】
- * 修 改 人:pWX184170
- * 修改功能:DTS2014011707941中描述的功能缺陷。机顶盒播放媒体中心DMS上的音频文件或本地音频文件，手机推送音频到机顶盒，推送成功后，无法播放，手机提示加载失败<br>
- * 原因分析:Android 4.2之后调用海思的播放器不支持同时两个{@code MediaPlayer}同时播放。播放另外一个前必须{@code release}一下{@code MediaPlayer},修改之前只是MediaPlayer.pause().<br>
- * 修改方案:{@link #onPause()}的时候,判断一下是否在播放，{@link InternalAudioPlayerActivity#isPlaying()}。如果在播放保存下当前的seekValue和position。
- * {@link #onResume()}的时候判断下{@link #onPause()}的时候是否需要播放根据变量{@link #bResumePlay}值来判断，如果需要播放，读取我们保存的值seekValue和position,设置一下这个时候我们需要在播放之后去seek到我们记录的位置，并且
- * 刷新下UI界面的显示.<br>
- * 修改位置:搜索 单号可以查找到所有修改的位置
- * ===========================================================================
-
+/**
+ * @author GaoFei
+ * 音乐播放模块
  */
 package com.rockchips.mediacenter.audioplayer;
 
@@ -130,7 +113,7 @@ import com.rockchips.mediacenter.viewutils.wheelview.WheelView;
 public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelChangedListener, OnKeyListener, OnClickListener, OnSelectTypeListener,
         OnSelectPopupListener, DLNAImageSwitcherListener
 {
-    private static final String TAG = "AudioPlayerActivity";
+    private static final String TAG = "AudioPlayer_REAL";
 
     private static final String ACTION = "com.rockchips.iptv.stb.dlna.action.exitplayer";
 
@@ -396,6 +379,10 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     {
     	//Log.i(TAG, "onCreate");
     	mCurrentDevice = (LocalDevice)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
+    	if(mCurrentDevice == null){
+    		mCurrentDevice = new LocalDevice();
+    		mCurrentDevice.setDevices_type(ConstData.DeviceType.DEVICE_TYPE_OTHER);
+    	}
 /*        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 */
@@ -1653,6 +1640,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 
         Log.d(TAG, "mCurrentMediaInfo is " + mCurrentMediaInfo);
         Log.d(TAG, "LocalMediaInfo is " + LocalMediaInfo);
+        Log.d(TAG, "LocalMediaInfo url is : " + LocalMediaInfo.getUrl());
         if (LocalMediaInfo != null && LocalMediaInfo != mCurrentMediaInfo)
         {
             // Log.d("1111", "1111");
@@ -1758,6 +1746,10 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 
                         // DTS2012061804317 播放音乐时按上下键切换，概率性（50%）播放歌曲不是列表当前指向的歌曲 end
                         String uri = mCurrentMediaInfo.getUrl();
+                        
+                        Log.i(TAG, "AudioPlayerMsg.MSG_REQUEST_PLAY->uri:" + uri);
+                        if(uri == null)
+                        	uri = mExtraUri.toString();
                         if (uri != null)
                         {
                             Lyric.getInstance().release();
@@ -2342,7 +2334,8 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                     mMediaPlayer.setOnSeekCompleteListener(mOnSeekCompleteListener);
                     mMediaPlayer.setOnBufferingUpdateListener(mOnBufferingUpdateListener);
                     //Log.i(TAG, "setDataSourceAsync->path:" + path);
-                    if(mCurrentDevice.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_DMS)
+                    if(mCurrentDevice.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_DMS
+                    		|| mCurrentDevice.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_OTHER)
                     	mMediaPlayer.setVideoURI(Uri.parse(path));
                     else
                     	mMediaPlayer.setVideoURI(Uri.parse(Uri.encode(path)));

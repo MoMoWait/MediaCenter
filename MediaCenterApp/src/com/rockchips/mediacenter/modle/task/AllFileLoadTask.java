@@ -12,13 +12,14 @@ import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.util.MediaFileUtils;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 /**
  * @author GaoFei
  * 所有文件列表加载器
  */
 public class AllFileLoadTask extends AsyncTask<String, Integer, Integer> {
-	
+	private static final String TAG = "AllFileLoadTask";
 	public interface CallBack{
 		void onGetFiles(List<AllFileInfo> fileInfos);
 	}
@@ -63,6 +64,9 @@ public class AllFileLoadTask extends AsyncTask<String, Integer, Integer> {
 				public int compare(AllFileInfo lhs, AllFileInfo rhs) {
 					if(lhs.getFile().isDirectory() && rhs.getFile().isFile())
 						return -1;
+					else if(lhs.getFile().isDirectory() && rhs.getFile().isDirectory()
+					        || lhs.getFile().isFile() && rhs.getFile().isFile())
+					    return lhs.getFile().getPath().compareTo(rhs.getFile().getPath());
 					return 0;
 				}
 			});

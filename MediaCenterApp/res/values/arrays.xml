@@ -25,4 +25,14 @@
         <item>@string/refresh_all_devices</item>
     </string-array>
     
+    
+    <!-- 文件操作 -->
+    <string-array name="file_oprations">
+        <item>@string/file_op_copy</item>
+        <item>@string/file_op_delete</item>
+        <item>@string/file_op_move</item>
+        <item>@string/file_op_paste</item>
+        <item>@string/file_op_rename</item>
+    </string-array>
+    
 </resources>

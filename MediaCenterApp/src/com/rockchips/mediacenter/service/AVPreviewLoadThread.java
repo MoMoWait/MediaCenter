@@ -41,9 +41,13 @@ public class AVPreviewLoadThread extends Thread implements Comparable<AVPreviewL
     
     @Override
     public void run() {
-        //Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         if(mAllFileInfo.isLoadPreview())
             return;
+        
+        if(mService.isHaveVideoPlay())
+        	return;
+    	long startTime = System.currentTimeMillis();
+		Log.i(TAG, "AVPreviewLoadThread->startTime:" + startTime);
         /**
          * 媒体信息元数据获取器
          * */
@@ -53,7 +57,7 @@ public class AVPreviewLoadThread extends Thread implements Comparable<AVPreviewL
             mediaMetadataRetriever.setDataSource(mAllFileInfo.getFile().getPath());
         }catch (Exception e){
             //存在发生异常的可能性
-            Log.e(TAG, "doInBackground->setDataSource->exception:" + e);
+            Log.e(TAG, "AVPreviewLoadThread->setDataSource->exception:" + e);
         }
         
         String durationStr = null;
@@ -61,9 +65,9 @@ public class AVPreviewLoadThread extends Thread implements Comparable<AVPreviewL
              durationStr = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
         }catch (Exception e){
             //存在发生异常的可能性
-            Log.e(TAG, "doInBackground->extractMetadata->exception:" + e);
+            Log.e(TAG, "AVPreviewLoadThread->extractMetadata->exception:" + e);
         }
-        
+        Log.i(TAG, "AVPreviewLoadThread->durationStr:" + durationStr);
         if(durationStr != null){
             mAllFileInfo.setDuration(getDuration(Long.parseLong(durationStr)));
         }
@@ -100,6 +104,7 @@ public class AVPreviewLoadThread extends Thread implements Comparable<AVPreviewL
                 
             }
         }
+        Log.i(TAG, "AVPreviewLoadThread->previewBitmap:" + priviewBitmap);
         File cacheImageDirFile = new File(ConstData.CACHE_IMAGE_DIRECTORY);
         if(!cacheImageDirFile.exists())
             cacheImageDirFile.mkdirs();
@@ -114,7 +119,9 @@ public class AVPreviewLoadThread extends Thread implements Comparable<AVPreviewL
             previewIntent.putExtra(ConstData.IntentKey.EXTRA_ALL_FILE_INFO, mAllFileInfo);
             LocalBroadcastManager.getInstance(mService).sendBroadcast(previewIntent);
         }
-            
+        long endTime = System.currentTimeMillis();
+		Log.i(TAG, "AVPreviewLoadThread->endTime:" + endTime);
+		Log.i(TAG, "AVPreviewLoadThread->totalTime:" + (endTime - startTime) / 1000 + "s");
     }
     
     public String getDuration(long time){

@@ -69,7 +69,8 @@ public class LocalMediaFileService extends AppBeanService<LocalMediaFile> {
 		List<LocalMediaFile> mediaFiles = new ArrayList<LocalMediaFile>();
 		try{
 			mediaFiles = MediaCenterApplication.mDBManager.selector(LocalMediaFile.class)
-					.where("parentPath", "=", parentPath).and("type", "=", mediaType).findAll();
+					.where("parentPath", "=", parentPath).and("type", "=", mediaType).
+					orderBy("path", false).findAll();
 		}catch (Exception e){
 			
 		}
@@ -123,7 +124,7 @@ public class LocalMediaFileService extends AppBeanService<LocalMediaFile> {
 		List<LocalMediaFile> mediaFiles = new ArrayList<LocalMediaFile>();
 		try {
 			mediaFiles = MediaCenterApplication.mDBManager.selector(LocalMediaFile.class).where("type", "=" , mediaType)
-					.and("deviceID", "=", deviceId).findAll();
+					.and("deviceID", "=", deviceId).orderBy("path", false).findAll();
 		} catch (DbException e) {
 			e.printStackTrace();
 		}

@@ -71,6 +71,7 @@ import com.rockchips.mediacenter.modle.db.ScanDirectoryService;
 import com.rockchips.mediacenter.service.DeviceMonitorService;
 import com.rockchips.mediacenter.util.DialogUtils;
 import com.rockchips.mediacenter.util.MediaFileUtils;
+import com.rockchips.mediacenter.util.MediaUtils;
 import com.rockchips.mediacenter.util.MountUtils;
 import com.rockchips.mediacenter.util.ShellUtils;
 import com.rockchips.mediacenter.utils.DeviceTypeStr;
@@ -97,7 +98,7 @@ import android.util.Log;
  */
 public class MainActivity extends AppBaseActivity implements OnDeviceSelectedListener, OnSearchListener
 {
-    private static final String TAG = "MediaCenterApp";
+    private static final String TAG = "MediaCenter_MainActivity";
 
     private static final IICLOG LOG = IICLOG.getInstance();
 
@@ -172,25 +173,23 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
      * 是否绑定DeviceMonitorService
      */
     private boolean isBindDeviceMonitorService;
-    
+    /**
+     * 本地设备上下线监听
+     */
+    private LocalDeviceUpDownListener mLocalDeviceUpDownListener;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-		//Log.i(TAG, "onCreate->start");
         mStMainActivity = this;
         setContentView(R.layout.activity_main);
         mDevicesListView = (DevicesListView) findViewById(R.id.deviceList);
-        //mIvLogo = (ImageView) findViewById(R.id.iv_devices_list_logo);
-        //mIvLogo.setVisibility(View.VISIBLE);
         mLlNoDev = (LinearLayout) findViewById(R.id.layout_no_device);
         mDevicesListView.setOnSearchListener(this);
         initView();
         //初始化数据
         initData();
-        //启动本地扫描服务
-        initServices();
-        //绑定服务
+        //绑定设备监听服务
         attachServices();
         //初始化网络设备
         initNetWorkDevices();
@@ -209,23 +208,16 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     	if(mNFSList != null && mNFSList.size() > 0){
     		for(NFSInfo nfsInfo : mNFSList){
     			mNFSMap.put(nfsInfo.getLocalMountPath(), nfsInfo);
-    			//设备挂载不成功，尝试挂载
-    			if(!MountUtils.isMountSuccess(nfsInfo.getNetWorkPath(), nfsInfo.getLocalMountPath())){
-    				mountNFSDevice(nfsInfo);
-    			}
-    			
+    			//尝试挂载NFS设备
+    			mountNFSDevice(nfsInfo);
     		}
     	}
     	
     	if(mSmbList != null && mSmbList.size() > 0){
     		for(SmbInfo smbInfo : mSmbList){
     			mSmbMap.put(smbInfo.getLocalMountPath(), smbInfo);
-    			//设备挂载不成功，尝试挂载
-    			if(!MountUtils.isMountSuccess(smbInfo.getNetWorkPath(), smbInfo.getLocalMountPath())){
-    				mountSmbDevice(smbInfo);
-    			}
-    			
-    		
+    			//尝试挂载samba设备
+    			mountSmbDevice(smbInfo);
     		}
     	}
     }
@@ -271,6 +263,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
      */
     private void initData(){
     	mDeviceUpDownReceiver = new DeviceUpDownReceiver();
+    	mLocalDeviceUpDownListener = new LocalDeviceUpDownListener();
     	mDeviceMonitorConnection = new ServiceConnection() {
 			
 			@Override
@@ -283,7 +276,8 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
 				LOG.i(TAG, "MainActivity->serviceConnection on ServiceConnected" );
 				DeviceMonitorService.MonitorBinder serviceBinder = (DeviceMonitorService.MonitorBinder)service;
 				mDeviceMonitorService = serviceBinder.getMonitorService();
-				
+				//注册本地设备上下线监听
+				mDeviceMonitorService.registerLocalDeviceListener(mLocalDeviceUpDownListener);
 			}
 		};
 		
@@ -489,13 +483,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     	sambaAddDialog.show();
     }
     
-    /**
-     * 初始化各种服务
-     */
-    private void initServices(){
-    	Intent scanIntent = new Intent(this, DeviceMonitorService.class);
-    	startService(scanIntent);
-    }
     
     @Override
     protected void onStart() {
@@ -524,6 +511,8 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     {
     	unBindServices();
         mDevicesListView.recycle();
+        if(mDeviceMonitorService != null)
+        	mDeviceMonitorService.unRegisterLocalDeviceListener(mLocalDeviceUpDownListener);
         super.onDestroy();
     }
 
@@ -761,10 +750,30 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     		//设备路径
     		String devicePath = intent.getStringExtra(ConstData.IntentKey.EXTRA_DEVICE_PATH);
     		boolean isAddNetWork = intent.getBooleanExtra(ConstData.IntentKey.EXTRA_IS_ADD_NETWORK_DEVICE, false);
+    		int deviceType = intent.getIntExtra(ConstData.IntentKey.EXTRA_DEVICE_TYPE, -1);
     		Log.i(TAG, "DeviceUpDownReceiver->devicePath:" + devicePath);
     		Log.i(TAG, "DeviceUpDownReceiver->isAddNetWork:" + isAddNetWork);
-    		loadDeviceInfoList(isAddNetWork);
+    		if(deviceType != ConstData.DeviceType.DEVICE_TYPE_SD && deviceType != ConstData.DeviceType.DEVICE_TYPE_U){
+    			loadDeviceInfoList(isAddNetWork);
+    		}
+    		
     	}
     }
     
+    /**
+     * 本地设备上下线监听
+     * @author GaoFei
+     *
+     */
+    class LocalDeviceUpDownListener implements DeviceMonitorService.LocalDeviceListener{
+
+		@Override
+		public void onDeviceUpOrDown(Message message) {
+			Log.i(TAG, "onDeviceUpOrDown");
+			Log.i(TAG, "currentTime:" + System.currentTimeMillis());
+			//刷新列表
+			loadDeviceInfoList(false);
+		}
+    	
+    }
 }

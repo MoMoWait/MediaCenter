@@ -9,6 +9,7 @@ import org.xutils.DbManager;
 import org.xutils.x;
 
 import momo.cn.edu.fjnu.androidutils.base.BaseApplication;
+import momo.cn.edu.fjnu.androidutils.utils.StorageUtils;
 
 import android.app.Application;
 import android.content.BroadcastReceiver;
@@ -25,9 +26,10 @@ import com.rockchips.mediacenter.basicutils.util.IICLOG;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.service.DeviceMonitorService;
 import com.rockchips.mediacenter.util.ActivityExitUtils;
+import com.rockchips.mediacenter.util.MediaUtils;
 public class MediaCenterApplication extends BaseApplication
 {
-    private static final String TAG = "MediaCenterApp";
+    private static final String TAG = "MediaCenterApplication";
     
     private static final IICLOG LOG = IICLOG.getInstance();
 
@@ -38,13 +40,16 @@ public class MediaCenterApplication extends BaseApplication
     public void onCreate()
     {
         super.onCreate();
+        
+        //Log.i(TAG, "currentMediaPostion:" + MediaUtils.getCurrentPostion());
+        
         try{
             PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             Log.i(TAG, "versionName:" + packageInfo.versionName);
         }catch (Exception e){
         	Log.i(TAG, "getVersionName->exception:" + e);
         }
-    
+        
         ActivityExitUtils.clearActivities();
         //初始化xutils3框架
         x.Ext.init(this);
@@ -53,6 +58,8 @@ public class MediaCenterApplication extends BaseApplication
         initService();
         //初始化数据库
         initDB();
+        //初始化数据
+        initData();
     }
 
     @Override
@@ -62,6 +69,17 @@ public class MediaCenterApplication extends BaseApplication
     }
 
 
+    @Override
+    public void onTerminate() {
+    	super.onTerminate();
+    	try{
+    		mDBManager.close();
+    	}catch (Exception e){
+    		
+    	}
+    	
+    }
+    
     
     /**
      * 初始化数据库
@@ -90,6 +108,14 @@ public class MediaCenterApplication extends BaseApplication
     	startService(deviceMonitorIntent);
     }
     
-    
+    /**
+     * 初始化数据
+     */
+    public void initData(){
+    	//当前拷贝文件清空
+    	StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.COPY_FILE_PATH, "");
+    	//当前剪切文件清空
+    	StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.MOVE_FILE_PATH, "");
+    }
 
 }

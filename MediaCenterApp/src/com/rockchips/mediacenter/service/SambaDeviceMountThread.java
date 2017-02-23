@@ -26,6 +26,8 @@ public class SambaDeviceMountThread extends Thread{
 	@Override
 	public void run() {
 		if(mInfo != null){
+			if(MountUtils.isMountSuccess(mInfo.getLocalMountPath(), mInfo.getLocalMountPath()))
+				return;
 			if(MountUtils.mountSamba(mInfo)){
 				//mount Samba设备成功
 				mService.processMountMsg(mInfo.getLocalMountPath(), Environment.MEDIA_MOUNTED, ConstData.DeviceType.DEVICE_TYPE_SMB, mIsAddNetwork);

@@ -1201,4 +1201,12 @@ public class PlayStateInfo
     public int get3DMode(){
     	return m3DMode;
     }
+    
+    /**
+     * 设置播放列表
+     * @param infoList
+     */
+    public void setmMediaList(List<VideoInfo> infoList){
+    	mMediaList = infoList;
+    }
 }

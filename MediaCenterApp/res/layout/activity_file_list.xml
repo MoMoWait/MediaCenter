@@ -9,7 +9,8 @@
     <LinearLayout
         android:id="@+id/layout_header"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
+        android:gravity="center_vertical"
         android:orientation="horizontal" >
 
         <TextView
@@ -19,7 +20,9 @@
             android:layout_marginLeft="40dp"
             android:padding="10dp"
             android:textColor="#8fffffff"
-            android:textSize="20sp" />
+            android:textSize="20sp" 
+            android:singleLine="true"
+            android:maxWidth="620dp"/>
 
         <TextView
             android:id="@+id/text_file_name"
@@ -30,6 +33,7 @@
             android:padding="10dp"
             android:gravity="center"
             android:textColor="#8fffffff"
+            android:singleLine="true"
             android:textSize="20sp" />
     </LinearLayout>
 

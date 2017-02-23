@@ -88,6 +88,15 @@ public class FileScanThread extends Thread{
 		long startTime = System.currentTimeMillis();
 		Log.i(TAG, "FileScanThread start time:" + startTime);
 		while(!mScanDirectories.isEmpty()){
+		    try{
+		        while(mService.isHaveVideoPlay()){
+		            //睡眠1s
+	                Thread.sleep(1000);
+	            }
+		    }catch (Exception e){
+		        Log.i(TAG, "FileScanThread exception:" + e);
+		    }
+		  
 			mIsMounted = mService.isMounted(mPath);
 			mScanStatus = mService.getScanStatus(mPath);
 			if(!mIsMounted){

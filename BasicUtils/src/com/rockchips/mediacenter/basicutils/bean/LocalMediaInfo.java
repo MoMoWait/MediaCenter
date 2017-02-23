@@ -130,6 +130,8 @@ public class LocalMediaInfo
 
     private String firstPhotoUrl;
     
+    private String mUrl;
+    
     public Bundle compress()
     {
         Bundle bundle = new Bundle();
@@ -513,9 +515,19 @@ public class LocalMediaInfo
                 return mResUri;
             case Constant.DeviceType.DEVICE_TYPE_U:
             case Constant.DeviceType.DEVICE_TYPE_SD:
+            case Constant.DeviceType.DEVICE_TYPE_NFS:
+            case Constant.DeviceType.DEVICE_TYPE_SMB:
+            	return getmData();
+            case Constant.DeviceType.DEVICE_TYPE_OTHER:
+            	return mUrl;
             default:
                 return getmData();
         }
+    }
+    
+    
+    public void setUrl(String url){
+    	mUrl = url;
     }
     
     public String getmDuration()

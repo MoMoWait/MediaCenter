@@ -64,7 +64,7 @@ public class SambaAddDialog extends AppBaseDialog{
 
 	@Override
 	public void initData() {
-		mEditServerAddress.setText("//10.10.10.130/share");
+		//mEditServerAddress.setText("//10.10.10.130/share");
 		//mEditServerAddress.setText("//10.10.10.164/Marshmallow_Repository");
 		//mEditUserName.setText("sdk");
 		//mEditPassword.setText("839919");

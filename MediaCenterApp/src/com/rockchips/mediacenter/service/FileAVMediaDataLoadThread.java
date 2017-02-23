@@ -24,7 +24,7 @@ import com.rockchips.mediacenter.modle.task.FileMediaDataLoadTask;
  */
 public class FileAVMediaDataLoadThread extends Thread implements Comparable<FileAVMediaDataLoadThread>{
 
-	public static final String TAG = FileMediaDataLoadTask.class.getSimpleName();
+	public static final String TAG = "AVPreviewLoadThread";
 	private LocalMediaFile mLocalMediaFile;
 	private DeviceMonitorService mService;
 	private int mPriority;
@@ -37,9 +37,19 @@ public class FileAVMediaDataLoadThread extends Thread implements Comparable<File
 	
 	@Override
 	public void run() {
-
-		//Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
-		Log.i(TAG, "doInBackground");
+		/**
+		 * 已经获取过缩列图，不在重新获取
+		 */
+		if(mLocalMediaFile.isLoadPreviewPhoto())
+			return;
+		
+		/**
+		 * 如果正在播放视频，结束获取缩列图
+		 */
+		if(mService.isHaveVideoPlay())
+			return;
+		long startTime = System.currentTimeMillis();
+		Log.i(TAG, "FileAVMediaDataLoadThread->startTime:" + startTime);
 		/**
 		 * 媒体信息元数据获取器
 		 * */
@@ -59,6 +69,8 @@ public class FileAVMediaDataLoadThread extends Thread implements Comparable<File
 			//存在发生异常的可能性
 			Log.e(TAG, "doInBackground->extractMetadata->exception:" + e);
 		}
+		
+		Log.i(TAG, "FileAVMediaDataLoadThread->durationStr:" + durationStr);
 		
 		if(durationStr != null){
 			mLocalMediaFile.setDuration(getDuration(Long.parseLong(durationStr)));
@@ -94,6 +106,8 @@ public class FileAVMediaDataLoadThread extends Thread implements Comparable<File
 				
 			}
 		}
+		
+		Log.i(TAG, "FileAVMediaDataLoadThread->previewBitmap:" + priviewBitmap);
 		File cacheImageDirFile = new File(ConstData.CACHE_IMAGE_DIRECTORY);
 		if(!cacheImageDirFile.exists())
 			cacheImageDirFile.mkdirs();
@@ -111,7 +125,10 @@ public class FileAVMediaDataLoadThread extends Thread implements Comparable<File
 			intent.putExtra(ConstData.IntentKey.EXTRA_LOCAL_MEDIA_FILE, mLocalMediaFile);
 			LocalBroadcastManager.getInstance(mService).sendBroadcast(intent);
 		}
-			
+		
+		long endTime = System.currentTimeMillis();
+		Log.i(TAG, "FileAVMediaDataLoadThread->endTime:" + endTime);
+		Log.i(TAG, "FileAVMediaDataLoadThread->totalTime:" + (endTime - startTime) / 1000 + "s");
 	
 	}
 	

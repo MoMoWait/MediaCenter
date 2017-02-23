@@ -9,6 +9,7 @@
  */
 package com.rockchips.mediacenter.videoplayer;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -113,6 +114,11 @@ public abstract class PlayerBaseActivity extends DeviceActivity
      * 标志Sender端的标示
      */
     private String mSenderClientUniq = null;
+    
+    /**
+     * 标记是否是从其他应用跳转到媒体中心视频播放器
+     */
+    protected Uri mExtraVideoUri;
     
     private Handler connectListenerHandler = new Handler()
     {
@@ -339,6 +345,10 @@ public abstract class PlayerBaseActivity extends DeviceActivity
             }
             mPlayStateInfo.setCurrDevName(mStdevName);
             return;
+        }else{
+            //不是内部播放器，则表示从其他应用跳转此处
+            mExtraVideoUri = intent.getData();
+            Log.i(TAG, "mExtraVideoUri:" + mExtraVideoUri);
         }
         
         // 判断参数是否有效
@@ -379,6 +389,20 @@ public abstract class PlayerBaseActivity extends DeviceActivity
         mPlayStateInfo.setCurrentIndex(playIndex);
         mPlayStateInfo.setSenderClientUniq(senderClientUniq);
         mPlayStateInfo.setMediaList(mediaBaseList);
+        if(mExtraVideoUri != null){
+        	List<VideoInfo> videoInfos = new ArrayList<VideoInfo>();
+        	VideoInfo videoInfo = new VideoInfo();
+        	String extraPath = mExtraVideoUri.toString();
+        	Log.i(TAG, "parseIntent->extraPath:" + extraPath);
+        	if(extraPath != null){
+        		//videoInfo.setmParentPath(extraFile.getParentFile().getPath());
+        		videoInfo.setUrl(extraPath);
+        		videoInfo.setmDeviceType(ConstData.DeviceType.DEVICE_TYPE_OTHER);
+        	}
+        	
+        	videoInfos.add(videoInfo);
+        	mPlayStateInfo.setmMediaList(videoInfos);
+        }
         mediaBaseList = null;
         
         // DTS2012030204438

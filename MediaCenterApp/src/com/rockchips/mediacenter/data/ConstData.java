@@ -88,6 +88,12 @@ public class ConstData {
 		String EXTRA_IS_ADD_NETWORK_DEVICE = "extra_is_add_network_device";
 		String EXTRA_ALL_FILE_INFO = "extra_all_file_info";
 		String EXTRA_LOCAL_MEDIA_FILE = "extra_local_media_file";
+		/**本地设备挂载点目录*/
+		String EXTRA_LOCAL_DEVICE_MOUNT_PATH = "extra_local_device_mount_path";
+		/**本地设备挂载状态*/
+		String EXTRA_LOCAL_DEVICE_MOUNT_STATE = "extra_local_device_mount_state";
+		/**本地设备ID*/
+		String EXTRA_LOCAL_DEVICE_ID = "extra_local_device_id";
         /**
          * 获取媒体列表的key键
          */
@@ -212,12 +218,20 @@ public class ConstData {
     
 	}
 	
-	
+	/**
+	 * SharedPreference key值
+	 * @author GaoFei
+	 *
+	 */
 	public interface SharedKey{
 		/**NFS网络路径*/
-		public String NFS_INFOS = "nfs_net_infos";
+		String NFS_INFOS = "nfs_net_infos";
 		/**Smb网络路径*/
-		public String SMB_INFOS = "smb_infos";
+		String SMB_INFOS = "smb_infos";
+		/**拷贝文件路径*/
+		String COPY_FILE_PATH = "copy_file_path";
+		/**剪切文件路径*/
+		String MOVE_FILE_PATH = "move_file_path";
 	}
 	
 	public interface ViewTags{
@@ -243,6 +257,7 @@ public class ConstData {
 		int ERROR_ID_NO_CODEC               =0xF4;
 		int ERROR_ID_VPU_MPEG4_ROSOLUTION   =0xF5;    /*mpeg4 not support 4k*/
 	    int ERROR_ID_10BIT_NOT_SUPPORT      =0xF6;    /*3288 supp*/
+	    int ERROR_ID_COPYRIGHT_NO_SVQ       =0xF9;
 	    int ERROR_NETWORK                   = -11;
 	}
 	
@@ -489,7 +504,12 @@ public class ConstData {
          * 未知设备类型
          */
         public static final int DEVICE_TYPE_UNKNOWN = -1;
-
+        
+        /**
+         * 其他类型的设备
+         */
+        public static final int DEVICE_TYPE_OTHER = 2003;
+        
         // 设备类型相关------结束
         /**
          * 根据 type 判断是否为外设 <功能详细描述>
@@ -812,5 +832,18 @@ public class ConstData {
      */
     public interface ActivityAction{
     	String INSTALL_APK = "com.rockchips.mediacenter.INSTALL_APP";
+    }
+    
+    /**
+     * 文件操作模式
+     * @author GaoFei
+     *
+     */
+    public interface FileOpMode{
+    	int COPY = 0;
+    	int DELETE = 1;
+    	int MOVE = 2;
+    	int PASTE = 3;
+    	int RENAME = 4;
     }
 }

@@ -254,6 +254,11 @@ public class Constant
          */
         public static final int DEVICE_TYPE_UNKNOWN = -1;
 
+        /**
+         * 其他类型的设备
+         */
+        public static final int DEVICE_TYPE_OTHER = 2003;
+        
         // 设备类型相关------结束
         /**
          * 根据 type 判断是否为外设 <功能详细描述>
