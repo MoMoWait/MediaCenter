@@ -15,11 +15,7 @@
 
 package org.fourthline.cling.model;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.*;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -61,11 +57,11 @@ public class XMLUtil {
 
     public static String documentToString(Document document, boolean standalone) throws Exception {
         String prol = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"" + (standalone ? "yes" : "no") + "\"?>";
-        return prol + nodeToString(document.getDocumentElement(), new HashSet(), document.getDocumentElement().getNamespaceURI());
+        return prol + nodeToString(document.getDocumentElement(), new HashSet<String>(), document.getDocumentElement().getNamespaceURI());
     }
 
     public static String documentToFragmentString(Document document) throws Exception {
-        return nodeToString(document.getDocumentElement(), new HashSet(), document.getDocumentElement().getNamespaceURI());
+        return nodeToString(document.getDocumentElement(), new HashSet<String>(), document.getDocumentElement().getNamespaceURI());
     }
 
     protected static String nodeToString(Node node, Set<String> parentPrefixes, String namespaceURI) throws Exception {
@@ -80,7 +76,7 @@ public class XMLUtil {
             b.append("<");
             b.append(element.getNodeName());
 
-            Map<String, String> thisLevelPrefixes = new HashMap();
+            Map<String, String> thisLevelPrefixes = new HashMap<>();
             if (element.getPrefix() != null && !parentPrefixes.contains(element.getPrefix())) {
                 thisLevelPrefixes.put(element.getPrefix(), element.getNamespaceURI());
             }
@@ -137,18 +133,24 @@ public class XMLUtil {
             }
 
         } else if (node.getNodeValue() != null) {
-            b.append(encodeText(node.getNodeValue()));
+            b.append(encodeText(node.getNodeValue(), node instanceof Attr));
         }
 
         return b.toString();
     }
 
     public static String encodeText(String s) {
+        return encodeText(s, true);
+    }
+
+    public static String encodeText(String s, boolean encodeQuotes) {
         s = s.replaceAll("&", "&amp;");
         s = s.replaceAll("<", "&lt;");
         s = s.replaceAll(">", "&gt;");
-        s = s.replaceAll("'", "&apos;");
-        s = s.replaceAll("\"", "&quot;");
+        if(encodeQuotes) {
+        	s = s.replaceAll("'", "&apos;");
+        	s = s.replaceAll("\"", "&quot;");
+        }
         return s;
     }
 

@@ -11,7 +11,7 @@ import android.text.TextUtils;
 import com.rockchips.mediacenter.bean.NFSInfo;
 import com.rockchips.mediacenter.bean.SmbInfo;
 import com.rockchips.mediacenter.data.ConstData;
-import com.rockchips.mediacenter.util.MountUtils;
+import com.rockchips.mediacenter.utils.MountUtils;
 
 import momo.cn.edu.fjnu.androidutils.utils.JsonUtils;
 import momo.cn.edu.fjnu.androidutils.utils.StorageUtils;

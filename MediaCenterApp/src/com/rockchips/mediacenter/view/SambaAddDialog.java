@@ -18,7 +18,7 @@ import android.widget.Toast;
 import com.rockchips.mediacenter.R;
 import com.rockchips.mediacenter.bean.SmbInfo;
 import com.rockchips.mediacenter.data.ConstData;
-import com.rockchips.mediacenter.util.ValidUtils;
+import com.rockchips.mediacenter.utils.ValidUtils;
 /**
  * @author GaoFei
  * 添加Samba设备网络对话框

@@ -1,4 +1,4 @@
-package com.rockchips.mediacenter.util;
+package com.rockchips.mediacenter.utils;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;

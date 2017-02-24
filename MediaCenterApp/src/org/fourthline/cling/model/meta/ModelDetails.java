@@ -76,13 +76,4 @@ public class ModelDetails {
     public URI getModelURI() {
         return modelURI;
     }
-
-	/*@Override
-	public String toString() {
-		return "ModelDetails [modelName=" + modelName + ", modelDescription="
-				+ modelDescription + ", modelNumber=" + modelNumber
-				+ ", modelURI=" + modelURI + "]";
-	}*/
-    
-    
 }

@@ -7,7 +7,7 @@ import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.modle.db.LocalDeviceService;
 import com.rockchips.mediacenter.modle.db.LocalMediaFileService;
 import com.rockchips.mediacenter.modle.db.LocalMediaFolderService;
-import com.rockchips.mediacenter.util.StorageUtils;
+import com.rockchips.mediacenter.utils.StorageUtils;
 
 /**
  * 本地存储设备挂载器

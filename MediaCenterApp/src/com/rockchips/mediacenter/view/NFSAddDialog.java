@@ -10,8 +10,8 @@ import org.xutils.view.annotation.ViewInject;
 import com.rockchips.mediacenter.R;
 import com.rockchips.mediacenter.bean.NFSInfo;
 import com.rockchips.mediacenter.data.ConstData;
-import com.rockchips.mediacenter.util.FileUtils;
-import com.rockchips.mediacenter.util.ValidUtils;
+import com.rockchips.mediacenter.utils.FileUtils;
+import com.rockchips.mediacenter.utils.ValidUtils;
 
 import android.content.Context;
 import android.os.Environment;

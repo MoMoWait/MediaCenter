@@ -2,7 +2,7 @@ package com.rockchips.mediacenter.service;
 import android.os.Environment;
 import com.rockchips.mediacenter.bean.NFSInfo;
 import com.rockchips.mediacenter.data.ConstData;
-import com.rockchips.mediacenter.util.MountUtils;
+import com.rockchips.mediacenter.utils.MountUtils;
 /**
  * @author GaoFei
  * 单个NFS设备挂载器

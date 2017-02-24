@@ -8,6 +8,7 @@ import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
 import momo.cn.edu.fjnu.androidutils.utils.StorageUtils;
 
 import org.xutils.x;
+import org.xutils.common.util.LogUtil;
 import org.xutils.view.annotation.ViewInject;
 
 import com.rockchips.mediacenter.adapter.AllFileListAdapter;
@@ -27,11 +28,11 @@ import com.rockchips.mediacenter.modle.task.FileLoadTask;
 import com.rockchips.mediacenter.modle.task.FileMediaDataLoadTask;
 import com.rockchips.mediacenter.modle.task.FileOpTask;
 import com.rockchips.mediacenter.modle.task.FolderLoadTask;
-import com.rockchips.mediacenter.util.APKUtils;
-import com.rockchips.mediacenter.util.ActivityUtils;
-import com.rockchips.mediacenter.util.DialogUtils;
-import com.rockchips.mediacenter.util.FileOpUtils;
-import com.rockchips.mediacenter.util.MediaFileUtils;
+import com.rockchips.mediacenter.utils.APKUtils;
+import com.rockchips.mediacenter.utils.ActivityUtils;
+import com.rockchips.mediacenter.utils.DialogUtils;
+import com.rockchips.mediacenter.utils.FileOpUtils;
+import com.rockchips.mediacenter.utils.MediaFileUtils;
 import com.rockchips.mediacenter.utils.GetDateUtil;
 import com.rockchips.mediacenter.videoplayer.InternalVideoPlayer;
 

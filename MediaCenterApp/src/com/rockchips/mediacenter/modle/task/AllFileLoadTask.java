@@ -9,7 +9,7 @@ import android.media.iso.ISOManager;
 import com.rockchips.mediacenter.bean.AllFileInfo;
 import com.rockchips.mediacenter.bean.LocalMediaFile;
 import com.rockchips.mediacenter.data.ConstData;
-import com.rockchips.mediacenter.util.MediaFileUtils;
+import com.rockchips.mediacenter.utils.MediaFileUtils;
 
 import android.os.AsyncTask;
 import android.util.Log;

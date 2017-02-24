@@ -15,17 +15,18 @@
 
 package org.fourthline.cling.model.meta;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
 import org.fourthline.cling.model.ServiceReference;
 import org.fourthline.cling.model.ValidationError;
 import org.fourthline.cling.model.ValidationException;
 import org.fourthline.cling.model.types.Datatype;
 import org.fourthline.cling.model.types.ServiceId;
 import org.fourthline.cling.model.types.ServiceType;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * The metadata of a service, with actions and state variables.
@@ -34,12 +35,14 @@ import java.util.Map;
  */
 public abstract class Service<D extends Device, S extends Service> {
 
+	final private static Logger log = Logger.getLogger(Service.class.getName());
+
     final private ServiceType serviceType;
     final private ServiceId serviceId;
 
 
-    final private Map<String, Action> actions = new HashMap();
-    final private Map<String, StateVariable> stateVariables = new HashMap();
+    final private Map<String, Action> actions = new HashMap<>();
+    final private Map<String, StateVariable> stateVariables = new HashMap<>();
 
     // Package mutable state
     private D device;
@@ -110,7 +113,7 @@ public abstract class Service<D extends Device, S extends Service> {
     }
 
     public StateVariable<S> getStateVariable(String name) {
-        // Some magic necessary for the deprected 'query state variable' action stuff
+        // Some magic necessary for the deprecated 'query state variable' action stuff
         if (QueryStateVariableAction.VIRTUAL_STATEVARIABLE_INPUT.equals(name)) {
             return new StateVariable(
                     QueryStateVariableAction.VIRTUAL_STATEVARIABLE_INPUT,
@@ -139,7 +142,7 @@ public abstract class Service<D extends Device, S extends Service> {
     }
 
     public List<ValidationError> validate() {
-        List<ValidationError> errors = new ArrayList();
+        List<ValidationError> errors = new ArrayList<>();
 
         if (getServiceType() == null) {
             errors.add(new ValidationError(
@@ -170,16 +173,26 @@ public abstract class Service<D extends Device, S extends Service> {
             ));
         }
         */
-
-        if (hasActions()) {
-            for (Action action : getActions()) {
-                errors.addAll(action.validate());
-            }
-        }
-
         if (hasStateVariables()) {
             for (StateVariable stateVariable : getStateVariables()) {
                 errors.addAll(stateVariable.validate());
+            }
+        }
+
+        if (hasActions()) {
+            for (Action action : getActions()) {
+
+                // Instead of bailing out here, we try to continue if an action is invalid
+                // errors.addAll(action.validate());
+
+                List<ValidationError> actionErrors = action.validate();
+            	if(actionErrors.size() > 0) {
+                    actions.remove(action.getName()); // Remove it
+                    log.warning("Discarding invalid action of service '" + getServiceId() + "': " + action.getName());
+                    for (ValidationError actionError : actionErrors) {
+                        log.warning("Invalid action '" + action.getName() + "': " + actionError);
+                    }
+            	}
             }
         }
 
@@ -188,12 +201,8 @@ public abstract class Service<D extends Device, S extends Service> {
 
     public abstract Action getQueryStateVariableAction();
 
-	@Override
-	public String toString() {
-		return "Service [serviceType=" + serviceType + ", serviceId="
-				+ serviceId + ", actions=" + actions + ", stateVariables="
-				+ stateVariables + ", device=" + device + "]";
-	}
-
-    
+    @Override
+    public String toString() {
+        return "(" + getClass().getSimpleName() + ") ServiceId: " + getServiceId();
+    }
 }

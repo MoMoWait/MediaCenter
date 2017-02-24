@@ -69,7 +69,7 @@ public interface Registry {
     /**
      * Typically called internally when the UPnP stack is stopping.
      * <p>
-     * Unsubscribes all local devices and GENA subscriptions.
+     * Unsubscribe all local devices and GENA subscriptions.
      * </p>
      */
     public void shutdown();
@@ -161,7 +161,7 @@ public interface Registry {
      * Called internally by the UPnP stack when the discovery protocol starts.
      * <p>
      * The registry will notify all registered listeners of this event, unless the
-     * given device was already been present in the registry.
+     * given device was already in the registry.
      * </p>
      *
      * @param device The half-hydrated (without services) metadata of the discovered device.
@@ -170,7 +170,7 @@ public interface Registry {
     public boolean notifyDiscoveryStart(RemoteDevice device);
 
     /**
-     * Called internally by the UPnP stack when the discovery protocol stopped abnormaly.
+     * Called internally by the UPnP stack when the discovery protocol stopped abnormally.
      * <p>
      * The registry will notify all registered listeners of this event.
      * </p>
@@ -303,7 +303,7 @@ public interface Registry {
     public Collection<Device> getDevices(ServiceType serviceType);
 
     /**
-     * @return Complete service metadata.for a service reference or <code>null</code> if no service
+     * @return Complete service metadata for a service reference or <code>null</code> if no service
      *         for the given reference has been registered.
      */
     public Service getService(ServiceReference serviceReference);
@@ -413,17 +413,30 @@ public interface Registry {
      * <p>
      * When subscribing with a remote host, the remote host might send the
      * initial event message faster than the response for the subscription
-     * request. So we lock all subscriptions when the subscription procedure
-     * executes, which forces the incoming initial event message to wait until
-     * the subscription procedure is complete.
+     * request. This method register that the subscription procedure is
+     * executing.
      * </p>
      */
-    public void lockRemoteSubscriptions();
+    public void registerPendingRemoteSubscription(RemoteGENASubscription subscription);
 
     /**
      * Called internally by the UPnP stack, during GENA protocol execution.
+     * <p>
+     * Notify that the subscription procedure has terminated.
+     * </p>
      */
-    public void unlockRemoteSubscriptions();
+    public void unregisterPendingRemoteSubscription(RemoteGENASubscription subscription);
+
+    /**
+     * Called internally by the UPnP stack, during GENA protocol execution.
+     * <p>
+     * Get a remote subscription from its subscriptionId. If the subscription can't be found,
+     * wait for one of the pending remote subscription procedures from the registry background
+     * maintainer to terminate, until the subscription has been found or until there are no
+     * more pending subscription procedures.
+     * </p>
+     */
+    public RemoteGENASubscription getWaitRemoteSubscription(String subscriptionId);
 
     // #################################################################################################
 

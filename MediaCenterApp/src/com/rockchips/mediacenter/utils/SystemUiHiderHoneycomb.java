@@ -1,4 +1,4 @@
-package com.rockchips.mediacenter.util;
+package com.rockchips.mediacenter.utils;
 
 import android.annotation.TargetApi;
 import android.app.Activity;

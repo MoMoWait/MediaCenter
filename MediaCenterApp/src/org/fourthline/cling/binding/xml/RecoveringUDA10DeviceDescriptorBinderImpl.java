@@ -22,6 +22,7 @@ import org.seamless.xml.ParserException;
 import org.seamless.xml.XmlPullParserUtils;
 import org.xml.sax.SAXParseException;
 
+import java.util.Locale;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,7 +42,8 @@ public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescri
         try {
 
             try {
-                descriptorXml = descriptorXml.trim(); // Always trim whitespace
+                if (descriptorXml != null)
+                  descriptorXml = descriptorXml.trim(); // Always trim whitespace
                 device = super.describe(undescribedDevice, descriptorXml);
                 return device;
             } catch (DescriptorBindingException ex) {
@@ -51,6 +53,16 @@ public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescri
 
             String fixedXml;
             // The following modifications are not cumulative!
+
+            fixedXml = fixGarbageLeadingChars(descriptorXml);
+            if (fixedXml != null) {
+                try {
+                    device = super.describe(undescribedDevice, fixedXml);
+                    return device;
+                } catch (DescriptorBindingException ex) {
+                    log.warning("Removing leading garbage didn't work: " + Exceptions.unwrap(ex).getMessage());
+                }
+            }
 
             fixedXml = fixGarbageTrailingChars(descriptorXml, originalException);
             if (fixedXml != null) {
@@ -99,6 +111,29 @@ public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescri
         }
         throw new IllegalStateException("No device produced, did you swallow exceptions in your subclass?");
     }
+
+    private String fixGarbageLeadingChars(String descriptorXml) {
+    		/* Recover this:
+
+    		HTTP/1.1 200 OK
+    		Content-Length: 4268
+    		Content-Type: text/xml; charset="utf-8"
+    		Server: Microsoft-Windows/6.2 UPnP/1.0 UPnP-Device-Host/1.0 Microsoft-HTTPAPI/2.0
+    		Date: Sun, 07 Apr 2013 02:11:30 GMT
+
+    		@7:5 in java.io.StringReader@407f6b00) : HTTP/1.1 200 OK
+    		Content-Length: 4268
+    		Content-Type: text/xml; charset="utf-8"
+    		Server: Microsoft-Windows/6.2 UPnP/1.0 UPnP-Device-Host/1.0 Microsoft-HTTPAPI/2.0
+    		Date: Sun, 07 Apr 2013 02:11:30 GMT
+
+    		<?xml version="1.0"?>...
+    	    */
+
+    		int index = descriptorXml.indexOf("<?xml");
+    		if(index == -1) return descriptorXml;
+    		return descriptorXml.substring(index);
+    	}
 
     protected String fixGarbageTrailingChars(String descriptorXml, DescriptorBindingException ex) {
         int index = descriptorXml.indexOf("</root>");
@@ -161,7 +196,7 @@ public class RecoveringUDA10DeviceDescriptorBinderImpl extends UDA10DeviceDescri
         // Add missing namespace, it only matters that it is defined, not that it is correct
         return "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
             + "<root "
-            + String.format("xmlns:%s=\"urn:schemas-dlna-org:device-1-0\"", missingNS) + rootAttributes + ">"
+            + String.format(Locale.ROOT, "xmlns:%s=\"urn:schemas-dlna-org:device-1-0\"", missingNS) + rootAttributes + ">"
             + rootBody
             + "</root>";
 

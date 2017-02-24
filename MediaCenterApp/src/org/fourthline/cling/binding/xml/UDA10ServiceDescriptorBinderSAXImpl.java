@@ -102,13 +102,13 @@ public class UDA10ServiceDescriptorBinderSAXImpl extends UDA10ServiceDescriptorB
             */
 
             if (element.equals(ActionListHandler.EL)) {
-                List<MutableAction> actions = new ArrayList();
+                List<MutableAction> actions = new ArrayList<>();
                 getInstance().actions = actions;
                 new ActionListHandler(actions, this);
             }
 
             if (element.equals(StateVariableListHandler.EL)) {
-                List<MutableStateVariable> stateVariables = new ArrayList();
+                List<MutableStateVariable> stateVariables = new ArrayList<>();
                 getInstance().stateVariables = stateVariables;
                 new StateVariableListHandler(stateVariables, this);
             }
@@ -178,7 +178,7 @@ public class UDA10ServiceDescriptorBinderSAXImpl extends UDA10ServiceDescriptorB
         @Override
         public void startElement(ELEMENT element, Attributes attributes) throws SAXException {
             if (element.equals(ActionArgumentListHandler.EL)) {
-                List<MutableActionArgument> arguments = new ArrayList();
+                List<MutableActionArgument> arguments = new ArrayList<>();
                 getInstance().arguments = arguments;
                 new ActionArgumentListHandler(arguments, this);
             }
@@ -239,7 +239,7 @@ public class UDA10ServiceDescriptorBinderSAXImpl extends UDA10ServiceDescriptorB
                 case direction:
                     String directionString = getCharacters();
                     try {
-                        getInstance().direction = ActionArgument.Direction.valueOf(directionString.toUpperCase(Locale.ENGLISH));
+                        getInstance().direction = ActionArgument.Direction.valueOf(directionString.toUpperCase(Locale.ROOT));
                     } catch (IllegalArgumentException ex) {
                         // TODO: UPNP VIOLATION: Pelco SpectraIV-IP uses illegal value INOUT
                         log.warning("UPnP specification violation: Invalid action argument direction, assuming 'IN': " + directionString);
@@ -276,7 +276,7 @@ public class UDA10ServiceDescriptorBinderSAXImpl extends UDA10ServiceDescriptorB
 
                 String sendEventsAttributeValue = attributes.getValue(ATTRIBUTE.sendEvents.toString());
                 stateVariable.eventDetails = new StateVariableEventDetails(
-                        sendEventsAttributeValue != null && sendEventsAttributeValue.toUpperCase(Locale.ENGLISH).equals("YES")
+                        sendEventsAttributeValue != null && sendEventsAttributeValue.toUpperCase(Locale.ROOT).equals("YES")
                 );
 
                 getInstance().add(stateVariable);
@@ -301,7 +301,7 @@ public class UDA10ServiceDescriptorBinderSAXImpl extends UDA10ServiceDescriptorB
         @Override
         public void startElement(ELEMENT element, Attributes attributes) throws SAXException {
             if (element.equals(AllowedValueListHandler.EL)) {
-                List<String> allowedValues = new ArrayList();
+                List<String> allowedValues = new ArrayList<>();
                 getInstance().allowedValues = allowedValues;
                 new AllowedValueListHandler(allowedValues, this);
             }

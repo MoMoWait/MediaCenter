@@ -37,7 +37,7 @@ import java.util.logging.Logger;
  * If no {@link UpnpServiceConfiguration} is provided it will automatically
  * instantiate {@link DefaultUpnpServiceConfiguration}. This configuration <strong>does not
  * work</strong> on Android! Use the {@link org.fourthline.cling.android.AndroidUpnpService}
- * application component instead
+ * application component instead.
  * </p>
  * <p>
  * Override the various <tt>create...()</tt> methods to customize instantiation of protocol factory,
@@ -165,8 +165,7 @@ public class UpnpServiceImpl implements UpnpService {
             if (cause instanceof InterruptedException) {
                 log.log(Level.INFO, "Router shutdown was interrupted: " + ex, cause);
             } else {
-            	//no handle
-                //throw new RuntimeException("Router error on shutdown: " + ex, ex);
+                log.log(Level.SEVERE, "Router error on shutdown: " + ex, cause);
             }
         }
     }

@@ -21,11 +21,14 @@ import org.fourthline.cling.transport.spi.InitializationException;
 import org.fourthline.cling.transport.spi.StreamServer;
 
 import javax.servlet.AsyncContext;
+import javax.servlet.AsyncEvent;
+import javax.servlet.AsyncListener;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -43,6 +46,7 @@ public class AsyncServletStreamServerImpl implements StreamServer<AsyncServletSt
 
     final protected AsyncServletStreamServerConfigurationImpl configuration;
     protected int localPort;
+    protected String hostAddress;
 
     public AsyncServletStreamServerImpl(AsyncServletStreamServerConfigurationImpl configuration) {
         this.configuration = configuration;
@@ -54,14 +58,17 @@ public class AsyncServletStreamServerImpl implements StreamServer<AsyncServletSt
 
     synchronized public void init(InetAddress bindAddress, final Router router) throws InitializationException {
         try {
-            log.info("Setting executor service on servlet container adapter");
+            if (log.isLoggable(Level.FINE))
+                log.fine("Setting executor service on servlet container adapter");
             getConfiguration().getServletContainerAdapter().setExecutorService(
                 router.getConfiguration().getStreamServerExecutorService()
             );
 
-            log.info("Adding connector: " + bindAddress + ":" + getConfiguration().getListenPort());
+            if (log.isLoggable(Level.FINE))
+                log.fine("Adding connector: " + bindAddress + ":" + getConfiguration().getListenPort());
+            hostAddress = bindAddress.getHostAddress();
             localPort = getConfiguration().getServletContainerAdapter().addConnector(
-                bindAddress.getHostAddress(),
+                hostAddress,
                 getConfiguration().getListenPort()
             );
 
@@ -78,24 +85,61 @@ public class AsyncServletStreamServerImpl implements StreamServer<AsyncServletSt
     }
 
     synchronized public void stop() {
-        getConfiguration().getServletContainerAdapter().stopIfRunning();
+        getConfiguration().getServletContainerAdapter().removeConnector(hostAddress, localPort);
     }
 
     public void run() {
         getConfiguration().getServletContainerAdapter().startIfNotRunning();
     }
 
+    private int mCounter = 0;
+
     protected Servlet createServlet(final Router router) {
         return new HttpServlet() {
             @Override
             protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+            	final long startTime = System.currentTimeMillis();
+            	final int counter = mCounter++;
                 if (log.isLoggable(Level.FINE))
-                    log.fine(
-                        "Handling Servlet request asynchronously: " + req
-                    );
+                	log.fine(String.format("HttpServlet.service(): id: %3d, request URI: %s", counter, req.getRequestURI()));
 
                 AsyncContext async = req.startAsync();
                 async.setTimeout(getConfiguration().getAsyncTimeoutSeconds()*1000);
+
+                async.addListener(new AsyncListener() {
+
+                    @Override
+                    public void onTimeout(AsyncEvent arg0) throws IOException {
+                        long duration = System.currentTimeMillis() - startTime;
+                        if (log.isLoggable(Level.FINE))
+                            log.fine(String.format("AsyncListener.onTimeout(): id: %3d, duration: %,4d, request: %s", counter, duration, arg0.getSuppliedRequest()));
+                    }
+
+
+                    @Override
+                    public void onStartAsync(AsyncEvent arg0) throws IOException {
+                        if (log.isLoggable(Level.FINE))
+                            log.fine(String.format("AsyncListener.onStartAsync(): id: %3d, request: %s", counter, arg0.getSuppliedRequest()));
+                    }
+
+
+                    @Override
+                    public void onError(AsyncEvent arg0) throws IOException {
+                        long duration = System.currentTimeMillis() - startTime;
+                        if (log.isLoggable(Level.FINE))
+                            log.fine(String.format("AsyncListener.onError(): id: %3d, duration: %,4d, response: %s", counter, duration, arg0.getSuppliedResponse()));
+                    }
+
+
+                    @Override
+                    public void onComplete(AsyncEvent arg0) throws IOException {
+                        long duration = System.currentTimeMillis() - startTime;
+                        if (log.isLoggable(Level.FINE))
+                            log.fine(String.format("AsyncListener.onComplete(): id: %3d, duration: %,4d, response: %s", counter, duration, arg0.getSuppliedResponse()));
+                    }
+
+                });
 
                 AsyncServletUpnpStream stream =
                     new AsyncServletUpnpStream(router.getProtocolFactory(), async, req) {

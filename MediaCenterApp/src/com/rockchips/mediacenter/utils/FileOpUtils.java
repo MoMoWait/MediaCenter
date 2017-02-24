@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.rockchips.mediacenter.util;
+package com.rockchips.mediacenter.utils;
 
 import java.io.File;
 import java.io.FileInputStream;

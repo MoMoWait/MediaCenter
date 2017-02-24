@@ -31,7 +31,6 @@ import org.fourthline.cling.transport.RouterImpl;
 import org.fourthline.cling.transport.spi.InitializationException;
 import org.seamless.util.Exceptions;
 
-import java.lang.reflect.Field;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,10 +63,14 @@ public class AndroidRouter extends RouterImpl {
 
         // Only register for network connectivity changes if we are not running on emulator
         if (!ModelUtil.ANDROID_EMULATOR) {
-            this.broadcastReceiver = new ConnectivityBroadcastReceiver();
+            this.broadcastReceiver = createConnectivityBroadcastReceiver();
             context.registerReceiver(broadcastReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
         }
     }
+
+    protected BroadcastReceiver createConnectivityBroadcastReceiver() {
+		return new ConnectivityBroadcastReceiver();
+	}
 
     @Override
     protected int getLockTimeoutMillis() {
@@ -179,7 +182,7 @@ public class AndroidRouter extends RouterImpl {
 
     protected void setWifiLock(boolean enable) {
         if (wifiLock == null) {
-            wifiLock = createWiFiLock();
+            wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, getClass().getSimpleName());
         }
 
         if (enable) {
@@ -197,21 +200,6 @@ public class AndroidRouter extends RouterImpl {
                 log.warning("WiFi lock already released");
             }
         }
-    }
-
-    protected WifiManager.WifiLock createWiFiLock() {
-        int wifiMode = WifiManager.WIFI_MODE_FULL;
-        try {
-            // TODO: What's this?
-            Field f = WifiManager.class.getField("WIFI_MODE_FULL_HIGH_PERF");
-            wifiMode = f.getInt(null);
-        } catch (Exception e) {
-            // Ignore
-        }
-        WifiManager.WifiLock wifiLock =
-            wifiManager.createWifiLock(wifiMode, getClass().getSimpleName());
-        log.info("Created WiFi lock, mode: " + wifiMode);
-        return wifiLock;
     }
 
     /**
@@ -242,12 +230,17 @@ public class AndroidRouter extends RouterImpl {
         }
     }
 
+    /**
+     * Handles errors when network has been switched, during reception of
+     * network switch broadcast. Logs a warning by default, override to
+     * change this behavior.
+     */
     protected void handleRouterExceptionOnNetworkTypeChange(RouterException ex) {
         Throwable cause = Exceptions.unwrap(ex);
         if (cause instanceof InterruptedException) {
             log.log(Level.INFO, "Router was interrupted: " + ex, cause);
         } else {
-            throw new RuntimeException("Router error on network change: " + ex, ex);
+            log.log(Level.WARNING, "Router error on network change: " + ex, ex);
         }
     }
 

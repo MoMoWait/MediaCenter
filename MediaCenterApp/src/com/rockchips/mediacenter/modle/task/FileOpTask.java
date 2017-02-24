@@ -9,7 +9,7 @@ import momo.cn.edu.fjnu.androidutils.utils.StorageUtils;
 
 import com.rockchips.mediacenter.bean.AllFileInfo;
 import com.rockchips.mediacenter.data.ConstData;
-import com.rockchips.mediacenter.util.FileOpUtils;
+import com.rockchips.mediacenter.utils.FileOpUtils;
 
 import android.os.AsyncTask;
 import android.text.TextUtils;

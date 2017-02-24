@@ -44,8 +44,8 @@ public class Action<S extends Service> implements Validatable {
         this.name = name;
         if (arguments != null) {
 
-            List<ActionArgument> inputList= new ArrayList();
-            List<ActionArgument> outputList = new ArrayList();
+            List<ActionArgument> inputList= new ArrayList<>();
+            List<ActionArgument> outputList = new ArrayList<>();
 
             for (ActionArgument argument : arguments) {
                 argument.setAction(this);
@@ -136,7 +136,7 @@ public class Action<S extends Service> implements Validatable {
     }
 
     public List<ValidationError> validate() {
-        List<ValidationError> errors = new ArrayList();
+        List<ValidationError> errors = new ArrayList<>();
 
         if (getName() == null || getName().length() == 0) {
             errors.add(new ValidationError(
@@ -167,12 +167,17 @@ public class Action<S extends Service> implements Validatable {
         for (ActionArgument actionArgument : getArguments()) {
             // Check retval
             if (actionArgument.isReturnValue()) {
-                if (retValueArgument != null) {
-                    log.warning("UPnP specification violation of: " + getService().getDevice());
-                    log.warning("Only one argument of action '" + getName() + "' can be <retval/>");
+                if (actionArgument.getDirection() == ActionArgument.Direction.IN) {
+                    log.warning("UPnP specification violation of :" + getService().getDevice());
+                    log.warning("Input argument can not have <retval/>");
+                } else {
+                    if (retValueArgument != null) {
+                        log.warning("UPnP specification violation of: " + getService().getDevice());
+                        log.warning("Only one argument of action '" + getName() + "' can be <retval/>");
+                    }
+                    retValueArgument = actionArgument;
+                    retValueArgumentIndex = i;
                 }
-                retValueArgument = actionArgument;
-                retValueArgumentIndex = i;
             }
             i++;
         }
@@ -200,7 +205,7 @@ public class Action<S extends Service> implements Validatable {
             actionArgumentsDupe[i] = arg.deepCopy();
         }
 
-        return new Action<S>(
+        return new Action<>(
                 getName(),
                 actionArgumentsDupe
         );

@@ -20,13 +20,12 @@ import android.content.pm.PackageInfo;
 import android.os.RemoteException;
 import android.util.Log;
 import com.rockchips.mediacenter.api.localImp.LocalDeviceManager;
-import com.rockchips.mediacenter.basicutils.bean.LocalDeviceInfo;
 import com.rockchips.mediacenter.basicutils.constant.Constant;
 import com.rockchips.mediacenter.basicutils.util.IICLOG;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.service.DeviceMonitorService;
-import com.rockchips.mediacenter.util.ActivityExitUtils;
-import com.rockchips.mediacenter.util.MediaUtils;
+import com.rockchips.mediacenter.utils.ActivityExitUtils;
+import com.rockchips.mediacenter.utils.MediaUtils;
 public class MediaCenterApplication extends BaseApplication
 {
     private static final String TAG = "MediaCenterApplication";

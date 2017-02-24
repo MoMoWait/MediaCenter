@@ -1,4 +1,4 @@
-package com.rockchips.mediacenter.util;
+package com.rockchips.mediacenter.utils;
 
 import android.content.Context;
 import com.rockchips.mediacenter.view.LoadingDialog;

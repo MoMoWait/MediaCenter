@@ -27,8 +27,6 @@ import org.fourthline.cling.support.model.BrowseResult;
 import org.fourthline.cling.support.model.DIDLContent;
 import org.fourthline.cling.support.model.SortCriterion;
 
-import android.util.Log;
-
 import java.util.logging.Logger;
 
 /**
@@ -37,7 +35,7 @@ import java.util.logging.Logger;
  * @author Christian Bauer
  */
 public abstract class Browse extends ActionCallback {
-	public static final String TAG = Browse.class.getSimpleName();
+
     public static final String CAPS_WILDCARD = "*";
 
     public enum Status {
@@ -72,20 +70,17 @@ public abstract class Browse extends ActionCallback {
                                 String filter, long firstResult, Long maxResults, SortCriterion... orderBy) {
 
         super(new ActionInvocation(service.getAction("Browse")));
-        //Log.i(TAG, "Browse0");
+
         log.fine("Creating browse action for object ID: " + objectID);
-        Log.i(TAG, "Browse1");
+
         getActionInvocation().setInput("ObjectID", objectID);
-        //Log.i(TAG, "Browse2");
         getActionInvocation().setInput("BrowseFlag", flag.toString());
         getActionInvocation().setInput("Filter", filter);
         getActionInvocation().setInput("StartingIndex", new UnsignedIntegerFourBytes(firstResult));
         getActionInvocation().setInput("RequestedCount",
                 new UnsignedIntegerFourBytes(maxResults == null ? getDefaultMaxResults() : maxResults)
         );
-       // Log.i(TAG, "Browse3");
         getActionInvocation().setInput("SortCriteria", SortCriterion.toString(orderBy));
-        //Log.i(TAG, "Browse4");
     }
 
     @Override

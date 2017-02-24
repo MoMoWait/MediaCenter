@@ -96,6 +96,7 @@ public abstract class UpnpHeader<T> {
         private String httpName;
         private Class<? extends UpnpHeader>[] headerTypes;
 
+        @SafeVarargs
         private Type(String httpName, Class<? extends UpnpHeader>... headerClass) {
             this.httpName = httpName;
             this.headerTypes = headerClass;
@@ -123,7 +124,7 @@ public abstract class UpnpHeader<T> {
          */
         public static Type getByHttpName(String httpName) {
             if (httpName == null) return null;
-        	return byName.get(httpName.toUpperCase(Locale.ENGLISH));
+        	return byName.get(httpName.toUpperCase(Locale.ROOT));
         }
     }
 

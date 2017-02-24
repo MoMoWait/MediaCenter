@@ -19,8 +19,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
-import android.util.Log;
-
 import org.fourthline.cling.UpnpService;
 import org.fourthline.cling.UpnpServiceConfiguration;
 import org.fourthline.cling.UpnpServiceImpl;
@@ -42,7 +40,7 @@ import org.fourthline.cling.transport.Router;
  * @author Christian Bauer
  */
 public class AndroidUpnpServiceImpl extends Service {
-	public static final String TAG = "AndroidUpnpServiceImpl";
+
     protected UpnpService upnpService;
     protected Binder binder = new Binder();
 
@@ -51,7 +49,6 @@ public class AndroidUpnpServiceImpl extends Service {
      */
     @Override
     public void onCreate() {
-    	Log.i(TAG, "onCreate");
         super.onCreate();
 
         upnpService = new UpnpServiceImpl(createConfiguration()) {
@@ -91,25 +88,14 @@ public class AndroidUpnpServiceImpl extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-    	Log.i(TAG, "onBind");
         return binder;
     }
 
-    
-    @Override
-    public boolean onUnbind(Intent intent) {
-    	Log.i(TAG, "onUnbind");
-    	return super.onUnbind(intent);
-    }
-    
-    
-    
     /**
      * Stops the UPnP service, when the last Activity unbinds from this Service.
      */
     @Override
     public void onDestroy() {
-    	Log.i(TAG, "onDestroy");
         upnpService.shutdown();
         super.onDestroy();
     }

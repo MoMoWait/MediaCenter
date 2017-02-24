@@ -14,10 +14,8 @@
  */
 
 package org.fourthline.cling.android;
-
 import org.fourthline.cling.transport.impl.NetworkAddressFactoryImpl;
 import org.fourthline.cling.transport.spi.InitializationException;
-
 import java.lang.reflect.Field;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -48,21 +46,40 @@ public class AndroidNetworkAddressFactory extends NetworkAddressFactoryImpl {
     @Override
     protected boolean isUsableAddress(NetworkInterface networkInterface, InetAddress address) {
         boolean result = super.isUsableAddress(networkInterface, address);
+        //String version = System.getProperty("java.version");
+        //ToastUtils.showToast("java.version:" + version);
         if (result) {
-            // TODO: Workaround Android DNS reverse lookup issue, still a problem on ICS+?
-            // http://4thline.org/projects/mailinglists.html#nabble-td3011461
-            String hostName = address.getHostAddress();
-          /*  try {
-                Field field = InetAddress.class.getDeclaredField("hostName");
-                field.setAccessible(true);
-                field.set(address, hostName);
-            } catch (Exception ex) {
-                log.log(Level.SEVERE,
-                    "Failed injecting hostName to work around Android InetAddress DNS bug: " + address,
-                    ex
-                );
-                return false;
-            }*/
+        	String hostName = address.getHostAddress();
+        	if(android.os.Build.VERSION.SDK_INT < 24){
+        		 // TODO: Workaround Android DNS reverse lookup issue, still a problem on ICS+?
+                // http://4thline.org/projects/mailinglists.html#nabble-td3011461
+                try {
+                    Field field = InetAddress.class.getDeclaredField("hostName");
+                    field.setAccessible(true);
+                    field.set(address, hostName);
+                } catch (Exception ex) {
+                    log.log(Level.SEVERE,
+                        "Failed injecting hostName to work around Android InetAddress DNS bug: " + address,
+                        ex
+                    );
+                    return false;
+                }
+        	}else{
+        		try {
+					Field holderField = InetAddress.class.getDeclaredField("holder");
+					holderField.setAccessible(true);
+					Object holder = holderField.get(address);
+					if(holder != null){
+						Field hostNameField = holder.getClass().getDeclaredField("hostName");
+						hostNameField.setAccessible(true);
+						hostNameField.set(holder, hostName);
+					}
+				} catch (Exception e) {
+					 log.log(Level.SEVERE,"Failed injecting hostName to work around Android InetAddress DNS bug: " + address, e);
+					 return false;
+				}
+        	}
+           
         }
         return result;
     }

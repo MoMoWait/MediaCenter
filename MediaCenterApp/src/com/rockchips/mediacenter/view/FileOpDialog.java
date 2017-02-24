@@ -20,7 +20,7 @@ import android.widget.ListView;
 
 import com.rockchips.mediacenter.R;
 import com.rockchips.mediacenter.bean.AllFileInfo;
-import com.rockchips.mediacenter.util.FileOpUtils;
+import com.rockchips.mediacenter.utils.FileOpUtils;
 /**
  * @author GaoFei
  * 文件操作对话框

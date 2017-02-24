@@ -24,41 +24,39 @@ import org.fourthline.cling.model.meta.Service;
 import org.fourthline.cling.model.types.ErrorCode;
 import org.fourthline.cling.support.model.ProtocolInfos;
 
-import android.util.Log;
-
 /**
  * @author Christian Bauer
  */
 public abstract class GetProtocolInfo extends ActionCallback {
 
-	public GetProtocolInfo(Service service) {
-		this(service, null);
-	}
+    public GetProtocolInfo(Service service) {
+        this(service, null);
+    }
 
-	protected GetProtocolInfo(Service service, ControlPoint controlPoint) {
-		super(new ActionInvocation(service.getAction("GetProtocolInfo")),
-				controlPoint);
-	}
+    protected GetProtocolInfo(Service service, ControlPoint controlPoint) {
+        super(new ActionInvocation(service.getAction("GetProtocolInfo")), controlPoint);
+    }
 
-	@Override
-	public void success(ActionInvocation invocation) {
-		try {
-			ActionArgumentValue sink = invocation.getOutput("Sink");
-			ActionArgumentValue source = invocation.getOutput("Source");
+    @Override
+    public void success(ActionInvocation invocation) {
+        try {
+            ActionArgumentValue sink = invocation.getOutput("Sink");
+            ActionArgumentValue source = invocation.getOutput("Source");
 
-			received(invocation,
-					sink != null ? new ProtocolInfos(sink.toString()) : null,
-					source != null ? new ProtocolInfos(source.toString())
-							: null);
+            received(
+                    invocation,
+                    sink != null ? new ProtocolInfos(sink.toString()) : null,
+                    source != null ? new ProtocolInfos(source.toString()) : null
+            );
 
-		} catch (Exception ex) {
-			invocation.setFailure(new ActionException(ErrorCode.ACTION_FAILED,
-					"Can't parse ProtocolInfo response: " + ex, ex));
-			failure(invocation, null);
-		}
-	}
+        } catch (Exception ex) {
+            invocation.setFailure(
+                    new ActionException(ErrorCode.ACTION_FAILED, "Can't parse ProtocolInfo response: " + ex, ex)
+            );
+            failure(invocation, null);
+        }
+    }
 
-	public abstract void received(ActionInvocation actionInvocation,
-			ProtocolInfos sinkProtocolInfos, ProtocolInfos sourceProtocolInfos);
+    public abstract void received(ActionInvocation actionInvocation, ProtocolInfos sinkProtocolInfos, ProtocolInfos sourceProtocolInfos);
 
 }

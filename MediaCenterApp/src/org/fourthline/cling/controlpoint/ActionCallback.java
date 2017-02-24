@@ -138,7 +138,13 @@ public abstract class ActionCallback implements Runnable {
             RemoteService remoteService = (RemoteService)service;
 
             // Figure out the remote URL where we'd like to send the action request to
-            URL controLURL = remoteService.getDevice().normalizeURI(remoteService.getControlURI());
+            URL controLURL;
+            try {
+            	controLURL = remoteService.getDevice().normalizeURI(remoteService.getControlURI());
+            } catch(IllegalArgumentException e) {
+            	failure(actionInvocation, null, "bad control URL: " + remoteService.getControlURI());
+            	return ;
+            }
 
             // Do it
             SendingAction prot = getControlPoint().getProtocolFactory().createSendingAction(actionInvocation, controLURL);

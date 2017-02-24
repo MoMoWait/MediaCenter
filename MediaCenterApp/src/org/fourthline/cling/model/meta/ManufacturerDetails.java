@@ -55,12 +55,4 @@ public class ManufacturerDetails {
     public URI getManufacturerURI() {
         return manufacturerURI;
     }
-
-	/*@Override
-	public String toString() {
-		return "ManufacturerDetails [manufacturer=" + manufacturer
-				+ ", manufacturerURI=" + manufacturerURI + "]";
-	}*/
-    
-    
 }

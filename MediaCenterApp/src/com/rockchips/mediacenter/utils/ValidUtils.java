@@ -1,4 +1,4 @@
-package com.rockchips.mediacenter.util;
+package com.rockchips.mediacenter.utils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

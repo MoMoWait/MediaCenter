@@ -28,7 +28,6 @@ import java.util.regex.Matcher;
  */
 public class ServiceId {
 
-	public static final String TAG = "ServiceId";
     final private static Logger log = Logger.getLogger(ServiceId.class.getName());
 
     public static final String UNKNOWN = "UNKNOWN";

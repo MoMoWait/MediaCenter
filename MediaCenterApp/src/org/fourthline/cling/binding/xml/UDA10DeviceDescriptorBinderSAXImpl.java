@@ -28,6 +28,7 @@ import org.fourthline.cling.model.types.InvalidValueException;
 import org.fourthline.cling.model.types.ServiceId;
 import org.fourthline.cling.model.types.ServiceType;
 import org.fourthline.cling.model.types.UDN;
+import org.seamless.util.MimeType;
 import org.seamless.xml.SAXParser;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -36,6 +37,7 @@ import org.xml.sax.SAXException;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -171,19 +173,19 @@ public class UDA10DeviceDescriptorBinderSAXImpl extends UDA10DeviceDescriptorBin
         public void startElement(ELEMENT element, Attributes attributes) throws SAXException {
 
             if (element.equals(IconListHandler.EL)) {
-                List<MutableIcon> icons = new ArrayList();
+                List<MutableIcon> icons = new ArrayList<>();
                 getInstance().icons = icons;
                 new IconListHandler(icons, this);
             }
 
             if (element.equals(ServiceListHandler.EL)) {
-                List<MutableService> services = new ArrayList();
+                List<MutableService> services = new ArrayList<>();
                 getInstance().services = services;
                 new ServiceListHandler(services, this);
             }
 
             if (element.equals(DeviceListHandler.EL)) {
-                List<MutableDevice> devices = new ArrayList();
+                List<MutableDevice> devices = new ArrayList<>();
                 getInstance().embeddedDevices = devices;
                 new DeviceListHandler(devices, this);
             }
@@ -300,7 +302,13 @@ public class UDA10DeviceDescriptorBinderSAXImpl extends UDA10DeviceDescriptorBin
                     getInstance().uri = parseURI(getCharacters());
                     break;
                 case mimetype:
-                    getInstance().mimeType = getCharacters();
+                    try {
+                        getInstance().mimeType = getCharacters();
+                        MimeType.valueOf(getInstance().mimeType);
+                    } catch(IllegalArgumentException ex) {
+                        log.warning("Ignoring invalid icon mime type: " + getInstance().mimeType);
+                        getInstance().mimeType = "";
+                    }
                     break;
             }
         }
@@ -330,7 +338,16 @@ public class UDA10DeviceDescriptorBinderSAXImpl extends UDA10DeviceDescriptorBin
 
         @Override
         public boolean isLastElement(ELEMENT element) {
-            return element.equals(EL);
+            boolean last = element.equals(EL);
+            if (last) {
+                Iterator<MutableService> it = getInstance().iterator();
+                while (it.hasNext()) {
+                    MutableService service = it.next();
+                    if (service.serviceType == null || service.serviceId == null)
+                        it.remove();
+                }
+            }
+            return last;
         }
     }
 
@@ -344,22 +361,28 @@ public class UDA10DeviceDescriptorBinderSAXImpl extends UDA10DeviceDescriptorBin
 
         @Override
         public void endElement(ELEMENT element) throws SAXException {
-            switch (element) {
-                case serviceType:
-                    getInstance().serviceType = ServiceType.valueOf(getCharacters());
-                    break;
-                case serviceId:
-                    getInstance().serviceId = ServiceId.valueOf(getCharacters());
-                    break;
-                case SCPDURL:
-                    getInstance().descriptorURI = parseURI(getCharacters());
-                    break;
-                case controlURL:
-                    getInstance().controlURI = parseURI(getCharacters());
-                    break;
-                case eventSubURL:
-                    getInstance().eventSubscriptionURI = parseURI(getCharacters());
-                    break;
+            try {
+                switch (element) {
+                    case serviceType:
+                        getInstance().serviceType = ServiceType.valueOf(getCharacters());
+                        break;
+                    case serviceId:
+                        getInstance().serviceId = ServiceId.valueOf(getCharacters());
+                        break;
+                    case SCPDURL:
+                        getInstance().descriptorURI = parseURI(getCharacters());
+                        break;
+                    case controlURL:
+                        getInstance().controlURI = parseURI(getCharacters());
+                        break;
+                    case eventSubURL:
+                        getInstance().eventSubscriptionURI = parseURI(getCharacters());
+                        break;
+                }
+            } catch (InvalidValueException ex) {
+                log.warning(
+                    "UPnP specification violation, skipping invalid service declaration. " + ex.getMessage()
+                );
             }
         }
 

@@ -1,7 +1,7 @@
 $(info >>>>>>>>>>==========================================build MediaCenterApp==========================================<<<<<<<<<<)
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
-
+LIBS_PATH := $(LOCAL_PATH)
 LOCAL_MODULE_TAGS := optional
 LOCAL_PACKAGE_NAME := MediaCenter
 LOCAL_CERTIFICATE := platform
@@ -37,17 +37,19 @@ LOCAL_STATIC_JAVA_LIBRARIES += jetty-security-8.1.9.v20130131
 LOCAL_STATIC_JAVA_LIBRARIES += jetty-server-8.1.9.v20130131
 LOCAL_STATIC_JAVA_LIBRARIES += jetty-servlet-8.1.9.v20130131
 LOCAL_STATIC_JAVA_LIBRARIES += jetty-util-8.1.9.v20130131
-LOCAL_STATIC_JAVA_LIBRARIES += seamless-http-1.0-alpha2
-LOCAL_STATIC_JAVA_LIBRARIES += seamless-util-1.0-alpha2
-LOCAL_STATIC_JAVA_LIBRARIES += seamless-xml-1.0-alpha2
+LOCAL_STATIC_JAVA_LIBRARIES += seamless-http-1.1.1
+LOCAL_STATIC_JAVA_LIBRARIES += seamless-util-1.1.1
+LOCAL_STATIC_JAVA_LIBRARIES += seamless-xml-1.1.1
 LOCAL_STATIC_JAVA_LIBRARIES += slf4j-api-1.6.1
 LOCAL_STATIC_JAVA_LIBRARIES += slf4j-jdk14-1.6.1
 LOCAL_STATIC_JAVA_LIBRARIES += httpclient-4.2.2
+#LOCAL_STATIC_JAVA_LIBRARIES += libcling
+#LOCAL_STATIC_JAVA_LIBRARIES += libcling-support
 LOCAL_PROGUARD_ENABLED := disabled
-
 LOCAL_JNI_SHARED_LIBRARIES := libmediacenter-jni
 include $(BUILD_PACKAGE)
 include $(LOCAL_PATH)/jni/Android.mk
-include $(call all-makefiles-under,$(LOCAL_PATH))
-#include $(LOCAL_PATH)/libs/Common.mk
+include $(LIBS_PATH)/libs/Common.mk
+#include $(call all-makefiles-under,$(LOCAL_PATH))
+
 

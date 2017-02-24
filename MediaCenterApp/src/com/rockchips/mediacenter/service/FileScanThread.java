@@ -15,7 +15,7 @@ import com.rockchips.mediacenter.modle.db.LocalDeviceService;
 import com.rockchips.mediacenter.modle.db.LocalMediaFileService;
 import com.rockchips.mediacenter.modle.db.LocalMediaFolderService;
 import com.rockchips.mediacenter.modle.db.ScanDirectoryService;
-import com.rockchips.mediacenter.util.MediaFileUtils;
+import com.rockchips.mediacenter.utils.MediaFileUtils;
 import android.util.Log;
 /**
  * 本地设备文件扫描线程

@@ -56,11 +56,11 @@ public class NetworkAddressFactoryImpl implements NetworkAddressFactory {
 
     private static Logger log = Logger.getLogger(NetworkAddressFactoryImpl.class.getName());
 
-    final protected Set<String> useInterfaces = new HashSet<String>();
-    final protected Set<String> useAddresses = new HashSet<String>();
+    final protected Set<String> useInterfaces = new HashSet<>();
+    final protected Set<String> useAddresses = new HashSet<>();
 
-    final protected List<NetworkInterface> networkInterfaces = new ArrayList<NetworkInterface>();
-    final protected List<InetAddress> bindAddresses = new ArrayList<InetAddress>();
+    final protected List<NetworkInterface> networkInterfaces = new ArrayList<>();
+    final protected List<InetAddress> bindAddresses = new ArrayList<>();
 
     protected int streamListenPort;
 
@@ -329,6 +329,7 @@ public class NetworkAddressFactoryImpl implements NetworkAddressFactory {
      * <li>have no bound IP addresses</li>
      * <li>named "vmnet*" (OS X VMWare does not properly stop interfaces when it quits)</li>
      * <li>named "vnic*" (OS X Parallels interfaces should be ignored as well)</li>
+     * <li>named "vboxnet*" (OS X Virtual Box interfaces should be ignored as well)</li>
      * <li>named "*virtual*" (VirtualBox interfaces, for example</li>
      * <li>named "ppp*"</li>
      * </ul>
@@ -348,23 +349,28 @@ public class NetworkAddressFactoryImpl implements NetworkAddressFactory {
             return false;
         }
 
-        if (iface.getName().toLowerCase(Locale.ENGLISH).startsWith("vmnet") ||
-        		(iface.getDisplayName() != null &&  iface.getDisplayName().toLowerCase(Locale.ENGLISH).contains("vmnet"))) {
+        if (iface.getName().toLowerCase(Locale.ROOT).startsWith("vmnet") ||
+        		(iface.getDisplayName() != null &&  iface.getDisplayName().toLowerCase(Locale.ROOT).contains("vmnet"))) {
             log.finer("Skipping network interface (VMWare): " + iface.getDisplayName());
             return false;
         }
 
-        if (iface.getName().toLowerCase(Locale.ENGLISH).startsWith("vnic")) {
+        if (iface.getName().toLowerCase(Locale.ROOT).startsWith("vnic")) {
             log.finer("Skipping network interface (Parallels): " + iface.getDisplayName());
             return false;
         }
 
-        if (iface.getName().toLowerCase(Locale.ENGLISH).contains("virtual")) {
+        if (iface.getName().toLowerCase(Locale.ROOT).startsWith("vboxnet")) {
+            log.finer("Skipping network interface (Virtual Box): " + iface.getDisplayName());
+            return false;
+        }
+
+        if (iface.getName().toLowerCase(Locale.ROOT).contains("virtual")) {
             log.finer("Skipping network interface (named '*virtual*'): " + iface.getDisplayName());
             return false;
         }
 
-        if (iface.getName().toLowerCase(Locale.ENGLISH).startsWith("ppp")) {
+        if (iface.getName().toLowerCase(Locale.ROOT).startsWith("ppp")) {
             log.finer("Skipping network interface (PPP): " + iface.getDisplayName());
             return false;
         }

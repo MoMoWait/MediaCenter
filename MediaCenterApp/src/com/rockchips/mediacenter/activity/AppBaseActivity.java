@@ -6,8 +6,8 @@ import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
 
 import com.rockchips.mediacenter.bean.LocalDevice;
 import com.rockchips.mediacenter.data.ConstData;
-import com.rockchips.mediacenter.util.ActivityExitUtils;
-import com.rockchips.mediacenter.util.DialogUtils;
+import com.rockchips.mediacenter.utils.ActivityExitUtils;
+import com.rockchips.mediacenter.utils.DialogUtils;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;

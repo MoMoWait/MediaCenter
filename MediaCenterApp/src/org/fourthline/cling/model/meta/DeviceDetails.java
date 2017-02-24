@@ -22,7 +22,6 @@ import org.fourthline.cling.model.types.DLNADoc;
 
 import java.net.URI;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -199,7 +198,7 @@ public class DeviceDetails implements Validatable {
     }
 
     public List<ValidationError> validate() {
-        List<ValidationError> errors = new ArrayList();
+        List<ValidationError> errors = new ArrayList<>();
 
         if (getUpc() != null) {
             // This is broken in more than half of the devices I've tested, so let's not even bother with a warning
@@ -216,17 +215,4 @@ public class DeviceDetails implements Validatable {
 
         return errors;
     }
-
-	/*@Override
-	public String toString() {
-		return "DeviceDetails [baseURL=" + baseURL + ", friendlyName="
-				+ friendlyName + ", manufacturerDetails=" + manufacturerDetails
-				+ ", modelDetails=" + modelDetails + ", serialNumber="
-				+ serialNumber + ", upc=" + upc + ", presentationURI="
-				+ presentationURI + ", dlnaDocs=" + Arrays.toString(dlnaDocs)
-				+ ", dlnaCaps=" + dlnaCaps + ", secProductCaps="
-				+ secProductCaps + "]";
-	}
-    */
-    
 }

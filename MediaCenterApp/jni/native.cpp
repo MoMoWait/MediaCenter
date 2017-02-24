@@ -22,7 +22,7 @@ static jint getCurrentPostion(JNIEnv *env, jobject thiz){
 	return 1;
 }
 
-static const char *classPathName = "com/rockchips/mediacenter/util/MediaUtils";
+static const char *classPathName = "com/rockchips/mediacenter/utils/MediaUtils";
 
 static JNINativeMethod methods[] = {
   {"hasMediaClient", "()Z", (void*)hasMediaClient },

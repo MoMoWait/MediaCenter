@@ -87,7 +87,7 @@ public class AnnotationLocalServiceBinder implements LocalServiceBinder {
 
     public LocalService read(Class<?> clazz, ServiceId id, ServiceType type,
                              boolean supportsQueryStateVariables, Class[] stringConvertibleTypes) throws LocalServiceBindingException {
-        return read(clazz, id, type, supportsQueryStateVariables, new HashSet<Class>(Arrays.asList(stringConvertibleTypes)));
+        return read(clazz, id, type, supportsQueryStateVariables, new HashSet<>(Arrays.asList(stringConvertibleTypes)));
     }
 
     public LocalService read(Class<?> clazz, ServiceId id, ServiceType type,
@@ -143,7 +143,7 @@ public class AnnotationLocalServiceBinder implements LocalServiceBinder {
     protected Map<StateVariable, StateVariableAccessor> readStateVariables(Class<?> clazz, Set<Class> stringConvertibleTypes)
             throws LocalServiceBindingException {
 
-        Map<StateVariable, StateVariableAccessor> map = new HashMap();
+        Map<StateVariable, StateVariableAccessor> map = new HashMap<>();
 
         // State variables declared on the class
         if (clazz.isAnnotationPresent(UpnpStateVariables.class)) {
@@ -238,7 +238,7 @@ public class AnnotationLocalServiceBinder implements LocalServiceBinder {
                                                       Set<Class> stringConvertibleTypes)
             throws LocalServiceBindingException {
 
-        Map<Action, ActionExecutor> map = new HashMap();
+        Map<Action, ActionExecutor> map = new HashMap<>();
 
         for (Method method : Reflections.getMethods(clazz, UpnpAction.class)) {
             AnnotationActionBinder actionBinder =
@@ -265,14 +265,14 @@ public class AnnotationLocalServiceBinder implements LocalServiceBinder {
         if (javaName.length() < 1) {
             throw new IllegalArgumentException("Variable name must be at least 1 character long");
         }
-        return javaName.substring(0, 1).toUpperCase(Locale.ENGLISH) + javaName.substring(1);
+        return javaName.substring(0, 1).toUpperCase(Locale.ROOT) + javaName.substring(1);
     }
 
     static String toJavaStateVariableName(String upnpName) {
         if (upnpName.length() < 1) {
             throw new IllegalArgumentException("Variable name must be at least 1 character long");
         }
-        return upnpName.substring(0, 1).toLowerCase(Locale.ENGLISH) + upnpName.substring(1);
+        return upnpName.substring(0, 1).toLowerCase(Locale.ROOT) + upnpName.substring(1);
     }
 
 
@@ -280,14 +280,14 @@ public class AnnotationLocalServiceBinder implements LocalServiceBinder {
         if (javaName.length() < 1) {
             throw new IllegalArgumentException("Action name must be at least 1 character long");
         }
-        return javaName.substring(0, 1).toUpperCase(Locale.ENGLISH) + javaName.substring(1);
+        return javaName.substring(0, 1).toUpperCase(Locale.ROOT) + javaName.substring(1);
     }
 
     static String toJavaActionName(String upnpName) {
         if (upnpName.length() < 1) {
             throw new IllegalArgumentException("Variable name must be at least 1 character long");
         }
-        return upnpName.substring(0, 1).toLowerCase(Locale.ENGLISH) + upnpName.substring(1);
+        return upnpName.substring(0, 1).toLowerCase(Locale.ROOT) + upnpName.substring(1);
     }
 
 }

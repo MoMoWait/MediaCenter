@@ -6,7 +6,7 @@ import android.os.Environment;
 
 import com.rockchips.mediacenter.bean.SmbInfo;
 import com.rockchips.mediacenter.data.ConstData;
-import com.rockchips.mediacenter.util.MountUtils;
+import com.rockchips.mediacenter.utils.MountUtils;
 
 /**
  * @author GaoFei
