@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>     
-    <style name="MenuAnimation" parent="android:Animation">
-        <item name="android:windowEnterAnimation">@anim/menu_enter</item>  
-        <item name="android:windowExitAnimation">@anim/menu_exit</item>   
-    </style>  
-</resources> 
