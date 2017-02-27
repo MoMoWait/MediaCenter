@@ -12,7 +12,7 @@ package com.rockchips.mediacenter.videoplayer.data;
 
 import android.os.Bundle;
 
-import com.rockchips.mediacenter.basicutils.bean.LocalMediaInfo;
+import com.rockchips.mediacenter.bean.LocalMediaInfo;
 
 /**
  * Description: TODO<br>

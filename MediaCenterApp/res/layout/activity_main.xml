@@ -14,7 +14,7 @@
         android:src="@drawable/devices_list_logo"
         android:visibility="gone" /> -->
 
-    <com.rockchips.mediacenter.viewutils.devicelist.DevicesListView
+    <com.rockchips.mediacenter.view.DevicesListView
         android:id="@+id/deviceList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

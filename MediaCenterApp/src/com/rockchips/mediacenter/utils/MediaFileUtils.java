@@ -19,11 +19,10 @@ import android.provider.SyncStateContract.Constants;
 import android.text.TextUtils;
 import android.util.Log;
 import android.media.iso.ISOManager;
-import com.rockchips.mediacenter.basicutils.constant.Constant;
-import com.rockchips.mediacenter.basicutils.util.HanziToPinyin;
-import com.rockchips.mediacenter.basicutils.util.HanziToPinyin.Token;
-import com.rockchips.mediacenter.basicutils.bean.LocalMediaInfo;
-import com.rockchips.mediacenter.basicutils.bean.LocalDeviceInfo;
+import com.rockchips.mediacenter.utils.HanziToPinyin;
+import com.rockchips.mediacenter.utils.HanziToPinyin.Token;
+import com.rockchips.mediacenter.bean.LocalMediaInfo;
+import com.rockchips.mediacenter.bean.LocalDeviceInfo;
 import com.rockchips.mediacenter.bean.AllFileInfo;
 import com.rockchips.mediacenter.bean.AllUpnpFileInfo;
 import com.rockchips.mediacenter.bean.LocalDevice;
@@ -170,7 +169,7 @@ public class MediaFileUtils {
 				if(childFile.isDirectory() && isExistMediaFile(childFile, mediaType))
 					++mediaFileCount;
 				//如果媒体文件类型为FOLDER并且有扫描到文件夹
-				else if(mediaType == Constant.MediaType.FOLDER && getMediaTypeFromFile(childFile) != Constant.MediaType.UNKNOWN_TYPE)
+				else if(mediaType == ConstData.MediaType.FOLDER && getMediaTypeFromFile(childFile) != ConstData.MediaType.UNKNOWN_TYPE)
 					++mediaFileCount;
 				else if(mediaType == getMediaTypeFromFile(childFile))
 					++mediaFileCount;
@@ -199,7 +198,7 @@ public class MediaFileUtils {
     			}
     			return false;
     		}
-    	}else if(mediaType == Constant.MediaType.FOLDER && getMediaTypeFromFile(file) != Constant.MediaType.UNKNOWN_TYPE)
+    	}else if(mediaType == ConstData.MediaType.FOLDER && getMediaTypeFromFile(file) != ConstData.MediaType.UNKNOWN_TYPE)
     		return true;
     	else if(mediaType == getMediaTypeFromFile(file))
     		return true;
@@ -221,8 +220,8 @@ public class MediaFileUtils {
     		}
     	}else{
     		int mediaType = getMediaTypeFromFile(rootDirFile);
-    		if(mediaType == Constant.MediaType.IMAGE){
-    			LocalMediaInfo localMediaInfo = getMediaInfoFromFile(rootDirFile, Constant.MediaType.IMAGE, deviceInfo);
+    		if(mediaType == ConstData.MediaType.IMAGE){
+    			LocalMediaInfo localMediaInfo = getMediaInfoFromFile(rootDirFile, ConstData.MediaType.IMAGE, deviceInfo);
     			//提取出父目录相关信息
     			if(localMediaInfo != null){
     				LocalMediaInfo parentMediaInfo = getParentImageFolder(localMediaInfo);
@@ -351,8 +350,8 @@ public class MediaFileUtils {
 		localMediaInfo.setmDeviceType(mediaInfo.getmDeviceType());
 		localMediaInfo.setmPhysicId(mediaInfo.getmPhysicId());
 		localMediaInfo.setmFileSize(parentFile.length());
-		localMediaInfo.setmFiles(getMediaFileCount(parentFile, Constant.MediaType.IMAGE));
-		localMediaInfo.setmFileType(Constant.MediaType.IMAGEFOLDER);
+		localMediaInfo.setmFiles(getMediaFileCount(parentFile, ConstData.MediaType.IMAGE));
+		localMediaInfo.setmFileType(ConstData.MediaType.IMAGEFOLDER);
 		return localMediaInfo;
     }
     

@@ -49,65 +49,60 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
-import com.hisilicon.android.mediaplayer.HiMediaPlayer;
 import com.rockchips.mediacenter.R;
-import com.rockchips.mediacenter.api.localImp.LocalDeviceManager;
-import com.rockchips.mediacenter.basicutils.bean.LocalDeviceInfo;
-import com.rockchips.mediacenter.basicutils.bean.LocalMediaInfo;
-import com.rockchips.mediacenter.basicutils.constant.Constant;
-import com.rockchips.mediacenter.basicutils.constant.Constant.AudioPlayerMsg;
-import com.rockchips.mediacenter.basicutils.constant.Constant.EBrowerType;
-import com.rockchips.mediacenter.basicutils.constant.Constant.MediaType;
-import com.rockchips.mediacenter.basicutils.constant.Constant.PlayState;
-import com.rockchips.mediacenter.basicutils.util.BitmapUtil;
-import com.rockchips.mediacenter.basicutils.util.CharsetUtils;
-import com.rockchips.mediacenter.basicutils.util.DateUtil;
-import com.rockchips.mediacenter.basicutils.util.ID3V2;
-import com.rockchips.mediacenter.basicutils.util.Lyric;
-import com.rockchips.mediacenter.basicutils.util.SearchLrc;
-import com.rockchips.mediacenter.basicutils.util.StringUtils;
-import com.rockchips.mediacenter.basicutils.util.UriTexture;
-import com.rockchips.mediacenter.common.PlayStateInfo;
-import com.rockchips.mediacenter.config.PlatformConfig;
-import com.rockchips.mediacenter.portable.IMediaPlayerAdapter;
-import com.rockchips.mediacenter.portable.IVideoViewAdapter;
-import com.rockchips.mediacenter.portable.bean.AudioInfoOfVideo;
-import com.rockchips.mediacenter.portable.hisi.HisiVideoViewNoView;
-import com.rockchips.mediacenter.portable.listener.OnBufferingUpdateListener;
-import com.rockchips.mediacenter.portable.listener.OnCompleteListener;
-import com.rockchips.mediacenter.portable.listener.OnErrorListener;
-import com.rockchips.mediacenter.portable.listener.OnInfoListener;
-import com.rockchips.mediacenter.portable.listener.OnPreparedListener;
-import com.rockchips.mediacenter.portable.listener.OnSeekCompleteListener;
-import com.rockchips.mediacenter.portable.orig.OrigVideoViewNoView;
-import com.rockchips.mediacenter.widget.ThumbnailManager;
+import com.rockchips.mediacenter.service.LocalDeviceManager;
+import com.rockchips.mediacenter.bean.LocalDeviceInfo;
+import com.rockchips.mediacenter.bean.LocalMediaInfo;
+import com.rockchips.mediacenter.data.ConstData;
+import com.rockchips.mediacenter.data.ConstData.AudioPlayerMsg;
+import com.rockchips.mediacenter.data.ConstData.EBrowerType;
+import com.rockchips.mediacenter.data.ConstData.MediaType;
+import com.rockchips.mediacenter.data.ConstData.PlayState;
+import com.rockchips.mediacenter.utils.BitmapUtil;
+import com.rockchips.mediacenter.utils.CharsetUtils;
+import com.rockchips.mediacenter.utils.DateUtil;
+import com.rockchips.mediacenter.utils.ID3V2;
+import com.rockchips.mediacenter.utils.Lyric;
+import com.rockchips.mediacenter.utils.SearchLrc;
+import com.rockchips.mediacenter.utils.UriTexture;
+import com.rockchips.mediacenter.bean.PlayStateInfo;
+import com.rockchips.mediacenter.service.IMediaPlayerAdapter;
+import com.rockchips.mediacenter.service.IVideoViewAdapter;
+import com.rockchips.mediacenter.bean.AudioInfoOfVideo;
+import com.rockchips.mediacenter.service.OnBufferingUpdateListener;
+import com.rockchips.mediacenter.service.OnCompleteListener;
+import com.rockchips.mediacenter.service.OnErrorListener;
+import com.rockchips.mediacenter.service.OnInfoListener;
+import com.rockchips.mediacenter.service.OnPreparedListener;
+import com.rockchips.mediacenter.service.OnSeekCompleteListener;
+import com.rockchips.mediacenter.view.OrigVideoViewNoView;
+import com.rockchips.mediacenter.view.ThumbnailManager;
 import com.rockchips.mediacenter.activity.MainActivity;
 import com.rockchips.mediacenter.audioplayer.AudioPlayStateInfo.OnPlayListSyncCompletedListener;
 import com.rockchips.mediacenter.bean.LocalDevice;
-import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.dobly.DoblyPopWin;
 import com.rockchips.mediacenter.imageplayer.DLNAImageSwitcher;
 import com.rockchips.mediacenter.imageplayer.DLNAImageSwitcher.DLNAImageSwitcherListener;
 import com.rockchips.mediacenter.retrieve.RetrieveCompleteListener;
 import com.rockchips.mediacenter.retrieve.RetrieveInfoManager;
 import com.rockchips.mediacenter.view.AudioSettingsDialog;
-import com.rockchips.mediacenter.viewutils.listselectpopup.ListSelectItem;
-import com.rockchips.mediacenter.viewutils.listselectpopup.ListSelectPopup;
-import com.rockchips.mediacenter.viewutils.listselectpopup.ListSelectPopup.OnSelectPopupListener;
-import com.rockchips.mediacenter.viewutils.menu.BottomPopMenu;
-import com.rockchips.mediacenter.viewutils.menu.MenuCategory;
-import com.rockchips.mediacenter.viewutils.menu.MenuItemImpl;
-import com.rockchips.mediacenter.viewutils.menu.OnSelectTypeListener;
-import com.rockchips.mediacenter.viewutils.menu.PopMenu;
-import com.rockchips.mediacenter.viewutils.playlist.GlobalFocus;
-import com.rockchips.mediacenter.viewutils.playlist.PlayListView;
-import com.rockchips.mediacenter.viewutils.playlist.PlayListView.OnItemTouchListener;
-import com.rockchips.mediacenter.viewutils.playlist.PlayListView.OnMenuListener;
-import com.rockchips.mediacenter.viewutils.preview.PreviewWidget;
-import com.rockchips.mediacenter.viewutils.toast.ToastUtil;
-import com.rockchips.mediacenter.viewutils.wheelview.OnWheelChangedListener;
-import com.rockchips.mediacenter.viewutils.wheelview.WheelView;
-
+import com.rockchips.mediacenter.view.ListSelectItem;
+import com.rockchips.mediacenter.view.ListSelectPopup;
+import com.rockchips.mediacenter.view.ListSelectPopup.OnSelectPopupListener;
+import com.rockchips.mediacenter.view.BottomPopMenu;
+import com.rockchips.mediacenter.view.MenuCategory;
+import com.rockchips.mediacenter.view.MenuItemImpl;
+import com.rockchips.mediacenter.view.OnSelectTypeListener;
+import com.rockchips.mediacenter.view.PopMenu;
+import com.rockchips.mediacenter.view.GlobalFocus;
+import com.rockchips.mediacenter.view.PlayListView;
+import com.rockchips.mediacenter.view.PlayListView.OnItemTouchListener;
+import com.rockchips.mediacenter.view.PlayListView.OnMenuListener;
+import com.rockchips.mediacenter.view.PreviewWidget;
+import com.rockchips.mediacenter.utils.ToastUtil;
+import com.rockchips.mediacenter.view.OnWheelChangedListener;
+import com.rockchips.mediacenter.view.WheelView;
+import com.rockchips.mediacenter.utils.StringUtils;
 /**
  */
 public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelChangedListener, OnKeyListener, OnClickListener, OnSelectTypeListener,
@@ -548,13 +543,13 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     @Override
     protected int getUUID()
     {
-        return Constant.MediaType.AUDIO;
+        return ConstData.MediaType.AUDIO;
     }
 
     @Override
     protected int getMediaType()
     {
-        return Constant.MediaType.AUDIO;
+        return ConstData.MediaType.AUDIO;
     }
 
     @Override
@@ -967,7 +962,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                 if (mMediaCenterPlayerClient != null)
                 {
                     Log.d(TAG, "Send the volume percent to Sender client");
-                    mMediaCenterPlayerClient.adjustVolume(Constant.VolumeAdjustType.ADJUST_SET, volumePercent);
+                    mMediaCenterPlayerClient.adjustVolume(ConstData.VolumeAdjustType.ADJUST_SET, volumePercent);
                 }
 
                 return super.onKeyDown(keyCode, event);
@@ -1128,7 +1123,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                     DBUtils.fillValuesByDisplayName(mMediaInfo, getApplicationContext(), Url);
                 }
 
-                if (Constant.DeviceType.isLocalDevice(mMediaInfo.getmDeviceType()))
+                if (ConstData.DeviceType.isLocalDevice(mMediaInfo.getmDeviceType()))
                 {
                     if (StringUtils.isEmpty(mMediaInfo.getmArtist()))
                     {
@@ -2035,7 +2030,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                     do
                     {
                     	/*
-                        if (mCurrentMediaInfo.getmDeviceType() == Constant.DeviceType.DEVICE_TYPE_DMS)
+                        if (mCurrentMediaInfo.getmDeviceType() == ConstData.DeviceType.DEVICE_TYPE_DMS)
                         {
                             int devId = getDevId();
                             if (devId != -1)
@@ -2312,19 +2307,8 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
             {
                 try
                 {
-                    // TODO:海思播放器暂不能播放
-                    if (PlatformConfig.isSupportHisiMediaplayer())
-                    {
-                        // himediaplayer.java
-                        HisiVideoViewNoView tmp = new HisiVideoViewNoView(getApplicationContext());
-                        mMediaPlayer = tmp;
-                    }
-                    else
-                    {
-                        OrigVideoViewNoView tmp = new OrigVideoViewNoView(getApplicationContext());
-                        mMediaPlayer = tmp;
-                    }
-
+                    OrigVideoViewNoView tmp = new OrigVideoViewNoView(getApplicationContext());
+                    mMediaPlayer = tmp;
                     mIsInitialized = false;
                     mMediaPlayer.setOnPreparedListener(preparedListener);
 
@@ -2339,24 +2323,8 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                     	mMediaPlayer.setVideoURI(Uri.parse(path));
                     else
                     	mMediaPlayer.setVideoURI(Uri.parse(Uri.encode(path)));
-                    //Log.i(TAG, "setDataSourceAsync->encode path:" + Uri.parse(Uri.encode(path)));
-
-                    // DTS2014033000710 还原成以前的上层控制状态模式，播放器的release等动作需要prepare先完成才行。
-//                    mMediaPlayer.start();
-
-                    // mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                    // mMediaPlayer.setOnInfoListener(mOnInfoListener);
 
                 }
-                // catch (IOException ex)
-                // {
-                //
-                // mMediaPlayer = null;
-                //
-                // removeLogicalMessage(AudioPlayerMsg.MSG_PROC_ERROR);
-                // sendLogicalMessage(AudioPlayerMsg.MSG_PROC_ERROR, 0);
-                // return;
-                // }
                 catch (IllegalArgumentException ex)
                 {
                 	
@@ -2635,14 +2603,6 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 					mMusicPlayer.resetPlayer();
                     sendUiMessage(MSG_REQUSET_EXIT_MUSICPLAYER, 0);
                     return true;
-                    
-//                case HiMediaPlayer.MEDIA_INFO_NETWORK:
-//	        	case HiMediaPlayer.MEDIA_INFO_NOT_SUPPORT:
-//                    Log.d(TAG, "----------network erro..........");
-//					sendUiMessage(AudioPlayerMsg.PUAH_MEDIAFILE_PLAY_COMPLETE,0);
-//                    sendUiMessage(MSG_REQUSET_EXIT_MUSICPLAYER, 0);
-//                    return true;
-                    
                 case -38:
                 {
                     // FIXME:
@@ -2689,11 +2649,6 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         @Override
         public boolean onInfo(IMediaPlayerAdapter mp, int what, int extra)
         {
-            if (what == HiMediaPlayer.MEDIA_INFO_NETWORK && extra != HI_FORMAT_MSG_NETWORK_E.HI_FORMAT_MSG_NETWORK_NORMAL.ordinal())
-            {
-                Log.d(TAG, "----->process network disconnected!!!");
-                return mOnErrorListener.onError(mp, what, extra);
-            }
             return false;
         }
     };
@@ -2867,19 +2822,19 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     {
         switch (playMode)
         {
-            case Constant.MediaPlayMode.MP_MODE_ALL:
+            case ConstData.MediaPlayMode.MP_MODE_ALL:
                 mPlayModeText.setText(R.string.play_mode_sequence_play);
                 mPlayModeIcon.setImageResource(R.drawable.playmode_icon_sequential);
                 break;
-            case Constant.MediaPlayMode.MP_MODE_SINGLE:
+            case ConstData.MediaPlayMode.MP_MODE_SINGLE:
                 mPlayModeText.setText(R.string.play_mode_single_play);
                 mPlayModeIcon.setImageResource(R.drawable.playmode_icon_single_play);
                 break;
-            case Constant.MediaPlayMode.MP_MODE_RONDOM:
+            case ConstData.MediaPlayMode.MP_MODE_RONDOM:
                 mPlayModeText.setText(R.string.play_mode_random_play);
                 mPlayModeIcon.setImageResource(R.drawable.playmode_icon_random);
                 break;
-            case Constant.MediaPlayMode.MP_MODE_ALL_CYC:
+            case ConstData.MediaPlayMode.MP_MODE_ALL_CYC:
                 mPlayModeText.setText(R.string.play_mode_loop_play);
                 mPlayModeIcon.setImageResource(R.drawable.playmode_icon_loop);
                 break;
@@ -2894,25 +2849,25 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
             case 0:
                 mPlayModeText.setText(R.string.play_mode_random_play);
                 mPlayModeIcon.setImageResource(R.drawable.playmode_icon_random);
-                AudioPlayStateInfo.setPlayMode(Constant.MediaPlayMode.MP_MODE_RONDOM);
+                AudioPlayStateInfo.setPlayMode(ConstData.MediaPlayMode.MP_MODE_RONDOM);
                 sendPlayModeMenuDismissMsg(0);
                 break;
             case 1:
                 mPlayModeText.setText(R.string.play_mode_loop_play);
                 mPlayModeIcon.setImageResource(R.drawable.playmode_icon_loop);
-                AudioPlayStateInfo.setPlayMode(Constant.MediaPlayMode.MP_MODE_ALL_CYC);
+                AudioPlayStateInfo.setPlayMode(ConstData.MediaPlayMode.MP_MODE_ALL_CYC);
                 sendPlayModeMenuDismissMsg(0);
                 break;
             case 2:
                 mPlayModeText.setText(R.string.play_mode_sequence_play);
                 mPlayModeIcon.setImageResource(R.drawable.playmode_icon_sequential);
-                AudioPlayStateInfo.setPlayMode(Constant.MediaPlayMode.MP_MODE_ALL);
+                AudioPlayStateInfo.setPlayMode(ConstData.MediaPlayMode.MP_MODE_ALL);
                 sendPlayModeMenuDismissMsg(0);
                 break;
             case 3:
                 mPlayModeText.setText(R.string.play_mode_single_play);
                 mPlayModeIcon.setImageResource(R.drawable.playmode_icon_single_play);
-                AudioPlayStateInfo.setPlayMode(Constant.MediaPlayMode.MP_MODE_SINGLE);
+                AudioPlayStateInfo.setPlayMode(ConstData.MediaPlayMode.MP_MODE_SINGLE);
                 sendPlayModeMenuDismissMsg(0);
                 break;
         }
@@ -3136,7 +3091,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         Log.d(TAG, "passIntentForAudioBrowser() IN...");
         Bundle bundle = new Bundle();
         bundle.putInt("playIndex", mCurrentPlayIndex);
-        bundle.putInt("mediaType", Constant.MediaType.AUDIO);
+        bundle.putInt("mediaType", ConstData.MediaType.AUDIO);
 
         Intent intent = new Intent();
         intent.putExtras(bundle);
@@ -3284,13 +3239,13 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     {
         switch (playmode)
         {
-            case Constant.MediaPlayMode.MP_MODE_RONDOM:
+            case ConstData.MediaPlayMode.MP_MODE_RONDOM:
                 return 0;
-            case Constant.MediaPlayMode.MP_MODE_ALL_CYC:
+            case ConstData.MediaPlayMode.MP_MODE_ALL_CYC:
                 return 1;
-            case Constant.MediaPlayMode.MP_MODE_ALL:
+            case ConstData.MediaPlayMode.MP_MODE_ALL:
                 return 2;
-            case Constant.MediaPlayMode.MP_MODE_SINGLE:
+            case ConstData.MediaPlayMode.MP_MODE_SINGLE:
                 return 3;
 
             default:
@@ -3360,11 +3315,11 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         if (bundle != null)
         {
             int deviceType = bundle.getInt(LocalDeviceInfo.DEVICE_TYPE);
-            if (Constant.DeviceType.isDLNADevice(deviceType))
+            if (ConstData.DeviceType.isDLNADevice(deviceType))
             { // DMS设备类型
                 deviceId = bundle.getString(LocalDeviceInfo.PHYSIC_ID);
             }
-            else if (Constant.DeviceType.isExternalStorage(deviceType))
+            else if (ConstData.DeviceType.isExternalStorage(deviceType))
             { // U盘设备类型 SD盘设备类型,返回的类型为string
                 deviceId = bundle.getString(LocalDeviceInfo.MOUNT_PATH);
             }
@@ -3377,7 +3332,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         Bundle bundle = getIntent().getBundleExtra(LocalDeviceInfo.DEVICE_EXTRA_NAME);
         if (bundle == null)
         {
-            return Constant.DeviceType.DEVICE_TYPE_UNKNOWN;
+            return ConstData.DeviceType.DEVICE_TYPE_UNKNOWN;
         }
         return bundle.getInt("devices_type");
     }
@@ -3459,7 +3414,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
             return null;
         }
         /*
-        if (Constant.DeviceType.isDLNADevice(deviceType))
+        if (ConstData.DeviceType.isDLNADevice(deviceType))
         {
             //Log.i(TAG, "DEVICE_TYPE_DMS");
             int devId = bundle.getInt(LocalDeviceInfo.DEVICE_ID, -1);
@@ -3468,12 +3423,12 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                 return null;
             }
             List<DlnaBaseObjectInfo> tmpList = ObjectFactory.getMediaBrowserClient().getFlatFileFolder(devId,
-                    MediaInfoConvertor.LocalType2DlnaType(Constant.MediaType.IMAGE));
+                    MediaInfoConvertor.LocalType2DlnaType(ConstData.MediaType.IMAGE));
             mediaInfoList = MediaInfoConvertor.DlnaBaseObjectInfoList2LocalMediaInfoList(tmpList);
         }*/
         
-      //else if (deviceType == Constant.DeviceType.DEVICE_TYPE_U || deviceType == Constant.DeviceType.DEVICE_TYPE_SD)
-        else if (Constant.DeviceType.isLocalDevice(deviceType)) 
+      //else if (deviceType == ConstData.DeviceType.DEVICE_TYPE_U || deviceType == ConstData.DeviceType.DEVICE_TYPE_SD)
+        else if (ConstData.DeviceType.isLocalDevice(deviceType)) 
         {
             //Log.i(TAG, "DEVICE_TYPE_U");
             String mountPath = bundle.getString(LocalDeviceInfo.MOUNT_PATH);
@@ -3508,7 +3463,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 
         mMediaList.clear();
         /*
-        if (Constant.DeviceType.isDLNADevice(deviceType))
+        if (ConstData.DeviceType.isDLNADevice(deviceType))
         {
             int devId = getDevId();
             if (devId == -1)
@@ -3520,7 +3475,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
             {
                 LocalMediaInfo info = (LocalMediaInfo) mi.getObject();
                 List<DlnaBaseObjectInfo> tmpList = ObjectFactory.getMediaBrowserClient().getMediaListByTypeInFolder(devId, info.getmObjectId(),
-                        MediaInfoConvertor.LocalType2DlnaType(Constant.MediaType.IMAGE), EDlnaSortType.DLNA_SORT_TYPE_BY_DATE_DESC);
+                        MediaInfoConvertor.LocalType2DlnaType(ConstData.MediaType.IMAGE), EDlnaSortType.DLNA_SORT_TYPE_BY_DATE_DESC);
 
                 List<LocalMediaInfo> localMediaInfoList = MediaInfoConvertor.DlnaBaseObjectInfoList2LocalMediaInfoList(tmpList);
                 if (localMediaInfoList != null && localMediaInfoList.size() > 0)
@@ -3529,8 +3484,8 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                 }
             }
         }
-      //else if (deviceType == Constant.DeviceType.DEVICE_TYPE_U || deviceType == Constant.DeviceType.DEVICE_TYPE_SD)
-        else*/ if (Constant.DeviceType.isLocalDevice(deviceType)) 
+      //else if (deviceType == ConstData.DeviceType.DEVICE_TYPE_U || deviceType == ConstData.DeviceType.DEVICE_TYPE_SD)
+        else*/ if (ConstData.DeviceType.isLocalDevice(deviceType)) 
         {
             Set<String> urls = new HashSet<String>();
             for (ListSelectItem mi : list)
@@ -3573,25 +3528,25 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
             case ENUM_RANDOM_PLAY:
                 mPlayModeText.setText(R.string.play_mode_random_play);
                 mPlayModeIcon.setImageResource(R.drawable.playmode_icon_random);
-                AudioPlayStateInfo.setPlayMode(Constant.MediaPlayMode.MP_MODE_RONDOM);
+                AudioPlayStateInfo.setPlayMode(ConstData.MediaPlayMode.MP_MODE_RONDOM);
                 break;
 
             case ENUM_LOOP_PLAY:
                 mPlayModeText.setText(R.string.play_mode_loop_play);
                 mPlayModeIcon.setImageResource(R.drawable.playmode_icon_loop);
-                AudioPlayStateInfo.setPlayMode(Constant.MediaPlayMode.MP_MODE_ALL_CYC);
+                AudioPlayStateInfo.setPlayMode(ConstData.MediaPlayMode.MP_MODE_ALL_CYC);
                 break;
 
             case ENUM_SEQUENTIAL_PLAY:
                 mPlayModeText.setText(R.string.play_mode_sequence_play);
                 mPlayModeIcon.setImageResource(R.drawable.playmode_icon_sequential);
-                AudioPlayStateInfo.setPlayMode(Constant.MediaPlayMode.MP_MODE_ALL);
+                AudioPlayStateInfo.setPlayMode(ConstData.MediaPlayMode.MP_MODE_ALL);
                 break;
 
             case ENUM_SINGLE_PLAY:
                 mPlayModeText.setText(R.string.play_mode_single_play);
                 mPlayModeIcon.setImageResource(R.drawable.playmode_icon_single_play);
-                AudioPlayStateInfo.setPlayMode(Constant.MediaPlayMode.MP_MODE_SINGLE);
+                AudioPlayStateInfo.setPlayMode(ConstData.MediaPlayMode.MP_MODE_SINGLE);
                 break;
 
             case ENUM_OPEN_BACKGROUND_PIC:
@@ -3746,7 +3701,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
             mImageSwitcher.setListener(this);
             
             int deviceType = getmDeviceType();
-            if (deviceType == Constant.DeviceType.DEVICE_TYPE_U || deviceType == Constant.DeviceType.DEVICE_TYPE_SD)
+            if (deviceType == ConstData.DeviceType.DEVICE_TYPE_U || deviceType == ConstData.DeviceType.DEVICE_TYPE_SD)
             {
                 mediaLists = getBgImagesFromPreferences();
                 bgDevId = getBgPicDeviceId();
@@ -3861,7 +3816,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
             int targetPostion;
             try
             {
-                targetPostion = intent.getIntExtra(Constant.IntentKey.SEEK_POS, -1);
+                targetPostion = intent.getIntExtra(ConstData.IntentKey.SEEK_POS, -1);
             }
             catch (Exception e)
             {                
@@ -3873,7 +3828,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                 {
                     // 尝试百分比
                     Log.d(TAG, "will calculate by percent!!!");
-                    float postionPercent = intent.getFloatExtra(Constant.IntentKey.SEEK_POS, -1);
+                    float postionPercent = intent.getFloatExtra(ConstData.IntentKey.SEEK_POS, -1);
                     Log.d(TAG, "postionPercent is " + postionPercent);
                     if (postionPercent < 1.0)
                     {

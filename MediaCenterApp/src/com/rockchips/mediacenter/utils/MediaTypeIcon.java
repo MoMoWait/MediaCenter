@@ -1,7 +1,7 @@
 package com.rockchips.mediacenter.utils;
 
 import com.rockchips.mediacenter.R;
-import com.rockchips.mediacenter.basicutils.constant.Constant;
+import com.rockchips.mediacenter.data.ConstData;
 
 public class MediaTypeIcon 
 {
@@ -10,16 +10,16 @@ public class MediaTypeIcon
         int resId;
         switch(type)
         {
-            case Constant.MediaType.AUDIO:
+            case ConstData.MediaType.AUDIO:
                 resId = R.drawable.icon_audio_header;
                 break;
-            case Constant.MediaType.FOLDER:
+            case ConstData.MediaType.FOLDER:
                 resId = R.drawable.icon_folder_header;
                 break;
-            case Constant.MediaType.IMAGE:
+            case ConstData.MediaType.IMAGE:
                 resId = R.drawable.icon_image_header;
                 break;
-            case Constant.MediaType.VIDEO:
+            case ConstData.MediaType.VIDEO:
                 resId = R.drawable.icon_video_header;
                 break;
             default:

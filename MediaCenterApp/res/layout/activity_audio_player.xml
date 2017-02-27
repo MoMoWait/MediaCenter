@@ -66,7 +66,7 @@
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp">
 
-            <com.rockchips.mediacenter.viewutils.preview.PreviewWidget
+            <com.rockchips.mediacenter.view.PreviewWidget
                 android:id="@+id/music_info"
                 android:layout_width="0dp"
                 android:layout_weight="1"
@@ -74,7 +74,7 @@
 
             <!-- 播放列表组件 -->
 
-            <com.rockchips.mediacenter.viewutils.playlist.PlayListView
+            <com.rockchips.mediacenter.view.PlayListView
                 android:id="@+id/music_playlist"
                 android:layout_width="0dp"
                 android:layout_weight="1"

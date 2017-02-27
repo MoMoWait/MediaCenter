@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.rockchips.mediacenter.R;
-import com.rockchips.mediacenter.viewutils.wheelview.AbstractWheelTextAdapter;
+import com.rockchips.mediacenter.view.AbstractWheelTextAdapter;
 
 public class MusicPlayModeAdapter extends AbstractWheelTextAdapter {
 

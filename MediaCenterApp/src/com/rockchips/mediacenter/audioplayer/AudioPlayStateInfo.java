@@ -17,8 +17,8 @@ import java.util.List;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.rockchips.mediacenter.basicutils.bean.LocalMediaInfo;
-import com.rockchips.mediacenter.basicutils.constant.Constant;
+import com.rockchips.mediacenter.bean.LocalMediaInfo;
+import com.rockchips.mediacenter.data.ConstData;
 
 /**
  * 
@@ -125,7 +125,7 @@ public class AudioPlayStateInfo
     {
         if (null != mSenderClientUniq)
         {
-            if (Constant.ClientTypeUniq.DMS_UNIQ.equalsIgnoreCase(mSenderClientUniq))
+            if (ConstData.ClientTypeUniq.DMS_UNIQ.equalsIgnoreCase(mSenderClientUniq))
             {
                 isNeedShowMenuBar = true;
             }
@@ -140,7 +140,7 @@ public class AudioPlayStateInfo
 
     // add by s00203507 2012年7月30日 end
 
-    private static int playMode = Constant.MediaPlayMode.MP_MODE_ALL_CYC;
+    private static int playMode = ConstData.MediaPlayMode.MP_MODE_ALL_CYC;
 
     private String mSenderClientUniq = null;
 
@@ -713,7 +713,7 @@ public class AudioPlayStateInfo
 
             switch (playmode)
             {
-                case Constant.MediaPlayMode.MP_MODE_ALL_CYC: // 所有循环
+                case ConstData.MediaPlayMode.MP_MODE_ALL_CYC: // 所有循环
                     if (getMediaList().size() == 1)
                     {
                         // 当只有一首歌时，等同单曲循环
@@ -747,7 +747,7 @@ public class AudioPlayStateInfo
                         }
                     }
                     break;
-                case Constant.MediaPlayMode.MP_MODE_ALL: // 所有顺序播放
+                case ConstData.MediaPlayMode.MP_MODE_ALL: // 所有顺序播放
                     // 遍历到结尾
                     for (int i = getCurrentIndex() + 1; i < getMediaList().size(); i++)
                     {
@@ -758,13 +758,13 @@ public class AudioPlayStateInfo
                         }
                     }
                     break;
-                case Constant.MediaPlayMode.MP_MODE_SINGLE_CYC: // 单曲循环
+                case ConstData.MediaPlayMode.MP_MODE_SINGLE_CYC: // 单曲循环
                     if (isCanPlay(getMediaInfo(getCurrentIndex())))
                     {
                         index = getCurrentIndex();
                     }
                     break;
-                case Constant.MediaPlayMode.MP_MODE_RONDOM: // 随机
+                case ConstData.MediaPlayMode.MP_MODE_RONDOM: // 随机
                     List<Integer> indexList = new ArrayList<Integer>();
                     for (int i = 0; i < getMediaList().size(); i++)
                     {
@@ -918,12 +918,12 @@ public class AudioPlayStateInfo
     {
         if (mSenderClientUniq != null)
         {
-            if (mSenderClientUniq.equalsIgnoreCase(Constant.ClientTypeUniq.PUSH_UNIQ))
+            if (mSenderClientUniq.equalsIgnoreCase(ConstData.ClientTypeUniq.PUSH_UNIQ))
             {
                 return true;
             }
 
-            if (mSenderClientUniq.equalsIgnoreCase(Constant.ClientTypeUniq.SYN_UINQ))
+            if (mSenderClientUniq.equalsIgnoreCase(ConstData.ClientTypeUniq.SYN_UINQ))
             {
                 return true;
             }
@@ -937,7 +937,7 @@ public class AudioPlayStateInfo
     {
         if (mSenderClientUniq != null)
         {
-            if (mSenderClientUniq.equalsIgnoreCase(Constant.ClientTypeUniq.DMS_UNIQ))
+            if (mSenderClientUniq.equalsIgnoreCase(ConstData.ClientTypeUniq.DMS_UNIQ))
             {
                 return true;
             }

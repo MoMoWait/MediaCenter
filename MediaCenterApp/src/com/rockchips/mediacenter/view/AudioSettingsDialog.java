@@ -20,7 +20,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.rockchips.mediacenter.R;
-import com.rockchips.mediacenter.viewutils.menu.*;
 /**
  * @author GaoFei
  *

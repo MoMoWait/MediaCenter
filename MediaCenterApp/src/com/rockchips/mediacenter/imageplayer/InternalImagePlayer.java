@@ -25,20 +25,20 @@ import android.view.KeyEvent;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.rockchips.mediacenter.R;
-import com.rockchips.mediacenter.api.localImp.LocalDeviceManager;
-import com.rockchips.mediacenter.basicutils.bean.LocalDeviceInfo;
-import com.rockchips.mediacenter.basicutils.bean.LocalMediaInfo;
-import com.rockchips.mediacenter.basicutils.constant.Constant;
-import com.rockchips.mediacenter.basicutils.constant.Constant.EBrowerType;
-import com.rockchips.mediacenter.basicutils.constant.Constant.MediaType;
-import com.rockchips.mediacenter.basicutils.util.IICLOG;
-import com.rockchips.mediacenter.basicutils.util.StringUtils;
-import com.rockchips.mediacenter.common.PlayStateInfo;
+import com.rockchips.mediacenter.service.LocalDeviceManager;
+import com.rockchips.mediacenter.bean.LocalDeviceInfo;
+import com.rockchips.mediacenter.bean.LocalMediaInfo;
+import com.rockchips.mediacenter.data.ConstData;
+import com.rockchips.mediacenter.data.ConstData.EBrowerType;
+import com.rockchips.mediacenter.data.ConstData.MediaType;
+import com.rockchips.mediacenter.utils.IICLOG;
+import com.rockchips.mediacenter.utils.StringUtils;
+import com.rockchips.mediacenter.bean.PlayStateInfo;
 import com.rockchips.mediacenter.activity.MainActivity;
 import com.rockchips.mediacenter.audioplayer.BackgroundAudioPreviewWidget;
-import com.rockchips.mediacenter.viewutils.listselectpopup.ListSelectItem;
-import com.rockchips.mediacenter.viewutils.listselectpopup.ListSelectPopup;
-import com.rockchips.mediacenter.viewutils.listselectpopup.ListSelectPopup.OnSelectPopupListener;
+import com.rockchips.mediacenter.view.ListSelectItem;
+import com.rockchips.mediacenter.view.ListSelectPopup;
+import com.rockchips.mediacenter.view.ListSelectPopup.OnSelectPopupListener;
 
 /**
  * 
@@ -490,7 +490,7 @@ public class InternalImagePlayer extends ImagePlayerActivity implements OnSelect
         boolean isCurrentDev = false;
         if (devId != null && mCurDevId != null)
         {
-            if (devType == Constant.DeviceType.DEVICE_TYPE_U || devType == Constant.DeviceType.DEVICE_TYPE_SD)
+            if (devType == ConstData.DeviceType.DEVICE_TYPE_U || devType == ConstData.DeviceType.DEVICE_TYPE_SD)
             {
                 isCurrentDev = devId.contains(mCurDevId);
             }
@@ -531,14 +531,14 @@ public class InternalImagePlayer extends ImagePlayerActivity implements OnSelect
     {
         int deviceType = mLocalDeviceInfo.getDeviceType();
         String deviceId = null;
-        if (deviceType == Constant.DeviceType.DEVICE_TYPE_DMS)
+        if (deviceType == ConstData.DeviceType.DEVICE_TYPE_DMS)
         { // DMS设备类型
 //            deviceId = bundle.getString("device_id");
 //            PlayStateInfo.getInstance().setCurrentDevId(deviceId);
             deviceId = String.valueOf(mLocalDeviceInfo.getmDeviceId());
             PlayStateInfo.setCurrentDevId(deviceId);
         }
-        else if (deviceType == Constant.DeviceType.DEVICE_TYPE_U || deviceType == Constant.DeviceType.DEVICE_TYPE_SD)
+        else if (deviceType == ConstData.DeviceType.DEVICE_TYPE_U || deviceType == ConstData.DeviceType.DEVICE_TYPE_SD)
         { // U盘设备类型
           // SD盘设备类型,返回的类型为sta
             deviceId = mLocalDeviceInfo.getMountPath();
@@ -569,12 +569,12 @@ public class InternalImagePlayer extends ImagePlayerActivity implements OnSelect
         int deviceIdHashCode = 0;
         mLog.d(TAG, "onDeviceDown deviceType:" + deviceType);
         // DMS设备类型
-        if (deviceType == Constant.DeviceType.DEVICE_TYPE_DMS)
+        if (deviceType == ConstData.DeviceType.DEVICE_TYPE_DMS)
         {
             deviceIdHashCode = deviceId.hashCode();
         }
         // U盘设备类型,sdcard类型
-        else if (deviceType == Constant.DeviceType.DEVICE_TYPE_U || deviceType == Constant.DeviceType.DEVICE_TYPE_SD)
+        else if (deviceType == ConstData.DeviceType.DEVICE_TYPE_U || deviceType == ConstData.DeviceType.DEVICE_TYPE_SD)
         {
             deviceId = deviceId.substring(0, deviceId.lastIndexOf("/"));
             deviceIdHashCode = deviceId.hashCode();
@@ -727,7 +727,7 @@ public class InternalImagePlayer extends ImagePlayerActivity implements OnSelect
     {
         Bundle bundle = new Bundle();
         bundle.putInt("playIndex", mCurrentPlayIndex);
-        bundle.putInt("mediaType", Constant.MediaType.IMAGE);
+        bundle.putInt("mediaType", ConstData.MediaType.IMAGE);
 
         Intent intent = new Intent();
         intent.putExtras(bundle);
@@ -988,7 +988,7 @@ public class InternalImagePlayer extends ImagePlayerActivity implements OnSelect
     {
         List<ListSelectItem> miList = new ArrayList<ListSelectItem>();
         /*
-        if (Constant.DeviceType.isDLNADevice(deviceType))
+        if (ConstData.DeviceType.isDLNADevice(deviceType))
         {
             int devId = -1;
             try{
@@ -1002,7 +1002,7 @@ public class InternalImagePlayer extends ImagePlayerActivity implements OnSelect
             }
             //暂时注释，待DLNA调测时候打开
             List<DlnaBaseObjectInfo> tmpList = ObjectFactory.getMediaBrowserClient().getFlatFileFolder(
-                    devId, MediaInfoConvertor.LocalType2DlnaType(Constant.MediaType.AUDIO));
+                    devId, MediaInfoConvertor.LocalType2DlnaType(ConstData.MediaType.AUDIO));
             List<LocalMediaInfo> mediaInfos = MediaInfoConvertor.DlnaBaseObjectInfoList2LocalMediaInfoList(tmpList);
             ListSelectItem item;
             if (mediaInfos != null && mediaInfos.size() != 0)
@@ -1019,7 +1019,7 @@ public class InternalImagePlayer extends ImagePlayerActivity implements OnSelect
             }
             
         }
-        else*/ if (deviceType == Constant.DeviceType.DEVICE_TYPE_U || deviceType == Constant.DeviceType.DEVICE_TYPE_SD)
+        else*/ if (deviceType == ConstData.DeviceType.DEVICE_TYPE_U || deviceType == ConstData.DeviceType.DEVICE_TYPE_SD)
         {
             mLog.i(TAG, "DEVICE_TYPE_U");
             List<LocalMediaInfo> mediaInfoList = mLocalDeviceManager.getFlatAVIFile(deviceId, MediaType.AUDIO, 0, 100, EBrowerType.ORDER_TYPE_CHARACTER);
@@ -1052,18 +1052,18 @@ public class InternalImagePlayer extends ImagePlayerActivity implements OnSelect
 
         int deviceType = mLocalDeviceInfo.getDeviceType();
         /*
-        if (Constant.DeviceType.isDLNADevice(deviceType))
+        if (ConstData.DeviceType.isDLNADevice(deviceType))
         {
             for (ListSelectItem mi : list)
             {
                 LocalMediaInfo info = (LocalMediaInfo) mi.getObject();
                 List<DlnaBaseObjectInfo> tmpList = ObjectFactory.getMediaBrowserClient().getMediaListByTypeInFolder(mLocalDeviceInfo.getmDeviceId(), info.getmObjectId(), 
-                        MediaInfoConvertor.LocalType2DlnaType(Constant.MediaType.AUDIO), EDlnaSortType.DLNA_SORT_TYPE_BY_DATE_DESC);               
+                        MediaInfoConvertor.LocalType2DlnaType(ConstData.MediaType.AUDIO), EDlnaSortType.DLNA_SORT_TYPE_BY_DATE_DESC);               
                 List<LocalMediaInfo> mediaInfos = MediaInfoConvertor.DlnaBaseObjectInfoList2LocalMediaInfoList(tmpList);
                 mediaList.addAll(mediaInfos);
             }
         }
-        else */if (deviceType == Constant.DeviceType.DEVICE_TYPE_U || deviceType == Constant.DeviceType.DEVICE_TYPE_SD)
+        else */if (deviceType == ConstData.DeviceType.DEVICE_TYPE_U || deviceType == ConstData.DeviceType.DEVICE_TYPE_SD)
         {
             Set<String> urls = new HashSet<String>();
             for (ListSelectItem mi : list)
@@ -1146,7 +1146,7 @@ public class InternalImagePlayer extends ImagePlayerActivity implements OnSelect
         List<LocalMediaInfo> lists;
         String bgDevId;
         int deviceType = mLocalDeviceInfo.getDeviceType();
-        if (deviceType == Constant.DeviceType.DEVICE_TYPE_U || deviceType == Constant.DeviceType.DEVICE_TYPE_SD)
+        if (deviceType == ConstData.DeviceType.DEVICE_TYPE_U || deviceType == ConstData.DeviceType.DEVICE_TYPE_SD)
         {
             lists = getBgAudiosFromPreferences();
             bgDevId = getBgAudioDeviceId();

@@ -15,11 +15,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.rockchips.mediacenter.R;
-import com.rockchips.mediacenter.basicutils.bean.LocalMediaInfo;
-import com.rockchips.mediacenter.basicutils.constant.Constant;
-import com.rockchips.mediacenter.basicutils.util.BitmapUtil;
-import com.rockchips.mediacenter.basicutils.util.IICLOG;
-import com.rockchips.mediacenter.basicutils.util.StringUtils;
+import com.rockchips.mediacenter.bean.LocalMediaInfo;
+import com.rockchips.mediacenter.data.ConstData;
+import com.rockchips.mediacenter.utils.BitmapUtil;
+import com.rockchips.mediacenter.utils.IICLOG;
 import com.rockchips.mediacenter.retrieve.EncodeUtil;
 import com.rockchips.mediacenter.retrieve.RetrieveCompleteListener;
 import com.rockchips.mediacenter.retrieve.RetrieveInfoManager;
@@ -102,7 +101,7 @@ public class BackgroundAudioPreviewWidget extends LinearLayout
         }
 
         loadDefaultMusicBitmap();
-        if (!Constant.DeviceType.isLocalDevice(LocalMediaInfo.getmDeviceType()))
+        if (!ConstData.DeviceType.isLocalDevice(LocalMediaInfo.getmDeviceType()))
         {
             artistFromRetriever = LocalMediaInfo.getmArtist();
             albumFromRetriever = LocalMediaInfo.getmAlbum();

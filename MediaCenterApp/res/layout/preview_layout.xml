@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="414dip"
+    android:layout_height="540dip" >
+
+    <!-- 阴影 -->
+
+    <ImageView
+        android:id="@+id/preview_image_shadow"
+        android:layout_width="280dip"
+        android:layout_height="70dip"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="80dip"
+        android:layout_marginTop="280dip"
+        android:scaleType="fitXY" />
+    <!-- 高亮图 -->
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="150dip"
+        android:scaleType="fitXY"
+        android:src="@drawable/preview_hight_light" />
+    <!-- 原图 -->
+
+    <ImageView
+        android:id="@+id/preview_image"
+        android:layout_width="280dip"
+        android:layout_height="280dip"
+        android:layout_centerHorizontal="true"
+        android:scaleType="fitXY" />
+    <!-- 名字 -->
+
+    <com.rockchips.mediacenter.view.MarqueeTextView
+        android:id="@+id/preview_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="310dip"
+        android:gravity="center"
+        android:maxWidth="350dip"
+        android:singleLine="true"
+        android:textColor="#ffffff"
+        android:textSize="30sp">
+    </com.rockchips.mediacenter.view.MarqueeTextView>
+    <!-- 其他 -->
+
+    <TextView
+        android:id="@+id/preview_other"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="360dip"
+        android:gravity="center"
+        android:maxWidth="350dip"
+        android:textColor="#ffffff"
+        android:lineSpacingExtra="12dip"
+        android:textSize="18sp" />
+
+</RelativeLayout>

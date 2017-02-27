@@ -31,12 +31,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.rockchips.mediacenter.R;
-import com.rockchips.mediacenter.api.localImp.LocalDeviceManager;
-import com.rockchips.mediacenter.basicutils.bean.LocalMediaInfo;
-import com.rockchips.mediacenter.basicutils.constant.Constant;
-import com.rockchips.mediacenter.basicutils.constant.Constant.EBrowerType;
-import com.rockchips.mediacenter.basicutils.util.HanziToPinyin;
-import com.rockchips.mediacenter.basicutils.util.HanziToPinyin.Token;
+import com.rockchips.mediacenter.service.LocalDeviceManager;
+import com.rockchips.mediacenter.bean.LocalMediaInfo;
+import com.rockchips.mediacenter.data.ConstData;
+import com.rockchips.mediacenter.data.ConstData.EBrowerType;
+import com.rockchips.mediacenter.utils.HanziToPinyin;
+import com.rockchips.mediacenter.utils.HanziToPinyin.Token;
 import com.rockchips.mediacenter.videoplayer.VideoPlayerActivity;
 import com.rockchips.mediacenter.videoplayer.data.SubTitleInfo.SubTitleFile;
 
@@ -180,11 +180,11 @@ public class SubtitleSelectPopup extends Dialog
         ViewHolder viewHolder = (ViewHolder)view.getTag();
         LocalMediaInfo mediaFile = mMediaFiles.get(position);
         
-        if (Constant.MediaType.SUBTITLE != mediaFile.getmFileType())
+        if (ConstData.MediaType.SUBTITLE != mediaFile.getmFileType())
         {                        
             mMediaFiles =
                     LocalDeviceManager.getInstance(mContext).
-                    getFlatAVIFileSubWithType(mediaFile.getUrl(), Constant.MediaType.SUBTITLE, 0, 100, EBrowerType.ORDER_TYPE_CHARACTER);  
+                    getFlatAVIFileSubWithType(mediaFile.getUrl(), ConstData.MediaType.SUBTITLE, 0, 100, EBrowerType.ORDER_TYPE_CHARACTER);  
             getOrderedList(mMediaFiles);
             refreshAndLoadData();
             mFolderSelectFocusPos = position;

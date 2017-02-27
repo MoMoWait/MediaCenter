@@ -18,11 +18,11 @@ import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
 
-import com.rockchips.mediacenter.basicutils.bean.LocalMediaInfo;
-import com.rockchips.mediacenter.basicutils.constant.Constant;
-import com.rockchips.mediacenter.basicutils.util.DateUtil;
-import com.rockchips.mediacenter.basicutils.util.IICLOG;
-import com.rockchips.mediacenter.basicutils.util.StringUtils;
+import com.rockchips.mediacenter.bean.LocalMediaInfo;
+import com.rockchips.mediacenter.data.ConstData;
+import com.rockchips.mediacenter.utils.DateUtil;
+import com.rockchips.mediacenter.utils.IICLOG;
+import com.rockchips.mediacenter.utils.StringUtils;
 import com.rockchips.mediacenter.audioplayer.SongInfo;
 
 /**
@@ -254,11 +254,11 @@ public class RetrieveInfoManager
         if ((width > 0) && (height > 0))
         {
             Bitmap bitmap = null;
-            if (info.getmFileType() == Constant.MediaType.AUDIO)
+            if (info.getmFileType() == ConstData.MediaType.AUDIO)
             {
                 bitmap = retrieveAudioAlbum(width, height);
             }
-            else if (info.getmFileType() == Constant.MediaType.VIDEO)
+            else if (info.getmFileType() == ConstData.MediaType.VIDEO)
             {
                 bitmap = retrieveVideoThumbnail(width, height);
             }

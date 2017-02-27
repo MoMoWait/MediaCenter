@@ -16,7 +16,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
-import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,21 +24,17 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
-
-import com.hisilicon.android.mediaplayer.HiMediaPlayer;
-import com.rockchips.mediacenter.basicutils.bean.LocalMediaInfo;
-import com.rockchips.mediacenter.basicutils.constant.Constant;
-import com.rockchips.mediacenter.basicutils.constant.Constant.AudioPlayerMsg;
-import com.rockchips.mediacenter.basicutils.util.IICLOG;
-import com.rockchips.mediacenter.config.PlatformConfig;
-import com.rockchips.mediacenter.portable.IMediaPlayerAdapter;
-import com.rockchips.mediacenter.portable.IVideoViewAdapter;
-import com.rockchips.mediacenter.portable.hisi.HisiVideoViewNoView;
-import com.rockchips.mediacenter.portable.listener.OnCompleteListener;
-import com.rockchips.mediacenter.portable.listener.OnErrorListener;
-import com.rockchips.mediacenter.portable.listener.OnInfoListener;
-import com.rockchips.mediacenter.portable.listener.OnPreparedListener;
-import com.rockchips.mediacenter.portable.orig.OrigVideoViewNoView;
+import com.rockchips.mediacenter.bean.LocalMediaInfo;
+import com.rockchips.mediacenter.data.ConstData;
+import com.rockchips.mediacenter.data.ConstData.AudioPlayerMsg;
+import com.rockchips.mediacenter.utils.IICLOG;
+import com.rockchips.mediacenter.service.IMediaPlayerAdapter;
+import com.rockchips.mediacenter.service.IVideoViewAdapter;
+import com.rockchips.mediacenter.service.OnCompleteListener;
+import com.rockchips.mediacenter.service.OnErrorListener;
+import com.rockchips.mediacenter.service.OnInfoListener;
+import com.rockchips.mediacenter.service.OnPreparedListener;
+import com.rockchips.mediacenter.view.OrigVideoViewNoView;
 import com.rockchips.mediacenter.playerclient.MediaCenterPlayerClient;
 
 /**
@@ -194,7 +189,7 @@ public class AudioPlayerService extends Service
         Log.d(TAG, " start to connect MCS service ");
         if (!(mMediaCenterPlayerClient.isConnected()))
         {
-            mMediaCenterPlayerClient.setPlayerType(Constant.MediaType.AUDIO);            
+            mMediaCenterPlayerClient.setPlayerType(ConstData.MediaType.AUDIO);            
             mMediaCenterPlayerClient.setSenderUniq(mSenderClientUniq);
 
             mMediaCenterPlayerClient.registerPlayerCallBack(mPlayerCallbackMessenger);
@@ -279,13 +274,13 @@ public class AudioPlayerService extends Service
         }
 
         // 获取当前播放索引
-        mPlayIndex = intent.getIntExtra(Constant.IntentKey.CURRENT_INDEX, 0);
+        mPlayIndex = intent.getIntExtra(ConstData.IntentKey.CURRENT_INDEX, 0);
         
         // 解析当前播放列表
-        mMediaBaseList = intent.getParcelableArrayListExtra(Constant.IntentKey.MEDIA_INFO_LIST);
+        mMediaBaseList = intent.getParcelableArrayListExtra(ConstData.IntentKey.MEDIA_INFO_LIST);
               
         // 获取客户端唯一标识
-        mSenderClientUniq = intent.getStringExtra(Constant.IntentKey.UNIQ);        
+        mSenderClientUniq = intent.getStringExtra(ConstData.IntentKey.UNIQ);        
         Log.d(TAG, "senderClientUniq is :" + mSenderClientUniq);        
         // DTS2012030204438
         if (mMediaCenterPlayerClient != null)
@@ -333,32 +328,32 @@ public class AudioPlayerService extends Service
             Intent intent = (Intent) msg.obj;
             switch (msg.what)
             {
-                case Constant.MCSMessage.MSG_SET_MEDIA_DATA:
+                case ConstData.MCSMessage.MSG_SET_MEDIA_DATA:
                     Log.d(TAG, "MSG_SET_MEDIA_DATA start");
                     parseInputIntent(intent);  
                     setDataSource();                                        
                     Log.d(TAG, "MSG_SET_MEDIA_DATA end");
 
                     break;
-                case Constant.MCSMessage.MSG_PLAY:
+                case ConstData.MCSMessage.MSG_PLAY:
                     Log.d(TAG, "MSG_PLAY start");
                     play();                                        
                     Log.d(TAG, "MSG_PLAY end");
 
                     break;
-                case Constant.MCSMessage.MSG_PAUSE:
+                case ConstData.MCSMessage.MSG_PAUSE:
                     Log.d(TAG, "MSG_PAUSE start");
                     pause();    
                     Log.d(TAG, "MSG_PAUSE end");
 
                     break;
-                case Constant.MCSMessage.MSG_SEEK:
+                case ConstData.MCSMessage.MSG_SEEK:
                     Log.d(TAG, "MSG_SEEK start"); 
                     seekTo(intent);
                     Log.d(TAG, "MSG_SEEK end");
 
                     break;
-                case Constant.MCSMessage.MSG_STOP:
+                case ConstData.MCSMessage.MSG_STOP:
                     Log.d(TAG, "MSG_STOP start");
 
                     // 收到stop信令就进行解绑操作，避免由于在onDestroy()中解绑太慢，导致MCS中刚注册上的播放器回调被正销毁的播放器反注册掉
@@ -369,12 +364,12 @@ public class AudioPlayerService extends Service
                     Log.d(TAG, "MSG_STOP end");
 
                     break;
-                case Constant.MCSMessage.MSG_APPEND_MEDIA_DATA:
+                case ConstData.MCSMessage.MSG_APPEND_MEDIA_DATA:
                     Log.d(TAG, "MSG_APPEND_MEDIA_DATA start");
                     break;
-                case Constant.MCSMessage.MSG_DEVICE_DOWN:
+                case ConstData.MCSMessage.MSG_DEVICE_DOWN:
                     Log.d(TAG, "MSG_DEVICE_DOWN start");
-                    String deviceId = intent.getStringExtra(Constant.IntentKey.DEVICE_ID);
+                    String deviceId = intent.getStringExtra(ConstData.IntentKey.DEVICE_ID);
                     Log.d(TAG, "deviceId:" + deviceId);
 
                     if (null == deviceId || deviceId.trim().equals(""))
@@ -384,13 +379,13 @@ public class AudioPlayerService extends Service
                     }
 
                     break;
-                case Constant.MCSMessage.MSG_ADJUST_VOLUME:
+                case ConstData.MCSMessage.MSG_ADJUST_VOLUME:
                     Log.d(TAG, "MSG_ADJUST_VOLUME start");
 
-                    int volumeAdjustType = intent.getIntExtra(Constant.IntentKey.VOLUME_ADJUST_TYPE, Constant.VolumeAdjustType.ADJUST_UNKNOWND);
+                    int volumeAdjustType = intent.getIntExtra(ConstData.IntentKey.VOLUME_ADJUST_TYPE, ConstData.VolumeAdjustType.ADJUST_UNKNOWND);
                     Log.d(TAG, "volumeAdjustType:" + volumeAdjustType);
 
-                    if (volumeAdjustType != Constant.VolumeAdjustType.ADJUST_UNKNOWND)
+                    if (volumeAdjustType != ConstData.VolumeAdjustType.ADJUST_UNKNOWND)
                     {
                         if (mAudioManager == null)
                         {
@@ -398,7 +393,7 @@ public class AudioPlayerService extends Service
                             mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
                         }
 
-                        if (volumeAdjustType == Constant.VolumeAdjustType.ADJUST_LOWER)
+                        if (volumeAdjustType == ConstData.VolumeAdjustType.ADJUST_LOWER)
                         {
                             Log.d(TAG, "Adjust the volume to lower");
 
@@ -409,12 +404,12 @@ public class AudioPlayerService extends Service
                             if (mMediaCenterPlayerClient != null)
                             {
                                 Log.d(TAG, "Send adjust volume lower to Sender client");
-                                mMediaCenterPlayerClient.adjustVolume(Constant.VolumeAdjustType.ADJUST_LOWER, -1);
+                                mMediaCenterPlayerClient.adjustVolume(ConstData.VolumeAdjustType.ADJUST_LOWER, -1);
                             }
 
                             return;
                         }
-                        else if (volumeAdjustType == Constant.VolumeAdjustType.ADJUST_SAME)
+                        else if (volumeAdjustType == ConstData.VolumeAdjustType.ADJUST_SAME)
                         {
                             Log.d(TAG, "Not Adjust the volume");
 
@@ -425,12 +420,12 @@ public class AudioPlayerService extends Service
                             if (mMediaCenterPlayerClient != null)
                             {
                                 Log.d(TAG, "Send adjust volume same to Sender client");
-                                mMediaCenterPlayerClient.adjustVolume(Constant.VolumeAdjustType.ADJUST_SAME, -1);
+                                mMediaCenterPlayerClient.adjustVolume(ConstData.VolumeAdjustType.ADJUST_SAME, -1);
                             }
 
                             return;
                         }
-                        else if (volumeAdjustType == Constant.VolumeAdjustType.ADJUST_RAISE)
+                        else if (volumeAdjustType == ConstData.VolumeAdjustType.ADJUST_RAISE)
                         {
                             Log.d(TAG, "Adjust the volume to raise");
 
@@ -441,12 +436,12 @@ public class AudioPlayerService extends Service
                             if (mMediaCenterPlayerClient != null)
                             {
                                 Log.d(TAG, "Send adjust volume raise to Sender client");
-                                mMediaCenterPlayerClient.adjustVolume(Constant.VolumeAdjustType.ADJUST_RAISE, -1);
+                                mMediaCenterPlayerClient.adjustVolume(ConstData.VolumeAdjustType.ADJUST_RAISE, -1);
                             }
 
                             return;
                         }
-                        else if (volumeAdjustType == Constant.VolumeAdjustType.ADJUST_MUTE_ON)
+                        else if (volumeAdjustType == ConstData.VolumeAdjustType.ADJUST_MUTE_ON)
                         {
                             Log.d(TAG, "Turn on the mute mode");
 
@@ -460,12 +455,12 @@ public class AudioPlayerService extends Service
                             if (mMediaCenterPlayerClient != null)
                             {
                                 Log.d(TAG, "Send mute on to Sender client");
-                                mMediaCenterPlayerClient.adjustVolume(Constant.VolumeAdjustType.ADJUST_MUTE_ON, -1);
+                                mMediaCenterPlayerClient.adjustVolume(ConstData.VolumeAdjustType.ADJUST_MUTE_ON, -1);
                             }
 
                             return;
                         }
-                        else if (volumeAdjustType == Constant.VolumeAdjustType.ADJUST_MUTE_OFF)
+                        else if (volumeAdjustType == ConstData.VolumeAdjustType.ADJUST_MUTE_OFF)
                         {
                             Log.d(TAG, "Close the mute mode");
 
@@ -479,16 +474,16 @@ public class AudioPlayerService extends Service
                             if (mMediaCenterPlayerClient != null)
                             {
                                 Log.d(TAG, "Send mute off to Sender client");
-                                mMediaCenterPlayerClient.adjustVolume(Constant.VolumeAdjustType.ADJUST_MUTE_OFF, -1);
+                                mMediaCenterPlayerClient.adjustVolume(ConstData.VolumeAdjustType.ADJUST_MUTE_OFF, -1);
                             }
 
                             return;
                         }
-                        else if (volumeAdjustType == Constant.VolumeAdjustType.ADJUST_SET)
+                        else if (volumeAdjustType == ConstData.VolumeAdjustType.ADJUST_SET)
                         {
                             Log.d(TAG, "Set the volume to a fixed value");
 
-                            float volumePercent = intent.getFloatExtra(Constant.IntentKey.VOLUME_SET_VALUE, -1);
+                            float volumePercent = intent.getFloatExtra(ConstData.IntentKey.VOLUME_SET_VALUE, -1);
                             Log.d(TAG, "volumePercent:" + volumePercent);
 
                             if (volumePercent < 0 || volumePercent > 1)
@@ -506,7 +501,7 @@ public class AudioPlayerService extends Service
                             if (mMediaCenterPlayerClient != null)
                             {
                                 Log.d(TAG, "Send the volume percent to Sender client");
-                                mMediaCenterPlayerClient.adjustVolume(Constant.VolumeAdjustType.ADJUST_SET, volumePercent);
+                                mMediaCenterPlayerClient.adjustVolume(ConstData.VolumeAdjustType.ADJUST_SET, volumePercent);
                             }
                             return;
                         }
@@ -539,7 +534,7 @@ public class AudioPlayerService extends Service
         {
             switch (msg.what)
             {
-                case Constant.ServiceConnectionMSG.MSG_SERVICE_DISCONNECTED:
+                case ConstData.ServiceConnectionMSG.MSG_SERVICE_DISCONNECTED:
                     Log.d(TAG, "------------->proc MSG_SERVICE_DISCONNECTED IN");                    
                     onRemoteDisconnect();                    
                     Log.d(TAG, "------------->proc MSG_SERVICE_DISCONNECTED OUT");
@@ -701,7 +696,7 @@ public class AudioPlayerService extends Service
         int targetPostion;
         try
         {
-            targetPostion = intent.getIntExtra(Constant.IntentKey.SEEK_POS, -1);
+            targetPostion = intent.getIntExtra(ConstData.IntentKey.SEEK_POS, -1);
         }
         catch (Exception e)
         {                
@@ -713,7 +708,7 @@ public class AudioPlayerService extends Service
             {
                 // 尝试百分比
                 Log.d(TAG, "will calculate by percent!!!");
-                float postionPercent = intent.getFloatExtra(Constant.IntentKey.SEEK_POS, -1);
+                float postionPercent = intent.getFloatExtra(ConstData.IntentKey.SEEK_POS, -1);
                 Log.d(TAG, "postionPercent is " + postionPercent);
                 if (postionPercent < 1.0)
                 {
@@ -876,19 +871,8 @@ public class AudioPlayerService extends Service
             {
                 try
                 {
-                    // TODO:海思播放器暂不能播放
-                    if (PlatformConfig.isSupportHisiMediaplayer())
-                    {
-                        // himediaplayer.java
-                        HisiVideoViewNoView tmp = new HisiVideoViewNoView(getApplicationContext());
-                        mMediaPlayer = tmp;
-                    }
-                    else
-                    {
-                        OrigVideoViewNoView tmp = new OrigVideoViewNoView(getApplicationContext());
-                        mMediaPlayer = tmp;
-                    }
-
+                    OrigVideoViewNoView tmp = new OrigVideoViewNoView(getApplicationContext());
+                    mMediaPlayer = tmp;
                     mIsInitialized = false;
                     mMediaPlayer.setOnPreparedListener(preparedListener);
                     mMediaPlayer.setOnCompletionListener(mOnCompletionListener);
@@ -1107,11 +1091,6 @@ public class AudioPlayerService extends Service
                         mMusicPlayer.resetPlayer(); 
                     }
                     return true;
-                    
-                case HiMediaPlayer.MEDIA_INFO_NETWORK:
-                case HiMediaPlayer.MEDIA_INFO_NOT_SUPPORT:
-                    Log.d(TAG, "----------network erro..........");
-                    return true;                
                 default:
                     Log.d(TAG, "Unkown Error: " + what + "," + extra);
                     break;
@@ -1146,11 +1125,7 @@ public class AudioPlayerService extends Service
         @Override
         public boolean onInfo(IMediaPlayerAdapter mp, int what, int extra)
         {
-            if (what == HiMediaPlayer.MEDIA_INFO_NETWORK && extra != HI_FORMAT_MSG_NETWORK_E.HI_FORMAT_MSG_NETWORK_NORMAL.ordinal())
-            {
-                Log.d(TAG, "----->process network disconnected!!!");
-                return mOnErrorListener.onError(mp, what, extra);
-            }
+          
             return false;
         }
     };

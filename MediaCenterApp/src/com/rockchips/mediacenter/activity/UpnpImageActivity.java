@@ -35,14 +35,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.rockchips.mediacenter.R;
-import com.rockchips.mediacenter.basicutils.bean.LocalDeviceInfo;
-import com.rockchips.mediacenter.basicutils.bean.LocalMediaInfo;
-import com.rockchips.mediacenter.basicutils.constant.Constant;
-import com.rockchips.mediacenter.basicutils.constant.Constant.EBrowerType;
-import com.rockchips.mediacenter.basicutils.util.DiskUtil;
-import com.rockchips.mediacenter.basicutils.util.StringUtils;
-import com.rockchips.mediacenter.widget.ThumbnailManager;
-import com.rockchips.mediacenter.basicutils.constant.Constant;
+import com.rockchips.mediacenter.bean.LocalDeviceInfo;
+import com.rockchips.mediacenter.bean.LocalMediaInfo;
+import com.rockchips.mediacenter.data.ConstData;
+import com.rockchips.mediacenter.utils.DiskUtil;
 import com.rockchips.mediacenter.adapter.FileListAdapter;
 import com.rockchips.mediacenter.adapter.FolderListAdapter;
 import com.rockchips.mediacenter.adapter.PhotoGridAdapter;
@@ -52,10 +48,7 @@ import com.rockchips.mediacenter.bean.LocalMediaFile;
 import com.rockchips.mediacenter.bean.LocalMediaFolder;
 import com.rockchips.mediacenter.bean.UpnpFile;
 import com.rockchips.mediacenter.bean.UpnpFolder;
-import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.imageplayer.InternalImagePlayer;
-import com.rockchips.mediacenter.listadapter.ALImageBrowserAdapater;
-import com.rockchips.mediacenter.listadapter.LocalDeviceDiskAdapter;
 import com.rockchips.mediacenter.modle.db.LocalMediaFileService;
 import com.rockchips.mediacenter.modle.task.FileLoadTask;
 import com.rockchips.mediacenter.modle.task.FolderLoadTask;
@@ -65,8 +58,6 @@ import com.rockchips.mediacenter.utils.DialogUtils;
 import com.rockchips.mediacenter.utils.MediaFileUtils;
 import com.rockchips.mediacenter.videoplayer.InternalVideoPlayer;
 import com.rockchips.mediacenter.view.LoadingDialog;
-import com.rockchips.mediacenter.viewutils.animgridview.AnimGridView;
-import com.rockchips.mediacenter.viewutils.animgridview.HWListViewBaseAdapter;
 
 /**
  * Description:Upnp文件浏览器

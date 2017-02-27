@@ -1,6 +1,6 @@
 package com.rockchips.mediacenter.audioplayer;
 
-import com.rockchips.mediacenter.portable.IMediaPlayerAdapter;
+import com.rockchips.mediacenter.service.IMediaPlayerAdapter;
 
 //远程播控接口
 public interface RemoteCallback {

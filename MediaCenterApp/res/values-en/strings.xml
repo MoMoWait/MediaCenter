@@ -32,7 +32,6 @@
     <string name="folder_no_data">The folder is empty.</string>
     <string name="file_tip">Files:&#160;</string>
     <string name="image_size_tip">Resolution:&#160;</string>
-    <string name="file_size_tip">File Size:&#160;</string>
     <string name="modify_time_tip">Modified Time:&#160;</string>
     <string name="media_file_size_tip">Media File Size:&#160;</string>
 
@@ -96,12 +95,7 @@
     <string name="date_month_string">Month</string>
     <string name="date_day_string">Day\u0020</string>
     <string name="video_app_name">Video Player</string>
-    <string name="folder_no_data">The folder is empty.</string>
-    <string name="file_tip">Files:&#160;</string>
-    <string name="image_size_tip">Resolution:&#160;</string>
     <string name="file_size_tip">File Size:&#160;</string>
-    <string name="modify_time_tip">Modified Time:&#160;</string>
-    <string name="media_file_size_tip">Media File Size:&#160;</string>
     <string name="play_mode_audio">Play Mode</string>
     <string name="background_pics">Image</string>
     <string name="can_not_play_image">The image cannot be displayed.</string>
@@ -204,8 +198,6 @@
     <string name="image_rotated_failed">Failed to rotate the image.</string>
     <!-- 播放模式 -->
     <string name="play_mode_image">Play Mode</string>
-    <string name="play_mode_sequence_play">Sequential Play</string>
-    <string name="play_mode_loop_play">Loop Play</string>
     <!-- 相片播放菜单 -->
     <string name="image_delete_success">Image deleted successfully.</string>
     <string name="image_delete_failure">Failed to delete the image.</string>
@@ -237,13 +229,10 @@
     <string name="fine_sec">5 seconds</string>
     <string name="three_sec">3 seconds</string>
     <string name="open">On</string>
-    <string name="close">Off</string>
-    <string name="can_not_play_image">Image cannot be displayed.</string>
     <string name="photography_in">Taken On:&#160;</string>
     <string name="image_size">Resolution:&#160;</string>
     <string name="image_order">Order:&#160;</string>
     <string name="image_detail">Photo Details</string>
-    <string name="create_menu_fail">Insufficient memory. Cannot display the menu page.</string>
     <string name="load_net_image_fail">Loading failure.</string>
     <string name="load_net_image_timeout">Network connection timed out.</string>
     <string name="path">Download Path</string>
@@ -365,5 +354,19 @@
     <string name="file_op_paste">Paste</string>
     <string name="file_op_rename">Rename</string>
     <string name="enter_new_file_name">Enter new file name</string>
-    <string name="no_svq">No SVQ</string>  
+    <string name="no_svq">No SVQ</string>
+    
+    <string name="search_inputhint">Search Home Devices</string>
+    <string name="more_operation_pre">Please press MENU key to more opration\nPlease press UP or DOWN
+         key to change devices</string>
+    <string name="more_operation_back">Key to more Operation</string>
+    <string name="view_video">Video</string>
+    <string name="file">File</string>
+    <string name="photo">Image</string>
+    <string name="view_music">Audio</string>
+    <string name="gridView_not_support">Please layout in XML</string>
+    <string name="list_setting_select_tip">Select Other Subtitles</string>
+    <string name="list_finish_right_tip">to finish the selection</string>
+    <string name="list_finish_left_tip">please press</string>
+    <string name="media_center">Media Center</string>
 </resources>

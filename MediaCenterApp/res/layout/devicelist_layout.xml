@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:background="@drawable/main_page_mask">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <com.rockchips.mediacenter.view.DeviceItemView
+            android:id="@+id/gallery"
+            android:layout_width="match_parent"
+            android:layout_height="350dp"
+            android:layout_marginTop="250dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_devices"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/zeroDevice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="30dp"
+            android:textColor="@color/white"
+	        android:singleLine="true"
+	        android:textSize="24sp"
+            android:alpha="0" />
+
+        <TextView
+            android:id="@+id/firstDevice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="80dp"
+            android:gravity="center"
+            android:textColor="@color/white"
+	        android:singleLine="true"
+	        android:textSize="24sp"
+            android:alpha="0" />
+
+        <TextView
+            android:id="@+id/secondDevice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="130dp"
+            android:gravity="center"
+            android:textColor="@color/white"
+	        android:singleLine="true"
+	        android:textSize="24sp"
+            android:alpha="0.2" />
+
+        <TextView
+            android:id="@+id/thirdDevice"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_marginTop="185dp"
+            android:textColor="@color/white"
+            android:gravity="center"
+	        android:singleLine="true"
+	        android:textSize="24sp" 
+	        android:paddingLeft="8dp"
+	        android:paddingRight="8dp"/>
+
+        <TextView
+            android:id="@+id/fourthDevice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:layout_marginTop="580dp"
+	        android:singleLine="true"
+	        android:textSize="24sp"
+            android:alpha="0.1" />
+
+        <TextView
+            android:id="@+id/fiveDevice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="680dp"
+            android:textColor="@color/white"
+            android:gravity="center"
+	        android:singleLine="true"
+	        android:textSize="24sp"
+            android:alpha="0.0" />
+    </RelativeLayout>
+    
+    <RelativeLayout
+        android:id="@+id/rl_mainpage_header"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:gravity="center_horizontal" >
+        <LinearLayout 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+          	<ImageView
+            	android:id="@+id/iv_mediacenter_logo"
+            	android:layout_width="40dp"
+            	android:layout_height="40dp"
+            	android:layout_marginLeft="70dp"
+            	android:src="@drawable/ic_media" />
+          	
+          	 <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:text="@string/media_center"
+                android:textColor="@android:color/white"
+                android:textSize="30sp" />
+
+          	    
+        </LinearLayout>
+        
+
+        <LinearLayout
+            android:id="@+id/ll_mediacenter_hint_operate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"            
+            android:layout_marginRight="70dp" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:text="@string/more_operation_pre"
+                android:textSize="16sp" />
+        </LinearLayout>   
+        
+       <RelativeLayout
+	        android:id="@+id/search_layout"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_toRightOf="@+id/iv_mediacenter_logo"	 
+	        android:layout_toLeftOf="@+id/ll_mediacenter_hint_operate"  
+	        android:focusable="true"
+	        android:focusableInTouchMode="true"
+	        android:layout_centerVertical="true"
+	        android:visibility="gone">	
+	        <EditText
+	            android:id="@+id/deviceSearch"
+	            android:layout_width="400dp"
+	            android:layout_height="50dp"	            
+	            android:layout_centerInParent="true"
+	            android:background="@drawable/search_edit_bg"
+	            android:cursorVisible="true"
+	            android:drawableLeft="@drawable/icon_search"
+	            android:drawablePadding="15dp"
+	            android:ems="10"	            
+	            android:hint="@string/search_inputhint"
+	            android:imeOptions="actionDone"
+	            android:inputType="text"
+	            android:paddingLeft="10dp"
+	            android:singleLine="true"
+	            android:textColor="#7bbbe8"
+	            android:textSize="20sp" />		
+ 	        <ImageView
+	            android:id="@+id/focus"
+	            android:layout_width="434dp"
+	            android:layout_height="84dp"
+	            android:background="@drawable/focus"
+	            android:layout_centerInParent="true"
+	            android:visibility="invisible"/> 
+    	</RelativeLayout>       
+        
+    </RelativeLayout>
+
+</FrameLayout>

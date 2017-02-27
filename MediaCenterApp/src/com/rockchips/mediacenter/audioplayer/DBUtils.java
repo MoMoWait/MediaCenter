@@ -18,8 +18,8 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
 
-import com.rockchips.mediacenter.basicutils.bean.LocalMediaInfo;
-import com.rockchips.mediacenter.basicutils.util.StringUtils;
+import com.rockchips.mediacenter.bean.LocalMediaInfo;
+import com.rockchips.mediacenter.utils.StringUtils;
 
 /**
  * 

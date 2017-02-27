@@ -44,16 +44,16 @@ import android.widget.ProgressBar;
 import android.widget.ViewSwitcher;
 
 import com.rockchips.mediacenter.R;
-import com.rockchips.mediacenter.basicutils.bean.LocalMediaInfo;
-import com.rockchips.mediacenter.basicutils.constant.Constant;
-import com.rockchips.mediacenter.basicutils.util.DateUtil;
-import com.rockchips.mediacenter.basicutils.util.IICLOG;
-import com.rockchips.mediacenter.basicutils.util.Performance;
-import com.rockchips.mediacenter.basicutils.util.StringUtils;
-import com.rockchips.mediacenter.common.PlayStateInfo;
-import com.rockchips.mediacenter.image.gif.GifOpenHelper;
-import com.rockchips.mediacenter.image.gif.GifView;
-import com.rockchips.mediacenter.image.gif.OnGifListener;
+import com.rockchips.mediacenter.bean.LocalMediaInfo;
+import com.rockchips.mediacenter.data.ConstData;
+import com.rockchips.mediacenter.utils.DateUtil;
+import com.rockchips.mediacenter.utils.IICLOG;
+import com.rockchips.mediacenter.utils.Performance;
+import com.rockchips.mediacenter.utils.StringUtils;
+import com.rockchips.mediacenter.bean.PlayStateInfo;
+import com.rockchips.mediacenter.utils.GifOpenHelper;
+import com.rockchips.mediacenter.view.GifView;
+import com.rockchips.mediacenter.service.OnGifListener;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -642,7 +642,7 @@ public class DLNAImageSwitcher extends ImageSwitcher implements
                     // tss add
                     mbi = mPlayStateInfo.getCurrentMediaInfo();
                     if (mbi != null
-                            && mbi.getmDeviceType() == Constant.DeviceType.DEVICE_TYPE_CLOUD) {
+                            && mbi.getmDeviceType() == ConstData.DeviceType.DEVICE_TYPE_CLOUD) {
                         mLog.e(TAG, "MSG_DLNA_UI_IS_SHOWPIC bCanceled UriTexture.bCanceled:" + UriTexture.bCanceled);
 
                         if (UriTexture.bCanceled) {
@@ -960,7 +960,7 @@ public class DLNAImageSwitcher extends ImageSwitcher implements
         int iRetryTimes = 0;
 
         // 云相册图片尝试下载5次
-        if (type == Constant.DeviceType.DEVICE_TYPE_CLOUD) {
+        if (type == ConstData.DeviceType.DEVICE_TYPE_CLOUD) {
             iRetryTimes = 4;
         } else {
             iRetryTimes = 0;
@@ -978,7 +978,7 @@ public class DLNAImageSwitcher extends ImageSwitcher implements
             mbCycledDownload = true;
             SoftReference<Bitmap> srBmp = null;
 
-            if (type == Constant.DeviceType.DEVICE_TYPE_CLOUD) {
+            if (type == ConstData.DeviceType.DEVICE_TYPE_CLOUD) {
                 // 云相册只提示加载失败
                 CurlDownload.mCurlCode = 0;
             }
@@ -1179,7 +1179,7 @@ public class DLNAImageSwitcher extends ImageSwitcher implements
                     mbi.setmData(url);
 
                     // added by c00226539去除更新标签
-//                    if (Constant.DeviceType.isCloudDevice(mbi.getmDeviceType())) {
+//                    if (ConstData.DeviceType.isCloudDevice(mbi.getmDeviceType())) {
 //                        String tablename = DataBaseUtil.getTableName(mContext,
 //                                mbi.getmPhysicId());
 //                        mLog.d(TAG, "getTableName = " + tablename);
@@ -1218,7 +1218,7 @@ public class DLNAImageSwitcher extends ImageSwitcher implements
 
                     int fileSize = 0;
 
-                    if (mbi.getmDeviceType() == Constant.DeviceType.DEVICE_TYPE_CLOUD) {
+                    if (mbi.getmDeviceType() == ConstData.DeviceType.DEVICE_TYPE_CLOUD) {
                         isLoading = true;
                     }
 
@@ -1255,7 +1255,7 @@ public class DLNAImageSwitcher extends ImageSwitcher implements
                             + DateUtil.getCurrentTime());
                     mbCycledDownload = false;
                     if (uiHandler != null
-                            && mbi.getmDeviceType() != Constant.DeviceType.DEVICE_TYPE_CLOUD
+                            && mbi.getmDeviceType() != ConstData.DeviceType.DEVICE_TYPE_CLOUD
                             && drawable != null && drawable.get() != null) {
                         uiHandler
                                 .sendEmptyMessage(MSG_DLNA_UI_SET_IMAGE_DETAIL);
@@ -1470,7 +1470,7 @@ public class DLNAImageSwitcher extends ImageSwitcher implements
                         mLog.d(TAG, "MSG_DLNA_IS_CUR - 4");
 
                         // 设置播放云相册图片标志
-                        if (mbi.getmDeviceType() == Constant.DeviceType.DEVICE_TYPE_CLOUD) {
+                        if (mbi.getmDeviceType() == ConstData.DeviceType.DEVICE_TYPE_CLOUD) {
                             setPlayCloudPic(true);
                         }
                     }
@@ -1491,11 +1491,11 @@ public class DLNAImageSwitcher extends ImageSwitcher implements
                                 && (mPlayStateInfo
                                         .getSenderClientUniq()
                                         .trim()
-                                        .equals(Constant.ClientTypeUniq.PUSH_UNIQ
+                                        .equals(ConstData.ClientTypeUniq.PUSH_UNIQ
                                                 .trim()) || mPlayStateInfo
                                         .getSenderClientUniq()
                                         .trim()
-                                        .equals(Constant.ClientTypeUniq.SYN_UINQ
+                                        .equals(ConstData.ClientTypeUniq.SYN_UINQ
                                                 .trim()))) {
                             mLog.d(TAG,
                                     "Push only one image or Syn only one image to STB");
@@ -1555,11 +1555,11 @@ public class DLNAImageSwitcher extends ImageSwitcher implements
                                 && (mPlayStateInfo
                                         .getSenderClientUniq()
                                         .trim()
-                                        .equals(Constant.ClientTypeUniq.PUSH_UNIQ
+                                        .equals(ConstData.ClientTypeUniq.PUSH_UNIQ
                                                 .trim()) || mPlayStateInfo
                                         .getSenderClientUniq()
                                         .trim()
-                                        .equals(Constant.ClientTypeUniq.SYN_UINQ
+                                        .equals(ConstData.ClientTypeUniq.SYN_UINQ
                                                 .trim()))) {
                             mLog.d(TAG,
                                     "Push only one image or Syn only one image to STB");
@@ -1697,7 +1697,7 @@ public class DLNAImageSwitcher extends ImageSwitcher implements
                                     .get(ind);
 
                             // modify by XKF76249
-//                            if (Constant.DeviceType.isCloudDevice(mbi
+//                            if (ConstData.DeviceType.isCloudDevice(mbi
 //                                    .getmDeviceType())) {
 //                                mLog.d(TAG,
 //                                        "downloadImageToCache ----------->5");
@@ -1723,7 +1723,7 @@ public class DLNAImageSwitcher extends ImageSwitcher implements
                                     .get(ind);
 
                             // modify by XKF76249
-//                            if (Constant.DeviceType.isCloudDevice(mbi
+//                            if (ConstData.DeviceType.isCloudDevice(mbi
 //                                    .getmDeviceType())) {
 //                                if (StringUtils
 //                                        .isNetworkURI(getExistLocalPath(mbi))) {
@@ -1832,7 +1832,7 @@ public class DLNAImageSwitcher extends ImageSwitcher implements
         try
         {
 
-            if (devType == Constant.DeviceType.DEVICE_TYPE_DMS)
+            if (devType == ConstData.DeviceType.DEVICE_TYPE_DMS)
             {
                 try
                 {
@@ -1861,7 +1861,7 @@ public class DLNAImageSwitcher extends ImageSwitcher implements
                 is = conn.getInputStream();
 
             }
-            else if (devType == Constant.DeviceType.DEVICE_TYPE_U)
+            else if (devType == ConstData.DeviceType.DEVICE_TYPE_U)
             {// 此处给的格式可能是URI的格式
 
                 FileInputStream fis = new FileInputStream(url);
@@ -2483,7 +2483,7 @@ public class DLNAImageSwitcher extends ImageSwitcher implements
             return url;
         }
 
-//        if (Constant.DeviceType.isCloudDevice(mbi.getmDeviceType())) {// 云设备，可以检测下是否有本地文件
+//        if (ConstData.DeviceType.isCloudDevice(mbi.getmDeviceType())) {// 云设备，可以检测下是否有本地文件
 //            if (((ImagePlayerActivity) mContext).getCloudPreCache() == null) {
 //
 //                return url;

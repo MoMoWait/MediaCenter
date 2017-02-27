@@ -43,11 +43,6 @@
     </style>
     <!-- END: Modified by c00224451 for  DTS2014031902115  2014/3/19  -->
 
-    <style name="DialogCustomizeStyle">
-         <item name="android:windowNoTitle">true</item>
-         <item name="android:windowFullscreen">true</item>
-    </style>
-
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
@@ -85,6 +80,22 @@
         <item name="android:windowIsFloating">true</item>  
         <!--是否模糊-->  
         <item name="android:backgroundDimEnabled">false</item>  
+    </style>
+    
+     <style name="ListSettingItemTextStyle">
+        <item name="android:textSize">24px</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <style name="ListSettingItemNumStyle">
+        <item name="android:textSize">18px</item>
+        <item name="android:textColor">@color/file_num_bg</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <style name="ListSettingTextStyle">
+        <item name="android:textSize">16px</item>
+        <item name="android:textColor">#818b9a</item>
+        <item name="android:gravity">center_vertical</item>
     </style>
     
 </resources>

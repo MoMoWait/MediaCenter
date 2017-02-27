@@ -16,16 +16,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.HandlerThread;
 import android.text.TextUtils;
-
-import com.rockchips.mediacenter.basicutils.constant.Constant;
-import com.rockchips.mediacenter.basicutils.util.IICLOG;
-import com.rockchips.mediacenter.basicutils.util.StringUtils;
 import com.rockchips.mediacenter.data.ConstData;
+import com.rockchips.mediacenter.utils.IICLOG;
+import com.rockchips.mediacenter.utils.StringUtils;
 import com.rockchips.mediacenter.videoplayer.data.VideoInfo;
 
 /**
@@ -53,7 +48,7 @@ public class PlayStateInfo
     // 当前播放的设备名
     private String mCurrDevName = "";
     
-    private int playMode = Constant.MediaPlayMode.MP_MODE_SINGLE;
+    private int playMode = ConstData.MediaPlayMode.MP_MODE_SINGLE;
     
     /**
      * 默认2D
@@ -224,17 +219,17 @@ public class PlayStateInfo
         /**
          * 循环播放包括，整体循环、单曲循环、随即播放
          */
-        if (playMode == Constant.MediaPlayMode.MP_MODE_ALL_CYC)
+        if (playMode == ConstData.MediaPlayMode.MP_MODE_ALL_CYC)
         {
             return true;
         }
         
-        /*if (playMode == Constant.MediaPlayMode.MP_MODE_RONDOM)
+        /*if (playMode == ConstData.MediaPlayMode.MP_MODE_RONDOM)
         {
             return true;
         }*/
         
-     /*   if (playMode == Constant.MediaPlayMode.MP_MODE_SINGLE_CYC)
+     /*   if (playMode == ConstData.MediaPlayMode.MP_MODE_SINGLE_CYC)
         {
             return true;
         }*/
@@ -246,12 +241,12 @@ public class PlayStateInfo
     public boolean isSingleMode()
     {
         
-        if (playMode == Constant.MediaPlayMode.MP_MODE_SINGLE_CYC)
+        if (playMode == ConstData.MediaPlayMode.MP_MODE_SINGLE_CYC)
         {
             return true;
         }
         
-        if (playMode == Constant.MediaPlayMode.MP_MODE_SINGLE)
+        if (playMode == ConstData.MediaPlayMode.MP_MODE_SINGLE)
         {
             return true;
         }
@@ -273,7 +268,7 @@ public class PlayStateInfo
             
             for (int i = 0; i < mMediaList.size(); i++)
             {
-                if (mMediaList.get(i).getmDeviceType() == Constant.DeviceType.DEVICE_TYPE_U)
+                if (mMediaList.get(i).getmDeviceType() == ConstData.DeviceType.DEVICE_TYPE_U)
                 {
                     setCurrentIndex(i);
                     return true;
@@ -853,7 +848,7 @@ public class PlayStateInfo
             return null;
         }
         
-        if(playMode == Constant.MediaPlayMode.MP_MODE_SINGLE_CYC)
+        if(playMode == ConstData.MediaPlayMode.MP_MODE_SINGLE_CYC)
         	return mCurrentMBI;
         synchronized (this)
         {
@@ -1092,7 +1087,7 @@ public class PlayStateInfo
                 continue;
             }
             
-            if (mbi.getmDeviceType() == Constant.DeviceType.DEVICE_TYPE_U)
+            if (mbi.getmDeviceType() == ConstData.DeviceType.DEVICE_TYPE_U)
             {//存在数据
                 return true;
             }
@@ -1123,14 +1118,14 @@ public class PlayStateInfo
             
             Collator collator = Collator.getInstance();
             
-            if (dbi1.getmDeviceType() == Constant.DeviceType.DEVICE_TYPE_U
-                && dbi2.getmDeviceType() == Constant.DeviceType.DEVICE_TYPE_DMS)
+            if (dbi1.getmDeviceType() == ConstData.DeviceType.DEVICE_TYPE_U
+                && dbi2.getmDeviceType() == ConstData.DeviceType.DEVICE_TYPE_DMS)
             {
                 return -1;
             }
             
-            if (dbi1.getmDeviceType() == Constant.DeviceType.DEVICE_TYPE_DMS
-                && dbi2.getmDeviceType() == Constant.DeviceType.DEVICE_TYPE_U)
+            if (dbi1.getmDeviceType() == ConstData.DeviceType.DEVICE_TYPE_DMS
+                && dbi2.getmDeviceType() == ConstData.DeviceType.DEVICE_TYPE_U)
             {
                 return 1;
             }
@@ -1142,7 +1137,7 @@ public class PlayStateInfo
                         
 //            int iret = dbi1.getId() - dbi2.getId();
             int iret = 0;            
-            if (iret == 0 && dbi1.getmDeviceType() == Constant.DeviceType.DEVICE_TYPE_U)
+            if (iret == 0 && dbi1.getmDeviceType() == ConstData.DeviceType.DEVICE_TYPE_U)
             {
                 iret = collator.compare(dbi1.getmPhysicId(), dbi2.getmPhysicId());
             }

@@ -71,12 +71,12 @@ import com.rockchips.mediacenter.utils.DialogUtils;
 import com.rockchips.mediacenter.utils.MediaFileUtils;
 import com.rockchips.mediacenter.utils.GetDateUtil;
 import com.rockchips.mediacenter.videoplayer.InternalVideoPlayer;
-import com.rockchips.mediacenter.viewutils.preview.PreviewWidget;
+import com.rockchips.mediacenter.view.PreviewWidget;
 import com.rockchips.mediacenter.R;
-import com.rockchips.mediacenter.basicutils.util.ResLoadUtil;
-import com.rockchips.mediacenter.basicutils.util.DiskUtil;
-import com.rockchips.mediacenter.basicutils.bean.LocalDeviceInfo;
-import com.rockchips.mediacenter.basicutils.bean.LocalMediaInfo;
+import com.rockchips.mediacenter.utils.ResLoadUtil;
+import com.rockchips.mediacenter.utils.DiskUtil;
+import com.rockchips.mediacenter.bean.LocalDeviceInfo;
+import com.rockchips.mediacenter.bean.LocalMediaInfo;
 
 
 /**

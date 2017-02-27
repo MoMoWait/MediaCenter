@@ -53,37 +53,35 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.rockchips.mediacenter.R;
-import com.rockchips.mediacenter.basicutils.bean.LocalDeviceInfo;
-import com.rockchips.mediacenter.basicutils.bean.LocalMediaInfo;
-import com.rockchips.mediacenter.basicutils.constant.Constant;
-import com.rockchips.mediacenter.basicutils.util.DateUtil;
-import com.rockchips.mediacenter.basicutils.util.IICLOG;
-import com.rockchips.mediacenter.basicutils.util.PlatformUtil;
-import com.rockchips.mediacenter.basicutils.util.StringUtils;
-import com.rockchips.mediacenter.config.PlatformConfig;
-import com.rockchips.mediacenter.image.gif.GifOpenHelper;
-import com.rockchips.mediacenter.image.gif.GifView;
-import com.rockchips.mediacenter.image.gif.OnGifListener;
-import com.rockchips.mediacenter.portable.IMediaPlayerAdapter;
-import com.rockchips.mediacenter.portable.IVideoViewAdapter;
-import com.rockchips.mediacenter.portable.hisi.HisiVideoViewNoView;
-import com.rockchips.mediacenter.portable.listener.OnCompleteListener;
-import com.rockchips.mediacenter.portable.listener.OnErrorListener;
-import com.rockchips.mediacenter.portable.listener.OnPreparedListener;
-import com.rockchips.mediacenter.portable.orig.OrigVideoViewNoView;
-import com.rockchips.mediacenter.widget.ResLoadUtil;
+import com.rockchips.mediacenter.bean.LocalDeviceInfo;
+import com.rockchips.mediacenter.bean.LocalMediaInfo;
+import com.rockchips.mediacenter.data.ConstData;
+import com.rockchips.mediacenter.utils.DateUtil;
+import com.rockchips.mediacenter.utils.IICLOG;
+import com.rockchips.mediacenter.utils.PlatformUtil;
+import com.rockchips.mediacenter.utils.StringUtils;
+import com.rockchips.mediacenter.utils.GifOpenHelper;
+import com.rockchips.mediacenter.view.GifView;
+import com.rockchips.mediacenter.service.OnGifListener;
+import com.rockchips.mediacenter.service.IMediaPlayerAdapter;
+import com.rockchips.mediacenter.service.IVideoViewAdapter;
+import com.rockchips.mediacenter.service.OnCompleteListener;
+import com.rockchips.mediacenter.service.OnErrorListener;
+import com.rockchips.mediacenter.service.OnPreparedListener;
+import com.rockchips.mediacenter.view.OrigVideoViewNoView;
+import com.rockchips.mediacenter.utils.ResLoadUtil;
 import com.rockchips.mediacenter.imageplayer.DLNAImageSwitcher.DLNAImageSwitcherListener;
 import com.rockchips.mediacenter.imageplayer.image.CurlDownload;
 import com.rockchips.mediacenter.imageplayer.image.ImageUtils;
 import com.rockchips.mediacenter.imageplayer.image.UriTexture;
 import com.rockchips.mediacenter.utils.GetDateUtil;
 import com.rockchips.mediacenter.view.ImageSettingsDialog;
-import com.rockchips.mediacenter.viewutils.menu.BottomPopMenu;
-import com.rockchips.mediacenter.viewutils.menu.MenuCategory;
-import com.rockchips.mediacenter.viewutils.menu.MenuItemImpl;
-import com.rockchips.mediacenter.viewutils.menu.OnSelectTypeListener;
-import com.rockchips.mediacenter.viewutils.menu.PopMenu;
-import com.rockchips.mediacenter.viewutils.toast.ToastUtil;
+import com.rockchips.mediacenter.view.BottomPopMenu;
+import com.rockchips.mediacenter.view.MenuCategory;
+import com.rockchips.mediacenter.view.MenuItemImpl;
+import com.rockchips.mediacenter.view.OnSelectTypeListener;
+import com.rockchips.mediacenter.view.PopMenu;
+import com.rockchips.mediacenter.utils.ToastUtil;
 
 /**
  * ImagePlayerActivity
@@ -572,11 +570,11 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
             {
                 case 0:
                     //循环播放
-                    setPlayMode(Constant.MediaPlayMode.MP_MODE_ALL_CYC);
+                    setPlayMode(ConstData.MediaPlayMode.MP_MODE_ALL_CYC);
                     
                     break;
                 case 1:
-                    setPlayMode(Constant.MediaPlayMode.MP_MODE_ALL);
+                    setPlayMode(ConstData.MediaPlayMode.MP_MODE_ALL);
                     break;
                 default:
                     break;
@@ -933,9 +931,9 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
             
             // 如果是推送或甩屏过来的，只有一个媒体文件的情况下，快速关闭自动播放
             if ((mPlayStateInfo.getMediaList().size() == 1)
-                && (mPlayStateInfo.getSenderClientUniq().trim().equals(Constant.ClientTypeUniq.PUSH_UNIQ.trim()) || mPlayStateInfo.getSenderClientUniq()
+                && (mPlayStateInfo.getSenderClientUniq().trim().equals(ConstData.ClientTypeUniq.PUSH_UNIQ.trim()) || mPlayStateInfo.getSenderClientUniq()
                     .trim()
-                    .equals(Constant.ClientTypeUniq.SYN_UINQ.trim())))
+                    .equals(ConstData.ClientTypeUniq.SYN_UINQ.trim())))
             {
                 mLog.d(TAG, "Push only one image or Syn only one image to STB");
                 mImageSwitcher.setAutoMode(false, 0);
@@ -985,7 +983,7 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
         if (mImageTime != null)
         {
             String Date = null;
-            if (mbi.getmDeviceType() == Constant.DeviceType.DEVICE_TYPE_DMS)
+            if (mbi.getmDeviceType() == ConstData.DeviceType.DEVICE_TYPE_DMS)
             {
                 Date = mbi.getmModifyDateStr();
             }
@@ -1184,7 +1182,7 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
                 if (mMediaCenterPlayerClient != null)
                 {
                     mLog.d(TAG, "Send the volume percent to Sender client");
-                    mMediaCenterPlayerClient.adjustVolume(Constant.VolumeAdjustType.ADJUST_SET, volumePercent);
+                    mMediaCenterPlayerClient.adjustVolume(ConstData.VolumeAdjustType.ADJUST_SET, volumePercent);
                 }
                 return super.onKeyDown(keyCode, event);
             case KeyEvent.KEYCODE_BACK:
@@ -1483,7 +1481,7 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
     @Override
     protected int getUUID()
     {
-        return Constant.MediaType.IMAGE;
+        return ConstData.MediaType.IMAGE;
     }
     
     /*
@@ -1659,7 +1657,7 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
      */
     protected int getMediaType()
     {
-        return Constant.MediaType.IMAGE;
+        return ConstData.MediaType.IMAGE;
     }
     
     /*
@@ -2057,15 +2055,7 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
         
         if (mMediaPlayer == null)
         {
-            if (PlatformConfig.isSupportHisiMediaplayer())
-            {
-                mMediaPlayer = new HisiVideoViewNoView(this);
-            }
-            else
-            {
-                mMediaPlayer = new OrigVideoViewNoView(this);
-            }
-            
+            mMediaPlayer = new OrigVideoViewNoView(this);
             if (mMediaPlayer != null)
             {
                 mMediaPlayer.setOnCompletionListener(new OnCompleteListener()
@@ -2551,13 +2541,13 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
                 //顺序播放
                 if(type == EnumImagePopmenuType.ENUM_AUTOPLAY_MODE_SEQUENCE)
                 {
-                    setPlayMode(Constant.MediaPlayMode.MP_MODE_ALL);
+                    setPlayMode(ConstData.MediaPlayMode.MP_MODE_ALL);
                     mImagePlaySetHelper.savePlayModeIndex(1);
                 }
                 //循环播放
                 else if(type == EnumImagePopmenuType.ENUM_AUTOPLAY_MODE_LOOP)
                 {
-                    setPlayMode(Constant.MediaPlayMode.MP_MODE_ALL_CYC);
+                    setPlayMode(ConstData.MediaPlayMode.MP_MODE_ALL_CYC);
                     mImagePlaySetHelper.savePlayModeIndex(0);
                 }
                 

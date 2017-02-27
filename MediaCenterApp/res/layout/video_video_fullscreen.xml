@@ -9,7 +9,7 @@
 
     <!-- videoview -->
 
-    <com.rockchips.mediacenter.portable.orig.OrigVideoView
+    <com.rockchips.mediacenter.view.OrigVideoView
         android:id="@+id/vv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
@@ -115,7 +115,7 @@
 
     <!-- 右上角显示的时间 -->
 
-    <com.rockchips.mediacenter.viewutils.timelayout.TimeLayout
+    <com.rockchips.mediacenter.view.TimeLayout
         android:id="@+id/timeLayout"
         android:layout_width="100dp"
         android:layout_height="40dp"

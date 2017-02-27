@@ -2,7 +2,7 @@ package com.rockchips.mediacenter.dobly;
 
 import android.content.Context;
 
-import com.rockchips.mediacenter.basicutils.util.PlatformUtil;
+import com.rockchips.mediacenter.utils.PlatformUtil;
 
 /**
  * 

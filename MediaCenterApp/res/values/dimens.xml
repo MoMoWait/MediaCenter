@@ -53,4 +53,24 @@
     <dimen name="image_music_poster_width">188px</dimen>
     <dimen name="image_music_poster_height">188px</dimen>
     <!-- 图片缩放页面布局参数  end -->
+    
+    
+    <dimen name="menu_list_setting_bg_width">820px</dimen>
+    <dimen name="menu_list_setting_bg_height">600px</dimen>
+    <dimen name="menu_list_setting_bg_paddingleft">130px</dimen>
+    <dimen name="menu_list_setting_bg_paddingtop">50px</dimen>
+    <dimen name="menu_list_setting_title_height">50px</dimen>
+    <dimen name="menu_list_setting_title_margin">30px</dimen>
+    <dimen name="menu_list_setting_logo_width">26px</dimen>
+    <dimen name="menu_list_setting_logo_height">22px</dimen>
+    <dimen name="menu_list_setting_select_tip_margin">16px</dimen>
+    <dimen name="menu_list_setting_back_width">40px</dimen>
+    <dimen name="menu_list_setting_back_height">24px</dimen>
+    <dimen name="menu_list_setting_folder_width">160px</dimen>
+    <dimen name="menu_list_setting_folder_height">170px</dimen>
+    <dimen name="menu_list_setting_name_top">30px</dimen>
+    <dimen name="menu_list_setting_item_width">210px</dimen>
+    <dimen name="menu_list_setting_item_height">220px</dimen>
+    
+    
 </resources>

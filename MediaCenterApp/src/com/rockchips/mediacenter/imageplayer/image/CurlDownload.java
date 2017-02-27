@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import com.rockchips.mediacenter.basicutils.util.IICLOG;
+import com.rockchips.mediacenter.utils.IICLOG;
 import com.rockchips.mediacenter.imageplayer.DLNAImageSwitcherViewFactory;
 
 /**

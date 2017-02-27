@@ -30,7 +30,7 @@
 
     <!-- 文件夹预览 -->
     <string name="folder_no_data">文件夹为空，没有内容</string>
-    <string name="file_tip">文件数 : </string>
+   <!--  <string name="file_tip">文件数 : </string> -->
     <string name="image_size_tip">尺寸 : </string>
     <string name="file_size_tip">大小 : </string>
     <string name="modify_time_tip">修改时间 : </string>
@@ -96,12 +96,7 @@
     <string name="date_month_string">月</string>
     <string name="date_day_string">日\u0020</string>
     <string name="video_app_name">视频播放器</string>
-    <string name="folder_no_data">文件夹为空，没有内容</string>
     <string name="file_tip">文件数 : </string>
-    <string name="image_size_tip">尺寸 : </string>
-    <string name="file_size_tip">大小 : </string>
-    <string name="modify_time_tip">修改时间 : </string>
-    <string name="media_file_size_tip">媒体文件大小  : </string>
     <string name="play_mode_audio">播放模式</string>
     <string name="background_pics">播放背景</string>
     <string name="can_not_play_image">图片无法显示</string>
@@ -204,8 +199,6 @@
     <string name="image_rotated_failed">该图片旋转失败</string>
     <!-- 播放模式 -->
     <string name="play_mode_image">播放模式</string>
-    <string name="play_mode_sequence_play">顺序播放</string>
-    <string name="play_mode_loop_play">循环播放</string>
     <!-- 相片播放菜单 -->
     <string name="image_delete_success">图片删除成功</string>
     <string name="image_delete_failure">图片删除失败</string>
@@ -237,13 +230,10 @@
     <string name="fine_sec">5秒</string>
     <string name="three_sec">3秒</string>
     <string name="open">开启</string>
-    <string name="close">关闭</string>
-    <string name="can_not_play_image">图片无法显示</string>
     <string name="photography_in">摄于：</string>
     <string name="image_size">尺寸：</string>
     <string name="image_order">序号：</string>
     <string name="image_detail">相片详情</string>
-    <string name="create_menu_fail">内存溢出，无法创建菜单界面</string>
     <string name="load_net_image_fail">加载失败</string>
     <string name="load_net_image_timeout">网络连接超时</string>
     <string name="path">下载路径</string>
@@ -367,4 +357,17 @@
     <string name="file_op_rename">重命名</string> 
     <string name="enter_new_file_name">输入新文件名</string>
     <string name="no_svq">没有SVQ版权</string>  
+    
+    <string name="search_inputhint">搜索家庭设备内容</string>
+    <string name="more_operation_pre">请按菜单键进行进行更多操作\n请按上下键切换设备</string>
+    <string name="more_operation_back">键进行更多操作</string>
+    <string name="view_video">视频</string>
+    <string name="file">文件</string>
+    <string name="photo">图片</string>
+    <string name="view_music">音乐</string>
+    <string name="gridView_not_support">尚不支持直接new的使用方式，请使用布局文件</string>
+    <string name="list_setting_select_tip">选择其它字幕</string>
+    <string name="list_finish_right_tip">键完成选择</string>
+    <string name="list_finish_left_tip">请按</string>
+    <string name="media_center">媒体中心</string>
 </resources>

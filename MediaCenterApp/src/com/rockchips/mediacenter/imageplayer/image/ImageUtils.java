@@ -33,11 +33,11 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.net.Uri;
 
-import com.rockchips.mediacenter.basicutils.constant.Constant;
-import com.rockchips.mediacenter.basicutils.util.IICLOG;
-import com.rockchips.mediacenter.basicutils.util.NetUtils;
-import com.rockchips.mediacenter.basicutils.util.StringUtils;
-import com.rockchips.mediacenter.image.gif.GifOpenHelper;
+import com.rockchips.mediacenter.data.ConstData;
+import com.rockchips.mediacenter.utils.IICLOG;
+import com.rockchips.mediacenter.utils.NetUtils;
+import com.rockchips.mediacenter.utils.StringUtils;
+import com.rockchips.mediacenter.utils.GifOpenHelper;
 
 public class ImageUtils
 {
@@ -269,7 +269,7 @@ public class ImageUtils
             String[] strArr = UriTexture.findFile(fileName);
             mLog.d(TAG, "getPicSize--->fileName-->" + fileName);
             if (strArr != null && strArr.length >= 2 && strArr[1] != null && !"-1x-1".equals(strArr[1])
-                    && mDeviceType != Constant.DeviceType.DEVICE_TYPE_CLOUD)
+                    && mDeviceType != ConstData.DeviceType.DEVICE_TYPE_CLOUD)
             {
                 // SizeArr = FileUtils.computeWH_1(crc64uri);
                 size = strArr[1];
@@ -310,7 +310,7 @@ public class ImageUtils
                     }
                 }
                 // 如果是云相册图片
-                if ("0x0".equals(size) && mDeviceType == Constant.DeviceType.DEVICE_TYPE_CLOUD && strArr != null)
+                if ("0x0".equals(size) && mDeviceType == ConstData.DeviceType.DEVICE_TYPE_CLOUD && strArr != null)
                 {
                     SizeArr = NetUtils.computeWH_1(strArr[0]);
                     size = String.valueOf(SizeArr[0]) + "x" + String.valueOf(SizeArr[1]);

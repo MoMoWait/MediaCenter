@@ -29,11 +29,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.rockchips.mediacenter.R;
-import com.rockchips.mediacenter.viewutils.menu.MenuCategory;
-import com.rockchips.mediacenter.viewutils.menu.MenuItemAdapter;
-import com.rockchips.mediacenter.viewutils.menu.MenuItemImpl;
-import com.rockchips.mediacenter.viewutils.menu.OnSelectTypeListener;
-import com.rockchips.mediacenter.viewutils.wheelview.WheelView;
+import com.rockchips.mediacenter.view.MenuCategory;
+import com.rockchips.mediacenter.view.MenuItemAdapter;
+import com.rockchips.mediacenter.view.MenuItemImpl;
+import com.rockchips.mediacenter.view.OnSelectTypeListener;
+import com.rockchips.mediacenter.view.WheelView;
 /**
  * @author GaoFei 视频设置页面对话框
  */

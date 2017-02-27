@@ -10,8 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.rockchips.mediacenter.R;
-import com.rockchips.mediacenter.basicutils.util.StringUtils;
-import com.rockchips.mediacenter.viewutils.playlist.IListDataAdapter;
+import com.rockchips.mediacenter.utils.StringUtils;
+import com.rockchips.mediacenter.view.IListDataAdapter;
 
 public class TextViewListAdapter implements IListDataAdapter
 {

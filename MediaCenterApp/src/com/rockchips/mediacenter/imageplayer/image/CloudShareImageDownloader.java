@@ -2,7 +2,7 @@ package com.rockchips.mediacenter.imageplayer.image;
 
 import android.content.Context;
 
-import com.rockchips.mediacenter.mtd.download.IDownloadFile;
+import com.rockchips.mediacenter.service.IDownloadFile;
 
 /***
  * 分享图片下载

@@ -14,8 +14,8 @@ import android.view.SurfaceHolder;
 import android.view.WindowManager;
 import android.widget.VideoView;
 import com.rockchips.mediacenter.service.IVideoPlayer;
-import com.rockchips.mediacenter.portable.bean.AudioInfoOfVideo;
-import com.rockchips.mediacenter.portable.bean.SubInfo;
+import com.rockchips.mediacenter.bean.AudioInfoOfVideo;
+import com.rockchips.mediacenter.bean.SubInfo;
 import android.util.Log;
 /**
  * @author GaoFei

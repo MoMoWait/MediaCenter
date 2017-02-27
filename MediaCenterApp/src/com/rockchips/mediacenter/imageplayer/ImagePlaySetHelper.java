@@ -1,8 +1,5 @@
 package com.rockchips.mediacenter.imageplayer;
-
-import com.rockchips.mediacenter.basicutils.util.IICLOG;
-
-import android.R.integer;
+import com.rockchips.mediacenter.utils.IICLOG;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;

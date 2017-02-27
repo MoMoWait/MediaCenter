@@ -12,5 +12,26 @@
     </declare-styleable>
 
     <attr name="progressBarStyleLarge" format="reference" />
+        <declare-styleable name="CustomListView">
+        <attr name="itemGap" format="integer"></attr>
+        <attr name="lineGap" format="integer"></attr>
+        <attr name="itemCircle" format="boolean"></attr>
+        <attr name="isFocusFix" format="boolean"></attr>
+        <attr name="focusPosition" format="integer"></attr>
+        <attr name="focusDrawable" format="reference"></attr>
+        <attr name="focusBackGround" format="reference"></attr>
+        <attr name="bgDrawable" format="reference"></attr>
+        <attr name="defaultDrawable" format="reference"></attr>
+        <attr name="itemDefaultHeight" format="integer"></attr>
+        <attr name="itemHeight" format="integer"></attr>
+        <attr name="itemWidth" format="integer"></attr>
+        <attr name="viewMaxWidth" format="integer"></attr>
+        <attr name="focusPadding" format="integer"></attr>
+        <attr name="textviewNameHight" format="integer"></attr>
+        <attr name="topSpaceView" format="integer"></attr>
+        <attr name="buttomSpaceView" format="integer"></attr>
+        <attr name="numviewHight" format="integer"></attr>
+    </declare-styleable>
+    
 
 </resources>

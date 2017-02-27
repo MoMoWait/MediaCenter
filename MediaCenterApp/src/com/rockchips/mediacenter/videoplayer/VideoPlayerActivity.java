@@ -83,38 +83,32 @@ import momo.cn.edu.fjnu.androidutils.data.CommonValues;
 import momo.cn.edu.fjnu.androidutils.utils.DeviceInfoUtils;
 import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
 import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
-
-import com.hisilicon.android.hibdinfo.HiBDInfo;
-import com.hisilicon.android.mediaplayer.HiMediaPlayer;
+import com.rockchips.mediacenter.service.HiMediaPlayer;
 import com.rockchips.mediacenter.R;
-import com.rockchips.mediacenter.api.localImp.LocalDeviceManager;
-import com.rockchips.mediacenter.basicutils.bean.LocalMediaInfo;
-import com.rockchips.mediacenter.basicutils.constant.Constant;
-import com.rockchips.mediacenter.basicutils.constant.Constant.PlayMode;
-import com.rockchips.mediacenter.basicutils.util.MathUtil;
-import com.rockchips.mediacenter.basicutils.util.Mount;
-import com.rockchips.mediacenter.basicutils.util.PlatformUtil;
-import com.rockchips.mediacenter.basicutils.util.StringUtils;
-import com.rockchips.mediacenter.config.PlatformConfig;
-import com.rockchips.mediacenter.portable.IMediaPlayerAdapter;
-import com.rockchips.mediacenter.portable.IVideoViewAdapter;
-import com.rockchips.mediacenter.portable.bean.AudioInfoOfVideo;
-import com.rockchips.mediacenter.portable.bean.SubInfo;
-import com.rockchips.mediacenter.portable.hisi.HisiVideoView;
-import com.rockchips.mediacenter.portable.listener.OnBufferingUpdateListener;
-import com.rockchips.mediacenter.portable.listener.OnCompleteListener;
-import com.rockchips.mediacenter.portable.listener.OnErrorListener;
-import com.rockchips.mediacenter.portable.listener.OnFastBackwordCompleteListener;
-import com.rockchips.mediacenter.portable.listener.OnFastForwardCompleteListener;
-import com.rockchips.mediacenter.portable.listener.OnInfoListener;
-import com.rockchips.mediacenter.portable.listener.OnPreparedListener;
-import com.rockchips.mediacenter.portable.listener.OnSeekCompleteListener;
-import com.rockchips.mediacenter.portable.orig.OrigVideoView;
+import com.rockchips.mediacenter.service.LocalDeviceManager;
+import com.rockchips.mediacenter.bean.LocalMediaInfo;
+import com.rockchips.mediacenter.data.ConstData;
+import com.rockchips.mediacenter.data.ConstData.PlayMode;
+import com.rockchips.mediacenter.utils.MathUtil;
+import com.rockchips.mediacenter.utils.PlatformUtil;
+import com.rockchips.mediacenter.utils.StringUtils;
+import com.rockchips.mediacenter.service.IMediaPlayerAdapter;
+import com.rockchips.mediacenter.service.IVideoViewAdapter;
+import com.rockchips.mediacenter.bean.AudioInfoOfVideo;
+import com.rockchips.mediacenter.bean.SubInfo;
+import com.rockchips.mediacenter.service.OnBufferingUpdateListener;
+import com.rockchips.mediacenter.service.OnCompleteListener;
+import com.rockchips.mediacenter.service.OnErrorListener;
+import com.rockchips.mediacenter.service.OnFastBackwordCompleteListener;
+import com.rockchips.mediacenter.service.OnFastForwardCompleteListener;
+import com.rockchips.mediacenter.service.OnInfoListener;
+import com.rockchips.mediacenter.service.OnPreparedListener;
+import com.rockchips.mediacenter.service.OnSeekCompleteListener;
+import com.rockchips.mediacenter.view.OrigVideoView;
 import com.rockchips.mediacenter.activity.MainActivity;
 import com.rockchips.mediacenter.bean.LocalDevice;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.dobly.DoblyPopWin;
-import com.rockchips.mediacenter.videoplayer.bd.BDInfo;
 import com.rockchips.mediacenter.videoplayer.data.HistoryListRecord;
 import com.rockchips.mediacenter.videoplayer.data.PlayerStateRecorder;
 import com.rockchips.mediacenter.videoplayer.data.VideoInfo;
@@ -126,14 +120,14 @@ import com.rockchips.mediacenter.videoplayer.widget.SubtitleSelectPopup;
 import com.rockchips.mediacenter.videoplayer.widget.SeekBarLayout.SeekBarListener;
 import com.rockchips.mediacenter.videoplayer.widget.SubtitleSelectPopup.OnSubtileSelectListener;
 import com.rockchips.mediacenter.view.VideoSettingDialog;
-import com.rockchips.mediacenter.viewutils.menu.BottomPopMenu;
-import com.rockchips.mediacenter.viewutils.menu.MenuCategory;
-import com.rockchips.mediacenter.viewutils.menu.MenuItemImpl;
-import com.rockchips.mediacenter.viewutils.menu.OnSelectTypeListener;
-import com.rockchips.mediacenter.viewutils.menu.PopMenu;
-import com.rockchips.mediacenter.viewutils.timelayout.TimeLayout;
-import com.rockchips.mediacenter.viewutils.timeseek.TimeSeekDialog;
-import com.rockchips.mediacenter.viewutils.timeseek.TimeSeekDialog.OnTimeSeekListener;
+import com.rockchips.mediacenter.view.BottomPopMenu;
+import com.rockchips.mediacenter.view.MenuCategory;
+import com.rockchips.mediacenter.view.MenuItemImpl;
+import com.rockchips.mediacenter.view.OnSelectTypeListener;
+import com.rockchips.mediacenter.view.PopMenu;
+import com.rockchips.mediacenter.view.TimeLayout;
+import com.rockchips.mediacenter.view.TimeSeekDialog;
+import com.rockchips.mediacenter.view.TimeSeekDialog.OnTimeSeekListener;
 import android.os.SystemProperties;
 /**
  * 
@@ -338,7 +332,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         else
         {
             // 不是myMedia过来的请求,默认全体循环
-            setPlayMode(Constant.MediaPlayMode.MP_MODE_ALL_CYC);
+            setPlayMode(ConstData.MediaPlayMode.MP_MODE_ALL_CYC);
         }
         if (mSeekHandlerThread == null)
         {
@@ -362,8 +356,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         // creat VideoView
         if (mVV == null || mVVAdapter == null)
         {
-        	//支持海斯平台，就支持加速
-            canAccelerate = PlatformConfig.isSupportHisiMediaplayer();
+        	//默认不支持加速
+            canAccelerate = false;
             mVVAdapter = (IVideoViewAdapter) mVV;
             mVVAdapter.setOnErrorListener(onErrorListener);
             mVVAdapter.setOnPreparedListener(onPreparedListener);
@@ -731,7 +725,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                 if (mMediaCenterPlayerClient != null)
                 {
                     Log.d(TAG, "Send the volume percent to Sender client");
-                    mMediaCenterPlayerClient.adjustVolume(Constant.VolumeAdjustType.ADJUST_SET, volumePercent);
+                    mMediaCenterPlayerClient.adjustVolume(ConstData.VolumeAdjustType.ADJUST_SET, volumePercent);
                 }
 
                 return super.onKeyDown(keyCode, event);
@@ -1400,7 +1394,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             playerErrorTimes++;
 
             // 若是播放为single模式or连续6次无法播放，退出播放器
-            if (getPlayMode() == Constant.MediaPlayMode.MP_MODE_SINGLE || playerErrorTimes >= PLAYER_ERROR_TIMES_MAX)
+            if (getPlayMode() == ConstData.MediaPlayMode.MP_MODE_SINGLE || playerErrorTimes >= PLAYER_ERROR_TIMES_MAX)
             {
                 playerErrorTimes = 0;
                 // 不能播放的提示
@@ -1540,12 +1534,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             */
             
             initEvent();
-            
-            if (!PlatformConfig.isSupportHisiMediaplayer())
-            {
-                updateMenuScreen();
-            }
-
+            updateMenuScreen();
             mDuration = mp.getDuration();
             int position = mp.getCurrentPosition();
 
@@ -1842,7 +1831,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             return mPlayStateInfo.getScreenMode();
         }
 
-        return Constant.ScreenMode.SCREEN_FULL;
+        return ConstData.ScreenMode.SCREEN_FULL;
     }
 
     /****/
@@ -2016,7 +2005,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         }
         Bundle bundle = new Bundle();
         bundle.putInt("playIndex", index);
-        // bundle.putInt("mediaType", Constant.MediaType.VIDEO);
+        // bundle.putInt("mediaType", ConstData.MediaType.VIDEO);
 
         Intent intent = new Intent();
         intent.putExtras(bundle);
@@ -2334,11 +2323,11 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         menuCgy.setMenuItems(itemImpls);
 
         // 设置当前菜单的焦点框
-        if (getPlayMode() == Constant.MediaPlayMode.MP_MODE_ALL_CYC)
+        if (getPlayMode() == ConstData.MediaPlayMode.MP_MODE_ALL_CYC)
         {
             menuCgy.setSelectIndex(0);
         }
-        else if(getPlayMode() == Constant.MediaPlayMode.MP_MODE_SINGLE_CYC)
+        else if(getPlayMode() == ConstData.MediaPlayMode.MP_MODE_SINGLE_CYC)
         {
             menuCgy.setSelectIndex(1);
         }
@@ -2913,7 +2902,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
         try
         {
-            seekTo = intent.getIntExtra(Constant.IntentKey.SEEK_POS, -1);
+            seekTo = intent.getIntExtra(ConstData.IntentKey.SEEK_POS, -1);
         }
         catch(Exception e)
         {
@@ -2922,7 +2911,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         
         if (-1 == seekTo)
         {
-            seekTo = MathUtil.ConvertPercentageToValue(intent.getFloatExtra(Constant.IntentKey.SEEK_POS, -1), mDuration);
+            seekTo = MathUtil.ConvertPercentageToValue(intent.getFloatExtra(ConstData.IntentKey.SEEK_POS, -1), mDuration);
     
             if (seekTo < 0)
             {
@@ -3017,12 +3006,12 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         {
 
             // 如果是推送或甩屏过来的，恢复为初始播放模式，不复用上一次播放模式
-            if (mPlayStateInfo.getSenderClientUniq().trim().equals(Constant.ClientTypeUniq.PUSH_UNIQ.trim())
-                    || mPlayStateInfo.getSenderClientUniq().trim().equals(Constant.ClientTypeUniq.SYN_UINQ.trim()))
+            if (mPlayStateInfo.getSenderClientUniq().trim().equals(ConstData.ClientTypeUniq.PUSH_UNIQ.trim())
+                    || mPlayStateInfo.getSenderClientUniq().trim().equals(ConstData.ClientTypeUniq.SYN_UINQ.trim()))
             {
-                setPlayMode(Constant.MediaPlayMode.MP_MODE_SINGLE);
+                setPlayMode(ConstData.MediaPlayMode.MP_MODE_SINGLE);
                 mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_MCS_HIDEMODE);
-                PlayerStateRecorder.getInstance().put(PlayerStateRecorder.VIDEO_PLAY_MODE, Constant.MediaPlayMode.MP_MODE_SINGLE);
+                PlayerStateRecorder.getInstance().put(PlayerStateRecorder.VIDEO_PLAY_MODE, ConstData.MediaPlayMode.MP_MODE_SINGLE);
             }
         }
 
@@ -3031,7 +3020,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
         // 利用callback的接收消息功能，给它发送play命令执行播放操作
         Message msg = Message.obtain();
-        msg.what = Constant.MCSMessage.MSG_PLAY;
+        msg.what = ConstData.MCSMessage.MSG_PLAY;
         sendMessage(msg);
 
         VideoInfo mbi = new VideoInfo();
@@ -3055,7 +3044,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     @Override
     protected int getUUID()
     {
-        return Constant.MediaType.VIDEO;
+        return ConstData.MediaType.VIDEO;
     }
 
     /**
@@ -3065,7 +3054,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
      */
     protected int getMediaType()
     {
-        return Constant.MediaType.VIDEO;
+        return ConstData.MediaType.VIDEO;
     }
 
     /**
@@ -3169,7 +3158,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                         {
                             // 场景：DLNA连续推送，其他场景目前没有；
                             if (mMediaCenterPlayerClient != null && StringUtils.isNotEmpty(getSenderClientUniq())
-                                    && getSenderClientUniq().equalsIgnoreCase(Constant.ClientTypeUniq.PUSH_UNIQ))
+                                    && getSenderClientUniq().equalsIgnoreCase(ConstData.ClientTypeUniq.PUSH_UNIQ))
                             {
                                 mMediaCenterPlayerClient.seek(0);
                             }
@@ -3206,7 +3195,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                         progressGone();
                     }
                     // 播放下一个视频时，初始任然为全屏
-                    setScreenMode(Constant.ScreenMode.SCREEN_SCALE);
+                    setScreenMode(ConstData.ScreenMode.SCREEN_SCALE);
                     // 播放另外的视频时菜单需要消失重置
                     if (mPopMenu != null && mPopMenu.isShowing())
                     {
@@ -3780,11 +3769,11 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         }
         switch (getScreenMode())
         {
-            case Constant.ScreenMode.SCREEN_FULL:
+            case ConstData.ScreenMode.SCREEN_FULL:
                 width = SCREEN_WIDTH;
                 height = SCREEN_HEIGHT;
                 break;
-            case Constant.ScreenMode.SCREEN_ORIGINAL:
+            case ConstData.ScreenMode.SCREEN_ORIGINAL:
                 Log.i(TAG, "screenMode: SCREEN ORIGINAL");
                 if(width > SCREEN_WIDTH || height > SCREEN_HEIGHT){
                     //此时等比拉伸视频
@@ -3792,7 +3781,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                     height = scaleHeight;
                 }
                 break;
-            case Constant.ScreenMode.SCREEN_SCALE:
+            case ConstData.ScreenMode.SCREEN_SCALE:
                 width = scaleWidth;
                 height = scaleHeight;
                 break;
@@ -3856,7 +3845,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             return;
         }
 
-        if (getScreenMode() == Constant.ScreenMode.SCREEN_ORIGINAL)
+        if (getScreenMode() == ConstData.ScreenMode.SCREEN_ORIGINAL)
         {
             mVVAdapter.setScreenScale(videoWidth, videoHeight);
         }
@@ -4266,21 +4255,21 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             if (mCurrSelectType == PopMenuSelectType.REPEAT_LIST)
             {
                 Log.d(TAG, "change to play loop.");
-                setPlayMode(Constant.MediaPlayMode.MP_MODE_ALL_CYC);
-                PlayerStateRecorder.getInstance().put(PlayerStateRecorder.VIDEO_PLAY_MODE, Constant.MediaPlayMode.MP_MODE_ALL_CYC);
+                setPlayMode(ConstData.MediaPlayMode.MP_MODE_ALL_CYC);
+                PlayerStateRecorder.getInstance().put(PlayerStateRecorder.VIDEO_PLAY_MODE, ConstData.MediaPlayMode.MP_MODE_ALL_CYC);
                 saveCycPlayMode();
             }
             else if (mCurrSelectType == PopMenuSelectType.REPEAT_ONE)
             {
                 Log.d(TAG, "change to repeat one.");
-                setPlayMode(Constant.MediaPlayMode.MP_MODE_SINGLE_CYC);
-                PlayerStateRecorder.getInstance().put(PlayerStateRecorder.VIDEO_PLAY_MODE, Constant.MediaPlayMode.MP_MODE_SINGLE_CYC);
+                setPlayMode(ConstData.MediaPlayMode.MP_MODE_SINGLE_CYC);
+                PlayerStateRecorder.getInstance().put(PlayerStateRecorder.VIDEO_PLAY_MODE, ConstData.MediaPlayMode.MP_MODE_SINGLE_CYC);
                 saveCycPlayMode();
             }
             else if(mCurrSelectType == PopMenuSelectType.SINGLE_PLAY){
             	 Log.d(TAG, "change to single play.");
-                 setPlayMode(Constant.MediaPlayMode.MP_MODE_SINGLE);
-                 PlayerStateRecorder.getInstance().put(PlayerStateRecorder.VIDEO_PLAY_MODE, Constant.MediaPlayMode.MP_MODE_SINGLE);
+                 setPlayMode(ConstData.MediaPlayMode.MP_MODE_SINGLE);
+                 PlayerStateRecorder.getInstance().put(PlayerStateRecorder.VIDEO_PLAY_MODE, ConstData.MediaPlayMode.MP_MODE_SINGLE);
                  saveCycPlayMode();
             }
             /** 设置字幕 **/
@@ -4312,17 +4301,17 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             else if (mCurrSelectType == PopMenuSelectType.SCREEN_DISPLAY_FULL)
             {
                 Log.d(TAG, "set the screen full");
-                setScreenM(Constant.ScreenMode.SCREEN_FULL);
+                setScreenM(ConstData.ScreenMode.SCREEN_FULL);
             }
             else if (mCurrSelectType == PopMenuSelectType.SCREEN_DISPLAY_ORIGINAL)
             {
                 Log.d(TAG, "set the screen original");
-                setScreenM(Constant.ScreenMode.SCREEN_ORIGINAL);
+                setScreenM(ConstData.ScreenMode.SCREEN_ORIGINAL);
             }
             else if (mCurrSelectType == PopMenuSelectType.SCREEN_DISPLAY_SCALE)
             {
                 Log.d(TAG, "set the screen scale");
-                setScreenM(Constant.ScreenMode.SCREEN_SCALE);
+                setScreenM(ConstData.ScreenMode.SCREEN_SCALE);
             }
             else if (mCurrSelectType == PopMenuSelectType.CHANNEL_MODE_SET)
             {
@@ -4381,7 +4370,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     private void findAndSetSubTitleInfo()
     {
         //LocalDeviceManager manager = LocalDeviceManager.getInstance(this);
-       // mGetAllFlatFolders = manager.getAllFlatAVIFolders(Constant.MediaType.SUBTITLE, 0, 100);
+       // mGetAllFlatFolders = manager.getAllFlatAVIFolders(ConstData.MediaType.SUBTITLE, 0, 100);
     }
 
     /**
@@ -4393,7 +4382,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         Log.d(TAG, "passIntentForVideoBrowser() IN...");
         Bundle bundle = new Bundle();
         bundle.putInt("playIndex", getCurrentIndex());
-        bundle.putInt("mediaType", Constant.MediaType.VIDEO);
+        bundle.putInt("mediaType", ConstData.MediaType.VIDEO);
 
         Intent intent = new Intent();
         intent.putExtras(bundle);
@@ -4469,9 +4458,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     private static final String FIRST_START_VIDEOPLAY = "FIRST_START_VIDEOPLAY";
 
     //默认列表循环播放
-    private static final int DEFAULT_CYCLE_PLAY_MODE_INDEX = Constant.MediaPlayMode.MP_MODE_ALL_CYC;
+    private static final int DEFAULT_CYCLE_PLAY_MODE_INDEX = ConstData.MediaPlayMode.MP_MODE_ALL_CYC;
 
-    private static final int DEFAULT_SCREEN_DISPLAYE_MODE_INDEX = Constant.ScreenMode.SCREEN_FULL;
+    private static final int DEFAULT_SCREEN_DISPLAYE_MODE_INDEX = ConstData.ScreenMode.SCREEN_FULL;
 
     private static final int DEFAULT_CHANNEL_MODE_INDEX = 0; // 0 对应的是环绕立体声
 
@@ -4578,7 +4567,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
         firstSeek = true;
         // 单文件播放模式
-        if (getPlayMode() == Constant.MediaPlayMode.MP_MODE_SINGLE)
+        if (getPlayMode() == ConstData.MediaPlayMode.MP_MODE_SINGLE)
         {
             setToast(getString(R.string.video_program_completion));
 

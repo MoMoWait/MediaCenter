@@ -32,9 +32,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.rockchips.mediacenter.R;
-import com.rockchips.mediacenter.basicutils.util.BitmapUtil;
-import com.rockchips.mediacenter.basicutils.util.StringUtils;
-import com.rockchips.mediacenter.mtd.download.MultiThreadDownloader;
+import com.rockchips.mediacenter.utils.BitmapUtil;
+import com.rockchips.mediacenter.utils.StringUtils;
+import com.rockchips.mediacenter.service.MultiThreadDownloader;
 import com.rockchips.mediacenter.activity.DeviceActivity;
 
 /**

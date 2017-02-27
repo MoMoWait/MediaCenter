@@ -2,8 +2,6 @@ package com.rockchips.mediacenter.viewutils.devicelist;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import android.R.integer;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
@@ -27,7 +25,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
-
 import com.rockchips.mediacenter.viewutils.R;
 
 /**

@@ -2,7 +2,7 @@ package com.rockchips.mediacenter.retrieve;
 
 import android.graphics.Bitmap;
 
-import com.rockchips.mediacenter.basicutils.bean.LocalMediaInfo;
+import com.rockchips.mediacenter.bean.LocalMediaInfo;
 import com.rockchips.mediacenter.audioplayer.SongInfo;
 
 public interface RetrieveCompleteListener

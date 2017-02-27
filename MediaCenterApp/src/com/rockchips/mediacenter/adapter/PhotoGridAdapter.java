@@ -19,8 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.rockchips.mediacenter.basicutils.bean.LocalMediaInfo;
-import com.rockchips.mediacenter.basicutils.constant.Constant;
+import com.rockchips.mediacenter.bean.LocalMediaInfo;
 import com.rockchips.mediacenter.R;
 import com.rockchips.mediacenter.data.ConstData;
 

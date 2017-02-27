@@ -22,7 +22,7 @@ package com.rockchips.mediacenter.videoplayer.data;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.rockchips.mediacenter.basicutils.constant.Constant;
+import com.rockchips.mediacenter.data.ConstData;
 
 /**
  * 
@@ -37,7 +37,7 @@ import com.rockchips.mediacenter.basicutils.constant.Constant;
 public class PlayerStateRecorder
 {
     
-    public static final int VIDEO_PLAY_MODE = Constant.MediaPlayMode.MP_MODE_SINGLE;
+    public static final int VIDEO_PLAY_MODE = ConstData.MediaPlayMode.MP_MODE_SINGLE;
     
     private Map<Integer, Integer> mPlayerStateRecoderList = new HashMap<Integer, Integer>();
     

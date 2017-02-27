@@ -35,7 +35,7 @@
                 android:scaleType="fitXY"
                 android:src="@drawable/music_menu_focus_low" />
 
-            <com.rockchips.mediacenter.viewutils.wheelview.WheelView
+            <com.rockchips.mediacenter.view.WheelView
                 android:id="@+id/music_type"
                 android:layout_width="fill_parent"
                 android:layout_height="216dp"

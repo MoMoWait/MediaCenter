@@ -3,15 +3,12 @@ package com.rockchips.mediacenter.adapter;
 import java.util.ArrayList;
 import java.util.List;
 import android.content.Context;
-import android.provider.SyncStateContract.Constants;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.rockchips.mediacenter.basicutils.constant.Constant;
 import com.rockchips.mediacenter.R;
 import com.rockchips.mediacenter.adapter.FolderListAdapter.ViewHolder;
 import com.rockchips.mediacenter.bean.LocalMediaFile;

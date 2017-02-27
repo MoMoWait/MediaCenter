@@ -21,10 +21,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.rockchips.mediacenter.R;
-import com.rockchips.mediacenter.viewutils.menu.MenuCategory;
-import com.rockchips.mediacenter.viewutils.menu.MenuItemAdapter;
-import com.rockchips.mediacenter.viewutils.menu.MenuItemImpl;
-import com.rockchips.mediacenter.viewutils.menu.OnSelectTypeListener;
+import com.rockchips.mediacenter.view.MenuCategory;
+import com.rockchips.mediacenter.view.MenuItemAdapter;
+import com.rockchips.mediacenter.view.MenuItemImpl;
+import com.rockchips.mediacenter.view.OnSelectTypeListener;
 /**
  * @author GaoFei
  * 图片浏览设置对话框

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="menu_favrite_tag" type="id"></item>
+    <item name="menu_select_index_tag" type="id"></item>
+</resources>

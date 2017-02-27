@@ -67,7 +67,7 @@
             android:paddingRight="5dp"
             android:paddingTop="5dp" />
 
-        <com.rockchips.mediacenter.viewutils.preview.PreviewWidget
+        <com.rockchips.mediacenter.view.PreviewWidget
             android:id="@+id/widget_preview"
             android:layout_width="0dp"
             android:layout_height="match_parent"

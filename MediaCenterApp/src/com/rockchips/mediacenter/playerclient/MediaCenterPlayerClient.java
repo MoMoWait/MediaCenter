@@ -22,8 +22,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
-
-import com.rockchips.mediacenter.basicutils.constant.Constant;
+import com.rockchips.mediacenter.data.ConstData;
 
 /**
  * 
@@ -39,7 +38,7 @@ public class MediaCenterPlayerClient
 {
     private static final String TAG = "MediaCenterApp";
     
-    private int mPlayerType = Constant.MediaType.UNKNOWN_TYPE;
+    private int mPlayerType = ConstData.MediaType.UNKNOWN_TYPE;
     
     private String mSenderUniq = null;
     
@@ -79,17 +78,17 @@ public class MediaCenterPlayerClient
             synchronized (MediaCenterPlayerClient.this)
             {
                 mPlayerService = new Messenger(service);
-                if (mPlayerType != Constant.MediaType.UNKNOWN_TYPE && mMessenger != null)
+                if (mPlayerType != ConstData.MediaType.UNKNOWN_TYPE && mMessenger != null)
                 {
                     try
                     {
                         // 先注册CallBack，然后再处理消息队列
                         Message msg = Message.obtain();
-                        msg.what = Constant.MCSMessage.MSG_REGISTER_CALLBACK;
+                        msg.what = ConstData.MCSMessage.MSG_REGISTER_CALLBACK;
                         msg.replyTo = mMessenger;
                         
                         Intent intent = new Intent();
-                        intent.putExtra(Constant.IntentKey.UNIQ, mPlayerType);
+                        intent.putExtra(ConstData.IntentKey.UNIQ, mPlayerType);
                         msg.obj = intent;
                         Log.d(TAG, "mSenderService.send(), Msg.what=" + msg.what);
                         mPlayerService.send(msg);
@@ -120,7 +119,7 @@ public class MediaCenterPlayerClient
                 if (null != mConnectListenerHandler)
                 {
                     Log.d(TAG, "Send disconnect msg to player!");
-                    mConnectListenerHandler.sendEmptyMessage(Constant.ServiceConnectionMSG.MSG_SERVICE_DISCONNECTED);
+                    mConnectListenerHandler.sendEmptyMessage(ConstData.ServiceConnectionMSG.MSG_SERVICE_DISCONNECTED);
                     mConnectListenerHandler = null;
                 }
             }
@@ -198,17 +197,17 @@ public class MediaCenterPlayerClient
         Log.d(TAG, "PlayerClient --> requestMediaList()");
         
         Message msg = Message.obtain();
-        msg.what = Constant.MCSMessage.MSG_REQUEST_MEDIA_LIST;
+        msg.what = ConstData.MCSMessage.MSG_REQUEST_MEDIA_LIST;
         
-        if (mPlayerType == Constant.MediaType.UNKNOWN_TYPE)
+        if (mPlayerType == ConstData.MediaType.UNKNOWN_TYPE)
         {
-            Log.e(TAG, "mPlayerType == Constant.MediaType.UNKNOWN_TYPE");
+            Log.e(TAG, "mPlayerType == ConstData.MediaType.UNKNOWN_TYPE");
             return;
         }
         
-        if (mediaRequestType == Constant.MediaRequestType.UNKNOWND_TYPE)
+        if (mediaRequestType == ConstData.MediaRequestType.UNKNOWND_TYPE)
         {
-            Log.e(TAG, "mediaRequestType == Constant.MediaRequestType.UNKNOWND_TYPE");
+            Log.e(TAG, "mediaRequestType == ConstData.MediaRequestType.UNKNOWND_TYPE");
             return;
         }
         
@@ -219,9 +218,9 @@ public class MediaCenterPlayerClient
         }
         
         Intent intent = new Intent();
-        intent.putExtra(Constant.IntentKey.UNIQ, mPlayerType);
-        intent.putExtra(Constant.IntentKey.MEDIA_REQUEST_TYPE, mediaRequestType);
-        intent.putExtra(Constant.IntentKey.SENDER_UNIQ_PLAYER_TO_MCS, mSenderUniq);
+        intent.putExtra(ConstData.IntentKey.UNIQ, mPlayerType);
+        intent.putExtra(ConstData.IntentKey.MEDIA_REQUEST_TYPE, mediaRequestType);
+        intent.putExtra(ConstData.IntentKey.SENDER_UNIQ_PLAYER_TO_MCS, mSenderUniq);
         
         msg.obj = intent;
         
@@ -241,11 +240,11 @@ public class MediaCenterPlayerClient
         Log.d(TAG, "PlayerClient --> reportError()");
         
         Message msg = Message.obtain();
-        msg.what = Constant.MCSMessage.MSG_REPORT_ERROR;
+        msg.what = ConstData.MCSMessage.MSG_REPORT_ERROR;
         
-        if (mPlayerType == Constant.MediaType.UNKNOWN_TYPE)
+        if (mPlayerType == ConstData.MediaType.UNKNOWN_TYPE)
         {
-            Log.e(TAG, "mPlayerType == Constant.MediaType.UNKNOWN_TYPE!");
+            Log.e(TAG, "mPlayerType == ConstData.MediaType.UNKNOWN_TYPE!");
             return;
         }
         
@@ -256,9 +255,9 @@ public class MediaCenterPlayerClient
         }
         
         Intent intent = new Intent();
-        intent.putExtra(Constant.IntentKey.UNIQ, mPlayerType);
-        intent.putExtra(Constant.IntentKey.ERROR_INFO, strErrorInfo);
-        intent.putExtra(Constant.IntentKey.SENDER_UNIQ_PLAYER_TO_MCS, mSenderUniq);
+        intent.putExtra(ConstData.IntentKey.UNIQ, mPlayerType);
+        intent.putExtra(ConstData.IntentKey.ERROR_INFO, strErrorInfo);
+        intent.putExtra(ConstData.IntentKey.SENDER_UNIQ_PLAYER_TO_MCS, mSenderUniq);
         
         msg.obj = intent;
         
@@ -277,11 +276,11 @@ public class MediaCenterPlayerClient
         Log.d(TAG, "PlayerClient --> reportDuration()");
         
         Message msg = Message.obtain();
-        msg.what = Constant.MCSMessage.MSG_DURATION;
+        msg.what = ConstData.MCSMessage.MSG_DURATION;
         
-        if (mPlayerType == Constant.MediaType.UNKNOWN_TYPE)
+        if (mPlayerType == ConstData.MediaType.UNKNOWN_TYPE)
         {
-            Log.e(TAG, "mPlayerType == Constant.MediaType.UNKNOWN_TYPE!");
+            Log.e(TAG, "mPlayerType == ConstData.MediaType.UNKNOWN_TYPE!");
             return;
         }
         
@@ -292,10 +291,10 @@ public class MediaCenterPlayerClient
         }
         
         Intent intent = new Intent();
-        intent.putExtra(Constant.IntentKey.UNIQ, mPlayerType);
-        intent.putExtra(Constant.IntentKey.SEEK_POS, position);
-        intent.putExtra(Constant.IntentKey.MEDIA_DURATION, duration);
-        intent.putExtra(Constant.IntentKey.SENDER_UNIQ_PLAYER_TO_MCS, mSenderUniq);
+        intent.putExtra(ConstData.IntentKey.UNIQ, mPlayerType);
+        intent.putExtra(ConstData.IntentKey.SEEK_POS, position);
+        intent.putExtra(ConstData.IntentKey.MEDIA_DURATION, duration);
+        intent.putExtra(ConstData.IntentKey.SENDER_UNIQ_PLAYER_TO_MCS, mSenderUniq);
         
         msg.obj = intent;
         
@@ -307,11 +306,11 @@ public class MediaCenterPlayerClient
         Log.d(TAG, "PlayerClient --> play()");
         
         Message msg = Message.obtain();
-        msg.what = Constant.MCSMessage.MSG_PLAY;
+        msg.what = ConstData.MCSMessage.MSG_PLAY;
         
-        if (mPlayerType == Constant.MediaType.UNKNOWN_TYPE)
+        if (mPlayerType == ConstData.MediaType.UNKNOWN_TYPE)
         {
-            Log.e(TAG, "mPlayerType == Constant.MediaType.UNKNOWN_TYPE!");
+            Log.e(TAG, "mPlayerType == ConstData.MediaType.UNKNOWN_TYPE!");
             return;
         }
         
@@ -322,8 +321,8 @@ public class MediaCenterPlayerClient
         }
         
         Intent intent = new Intent();
-        intent.putExtra(Constant.IntentKey.UNIQ, mPlayerType);
-        intent.putExtra(Constant.IntentKey.SENDER_UNIQ_PLAYER_TO_MCS, mSenderUniq);
+        intent.putExtra(ConstData.IntentKey.UNIQ, mPlayerType);
+        intent.putExtra(ConstData.IntentKey.SENDER_UNIQ_PLAYER_TO_MCS, mSenderUniq);
         
         msg.obj = intent;
         
@@ -342,11 +341,11 @@ public class MediaCenterPlayerClient
         Log.d(TAG, "PlayerClient --> pause()");
         
         Message msg = Message.obtain();
-        msg.what = Constant.MCSMessage.MSG_PAUSE;
+        msg.what = ConstData.MCSMessage.MSG_PAUSE;
         
-        if (mPlayerType == Constant.MediaType.UNKNOWN_TYPE)
+        if (mPlayerType == ConstData.MediaType.UNKNOWN_TYPE)
         {
-            Log.e(TAG, "mPlayerType == Constant.MediaType.UNKNOWN_TYPE!");
+            Log.e(TAG, "mPlayerType == ConstData.MediaType.UNKNOWN_TYPE!");
             return;
         }
         
@@ -357,8 +356,8 @@ public class MediaCenterPlayerClient
         }
         
         Intent intent = new Intent();
-        intent.putExtra(Constant.IntentKey.UNIQ, mPlayerType);
-        intent.putExtra(Constant.IntentKey.SENDER_UNIQ_PLAYER_TO_MCS, mSenderUniq);
+        intent.putExtra(ConstData.IntentKey.UNIQ, mPlayerType);
+        intent.putExtra(ConstData.IntentKey.SENDER_UNIQ_PLAYER_TO_MCS, mSenderUniq);
         
         msg.obj = intent;
         
@@ -377,11 +376,11 @@ public class MediaCenterPlayerClient
         Log.d(TAG, "PlayerClient --> requestList()");
         
         Message msg = Message.obtain();
-        msg.what = Constant.MCSMessage.MSG_REQUEST_MEDIA_LIST;
+        msg.what = ConstData.MCSMessage.MSG_REQUEST_MEDIA_LIST;
         
-        if (mPlayerType == Constant.MediaType.UNKNOWN_TYPE)
+        if (mPlayerType == ConstData.MediaType.UNKNOWN_TYPE)
         {
-            Log.e(TAG, "mPlayerType == Constant.MediaType.UNKNOWN_TYPE!");
+            Log.e(TAG, "mPlayerType == ConstData.MediaType.UNKNOWN_TYPE!");
             return;
         }
         
@@ -392,8 +391,8 @@ public class MediaCenterPlayerClient
         }
         
         Intent intent = new Intent();
-        intent.putExtra(Constant.IntentKey.UNIQ, mPlayerType);
-        intent.putExtra(Constant.IntentKey.SENDER_UNIQ_PLAYER_TO_MCS, mSenderUniq);
+        intent.putExtra(ConstData.IntentKey.UNIQ, mPlayerType);
+        intent.putExtra(ConstData.IntentKey.SENDER_UNIQ_PLAYER_TO_MCS, mSenderUniq);
         
         msg.obj = intent;
         
@@ -413,11 +412,11 @@ public class MediaCenterPlayerClient
         Log.d(TAG, "PlayerClient --> seek():" + seekTo);
         
         Message msg = Message.obtain();
-        msg.what = Constant.MCSMessage.MSG_SEEK;
+        msg.what = ConstData.MCSMessage.MSG_SEEK;
         
-        if (mPlayerType == Constant.MediaType.UNKNOWN_TYPE)
+        if (mPlayerType == ConstData.MediaType.UNKNOWN_TYPE)
         {
-            Log.e(TAG, "mPlayerType == Constant.MediaType.UNKNOWN_TYPE!");
+            Log.e(TAG, "mPlayerType == ConstData.MediaType.UNKNOWN_TYPE!");
             return;
         }
         
@@ -428,9 +427,9 @@ public class MediaCenterPlayerClient
         }
         
         Intent intent = new Intent();
-        intent.putExtra(Constant.IntentKey.UNIQ, mPlayerType);
-        intent.putExtra(Constant.IntentKey.SEEK_POS, seekTo);
-        intent.putExtra(Constant.IntentKey.SENDER_UNIQ_PLAYER_TO_MCS, mSenderUniq);
+        intent.putExtra(ConstData.IntentKey.UNIQ, mPlayerType);
+        intent.putExtra(ConstData.IntentKey.SEEK_POS, seekTo);
+        intent.putExtra(ConstData.IntentKey.SENDER_UNIQ_PLAYER_TO_MCS, mSenderUniq);
         
         msg.obj = intent;
         
@@ -449,11 +448,11 @@ public class MediaCenterPlayerClient
         Log.d(TAG, "PlayerClient --> stop()");
         
         Message msg = Message.obtain();
-        msg.what = Constant.MCSMessage.MSG_STOP;
+        msg.what = ConstData.MCSMessage.MSG_STOP;
         
-        if (mPlayerType == Constant.MediaType.UNKNOWN_TYPE)
+        if (mPlayerType == ConstData.MediaType.UNKNOWN_TYPE)
         {
-            Log.e(TAG, "mPlayerType == Constant.MediaType.UNKNOWN_TYPE!");
+            Log.e(TAG, "mPlayerType == ConstData.MediaType.UNKNOWN_TYPE!");
             return;
         }
         
@@ -464,9 +463,9 @@ public class MediaCenterPlayerClient
         }
         
         Intent intent = new Intent();
-        intent.putExtra(Constant.IntentKey.CURRENT_PLAY_URL, url);
-        intent.putExtra(Constant.IntentKey.UNIQ, mPlayerType);
-        intent.putExtra(Constant.IntentKey.SENDER_UNIQ_PLAYER_TO_MCS, mSenderUniq);
+        intent.putExtra(ConstData.IntentKey.CURRENT_PLAY_URL, url);
+        intent.putExtra(ConstData.IntentKey.UNIQ, mPlayerType);
+        intent.putExtra(ConstData.IntentKey.SENDER_UNIQ_PLAYER_TO_MCS, mSenderUniq);
         
         msg.obj = intent;
         
@@ -478,12 +477,12 @@ public class MediaCenterPlayerClient
      * adjustVolume
      * 
      * @param volumeAdjustType:音量调节的类型
-     *      Constant.VolumeAdjustType.ADJUST_LOWER:降低音量
-     *      Constant.VolumeAdjustType.ADJUST_SAME:音量不变
-     *      Constant.VolumeAdjustType.ADJUST_RAISE:增加音量
-     *      Constant.VolumeAdjustType.ADJUST_MUTE_ON:开启静音
-     *      Constant.VolumeAdjustType.ADJUST_MUTE_OFF:关闭静音
-     *      Constant.VolumeAdjustType.ADJUST_SET:设置指定的音量
+     *      ConstData.VolumeAdjustType.ADJUST_LOWER:降低音量
+     *      ConstData.VolumeAdjustType.ADJUST_SAME:音量不变
+     *      ConstData.VolumeAdjustType.ADJUST_RAISE:增加音量
+     *      ConstData.VolumeAdjustType.ADJUST_MUTE_ON:开启静音
+     *      ConstData.VolumeAdjustType.ADJUST_MUTE_OFF:关闭静音
+     *      ConstData.VolumeAdjustType.ADJUST_SET:设置指定的音量
      *      
      * @param volumeValue：对应于音量调节类型的附加参数
      *      当类型为Constant.VolumeAdjustType.ADJUST_SET时，该参数才有意义，其值为要设置的音量值所占最大音量的百分比(0~1)
@@ -496,11 +495,11 @@ public class MediaCenterPlayerClient
         Log.d(TAG, "PlayerClient --> adjustVolume()");
         
         Message msg = Message.obtain();
-        msg.what = Constant.MCSMessage.MSG_ADJUST_VOLUME;
+        msg.what = ConstData.MCSMessage.MSG_ADJUST_VOLUME;
         
-        if (mPlayerType == Constant.MediaType.UNKNOWN_TYPE)
+        if (mPlayerType == ConstData.MediaType.UNKNOWN_TYPE)
         {
-            Log.e(TAG, "mPlayerType == Constant.MediaType.UNKNOWN_TYPE!");
+            Log.e(TAG, "mPlayerType == ConstData.MediaType.UNKNOWN_TYPE!");
             return;
         }
         
@@ -514,10 +513,10 @@ public class MediaCenterPlayerClient
         Log.d(TAG, "volumeValue:" + volumeValue);
         
         Intent intent = new Intent();
-        intent.putExtra(Constant.IntentKey.UNIQ, mPlayerType);
-        intent.putExtra(Constant.IntentKey.VOLUME_ADJUST_TYPE, volumeAdjustType);
-        intent.putExtra(Constant.IntentKey.VOLUME_SET_VALUE, volumeValue);
-        intent.putExtra(Constant.IntentKey.SENDER_UNIQ_PLAYER_TO_MCS, mSenderUniq);
+        intent.putExtra(ConstData.IntentKey.UNIQ, mPlayerType);
+        intent.putExtra(ConstData.IntentKey.VOLUME_ADJUST_TYPE, volumeAdjustType);
+        intent.putExtra(ConstData.IntentKey.VOLUME_SET_VALUE, volumeValue);
+        intent.putExtra(ConstData.IntentKey.SENDER_UNIQ_PLAYER_TO_MCS, mSenderUniq);
         msg.obj = intent;
         
         sendMsgToMediaCenter(msg);
@@ -552,11 +551,11 @@ public class MediaCenterPlayerClient
         Log.d(TAG, "PlayerClient --> unregisterPlayerCallBack()");
         
         Message msg = Message.obtain();
-        msg.what = Constant.MCSMessage.MSG_UNREGISTER_CALLBACK;
+        msg.what = ConstData.MCSMessage.MSG_UNREGISTER_CALLBACK;
         msg.replyTo = mMessenger;
         
         Intent intent = new Intent();
-        intent.putExtra(Constant.IntentKey.UNIQ, mPlayerType);
+        intent.putExtra(ConstData.IntentKey.UNIQ, mPlayerType);
         msg.obj = intent;
         
         sendMsgToMediaCenter(msg);

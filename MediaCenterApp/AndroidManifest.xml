@@ -57,6 +57,7 @@
                 <action android:name="com.rockchips.mediacenter.INSTALL_APP" />
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.MONKEY"/>
             </intent-filter>
         </activity>
         <activity
@@ -199,11 +200,6 @@
             android:name="com.rockchips.mediacenter.imageplayer.ImageScaleMoveActivity"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
         </activity>
-        <activity
-            android:name="com.rockchips.mediacenter.activity.SearchActivity"
-            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
-        </activity>
-
         <service
             android:name="com.rockchips.mediacenter.dlna.MediaCenterService"
             android:exported="true"

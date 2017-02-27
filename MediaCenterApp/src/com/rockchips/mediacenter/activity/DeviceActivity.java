@@ -10,15 +10,13 @@
 
 package com.rockchips.mediacenter.activity;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-
-import com.rockchips.mediacenter.basicutils.constant.Constant;
-import com.rockchips.mediacenter.basicutils.util.IICLOG;
+import com.rockchips.mediacenter.data.ConstData;
+import com.rockchips.mediacenter.utils.IICLOG;
 
 /**
  * Description: 监听本地及DLAN设备变化的Acitivity<br>
@@ -57,7 +55,7 @@ public class DeviceActivity extends AppBaseActivity
             mDeviceChangeBroadcastReceiver = new DeviceChangeBroadcastReceiver();
             IntentFilter mIntentFilter = new IntentFilter();
             mIntentFilter.addAction(ACTION_DEV_DOWN);
-            registerReceiver(mDeviceChangeBroadcastReceiver, mIntentFilter, Constant.MEDIACENTER_PERMISSION, null);
+            registerReceiver(mDeviceChangeBroadcastReceiver, mIntentFilter, ConstData.MEDIACENTER_PERMISSION, null);
         }
     }
 

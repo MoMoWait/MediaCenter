@@ -55,15 +55,14 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.rockchips.mediacenter.R;
-import com.rockchips.mediacenter.basicutils.bean.LocalDeviceInfo;
-import com.rockchips.mediacenter.basicutils.bean.LocalMediaInfo;
-import com.rockchips.mediacenter.basicutils.constant.Constant;
-import com.rockchips.mediacenter.basicutils.util.IICLOG;
+import com.rockchips.mediacenter.bean.LocalDeviceInfo;
+import com.rockchips.mediacenter.bean.LocalMediaInfo;
+import com.rockchips.mediacenter.data.ConstData;
+import com.rockchips.mediacenter.utils.IICLOG;
 import com.rockchips.mediacenter.audioplayer.ENUMLAYOUTDISPLAYTYPE;
 import com.rockchips.mediacenter.bean.LocalDevice;
 import com.rockchips.mediacenter.bean.NFSInfo;
 import com.rockchips.mediacenter.bean.SmbInfo;
-import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.modle.db.LocalDeviceService;
 import com.rockchips.mediacenter.modle.db.LocalMediaFileService;
 import com.rockchips.mediacenter.modle.db.LocalMediaFolderService;
@@ -79,13 +78,10 @@ import com.rockchips.mediacenter.view.LoadingDialog;
 import com.rockchips.mediacenter.view.NFSAddDialog;
 import com.rockchips.mediacenter.view.NetDeviceAddSelectDialog;
 import com.rockchips.mediacenter.view.SambaAddDialog;
-import com.rockchips.mediacenter.viewutils.devicelist.DeviceItem;
-import com.rockchips.mediacenter.viewutils.devicelist.DevicesListView;
-import com.rockchips.mediacenter.viewutils.devicelist.OnDeviceSelectedListener;
-import com.rockchips.mediacenter.viewutils.devicelist.DevicesListView.OnSearchListener;
-import com.rockchips.mediacenter.viewutils.menu.BottomPopMenu;
-import com.rockchips.mediacenter.viewutils.menu.MenuItemImpl;
-import com.rockchips.mediacenter.viewutils.menu.OnSelectTypeListener;
+import com.rockchips.mediacenter.bean.DeviceItem;
+import com.rockchips.mediacenter.view.DevicesListView;
+import com.rockchips.mediacenter.service.OnDeviceSelectedListener;
+import com.rockchips.mediacenter.view.DevicesListView.OnSearchListener;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.Html;
 import android.text.TextUtils;
@@ -142,8 +138,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     private static MainActivity mStMainActivity;
     
     private DeviceUpDownReceiver mDeviceUpDownReceiver;
-    
-    private BottomPopMenu mPopMenu;
 
     /**
      * 每一张海报的宽度
@@ -702,7 +696,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
         Intent intent = new Intent();
         intent.setClass(this, FileListActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.putExtra(Constant.EXTRA_IS_SEARCH, true);
+        intent.putExtra(ConstData.EXTRA_IS_SEARCH, true);
         //intent.putExtra(BaseActivity.SEARCH_KEY, key);
         startActivity(intent);
     }

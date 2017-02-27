@@ -43,14 +43,15 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 
 import com.rockchips.mediacenter.R;
-import com.rockchips.mediacenter.basicutils.bean.*;
-import com.rockchips.mediacenter.basicutils.util.*;
+import com.rockchips.mediacenter.bean.LocalMediaInfo;
+import com.rockchips.mediacenter.utils.*;
 import com.rockchips.mediacenter.adapter.FileListAdapter;
 import com.rockchips.mediacenter.adapter.FolderListAdapter;
 import com.rockchips.mediacenter.adapter.UpnpFileListAdapter;
 import com.rockchips.mediacenter.adapter.UpnpFolderListAdapter;
 import com.rockchips.mediacenter.audioplayer.InternalAudioPlayer;
 import com.rockchips.mediacenter.bean.LocalDevice;
+import com.rockchips.mediacenter.bean.LocalDeviceInfo;
 import com.rockchips.mediacenter.bean.LocalMediaFile;
 import com.rockchips.mediacenter.bean.LocalMediaFolder;
 import com.rockchips.mediacenter.bean.UpnpFile;
@@ -68,7 +69,7 @@ import com.rockchips.mediacenter.utils.DialogUtils;
 import com.rockchips.mediacenter.utils.MediaFileUtils;
 import com.rockchips.mediacenter.utils.GetDateUtil;
 import com.rockchips.mediacenter.videoplayer.InternalVideoPlayer;
-import com.rockchips.mediacenter.viewutils.preview.PreviewWidget;
+import com.rockchips.mediacenter.view.PreviewWidget;
 /**
  * @author GaoFei
  * Upnp文件列表浏览页面

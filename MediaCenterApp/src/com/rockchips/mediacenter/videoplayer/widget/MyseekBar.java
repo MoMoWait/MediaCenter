@@ -18,7 +18,7 @@ import android.view.MotionEvent;
 import android.widget.AbsSeekBar;
 
 import com.rockchips.mediacenter.R;
-import com.rockchips.mediacenter.basicutils.constant.Constant.PlayMode;
+import com.rockchips.mediacenter.data.ConstData.PlayMode;
 import com.rockchips.mediacenter.videoplayer.VideoPlayerActivity;
 
 public class MyseekBar extends AbsSeekBar

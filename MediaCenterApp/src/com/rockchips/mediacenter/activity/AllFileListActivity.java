@@ -10,7 +10,6 @@ import momo.cn.edu.fjnu.androidutils.utils.StorageUtils;
 import org.xutils.x;
 import org.xutils.common.util.LogUtil;
 import org.xutils.view.annotation.ViewInject;
-
 import com.rockchips.mediacenter.adapter.AllFileListAdapter;
 import com.rockchips.mediacenter.adapter.FileListAdapter;
 import com.rockchips.mediacenter.adapter.FolderListAdapter;
@@ -42,6 +41,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -66,12 +66,12 @@ import android.widget.AdapterView.OnItemSelectedListener;
 
 import com.rockchips.mediacenter.view.FileOpDialog;
 import com.rockchips.mediacenter.view.FileRenameDialog;
-import com.rockchips.mediacenter.viewutils.preview.PreviewWidget;
+import com.rockchips.mediacenter.view.PreviewWidget;
 import com.rockchips.mediacenter.R;
-import com.rockchips.mediacenter.basicutils.util.ResLoadUtil;
-import com.rockchips.mediacenter.basicutils.util.DiskUtil;
-import com.rockchips.mediacenter.basicutils.bean.LocalDeviceInfo;
-import com.rockchips.mediacenter.basicutils.bean.LocalMediaInfo;
+import com.rockchips.mediacenter.utils.ResLoadUtil;
+import com.rockchips.mediacenter.utils.DiskUtil;
+import com.rockchips.mediacenter.bean.LocalDeviceInfo;
+import com.rockchips.mediacenter.bean.LocalMediaInfo;
 
 /**
  * @author GaoFei

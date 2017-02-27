@@ -4,4 +4,9 @@
         <item name="android:windowEnterAnimation">@anim/video_menu_enter</item>  
         <item name="android:windowExitAnimation">@anim/video_menu_exit</item>   
     </style>  
+    
+    <style name="MenuAnimation" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/menu_enter</item>  
+        <item name="android:windowExitAnimation">@anim/menu_exit</item>   
+    </style>  
 </resources> 

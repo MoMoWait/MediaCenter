@@ -1,31 +1,17 @@
 package com.rockchips.mediacenter.application;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.xutils.DbManager;
 import org.xutils.x;
-
 import momo.cn.edu.fjnu.androidutils.base.BaseApplication;
 import momo.cn.edu.fjnu.androidutils.utils.StorageUtils;
-
-import android.app.Application;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
-import android.os.RemoteException;
 import android.util.Log;
-import com.rockchips.mediacenter.api.localImp.LocalDeviceManager;
-import com.rockchips.mediacenter.basicutils.constant.Constant;
-import com.rockchips.mediacenter.basicutils.util.IICLOG;
+import com.rockchips.mediacenter.utils.IICLOG;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.service.DeviceMonitorService;
 import com.rockchips.mediacenter.utils.ActivityExitUtils;
-import com.rockchips.mediacenter.utils.MediaUtils;
 public class MediaCenterApplication extends BaseApplication
 {
     private static final String TAG = "MediaCenterApplication";

@@ -20,12 +20,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.rockchips.mediacenter.R;
-import com.rockchips.mediacenter.basicutils.constant.Constant;
-import com.rockchips.mediacenter.basicutils.constant.Constant.PlayMode;
-import com.rockchips.mediacenter.portable.IVideoViewAdapter;
+import com.rockchips.mediacenter.data.ConstData;
+import com.rockchips.mediacenter.data.ConstData.PlayMode;
+import com.rockchips.mediacenter.service.IVideoViewAdapter;
 import com.rockchips.mediacenter.videoplayer.data.VideoInfo;
 import com.rockchips.mediacenter.videoplayer.widget.MyseekBar.OnSeekBarChangeListener;
-import com.rockchips.mediacenter.viewutils.marqueetextview.MarqueeTextView;
+import com.rockchips.mediacenter.view.MarqueeTextView;
 
 public class SeekBarLayout extends RelativeLayout
 {

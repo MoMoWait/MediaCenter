@@ -34,9 +34,9 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 
-import com.rockchips.mediacenter.basicutils.bean.LocalMediaInfo;
-import com.rockchips.mediacenter.basicutils.constant.Constant;
-import com.rockchips.mediacenter.basicutils.util.IICLOG;
+import com.rockchips.mediacenter.bean.LocalMediaInfo;
+import com.rockchips.mediacenter.data.ConstData;
+import com.rockchips.mediacenter.utils.IICLOG;
 import com.rockchips.mediacenter.audioplayer.AudioPlayerActivity;
 import com.rockchips.mediacenter.audioplayer.AudioPlayerService;
 import com.rockchips.mediacenter.imageplayer.ImagePlayerActivity;
@@ -244,12 +244,12 @@ public class MediaCenterService extends Service
             Messenger msger = null;
             switch (msg.what)
             {
-                case Constant.MCSMessage.MSG_REGISTER_CALLBACK:
+                case ConstData.MCSMessage.MSG_REGISTER_CALLBACK:
 
                     Log.d(TAG, "SenderHandler --> SENDER_MSG_REGISTER_CALLBACK");
 
                     intent = (Intent) msg.obj;
-                    strUniqueIndication = intent.getStringExtra(Constant.IntentKey.UNIQ);
+                    strUniqueIndication = intent.getStringExtra(ConstData.IntentKey.UNIQ);
 
                     Log.d(TAG, "strUniqueIndication:" + strUniqueIndication);
 
@@ -258,23 +258,23 @@ public class MediaCenterService extends Service
                     Log.d(TAG, "mSenderCallbacks.put(), strUniqueIndication=" + strUniqueIndication + ", msg.replyTo=" + msg.replyTo.toString());
                     break;
 
-                case Constant.MCSMessage.MSG_UNREGISTER_CALLBACK:
+                case ConstData.MCSMessage.MSG_UNREGISTER_CALLBACK:
 
                     Log.d(TAG, "SenderHandler --> SENDER_MSG_UNREGISTER_CALLBACK");
 
                     intent = (Intent) msg.obj;
-                    strUniqueIndication = intent.getStringExtra(Constant.IntentKey.UNIQ);
+                    strUniqueIndication = intent.getStringExtra(ConstData.IntentKey.UNIQ);
 
                     Log.d(TAG, strUniqueIndication);
                     mSenderCallbacks.remove(strUniqueIndication);
                     break;
-                case Constant.MCSMessage.MSG_SET_MEDIA_DATA:
+                case ConstData.MCSMessage.MSG_SET_MEDIA_DATA:
 
                     // DTS2012030105161:发送系统广播消息Intent.ACTION_CLOSE_SYSTEM_DIALOGS，取消系统的提示框
                     Log.d(TAG, "SenderHandler --> MSG_SET_MEDIA_DATA --> Send Broadcast to close the system dialogs");
                     Intent intentCloseSysDia = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-                    MediaCenterService.this.getApplicationContext().sendBroadcast(intentCloseSysDia, Constant.MEDIACENTER_PERMISSION);
-//                            ,                            Constant.BROADCAST_PERMISSION_MOUNT_UNMOUNT_FILESYSTEMS);
+                    MediaCenterService.this.getApplicationContext().sendBroadcast(intentCloseSysDia, ConstData.MEDIACENTER_PERMISSION);
+//                            ,                            ConstData.BROADCAST_PERMISSION_MOUNT_UNMOUNT_FILESYSTEMS);
 
                     // 清空Sender端发送过来的消息缓存记录
                     senderMsgQueue.clear();
@@ -283,12 +283,12 @@ public class MediaCenterService extends Service
 
                     // 获取唯一标识
                     intent = (Intent) msg.obj;
-                    strUniqueIndication = intent.getStringExtra(Constant.IntentKey.UNIQ);
+                    strUniqueIndication = intent.getStringExtra(ConstData.IntentKey.UNIQ);
                     mediaInfo.setUniq(strUniqueIndication);
                     Log.d(TAG, "strUniqueIndication = [" + strUniqueIndication + "]");
 
                     // 获取媒体播放列表
-                    mediaBaseList = intent.getParcelableArrayListExtra(Constant.IntentKey.MEDIA_INFO_LIST);
+                    mediaBaseList = intent.getParcelableArrayListExtra(ConstData.IntentKey.MEDIA_INFO_LIST);
 
                     mediaFileInfo = new LocalMediaInfo();
                     mediaFileInfo.decompress(mediaBaseList.get(0));
@@ -299,8 +299,8 @@ public class MediaCenterService extends Service
                     Log.d(TAG, "SenderHandler --> MSG_SET_MEDIA_DATA --> MediaType = [" + mediaFileInfo.getmFileType() + "]");
 
                     // 获取当前需要播放的媒体文件在媒体列表中的索引
-                    int currentIndex = intent.getIntExtra(Constant.IntentKey.CURRENT_INDEX, 0);
-                    boolean isMirrorOn = intent.getBooleanExtra(Constant.IntentKey.IS_MIRROR_ON, false);
+                    int currentIndex = intent.getIntExtra(ConstData.IntentKey.CURRENT_INDEX, 0);
+                    boolean isMirrorOn = intent.getBooleanExtra(ConstData.IntentKey.IS_MIRROR_ON, false);
                     if (currentIndex < 0)
                     {
                         currentIndex = 0;
@@ -330,10 +330,10 @@ public class MediaCenterService extends Service
                             if (msger != null)
                             {
                                 Message msgSenderStop = Message.obtain();
-                                msgSenderStop.what = Constant.MCSMessage.MSG_STOP;
+                                msgSenderStop.what = ConstData.MCSMessage.MSG_STOP;
                                 Intent intentSenderStop = new Intent();
-                                intentSenderStop.putExtra(Constant.IntentKey.UNIQ, mMediaInfo.getPlayerType());
-                                intentSenderStop.putExtra(Constant.IntentKey.SENDER_UNIQ_PLAYER_TO_MCS, mMediaInfo.getUniq());
+                                intentSenderStop.putExtra(ConstData.IntentKey.UNIQ, mMediaInfo.getPlayerType());
+                                intentSenderStop.putExtra(ConstData.IntentKey.SENDER_UNIQ_PLAYER_TO_MCS, mMediaInfo.getUniq());
 
                                 msgSenderStop.obj = intentSenderStop;
                                 if (!sendMsgToSender(msgSenderStop))
@@ -347,9 +347,9 @@ public class MediaCenterService extends Service
                             if (msger != null)
                             {
                                 Message msgPlayerStop = Message.obtain();
-                                msgPlayerStop.what = Constant.MCSMessage.MSG_STOP;
+                                msgPlayerStop.what = ConstData.MCSMessage.MSG_STOP;
                                 Intent intentPlayerStop = new Intent();
-                                intentPlayerStop.putExtra(Constant.IntentKey.UNIQ, mMediaInfo.getUniq());
+                                intentPlayerStop.putExtra(ConstData.IntentKey.UNIQ, mMediaInfo.getUniq());
                                 msgPlayerStop.obj = intentPlayerStop;
                                 if (!sendMsgToPlayer(msgPlayerStop))
                                 {
@@ -374,12 +374,12 @@ public class MediaCenterService extends Service
                                 Log.d(TAG, "Close backgroud player and start new player");
 
                                 // 发送stop给后台播放器
-                                if (mMediaInfo.getPlayerType() == Constant.MediaType.VIDEO && msger != null)
+                                if (mMediaInfo.getPlayerType() == ConstData.MediaType.VIDEO && msger != null)
                                 {
                                     Message msgPlayerStop = Message.obtain();
-                                    msgPlayerStop.what = Constant.MCSMessage.MSG_STOP;
+                                    msgPlayerStop.what = ConstData.MCSMessage.MSG_STOP;
                                     Intent intentPlayerStop = new Intent();
-                                    intentPlayerStop.putExtra(Constant.IntentKey.UNIQ, mMediaInfo.getUniq());
+                                    intentPlayerStop.putExtra(ConstData.IntentKey.UNIQ, mMediaInfo.getUniq());
                                     msgPlayerStop.obj = intentPlayerStop;
                                     if (!sendMsgToPlayer(msgPlayerStop))
                                     {
@@ -399,12 +399,12 @@ public class MediaCenterService extends Service
                                 if (msger != null)
                                 {
                                     Message msgSamePlayer = Message.obtain();
-                                    msgSamePlayer.what = Constant.MCSMessage.MSG_SET_MEDIA_DATA;
+                                    msgSamePlayer.what = ConstData.MCSMessage.MSG_SET_MEDIA_DATA;
                                     Intent intentSamePlayer = new Intent();
-                                    intentSamePlayer.putParcelableArrayListExtra(Constant.IntentKey.MEDIA_INFO_LIST, mediaBaseList);
-                                    intentSamePlayer.putExtra(Constant.IntentKey.CURRENT_INDEX, currentIndex);
-                                    intentSamePlayer.putExtra(Constant.IntentKey.UNIQ, mMediaInfo.getUniq());
-                                    intentSamePlayer.putExtra(Constant.IntentKey.IS_REUSE_AUDIOPLAYER, true);
+                                    intentSamePlayer.putParcelableArrayListExtra(ConstData.IntentKey.MEDIA_INFO_LIST, mediaBaseList);
+                                    intentSamePlayer.putExtra(ConstData.IntentKey.CURRENT_INDEX, currentIndex);
+                                    intentSamePlayer.putExtra(ConstData.IntentKey.UNIQ, mMediaInfo.getUniq());
+                                    intentSamePlayer.putExtra(ConstData.IntentKey.IS_REUSE_AUDIOPLAYER, true);
                                     msgSamePlayer.obj = intentSamePlayer;
 
                                     if (!sendMsgToPlayer(msgSamePlayer))
@@ -434,11 +434,11 @@ public class MediaCenterService extends Service
                             Log.d(TAG, "Send Stop Command to Previous Sender");
 
                             Message msgSenderStop = Message.obtain();
-                            msgSenderStop.what = Constant.MCSMessage.MSG_STOP;
+                            msgSenderStop.what = ConstData.MCSMessage.MSG_STOP;
 
                             Intent intentSenderStop = new Intent();
-                            intentSenderStop.putExtra(Constant.IntentKey.UNIQ, mMediaInfo.getPlayerType());
-                            intentSenderStop.putExtra(Constant.IntentKey.SENDER_UNIQ_PLAYER_TO_MCS, mMediaInfo.getUniq());
+                            intentSenderStop.putExtra(ConstData.IntentKey.UNIQ, mMediaInfo.getPlayerType());
+                            intentSenderStop.putExtra(ConstData.IntentKey.SENDER_UNIQ_PLAYER_TO_MCS, mMediaInfo.getUniq());
                             msgSenderStop.obj = intentSenderStop;
                             if (!sendMsgToSender(msgSenderStop))
                             {
@@ -456,9 +456,9 @@ public class MediaCenterService extends Service
                             if (msger != null)
                             {
                                 Message msgPlayerStop = Message.obtain();
-                                msgPlayerStop.what = Constant.MCSMessage.MSG_STOP;
+                                msgPlayerStop.what = ConstData.MCSMessage.MSG_STOP;
                                 Intent intentPlayerStop = new Intent();
-                                intentPlayerStop.putExtra(Constant.IntentKey.UNIQ, mMediaInfo.getUniq());
+                                intentPlayerStop.putExtra(ConstData.IntentKey.UNIQ, mMediaInfo.getUniq());
                                 msgPlayerStop.obj = intentPlayerStop;
                                 if (!sendMsgToPlayer(msgPlayerStop))
                                 {
@@ -485,12 +485,12 @@ public class MediaCenterService extends Service
                                 Log.d(TAG, "Close backgroud player and start new player");
 
                                 // 发送stop给后台播放器
-                                if (mMediaInfo.getPlayerType() == Constant.MediaType.VIDEO && msger != null)
+                                if (mMediaInfo.getPlayerType() == ConstData.MediaType.VIDEO && msger != null)
                                 {
                                     Message msgPlayerStop = Message.obtain();
-                                    msgPlayerStop.what = Constant.MCSMessage.MSG_STOP;
+                                    msgPlayerStop.what = ConstData.MCSMessage.MSG_STOP;
                                     Intent intentPlayerStop = new Intent();
-                                    intentPlayerStop.putExtra(Constant.IntentKey.UNIQ, mMediaInfo.getUniq());
+                                    intentPlayerStop.putExtra(ConstData.IntentKey.UNIQ, mMediaInfo.getUniq());
                                     msgPlayerStop.obj = intentPlayerStop;
                                     if (!sendMsgToPlayer(msgPlayerStop))
                                     {
@@ -509,11 +509,11 @@ public class MediaCenterService extends Service
                                 if (msger != null)
                                 {
                                     Message msgSamePlayer = Message.obtain();
-                                    msgSamePlayer.what = Constant.MCSMessage.MSG_SET_MEDIA_DATA;
+                                    msgSamePlayer.what = ConstData.MCSMessage.MSG_SET_MEDIA_DATA;
                                     Intent intentSamePlayer = new Intent();
-                                    intentSamePlayer.putParcelableArrayListExtra(Constant.IntentKey.MEDIA_INFO_LIST, mediaBaseList);
-                                    intentSamePlayer.putExtra(Constant.IntentKey.CURRENT_INDEX, currentIndex);
-                                    intentSamePlayer.putExtra(Constant.IntentKey.UNIQ, mMediaInfo.getUniq());
+                                    intentSamePlayer.putParcelableArrayListExtra(ConstData.IntentKey.MEDIA_INFO_LIST, mediaBaseList);
+                                    intentSamePlayer.putExtra(ConstData.IntentKey.CURRENT_INDEX, currentIndex);
+                                    intentSamePlayer.putExtra(ConstData.IntentKey.UNIQ, mMediaInfo.getUniq());
                                     msgSamePlayer.obj = intentSamePlayer;
 
                                     if (!sendMsgToPlayer(msgSamePlayer))
@@ -531,7 +531,7 @@ public class MediaCenterService extends Service
                     }
                     break;
 
-                case Constant.MCSMessage.MSG_APPEND_MEDIA_DATA:
+                case ConstData.MCSMessage.MSG_APPEND_MEDIA_DATA:
                     Log.d(TAG, "SenderHandler --> MSG_APPEND_MEDIA_DATA");
 
                     if (mMediaInfo == null)
@@ -542,7 +542,7 @@ public class MediaCenterService extends Service
 
                     // 获取媒体播放列表
                     intent = (Intent) msg.obj;
-                    mediaBaseList = intent.getParcelableArrayListExtra(Constant.IntentKey.MEDIA_INFO_LIST);
+                    mediaBaseList = intent.getParcelableArrayListExtra(ConstData.IntentKey.MEDIA_INFO_LIST);
                     if (mediaBaseList == null)
                     {
                         Log.e(TAG, "mediaBaseList == null");
@@ -568,7 +568,7 @@ public class MediaCenterService extends Service
 
                     break;
 
-                case Constant.MCSMessage.MSG_DEVICE_DOWN:
+                case ConstData.MCSMessage.MSG_DEVICE_DOWN:
                     Log.d(TAG, "SenderHandler --> MSG_DEVICE_DOWN ");
 
                     if (mMediaInfo == null)
@@ -583,7 +583,7 @@ public class MediaCenterService extends Service
                     }
 
                     break;
-                case Constant.MCSMessage.MSG_PLAY:
+                case ConstData.MCSMessage.MSG_PLAY:
                     Log.d(TAG, "SenderHandler --> MSG_PLAY");
 
                     if (mMediaInfo == null)
@@ -598,7 +598,7 @@ public class MediaCenterService extends Service
                     }
 
                     break;
-                case Constant.MCSMessage.MSG_PAUSE:
+                case ConstData.MCSMessage.MSG_PAUSE:
                     Log.d(TAG, "SenderHandler --> MSG_PAUSE");
 
                     if (mMediaInfo == null)
@@ -613,7 +613,7 @@ public class MediaCenterService extends Service
                     }
 
                     break;
-                case Constant.MCSMessage.MSG_SEEK:
+                case ConstData.MCSMessage.MSG_SEEK:
                     Log.d(TAG, "SenderHandler --> MSG_SEEK");
 
                     if (mMediaInfo == null)
@@ -629,7 +629,7 @@ public class MediaCenterService extends Service
 
                     break;
 
-                case Constant.MCSMessage.MSG_STOP:
+                case ConstData.MCSMessage.MSG_STOP:
 
                     Log.d(TAG, "SenderHandler --> MSG_STOP");
 
@@ -641,7 +641,7 @@ public class MediaCenterService extends Service
                     // DTS:DTS2012021300498
                     // 如果是DLNA过来的stop信令，而且当前是图片播放器，丢弃这个stop信令
                     // 自研的软件版本再手机上已经不再发stop信令了，但是windows会发送 所以这里
-                    // if (mMediaInfo.getPlayerType() == Constant.MediaType.IMAGE)
+                    // if (mMediaInfo.getPlayerType() == ConstData.MediaType.IMAGE)
                     // {
                     // Log.D(TAG, "DLNA stop command, not close the image player");
                     //
@@ -657,16 +657,16 @@ public class MediaCenterService extends Service
                     // 如果是相同的Sender，回发Stop消息，清除mediaInfo，如果是不同的Sender，Stop命令已被sendMsgToPlayer()阻止
                     // 此处清除mMediaInfo，解决Sender先发Stop再发SetMediaData导致SetMediaData进入到第一个尚未结束的Activity而没有启动第二个Activity
                     intent = (Intent) msg.obj;
-                    String strUniq = intent.getStringExtra(Constant.IntentKey.UNIQ);
+                    String strUniq = intent.getStringExtra(ConstData.IntentKey.UNIQ);
                     if (mMediaInfo.getUniq().equals(strUniq))
                     {
                         // 回发Stop消息
                         Message msgSenderStop = Message.obtain();
-                        msgSenderStop.what = Constant.MCSMessage.MSG_STOP;
+                        msgSenderStop.what = ConstData.MCSMessage.MSG_STOP;
 
                         Intent intentSenderStop = new Intent();
-                        intentSenderStop.putExtra(Constant.IntentKey.UNIQ, mMediaInfo.getPlayerType());
-                        intentSenderStop.putExtra(Constant.IntentKey.SENDER_UNIQ_PLAYER_TO_MCS, mMediaInfo.getUniq());
+                        intentSenderStop.putExtra(ConstData.IntentKey.UNIQ, mMediaInfo.getPlayerType());
+                        intentSenderStop.putExtra(ConstData.IntentKey.SENDER_UNIQ_PLAYER_TO_MCS, mMediaInfo.getUniq());
 
                         msgSenderStop.obj = intentSenderStop;
                         if (!sendMsgToSender(msgSenderStop))
@@ -680,7 +680,7 @@ public class MediaCenterService extends Service
                     }
 
                     break;
-                case Constant.MCSMessage.MSG_ADJUST_VOLUME:
+                case ConstData.MCSMessage.MSG_ADJUST_VOLUME:
                     Log.d(TAG, "SenderHandler --> MSG_ADJUST_VOLUME");
 
                     if (mMediaInfo == null)
@@ -722,18 +722,18 @@ public class MediaCenterService extends Service
         @Override
         public void handleMessage(Message msg)
         {
-            int playerType = Constant.MediaType.UNKNOWN_TYPE;
+            int playerType = ConstData.MediaType.UNKNOWN_TYPE;
             Intent intent = null;
 
             switch (msg.what)
             {
-                case Constant.MCSMessage.MSG_REGISTER_CALLBACK:
+                case ConstData.MCSMessage.MSG_REGISTER_CALLBACK:
                     Log.d(TAG, "PlayerHandler --> PLAYER_MSG_REGISTER_CALLBACK");
 
                     intent = (Intent) msg.obj;
-                    playerType = intent.getIntExtra(Constant.IntentKey.UNIQ, Constant.MediaType.UNKNOWN_TYPE);
+                    playerType = intent.getIntExtra(ConstData.IntentKey.UNIQ, ConstData.MediaType.UNKNOWN_TYPE);
 
-                    if (playerType == Constant.MediaType.UNKNOWN_TYPE)
+                    if (playerType == ConstData.MediaType.UNKNOWN_TYPE)
                     {
                         Log.d(TAG, "PLAYER_MSG_REGISTER_CALLBACK - playerType is UNKNOWN_TYPE");
                         break;
@@ -747,13 +747,13 @@ public class MediaCenterService extends Service
                     senderMsgQueueProcess(msg.replyTo);
                     break;
 
-                case Constant.MCSMessage.MSG_UNREGISTER_CALLBACK:
+                case ConstData.MCSMessage.MSG_UNREGISTER_CALLBACK:
                     Log.d(TAG, "PlayerHandler --> PLAYER_MSG_UNREGISTER_CALLBACK");
 
                     intent = (Intent) msg.obj;
-                    playerType = intent.getIntExtra(Constant.IntentKey.UNIQ, Constant.MediaType.UNKNOWN_TYPE);
+                    playerType = intent.getIntExtra(ConstData.IntentKey.UNIQ, ConstData.MediaType.UNKNOWN_TYPE);
 
-                    if (playerType == Constant.MediaType.UNKNOWN_TYPE)
+                    if (playerType == ConstData.MediaType.UNKNOWN_TYPE)
                     {
                         Log.e(TAG, "PLAYER_MSG_UNREGISTER_CALLBACK - playerType is UNKNOWN_TYPE");
 
@@ -774,7 +774,7 @@ public class MediaCenterService extends Service
 
                     break;
 
-                case Constant.MCSMessage.MSG_REQUEST_MEDIA_LIST:
+                case ConstData.MCSMessage.MSG_REQUEST_MEDIA_LIST:
                     Log.d(TAG, "PlayerHandler --> MSG_REQUEST_MEDIA_LIST");
 
                     if (!sendMsgToSender(msg))
@@ -783,7 +783,7 @@ public class MediaCenterService extends Service
                     }
                     break;
 
-                case Constant.MCSMessage.MSG_REPORT_ERROR:
+                case ConstData.MCSMessage.MSG_REPORT_ERROR:
 
                     Log.d(TAG, "PlayerHandler --> MSG_REPORT_ERROR");
 
@@ -793,7 +793,7 @@ public class MediaCenterService extends Service
                     }
                     break;
 
-                case Constant.MCSMessage.MSG_PLAY:
+                case ConstData.MCSMessage.MSG_PLAY:
 
                     Log.d(TAG, "PlayerHandler --> MSG_PLAY");
 
@@ -804,7 +804,7 @@ public class MediaCenterService extends Service
 
                     break;
 
-                case Constant.MCSMessage.MSG_DURATION:
+                case ConstData.MCSMessage.MSG_DURATION:
 
                     Log.d(TAG, "PlayerHandler --> MSG_DURATION");
 
@@ -815,7 +815,7 @@ public class MediaCenterService extends Service
 
                     break;
 
-                case Constant.MCSMessage.MSG_PAUSE:
+                case ConstData.MCSMessage.MSG_PAUSE:
 
                     Log.d(TAG, "PlayerHandler --> MSG_PAUSE");
 
@@ -826,12 +826,12 @@ public class MediaCenterService extends Service
 
                     break;
 
-                case Constant.MCSMessage.MSG_SEEK:
+                case ConstData.MCSMessage.MSG_SEEK:
 
                     Log.d(TAG, "PlayerHandler --> MSG_SEEK");
                     intent = (Intent) msg.obj;
-                    playerType = intent.getIntExtra(Constant.IntentKey.UNIQ, Constant.MediaType.UNKNOWN_TYPE);
-                    int seekTo = intent.getIntExtra(Constant.IntentKey.SEEK_POS, -1);
+                    playerType = intent.getIntExtra(ConstData.IntentKey.UNIQ, ConstData.MediaType.UNKNOWN_TYPE);
+                    int seekTo = intent.getIntExtra(ConstData.IntentKey.SEEK_POS, -1);
                     Log.d(TAG, "The PlayerType is:" + playerType);
                     Log.d(TAG, "The Seek Position is:" + seekTo);
 
@@ -842,7 +842,7 @@ public class MediaCenterService extends Service
 
                     break;
 
-                case Constant.MCSMessage.MSG_STOP:
+                case ConstData.MCSMessage.MSG_STOP:
 
                     Log.d(TAG, "PlayerHandler --> MSG_STOP");
 
@@ -853,7 +853,7 @@ public class MediaCenterService extends Service
 
                     break;
 
-                case Constant.MCSMessage.MSG_ADJUST_VOLUME:
+                case ConstData.MCSMessage.MSG_ADJUST_VOLUME:
 
                     Log.d(TAG, "PlayerHandler --> MSG_ADJUST_VOLUME");
 
@@ -921,7 +921,7 @@ public class MediaCenterService extends Service
 
             Intent intent = (Intent) msg.obj;
 
-            String strUniq = intent.getStringExtra(Constant.IntentKey.UNIQ);
+            String strUniq = intent.getStringExtra(ConstData.IntentKey.UNIQ);
 
             Log.d(TAG, "sendMsgToPlayer --> strUniq:" + strUniq);
             Log.d(TAG, "sendMsgToPlayer --> mMediaInfo.getUniq():" + mMediaInfo.getUniq());
@@ -977,8 +977,8 @@ public class MediaCenterService extends Service
         try
         {
             Intent intent = (Intent) msg.obj;
-            int playerType = intent.getIntExtra(Constant.IntentKey.UNIQ, Constant.MediaType.UNKNOWN_TYPE);
-            String strUniq = intent.getStringExtra(Constant.IntentKey.SENDER_UNIQ_PLAYER_TO_MCS);
+            int playerType = intent.getIntExtra(ConstData.IntentKey.UNIQ, ConstData.MediaType.UNKNOWN_TYPE);
+            String strUniq = intent.getStringExtra(ConstData.IntentKey.SENDER_UNIQ_PLAYER_TO_MCS);
 
             Message message = Message.obtain();
             message.copyFrom(msg);
@@ -1056,7 +1056,7 @@ public class MediaCenterService extends Service
         private String mUniq = null;
 
         // 播放器类型
-        private int mPlayerType = Constant.MediaType.UNKNOWN_TYPE;
+        private int mPlayerType = ConstData.MediaType.UNKNOWN_TYPE;
 
         /**
          * @param mUniq the mUniq to set
@@ -1115,24 +1115,24 @@ public class MediaCenterService extends Service
         Intent intent = null;
         switch (mediaType)
         {
-            case Constant.MediaType.VIDEO:
+            case ConstData.MediaType.VIDEO:
                 Log.d(TAG, "start VideoPlayerActivity");
                 intent = new Intent();
                 intent.setClass(this, VideoPlayerActivity.class);
-                intent.putExtra(Constant.IntentKey.CURRENT_INDEX, currentIndex);
-                intent.putExtra(Constant.IntentKey.UNIQ, senderClientUniq);
-                intent.putParcelableArrayListExtra(Constant.IntentKey.MEDIA_INFO_LIST, mediaBaseList);
+                intent.putExtra(ConstData.IntentKey.CURRENT_INDEX, currentIndex);
+                intent.putExtra(ConstData.IntentKey.UNIQ, senderClientUniq);
+                intent.putParcelableArrayListExtra(ConstData.IntentKey.MEDIA_INFO_LIST, mediaBaseList);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
                 startActivity(intent);
                 break;
-            case Constant.MediaType.AUDIO:
+            case ConstData.MediaType.AUDIO:
                 Log.d(TAG, "start AudioPlayerActivity");                
                 intent = new Intent();
-                intent.putExtra(Constant.IntentKey.CURRENT_INDEX, currentIndex);
-                intent.putExtra(Constant.IntentKey.UNIQ, senderClientUniq);
-                intent.putParcelableArrayListExtra(Constant.IntentKey.MEDIA_INFO_LIST, mediaBaseList);
+                intent.putExtra(ConstData.IntentKey.CURRENT_INDEX, currentIndex);
+                intent.putExtra(ConstData.IntentKey.UNIQ, senderClientUniq);
+                intent.putParcelableArrayListExtra(ConstData.IntentKey.MEDIA_INFO_LIST, mediaBaseList);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
@@ -1147,13 +1147,13 @@ public class MediaCenterService extends Service
                     startService(intent);
                 }
                 break;
-            case Constant.MediaType.IMAGE:
+            case ConstData.MediaType.IMAGE:
                 Log.d(TAG, "start ImagePlayerActivity");
                 intent = new Intent();
                 intent.setClass(this, ImagePlayerActivity.class);
-                intent.putExtra(Constant.IntentKey.CURRENT_INDEX, currentIndex);
-                intent.putExtra(Constant.IntentKey.UNIQ, senderClientUniq);
-                intent.putParcelableArrayListExtra(Constant.IntentKey.MEDIA_INFO_LIST, mediaBaseList);
+                intent.putExtra(ConstData.IntentKey.CURRENT_INDEX, currentIndex);
+                intent.putExtra(ConstData.IntentKey.UNIQ, senderClientUniq);
+                intent.putParcelableArrayListExtra(ConstData.IntentKey.MEDIA_INFO_LIST, mediaBaseList);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
@@ -1187,7 +1187,7 @@ public class MediaCenterService extends Service
 
         switch (mediaType)
         {
-            case Constant.MediaType.VIDEO:
+            case ConstData.MediaType.VIDEO:
                 if (componentClassName.equalsIgnoreCase(STR_VIDEO_CLASS_NAME))
                 {
                     Log.d(TAG, "VideoPlayerActivity In Forgroud");
@@ -1201,7 +1201,7 @@ public class MediaCenterService extends Service
                     return true;
                 }
 
-            case Constant.MediaType.AUDIO:
+            case ConstData.MediaType.AUDIO:
                 if (componentClassName.equalsIgnoreCase(STR_AUDIO_CLASS_NAME) || isServiceWorked(activityManager))
                 {
                     Log.d(TAG, "AudioPlayerActivity In Forgroud");
@@ -1215,7 +1215,7 @@ public class MediaCenterService extends Service
                     return true;
                 }
 
-            case Constant.MediaType.IMAGE:
+            case ConstData.MediaType.IMAGE:
                 if (componentClassName.equalsIgnoreCase(STR_IMAGE_CLASS_NAME))
                 {
                     Log.d(TAG, "ImagePlayerActivity In Forgroud");
@@ -1240,9 +1240,9 @@ public class MediaCenterService extends Service
     {
 
         IntentFilter filter = new IntentFilter();
-        filter.addAction(Constant.BroadcastMsg.ACTION_VPSERVICE_CALLING);
-        filter.addAction(Constant.BroadcastMsg.ACTION_VPSERVICE_CALLED);
-        registerReceiver(videoPhoneReceiver, filter);// , Constant.BROADCAST_PERMISSION_MOUNT_UNMOUNT_FILESYSTEMS, null);
+        filter.addAction(ConstData.BroadCastMsg.ACTION_VPSERVICE_CALLING);
+        filter.addAction(ConstData.BroadCastMsg.ACTION_VPSERVICE_CALLED);
+        registerReceiver(videoPhoneReceiver, filter);// , ConstData.BROADCAST_PERMISSION_MOUNT_UNMOUNT_FILESYSTEMS, null);
     }
 
     private void unregisterVideoPhoneReceiver(BroadcastReceiver videoPhoneReceiver)
@@ -1260,13 +1260,13 @@ public class MediaCenterService extends Service
         {
             String action = intent.getAction();
 
-            if (Constant.BroadcastMsg.ACTION_VPSERVICE_CALLING.equals(action))
+            if (ConstData.BroadCastMsg.ACTION_VPSERVICE_CALLING.equals(action))
             {
                 // 接收到视频电话呼叫事件
                 Log.d(TAG, "receive video phone calling");
                 bVideoPhoneCalling = true;
             }
-            else if (Constant.BroadcastMsg.ACTION_VPSERVICE_CALLED.equals(action))
+            else if (ConstData.BroadCastMsg.ACTION_VPSERVICE_CALLED.equals(action))
             {
                 // 接收到视频电话挂断事件
                 Log.d(TAG, "receive video phone hang up");

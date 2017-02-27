@@ -65,20 +65,20 @@ import android.net.Uri;
 import android.os.Environment;
 import android.view.View;
 
-import com.rockchips.mediacenter.basicutils.constant.Constant;
-import com.rockchips.mediacenter.basicutils.util.DateUtil;
-import com.rockchips.mediacenter.basicutils.util.FileUtil;
-import com.rockchips.mediacenter.basicutils.util.IICLOG;
-import com.rockchips.mediacenter.basicutils.util.Performance;
-import com.rockchips.mediacenter.basicutils.util.StringUtils;
-import com.rockchips.mediacenter.basicutils.util.Texture;
-import com.rockchips.mediacenter.basicutils.util.Utils;
-import com.rockchips.mediacenter.image.gif.GifOpenHelper;
-import com.rockchips.mediacenter.image.jpeg.JpegHeaders;
-import com.rockchips.mediacenter.image.jpeg.JpegHeaders.Section;
-import com.rockchips.mediacenter.image.jpeg.ReadJpg;
-import com.rockchips.mediacenter.mtd.download.MultiDownloadListener;
-import com.rockchips.mediacenter.mtd.download.MultiThreadDownloader;
+import com.rockchips.mediacenter.data.ConstData;
+import com.rockchips.mediacenter.utils.DateUtil;
+import com.rockchips.mediacenter.utils.FileUtil;
+import com.rockchips.mediacenter.utils.IICLOG;
+import com.rockchips.mediacenter.utils.Performance;
+import com.rockchips.mediacenter.utils.StringUtils;
+import com.rockchips.mediacenter.utils.Texture;
+import com.rockchips.mediacenter.utils.Utils;
+import com.rockchips.mediacenter.utils.GifOpenHelper;
+import com.rockchips.mediacenter.utils.JpegHeaders;
+import com.rockchips.mediacenter.utils.JpegHeaders.Section;
+import com.rockchips.mediacenter.utils.ReadJpg;
+import com.rockchips.mediacenter.service.MultiDownloadListener;
+import com.rockchips.mediacenter.service.MultiThreadDownloader;
 import com.rockchips.mediacenter.imageplayer.DLNAImageSwitcherViewFactory;
 import com.rockchips.mediacenter.imageplayer.downloader.DownloadProgressListener;
 import com.rockchips.mediacenter.imageplayer.downloader.FileDownloader;
@@ -240,7 +240,7 @@ public class UriTexture extends Texture
         try
         {
             //本地设备
-            if (Constant.DeviceType.isLocalDevice(devType))
+            if (ConstData.DeviceType.isLocalDevice(devType))
             {
                 mLog.d(TAG, "createGifFromUrl----------->sd or u");
                 File file = new File(uri);
@@ -411,7 +411,7 @@ public class UriTexture extends Texture
         SoftReference<Bitmap> srBmp = null;
         mLog.d(TAG, "createFromUri--->devType-->" + devType);
         // 如果播放的是U盘、sdcard、储存在本地云设备的图片则直接去本地读取而不去下载到缓存
-        if (Constant.DeviceType.isLocalDevice(devType) || devType == Constant.DeviceType.DEVICE_TYPE_NFS || devType == Constant.DeviceType.DEVICE_TYPE_SMB)
+        if (ConstData.DeviceType.isLocalDevice(devType) || devType == ConstData.DeviceType.DEVICE_TYPE_NFS || devType == ConstData.DeviceType.DEVICE_TYPE_SMB)
         {
             mLog.d(TAG, "createFromUri--->createFromLocal--->start--->" + DateUtil.getCurrentTime());
             
@@ -497,7 +497,7 @@ public class UriTexture extends Texture
             mLog.d(TAG, "resource from net: " + uri);
             
             //modify by xkf76249 增加一个分支判断 ，判断url是否是来自分享图片
-            if (devType == Constant.DeviceType.DEVICE_TYPE_CLOUD
+            if (devType == ConstData.DeviceType.DEVICE_TYPE_CLOUD
                 && (StringUtils.isNetworkURI(uri) || uri.startsWith("/Photoshare")))
             {
                 mLog.d(TAG, "CreateCloudPicBitMap is net url" + name);
@@ -2485,7 +2485,7 @@ public class UriTexture extends Texture
         {
             InputStream is = null;
             HttpURLConnection conn = null;
-            if (devType == Constant.DeviceType.DEVICE_TYPE_DMS)
+            if (devType == ConstData.DeviceType.DEVICE_TYPE_DMS)
             {
                 mLog.d(TAG, "CreateBitMap 3");
                 try
@@ -2532,7 +2532,7 @@ public class UriTexture extends Texture
                 mLog.d(TAG, "CreateBitMap 9");
                 
             }
-            else if (devType == Constant.DeviceType.DEVICE_TYPE_U)
+            else if (devType == ConstData.DeviceType.DEVICE_TYPE_U)
             {// 此处给的格式可能是URI的格式
             
                 // mLog.d("CreateBitMap 10");
@@ -2551,7 +2551,7 @@ public class UriTexture extends Texture
                 
                 // mLog.d("CreateBitMap 11");
             }
-            else if (devType == Constant.DeviceType.DEVICE_TYPE_CLOUD)
+            else if (devType == ConstData.DeviceType.DEVICE_TYPE_CLOUD)
             {
                 // 非网络uri,即本地uri
                 if (!StringUtils.isNetworkURI(url))

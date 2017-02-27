@@ -30,17 +30,17 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.rockchips.mediacenter.basicutils.bean.LocalMediaInfo;
-import com.rockchips.mediacenter.basicutils.constant.Constant;
-import com.rockchips.mediacenter.basicutils.util.IICLOG;
-import com.rockchips.mediacenter.basicutils.util.StringUtils;
-import com.rockchips.mediacenter.common.PlayStateInfo;
+import com.rockchips.mediacenter.bean.LocalMediaInfo;
+import com.rockchips.mediacenter.data.ConstData;
+import com.rockchips.mediacenter.utils.IICLOG;
+import com.rockchips.mediacenter.utils.StringUtils;
+import com.rockchips.mediacenter.bean.PlayStateInfo;
 import com.rockchips.mediacenter.activity.DeviceActivity;
 import com.rockchips.mediacenter.audioplayer.AudioPlayerActivity;
 import com.rockchips.mediacenter.audioplayer.DBUtils;
 import com.rockchips.mediacenter.playerclient.MediaCenterPlayerClient;
 import com.rockchips.mediacenter.videoplayer.VideoPlayerActivity;
-import com.rockchips.mediacenter.viewutils.menu.PopMenu.VolumeKeyListener;
+import com.rockchips.mediacenter.view.PopMenu.VolumeKeyListener;
 
 /**
  * 
@@ -122,7 +122,7 @@ public abstract class PlayerBaseActivity extends DeviceActivity
         {
             switch (msg.what)
             {
-                case Constant.ServiceConnectionMSG.MSG_SERVICE_DISCONNECTED:
+                case ConstData.ServiceConnectionMSG.MSG_SERVICE_DISCONNECTED:
                     finish();
                     break;
                 
@@ -247,7 +247,7 @@ public abstract class PlayerBaseActivity extends DeviceActivity
 //        {
 //            mLog.d(TAG, "mMediaCenterPlayerClient != null, send volumePercent to Sender");
 //            
-//            mMediaCenterPlayerClient.adjustVolume(Constant.VolumeAdjustType.ADJUST_SET, volumePercent);
+//            mMediaCenterPlayerClient.adjustVolume(ConstData.VolumeAdjustType.ADJUST_SET, volumePercent);
 //        }
         
         super.onResume();
@@ -324,11 +324,11 @@ public abstract class PlayerBaseActivity extends DeviceActivity
         }
         
         //获取当前播放索引
-        int playIndex = intent.getIntExtra(Constant.IntentKey.CURRENT_INDEX, 0);
+        int playIndex = intent.getIntExtra(ConstData.IntentKey.CURRENT_INDEX, 0);
         
         //获取客户端唯一标识
-        String senderClientUniq = intent.getStringExtra(Constant.IntentKey.UNIQ);
-        ArrayList<Bundle> mediaBaseList = intent.getParcelableArrayListExtra(Constant.IntentKey.MEDIA_INFO_LIST);
+        String senderClientUniq = intent.getStringExtra(ConstData.IntentKey.UNIQ);
+        ArrayList<Bundle> mediaBaseList = intent.getParcelableArrayListExtra(ConstData.IntentKey.MEDIA_INFO_LIST);
         
         if (StringUtils.isNotEmpty(senderClientUniq))
         {
@@ -336,10 +336,10 @@ public abstract class PlayerBaseActivity extends DeviceActivity
         }
         else
         {
-            setSenderClientUniq(Constant.ClientTypeUniq.UNKNOWN_UNIQ);
+            setSenderClientUniq(ConstData.ClientTypeUniq.UNKNOWN_UNIQ);
         }
         
-        mbInternalPlayer = intent.getBooleanExtra(Constant.IntentKey.IS_INTERNAL_PLAYER, false);
+        mbInternalPlayer = intent.getBooleanExtra(ConstData.IntentKey.IS_INTERNAL_PLAYER, false);
 		Log.d(TAG, "isInternalPlayer is : " + mbInternalPlayer);
 		
 		//如果是媒体中心内置播放器，则不启动服务
@@ -397,7 +397,7 @@ public abstract class PlayerBaseActivity extends DeviceActivity
 	                String artist = intent.getStringExtra("Artist");
 	                String title = intent.getStringExtra("Title");
 	                String album = intent.getStringExtra("Album");
-	                int deviceType = intent.getIntExtra("DeviceType", Constant.DeviceType.DEVICE_TYPE_UNKNOWN);
+	                int deviceType = intent.getIntExtra("DeviceType", ConstData.DeviceType.DEVICE_TYPE_UNKNOWN);
 	                Log.d(TAG, "parseInputIntent ---> artist:" + artist);
 	                Log.d(TAG, "parseInputIntent ---> title:" + title);
 	                Log.d(TAG, "parseInputIntent ---> deviceType:" + deviceType);
@@ -516,11 +516,11 @@ public abstract class PlayerBaseActivity extends DeviceActivity
     {
         if (str.startsWith("http") || str.startsWith("rtsp"))
         {
-            return Constant.DeviceType.DEVICE_TYPE_DMS;
+            return ConstData.DeviceType.DEVICE_TYPE_DMS;
         }
         else
         {
-            return Constant.DeviceType.DEVICE_TYPE_U;
+            return ConstData.DeviceType.DEVICE_TYPE_U;
         }
     }
     
@@ -709,7 +709,7 @@ public abstract class PlayerBaseActivity extends DeviceActivity
             
             switch (msg.what)
             {
-                case Constant.MCSMessage.MSG_SET_MEDIA_DATA:
+                case ConstData.MCSMessage.MSG_SET_MEDIA_DATA:
                     Log.d(TAG, "MSG_SET_MEDIA_DATA start");
                     
                     mcsSetMediaData(intent);
@@ -717,7 +717,7 @@ public abstract class PlayerBaseActivity extends DeviceActivity
                     Log.d(TAG, "MSG_SET_MEDIA_DATA end");
                     
                     break;
-                case Constant.MCSMessage.MSG_PLAY:
+                case ConstData.MCSMessage.MSG_PLAY:
                     Log.d(TAG, "MSG_PLAY start");
                     
                     mcsPlay(intent);
@@ -725,7 +725,7 @@ public abstract class PlayerBaseActivity extends DeviceActivity
                     Log.d(TAG, "MSG_PLAY end");
                     
                     break;
-                case Constant.MCSMessage.MSG_PAUSE:
+                case ConstData.MCSMessage.MSG_PAUSE:
                     Log.d(TAG, "MSG_PAUSE start");
                     
                     mcsPause(intent);
@@ -733,7 +733,7 @@ public abstract class PlayerBaseActivity extends DeviceActivity
                     Log.d(TAG, "MSG_PAUSE end");
                     
                     break;
-                case Constant.MCSMessage.MSG_SEEK:
+                case ConstData.MCSMessage.MSG_SEEK:
                     Log.d(TAG, "MSG_SEEK start");
                     
                     mcsSeek(intent);
@@ -741,7 +741,7 @@ public abstract class PlayerBaseActivity extends DeviceActivity
                     Log.d(TAG, "MSG_SEEK end");
                     
                     break;
-                case Constant.MCSMessage.MSG_STOP:
+                case ConstData.MCSMessage.MSG_STOP:
                     Log.d(TAG, "MSG_STOP start");
                     
                     // 收到stop信令就进行解绑操作，避免由于在onDestroy()中解绑太慢，导致MCS中刚注册上的播放器回调被正销毁的播放器反注册掉
@@ -752,11 +752,11 @@ public abstract class PlayerBaseActivity extends DeviceActivity
                     Log.d(TAG, "MSG_STOP end");
                     
                     break;
-                case Constant.MCSMessage.MSG_APPEND_MEDIA_DATA:
+                case ConstData.MCSMessage.MSG_APPEND_MEDIA_DATA:
                     Log.d(TAG, "MSG_APPEND_MEDIA_DATA start");
                     
                     ArrayList<Bundle> mediaBaseList =
-                        intent.getParcelableArrayListExtra(Constant.IntentKey.MEDIA_INFO_LIST);
+                        intent.getParcelableArrayListExtra(ConstData.IntentKey.MEDIA_INFO_LIST);
                     
                     if (mPlayStateInfo != null)
                     {
@@ -774,10 +774,10 @@ public abstract class PlayerBaseActivity extends DeviceActivity
                     Log.d(TAG, "MSG_APPEND_MEDIA_DATA end");
                     
                     break;
-                case Constant.MCSMessage.MSG_DEVICE_DOWN:
+                case ConstData.MCSMessage.MSG_DEVICE_DOWN:
                     Log.d(TAG, "MSG_DEVICE_DOWN start");
                     
-                    String deviceId = intent.getStringExtra(Constant.IntentKey.DEVICE_ID);
+                    String deviceId = intent.getStringExtra(ConstData.IntentKey.DEVICE_ID);
                     Log.d(TAG, "deviceId:" + deviceId);
                     
                     if (null == deviceId || deviceId.trim().equals(""))
@@ -806,15 +806,15 @@ public abstract class PlayerBaseActivity extends DeviceActivity
                     Log.d(TAG, "MSG_DEVICE_DOWN end");
                     
                     break;
-                case Constant.MCSMessage.MSG_ADJUST_VOLUME:
+                case ConstData.MCSMessage.MSG_ADJUST_VOLUME:
                     Log.d(TAG, "MSG_ADJUST_VOLUME start");
                     
                     int volumeAdjustType =
-                        intent.getIntExtra(Constant.IntentKey.VOLUME_ADJUST_TYPE,
-                            Constant.VolumeAdjustType.ADJUST_UNKNOWND);
+                        intent.getIntExtra(ConstData.IntentKey.VOLUME_ADJUST_TYPE,
+                            ConstData.VolumeAdjustType.ADJUST_UNKNOWND);
                     Log.d(TAG, "volumeAdjustType:" + volumeAdjustType);
                     
-                    if (volumeAdjustType != Constant.VolumeAdjustType.ADJUST_UNKNOWND)
+                    if (volumeAdjustType != ConstData.VolumeAdjustType.ADJUST_UNKNOWND)
                     {
                         if (audioManager == null)
                         {
@@ -824,7 +824,7 @@ public abstract class PlayerBaseActivity extends DeviceActivity
                                     .getSystemService(Context.AUDIO_SERVICE);
                         }
                         
-                        if (volumeAdjustType == Constant.VolumeAdjustType.ADJUST_LOWER)
+                        if (volumeAdjustType == ConstData.VolumeAdjustType.ADJUST_LOWER)
                         {
                             Log.d(TAG, "Adjust the volume to lower");
                             
@@ -836,12 +836,12 @@ public abstract class PlayerBaseActivity extends DeviceActivity
                             if (mMediaCenterPlayerClient != null)
                             {
                                 Log.d(TAG, "Send adjust volume lower to Sender client");
-                                mMediaCenterPlayerClient.adjustVolume(Constant.VolumeAdjustType.ADJUST_LOWER, -1);
+                                mMediaCenterPlayerClient.adjustVolume(ConstData.VolumeAdjustType.ADJUST_LOWER, -1);
                             }
                             
                             return;
                         }
-                        else if (volumeAdjustType == Constant.VolumeAdjustType.ADJUST_SAME)
+                        else if (volumeAdjustType == ConstData.VolumeAdjustType.ADJUST_SAME)
                         {
                             Log.d(TAG, "Not Adjust the volume");
                             
@@ -853,12 +853,12 @@ public abstract class PlayerBaseActivity extends DeviceActivity
                             if (mMediaCenterPlayerClient != null)
                             {
                                 Log.d(TAG, "Send adjust volume same to Sender client");
-                                mMediaCenterPlayerClient.adjustVolume(Constant.VolumeAdjustType.ADJUST_SAME, -1);
+                                mMediaCenterPlayerClient.adjustVolume(ConstData.VolumeAdjustType.ADJUST_SAME, -1);
                             }
                             
                             return;
                         }
-                        else if (volumeAdjustType == Constant.VolumeAdjustType.ADJUST_RAISE)
+                        else if (volumeAdjustType == ConstData.VolumeAdjustType.ADJUST_RAISE)
                         {
                             Log.d(TAG, "Adjust the volume to raise");
                             
@@ -870,12 +870,12 @@ public abstract class PlayerBaseActivity extends DeviceActivity
                             if (mMediaCenterPlayerClient != null)
                             {
                                 Log.d(TAG, "Send adjust volume raise to Sender client");
-                                mMediaCenterPlayerClient.adjustVolume(Constant.VolumeAdjustType.ADJUST_RAISE, -1);
+                                mMediaCenterPlayerClient.adjustVolume(ConstData.VolumeAdjustType.ADJUST_RAISE, -1);
                             }
                             
                             return;
                         }
-                        else if (volumeAdjustType == Constant.VolumeAdjustType.ADJUST_MUTE_ON)
+                        else if (volumeAdjustType == ConstData.VolumeAdjustType.ADJUST_MUTE_ON)
                         {
                             Log.d(TAG, "Turn on the mute mode");
                             
@@ -890,12 +890,12 @@ public abstract class PlayerBaseActivity extends DeviceActivity
                             if (mMediaCenterPlayerClient != null)
                             {
                                 Log.d(TAG, "Send mute on to Sender client");
-                                mMediaCenterPlayerClient.adjustVolume(Constant.VolumeAdjustType.ADJUST_MUTE_ON, -1);
+                                mMediaCenterPlayerClient.adjustVolume(ConstData.VolumeAdjustType.ADJUST_MUTE_ON, -1);
                             }
                             
                             return;
                         }
-                        else if (volumeAdjustType == Constant.VolumeAdjustType.ADJUST_MUTE_OFF)
+                        else if (volumeAdjustType == ConstData.VolumeAdjustType.ADJUST_MUTE_OFF)
                         {
                             Log.d(TAG, "Close the mute mode");
                             
@@ -910,16 +910,16 @@ public abstract class PlayerBaseActivity extends DeviceActivity
                             if (mMediaCenterPlayerClient != null)
                             {
                                 Log.d(TAG, "Send mute off to Sender client");
-                                mMediaCenterPlayerClient.adjustVolume(Constant.VolumeAdjustType.ADJUST_MUTE_OFF, -1);
+                                mMediaCenterPlayerClient.adjustVolume(ConstData.VolumeAdjustType.ADJUST_MUTE_OFF, -1);
                             }
                             
                             return;
                         }
-                        else if (volumeAdjustType == Constant.VolumeAdjustType.ADJUST_SET)
+                        else if (volumeAdjustType == ConstData.VolumeAdjustType.ADJUST_SET)
                         {
                             Log.d(TAG, "Set the volume to a fixed value");
                             
-                            float volumePercent = intent.getFloatExtra(Constant.IntentKey.VOLUME_SET_VALUE, -1);
+                            float volumePercent = intent.getFloatExtra(ConstData.IntentKey.VOLUME_SET_VALUE, -1);
                             Log.d(TAG, "volumePercent:" + volumePercent);
                             
                             if (volumePercent < 0 || volumePercent > 1)
@@ -940,7 +940,7 @@ public abstract class PlayerBaseActivity extends DeviceActivity
                             if (mMediaCenterPlayerClient != null)
                             {
                                 Log.d(TAG, "Send the volume percent to Sender client");
-                                mMediaCenterPlayerClient.adjustVolume(Constant.VolumeAdjustType.ADJUST_SET,
+                                mMediaCenterPlayerClient.adjustVolume(ConstData.VolumeAdjustType.ADJUST_SET,
                                         volumePercent);
                             }
                             return;
@@ -1319,7 +1319,7 @@ public abstract class PlayerBaseActivity extends DeviceActivity
      */
     public boolean isSenderMyMedia()
     {
-        if (getSenderClientUniq() == null || getSenderClientUniq().equals(Constant.ClientTypeUniq.DMS_UNIQ))
+        if (getSenderClientUniq() == null || getSenderClientUniq().equals(ConstData.ClientTypeUniq.DMS_UNIQ))
         {
             return true;
         }
@@ -1339,12 +1339,12 @@ public abstract class PlayerBaseActivity extends DeviceActivity
      */
     public boolean isPushType()
     {
-        if (getSenderClientUniq().equalsIgnoreCase(Constant.ClientTypeUniq.PUSH_UNIQ))
+        if (getSenderClientUniq().equalsIgnoreCase(ConstData.ClientTypeUniq.PUSH_UNIQ))
         {
             return true;
         }
         
-        if (getSenderClientUniq().equalsIgnoreCase(Constant.ClientTypeUniq.SYN_UINQ))
+        if (getSenderClientUniq().equalsIgnoreCase(ConstData.ClientTypeUniq.SYN_UINQ))
         {
             return true;
         }
@@ -1362,7 +1362,7 @@ public abstract class PlayerBaseActivity extends DeviceActivity
     {
         if (!StringUtils.isEmpty(mSenderClientUniq))
         {
-            if (mSenderClientUniq.equals(Constant.ClientTypeUniq.PUSH_UNIQ))
+            if (mSenderClientUniq.equals(ConstData.ClientTypeUniq.PUSH_UNIQ))
             {
                 return true;
             }
@@ -1376,7 +1376,7 @@ public abstract class PlayerBaseActivity extends DeviceActivity
     {
         if (!StringUtils.isEmpty(mSenderClientUniq))
         {
-            if (mSenderClientUniq.equals(Constant.ClientTypeUniq.SYN_UINQ))
+            if (mSenderClientUniq.equals(ConstData.ClientTypeUniq.SYN_UINQ))
             {
                 return true;
             }
@@ -1390,7 +1390,7 @@ public abstract class PlayerBaseActivity extends DeviceActivity
     {
         if (!StringUtils.isEmpty(mSenderClientUniq))
         {
-            if (mSenderClientUniq.equals(Constant.ClientTypeUniq.DMS_UNIQ))
+            if (mSenderClientUniq.equals(ConstData.ClientTypeUniq.DMS_UNIQ))
             {
                 return true;
             }
@@ -1478,7 +1478,7 @@ public abstract class PlayerBaseActivity extends DeviceActivity
             if (mMediaCenterPlayerClient != null)
             {
                 Log.d(TAG, "Send the volume percent to Sender client");
-                mMediaCenterPlayerClient.adjustVolume(Constant.VolumeAdjustType.ADJUST_SET, volumePercent);
+                mMediaCenterPlayerClient.adjustVolume(ConstData.VolumeAdjustType.ADJUST_SET, volumePercent);
             }
         }
     };

@@ -1,11 +1,9 @@
 
 package com.rockchips.mediacenter.data;
-
 import java.util.Arrays;
-
-import android.R.bool;
-import android.R.integer;
-
+import android.content.Intent;
+import android.net.Uri;
+import android.provider.MediaStore;
 import momo.cn.edu.fjnu.androidutils.data.CommonValues;
 import momo.cn.edu.fjnu.androidutils.utils.PackageUtils;
 /**
@@ -30,6 +28,8 @@ public class ConstData {
 	public static final String DB_DIRECTORY = CommonValues.application.getFilesDir() + "/" + PackageUtils.getPackageName();
 	public static final String CACHE_IMAGE_DIRECTORY = DB_DIRECTORY + "/" + "imgcache";
 	public static final String NETWORK_DEVICE_MOUNT_DIR = "/data" + "/mediacenter_networkdevice";
+	public static final String MEDIACENTER_PERMISSION = "com.android.rockchips.permission.MEDIACENTER_SEND_RECV";
+	public static final String EXTRA_IS_SEARCH = "is_search";
 	public class NFS{
 		//挂载路径
 		public static final String MOUNT_PATH = "/mnt/sdcard/nfs";
@@ -625,6 +625,178 @@ public class ConstData {
     	String LOAD_LOCAL_MEDIA_FILE_PREVIEW = "com.rockchip.mediacenter.load_local_media_file_preview";
     	String PAUSE_DEVICE_FILE_SCAN = "com.rockchip.mediacenter.pause_device_file_scan";
     	String CONTINUE_DEVICE_FILE_SCAN = "com.rockchip.mediacenter.continue_device_file_scan";
+    	
+    	// 消息广播相关------开始
+
+        /**
+         * 添加共享目录
+         */
+        String ACTION_ON_DMS_ADDSHARE = "com.rockchips.dlna.service.action.addShare";
+
+        /**
+         * 添加共享目录返回状态
+         */
+        String ACTION_ON_DMS_ADDSHARE_RESULT = "com.rockchips.dlna.service.action.addShare.result";
+
+        /**
+         * 添加共享目录回结果消息
+         */
+        int MSG_ACTION_ON_DMS_ADDSHARE_RESULT = 0X0514;
+
+        /**
+         * 删除共享目录
+         */
+        String ACTION_ON_DMS_DELSHARE = "com.rockchips.dlna.service.action.delShare";
+
+        /**
+         * 删除共享目录返回状态
+         */
+        String ACTION_ON_DMS_DELSHARE_RESULT = "com.rockchips.dlna.service.action.delShare.result";
+
+        /**
+         * 删除共享目录回结果消息
+         */
+        int MSG_ACTION_ON_DMS_DELSHARE_RESULT = 0X0515;
+
+        /**
+         * UPNP init通知
+         */
+        String ACTION_ON_STACK_INIT = "com.rockchips.dlna.service.action.OnStackInit";
+
+        /**
+         * 设备上线通知
+         */
+        String ACTION_ON_DMS_UP = "com.rockchips.dlna.service.action.OnDMSUp";
+
+        int MSG_ACTION_ON_DMS_UP = 1;
+
+        /**
+         * 设备下线通知
+         */
+        String ACTION_ON_DMS_DOWN = "com.rockchips.dlna.service.action.OnDMSDown";
+
+        int MSG_ACTION_ON_DMS_DOWN = 2;
+
+        /**
+         * // 通知设备刷新
+         */
+        String ACTION_ON_DMS_SEARCH = "com.rockchips.dlna.mymedia.dms.search";
+
+        /**
+         * 特定DMS设备内容更新通知
+         */
+        String ACTION_ON_DMS_BROWSE_RESULT = "com.rockchips.dlna.service.action.OnDMSBrowseResult";
+
+        public static final int MSG_ACTION_ON_DMS_BROWSE_RESULT = 3;
+
+        /**
+         * 设备的挂载（U盘）
+         */
+        public static final String ACTION_ON_MEDIA_MOUTED = Intent.ACTION_MEDIA_MOUNTED;
+
+        public static final int MSG_ACTION_ON_MEDIA_MOUTED = 4;
+
+        /**
+         * 设备的卸载（U盘）
+         */
+        String ACTION_ON_MEDIA_UNMOUTED = Intent.ACTION_MEDIA_UNMOUNTED;
+
+        public static final int MSG_ACTION_ON_MEDIA_UNMOUTED = 5;
+
+        /**
+         * 扫描完成（U盘）
+         */
+        String ACTION_ON_MEDIA_SCANNER_FINISHED = Intent.ACTION_MEDIA_SCANNER_FINISHED;
+
+        public static final int MSG_ACTION_ON_MEDIA_SCANNER_FINISHED = 6;
+
+        /**
+         * DMC通知DMR需要播放的媒体URI
+         */
+        String ACTION_ON_SET_MEDIA_URI = "com.rockchips.dlna.service.action.OnSetMediaUri";
+
+        int MSG_ACTION_ON_SET_MEDIA_URI = 7;
+
+        /**
+         * DMC通知DMR开始播放
+         */
+        String ACTION_ON_PLAY = "com.rockchips.dlna.service.action.OnPlay";
+
+        int MSG_ACTION_ON_PLAY = 8;
+
+        /**
+         * DMC通知DMR暂停播放
+         */
+        String ACTION_ON_PAUSE = "com.rockchips.dlna.service.action.OnPause";
+
+        int MSG_ACTION_ON_PAUSE = 9;
+
+        /**
+         * DMC通知DMR停止播放
+         */
+        String ACTION_ON_STOP = "com.rockchips.dlna.service.action.OnStop";
+
+        int MSG_ACTION_ON_STOP = 10;
+
+        /**
+         * DMC通知DMR定位播放
+         */
+        public static final String ACTION_ON_SEEK = "com.rockchips.dlna.service.action.OnSeek";
+
+        public static final int MSG_ACTION_ON_SEEK = 11;
+
+        /**
+         * 网络状态变化（网络断开或者连接）
+         */
+        String ACTION_ON_NETWORK_STATE_CHANGED = "android.net.ethernet.STATE_CHANGE";
+
+        String ACTION_ON_NETWORK_ETH_STATE_CHANGED = "android.net.ethernet.ETH_STATE_CHANGED";
+
+        int MSG_ACTION_ON_NETWORK_CONNECTED = 12;
+
+        int MSG_ACTION_ON_NETWORK_DISCONNECTED = 13;
+
+        /**
+         * 视频通话
+         */
+        String ACTION_VPSERVICE_CALLING = "com.rockchips.iptv.vpservice.action.calling";
+
+        String ACTION_VPSERVICE_CALLED = "com.rockchips.iptv.vpservice.action.called";
+
+        /**
+         * 扩展参数
+         */
+        String EXTRA_RESERVE = "com.rockchips.dlna.service.extra.reserve";
+
+        /**
+         * 扩展参数:推送的Seek模式
+         */
+        String EXTRA_SEEK_MODE = "com.rockchips.dlna.service.extra.seekMode";
+
+        /**
+         * 扩展参数:推送的Seek位置
+         */
+        String EXTRA_SEEK_TARGET = "com.rockchips.dlna.service.extra.seekTarget";
+
+        /**
+         * 媒体文件URI
+         */
+        String EXTRA_URI = "com.rockchips.dlna.service.extra.uri";
+
+        /**
+         * 媒体信息
+         */
+        String EXTRA_MEDIA_INFO = "com.rockchips.dlna.service.extra.mediaInfo";
+
+        /**
+         * 设备ID
+         */
+        String EXTRA_DEVICE_ID = "com.rockchips.dlna.service.extra.deviceID";
+        
+        String ACTION_ADD_FILE_SHARE_RESULT = "com.rockchips.mediacenter.addshare";
+        String ACTION_CANCEL_FILE_SHARE_RESULT = "com.rockchips.mediacenter.cancelshare";
+        String EXTRA_FILE_SHARE_RESULT = "com.rockchips.mediacenter.extra.share.result";
+        // 消息广播相关------结束
     }
     
     public enum EBrowerType
@@ -846,4 +1018,351 @@ public class ConstData {
     	int PASTE = 3;
     	int RENAME = 4;
     }
+    
+    public static final class AudioPlayerMsg
+    {
+
+        /**
+         * 请求播放消息
+         */
+        public static final int MSG_REQUEST_PLAY = 1000;
+
+        /**
+         * 请求seek消息
+         */
+        public static final int MSG_REQUEST_SEEKTO = 102;
+
+        /**
+         * 请求退出消息
+         */
+        public static final int MSG_REQUEST_EXIT = 103;
+
+        /**
+         * 请求更新专辑封面消息
+         */
+        public static final int MSG_REQUEST_UPDATECOVER = 105;
+
+        /**
+         * 请求下载歌词消息
+         */
+        public static final int MSG_REQUEST_LYRIC = 106;
+
+        /**
+         * 请求刷新媒体相关信息（专辑名、艺术家）消息
+         */
+        public static final int MSG_REQUEST_REFRESH_MEDIAINFO = 107;
+
+        /**
+         * 播放音乐消息
+         */
+        public static final int MSG_CONTROL_PLAY = 201;
+
+        /**
+         * 暂停音乐消息
+         */
+        public static final int MSG_CONTROL_PAUSE = 202;
+
+        /**
+         * 快进消息
+         */
+        public static final int MSG_CONTROL_FASTFORWORD = 204;
+
+        /**
+         * 快退消息
+         */
+        public static final int MSG_CONTROL_FASTBACKWARD = 205;
+
+        /**
+         * 音乐播放错误消息
+         */
+        public static final int MSG_PROC_ERROR = 301;
+
+        /**
+         * 音乐播放完成消息
+         */
+        public static final int MSG_PROC_COMPLETED = 302;
+
+        /**
+         * 同步播放进度消息
+         */
+        public static final int MSG_SYNC_POSTION = 402;
+
+        /**
+         * 同步歌词消息
+         */
+        public static final int MSG_SYNC_LYRIC = 403;
+
+        /**
+         * 重设歌词消息
+         */
+        public static final int MSG_RESET_LYRIC = 404;
+
+        /**
+         * 设置音乐播放列表datalist消息
+         */
+        public static final int MSG_SET_PLAYLIST_DATA = 405;
+
+        /**
+         * 设置音乐播放列表adapter消息
+         */
+        public static final int MSG_SET_PLAYLIST_ADAPTER = 406;
+
+        /**
+         * 显示无歌词提示消息
+         */
+        public static final int MSG_ISSHOW_NO_LYRIC_TEXT = 407;
+
+        /**
+         * 设置歌词消息
+         */
+        public static final int MSG_SET_LYRICLIST = 501;
+
+        /**
+         * 更新剩余播放时长消息
+         */
+        public static final int MSG_UPDATE_REMAININGDURATION = 502;
+
+        /**
+         * 滚动播放列表消息
+         */
+        public static final int MSG_SCROLL_PLAYLIST = 503;
+
+        /**
+         * 刷新播放、暂停图标消息
+         */
+        public static final int MSG_REFRESH_PLAYICON = 504;
+
+        /**
+         * 刷新专辑封面消息
+         */
+        public static final int MSG_REFRESH_ALBUMICON = 505;
+
+        /**
+         * 请求隐藏弹出菜单消息
+         */
+        public static final int MSG_REQUEST_DISMISS_POPUPWINDOW = 506;
+
+        /**
+         * 随机滚动播放列表消息
+         */
+        public static final int MSG_RANDOM_SCROLL_PLAYLIST = 507;
+
+        /**
+         * 请求播放列表焦点重新回到当前正在播放的歌曲上
+         */
+        public static final int MSG_REQUEST_PLAYLIST_RESTORE = 508;
+
+        /**
+         * 更新音乐播放进度消息
+         */
+        public static final int MSG_UPDATE_MUSIC_PROGRESS = 509;
+
+        /**
+         * 更新音乐总进度消息
+         */
+        public static final int MSG_UPDATE_MUSIC_TOTALDURATION = 510;
+
+        /**
+         * 推送音乐播放完毕延时消息
+         */
+        public static final int PUAH_MEDIAFILE_PLAY_COMPLETE = 511;
+
+        /**
+         * 推送音乐seek消息
+         */
+        public static final int PUAH_MEDIAFILE_PLAY_SEEK = 512;
+
+        /**
+         * 弹出菜单延迟消失时间
+         */
+        public static final int POPUPWINDOW_DISMISS_DELAYMILLIS = 5000;
+    }
+    
+    /**
+     * 播放状态：播放、暂停
+     */
+    public enum PlayState
+    {
+        PLAY, PAUSE
+    }
+	
+	public static final class ScreenMode
+    {
+        /**
+         * 全屏大小
+         */
+        public static final int SCREEN_FULL = 1;
+        
+        /**
+         * 原始大小
+         */
+        public static final int SCREEN_ORIGINAL = 2;
+        
+        /**
+         * 等比拉伸
+         */
+        public static final int SCREEN_SCALE = 3;        
+    }
+	
+
+    public static final class MediaPlayMode
+    {
+        /**
+         * 全体循环播放
+         */
+        public static final int MP_MODE_ALL_CYC = 0;
+
+        /**
+         * 单曲循环播放
+         */
+        public static final int MP_MODE_SINGLE_CYC = 1;
+
+        /**
+         * 随机播放
+         */
+        public static final int MP_MODE_RONDOM = 2;
+
+        /**
+         * 单曲播放
+         */
+        public static final int MP_MODE_SINGLE = 3;
+
+        /**
+         * 全体顺序播放
+         */
+        public static final int MP_MODE_ALL = 4;
+
+    }
+    
+    public static final class ServiceConnectionMSG
+    {
+
+        /**
+         * 断开连接
+         */
+        public static final int MSG_SERVICE_DISCONNECTED = 0;
+    }
+
+    public static final class MediaRequestType
+    {
+        /**
+         * 未知类型
+         */
+        public static final int UNKNOWND_TYPE = -1;
+
+        /**
+         * 上一个媒体文件
+         */
+        public static final int PREVIOUS_MEDIA = 0;
+
+        /**
+         * 下一个媒体文件
+         */
+        public static final int NEXT_MEDIA = 1;
+
+        /**
+         * 上一页媒体列表
+         */
+        public static final int PREVIOUS_PAGE = 2;
+
+        /**
+         * 下一页媒体列表
+         */
+        public static final int NEXT_PAGE = 3;
+
+        /**
+         * 所有媒体的列表
+         */
+        public static final int ALL_MEDIA_LIST = 4;
+    }
+    
+    /**
+     * 
+     * 
+     * VolumeAdjustType:推送端或甩屏端控制播放器调节音量的类型
+     * 
+     * 2012-3-17 下午04:35:18
+     * 
+     * @version 1.0.0
+     * 
+     */
+    public static final class VolumeAdjustType
+    {
+        /**
+         * 音量调节类型
+         */
+        public static final int ADJUST_UNKNOWND = -1;
+
+        /**
+         * 音量减小
+         */
+        public static final int ADJUST_LOWER = 0;
+
+        /**
+         * 音量不变
+         */
+        public static final int ADJUST_SAME = 1;
+
+        /**
+         * 音量增加
+         */
+        public static final int ADJUST_RAISE = 2;
+
+        /**
+         * 开启静音
+         */
+        public static final int ADJUST_MUTE_ON = 3;
+
+        /**
+         * 关闭静音
+         */
+        public static final int ADJUST_MUTE_OFF = 4;
+
+        /**
+         * 设置指定的音量值
+         */
+        public static final int ADJUST_SET = 5;
+    }
+    
+    //zkf61715
+    public static final class PlayMode
+    {
+        public static final int PLAY_COMMON = 0;
+        // 快进快退模式
+        public static final int PLAY_TRICK = 1;
+        // 快速拖动模式
+        public static final int PLAY_SEEK = 2;
+    }
+
+    public static class URI
+    {
+        // 数据库相关 ---------开始
+        /**
+         * 本地外设Audio的URI
+         */
+        public static final Uri LOCAL_AUDIO_URI = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+
+        /**
+         * 本地外设Video的URI
+         */
+        public static final Uri LOCAL_VIDEO_URI = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+
+        /**
+         * 本地外设Images的URI
+         */
+        public static final Uri LOCAL_IMAGE_URI = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+
+        /**
+         * 本地外设Device的URI
+         */
+        public static final Uri LOCAL_DEVICE_URI = Uri.parse("content://media/external/devices");
+
+        /**
+         * 本地Provider的URI
+         */
+        public static final Uri LOCAL_PROVIDER_URI = Uri.parse("content://" + LocDevProvConst.AUTHORITY);
+
+        // 数据库相关 ---------结束
+    }
+    
 }

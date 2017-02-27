@@ -40,7 +40,7 @@
             android:focusable="true"
             android:padding="0px" />
 
-        <com.rockchips.mediacenter.viewutils.marqueetextview.MarqueeTextView
+        <com.rockchips.mediacenter.view.MarqueeTextView
             android:id="@+id/elapsedName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
