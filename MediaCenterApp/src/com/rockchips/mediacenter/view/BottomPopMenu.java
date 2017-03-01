@@ -161,7 +161,7 @@ public class BottomPopMenu extends PopupWindow
         @SuppressWarnings("deprecation")
         int width = wm.getDefaultDisplay().getWidth();
         //BitmapDrawable drawbleBg = (BitmapDrawable) context.getResources().getDrawable(R.drawable.option_bg);
-        this.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#7f292930"))); // 璁剧疆TabMenu鑿滃崟鑳屾櫙
+        this.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#ef292930"))); // 璁剧疆TabMenu鑿滃崟鑳屾櫙
         this.setWidth(width);
         //this.setHeight(drawbleBg.getBitmap().getHeight());
         //fly.gao
@@ -766,7 +766,7 @@ public class BottomPopMenu extends PopupWindow
                     View currentView = mLayout.getChildAt(index);
                     if (currentView != null)
                     {
-                    	currentView.setBackgroundColor(Color.parseColor("#7f19395B"));
+                    	currentView.setBackgroundColor(Color.parseColor("#ef19395B"));
                     }
                  
                 }

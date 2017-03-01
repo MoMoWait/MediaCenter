@@ -370,4 +370,5 @@
     <string name="list_finish_right_tip">键完成选择</string>
     <string name="list_finish_left_tip">请按</string>
     <string name="media_center">媒体中心</string>
+    <string name="close_subtitle">关闭字幕</string>
 </resources>

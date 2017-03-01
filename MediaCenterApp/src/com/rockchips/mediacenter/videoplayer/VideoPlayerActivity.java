@@ -274,6 +274,10 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     //end add by caochao for DTS2014111006777 媒体中心视频时概率性出现“该视频无法播放”
     private LocalDevice mCurrentDevice;
     /**
+     * 是否关闭字幕
+     */
+    private boolean mIsCloseSubtitle;
+    /**
      * 错误提示对话框
      */
     private AlertDialog mErrorTipDialog;
@@ -657,14 +661,14 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         if(isInPictureInPictureMode){
             //当前是画中画模式,设置关闭字幕(使用属性控制)
             String strIsPipSubtitleDisplay = SystemProperties.get(ConstData.PROPERTY_PIP_SUBTITLE, "false");
-            if("false".equals(strIsPipSubtitleDisplay) && originMediaPlayer != null)
-                originMediaPlayer.setSubtitleVisible(false);
+            boolean isShowPIPSubtitle = "true".equals(strIsPipSubtitleDisplay);
+            originMediaPlayer.setSubtitleVisible(isShowPIPSubtitle && !mIsCloseSubtitle);
         }else{
             savePositionNow();
             //开启字幕
             if(originMediaPlayer != null)
                 try{
-                    originMediaPlayer.setSubtitleVisible(true);
+                    originMediaPlayer.setSubtitleVisible(!mIsCloseSubtitle && true);
                 }catch (Exception e) {
                     Log.i(TAG, "setSubtitleVisible->exception:");
                 }
@@ -1527,12 +1531,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         {       
         	Log.i(TAG, "VideoPlayerActivity->onPrepared");
             mMediaPlayer = mp;
-         /*   if (mVVAdapter.getSubtitleList() != null && mVVAdapter.getSubtitleList().size() > 0)
-            {
-                mVVAdapter.showSubtitle(true);
-            }
-            */
-            
             initEvent();
             updateMenuScreen();
             mDuration = mp.getDuration();
@@ -1612,17 +1610,16 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
      * 重置视频字幕显示
      */
     private void resetSubtitleVisible(){
-        //仅支持7.1平台
-        if(!isSupportPIPMode())
-            return;
+    	mIsCloseSubtitle = false;
         MediaPlayer originMediaPlayer = mMediaPlayer.getOriginMediaPlayer();
-        if(isInPictureInPictureMode()){
+        if(isSupportPIPMode() && isInPictureInPictureMode()){
             String strIsPipSubtitleDisplay = SystemProperties.get(ConstData.PROPERTY_PIP_SUBTITLE, "false");
-            if("false".equals(strIsPipSubtitleDisplay) && originMediaPlayer != null)
-                originMediaPlayer.setSubtitleVisible(false);
+            boolean isPIPShowSubtitle = "true".equals(strIsPipSubtitleDisplay);
+            originMediaPlayer.setSubtitleVisible(isPIPShowSubtitle && !mIsCloseSubtitle);
         }else{
-            originMediaPlayer.setSubtitleVisible(true);
+            originMediaPlayer.setSubtitleVisible(!mIsCloseSubtitle && true);
         }
+        //originMediaPlayer.setSubtitleVisible(!mIsCloseSubtitle);
             
     }
     
@@ -2354,10 +2351,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         subIndex = 0;
 
         // 若没有字幕则不显示字幕菜单
-        if (!hasAvailExtraSub())
-        {
+        if (!hasAvailExtraSub()){
             Log.d(TAG, "the movie has no subtitle.");
-            // return;
+            return;
         }
 
         // 加载“字幕”面板
@@ -2392,16 +2388,18 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                         item = new MenuItemImpl(this, i, PopMenuSelectType.SUBTITLE_INNER_SET, R.drawable.video_menu_subtitile, 1, tmp.getSubid(), title);
                         itemImpls.add(item);
                     }
-                    else
+                   /* else
                     {
 
                         item = new MenuItemImpl(this, i, PopMenuSelectType.SUBTITLE_INNER_SET, R.drawable.video_menu_subtitile, 1, tmp.getSubid(), str + "."
                                 + String.valueOf(i + 1));
                         itemImpls.add(item);
-                    }
+                    }*/
                    // order++;
                 }
-                
+                //关闭字幕选项
+                item = new MenuItemImpl(this, list1.size(), PopMenuSelectType.SUBTITLE_INNER_SET, R.drawable.video_menu_subtitile, 1, Integer.MAX_VALUE, getString(R.string.close_subtitle));
+                itemImpls.add(item);
                 // 把播放模式面板加入到
                 menuCgy.setMenuItems(itemImpls);
                 menuCgy.setSelectIndex(subId);
@@ -2472,17 +2470,25 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         Log.d(TAG, "subtitle 1 isMenuNeedShow:" + isMenuNeedShow);
         Log.d(TAG, "subtitle 1 subNum:" + subNum);
         // 防止重入
-        if (trackIndex == subId)
+   /*     if (trackIndex == subId)
         {
             Log.d(TAG, "subtitle index == subId!");
             return;
-        }
+        }*/
         if (isMenuNeedShow && subNum > 0)
         {
             if (mVVAdapter != null)
             {
             	MediaPlayer mediaPlayer = mMediaPlayer.getOriginMediaPlayer();
-            	mediaPlayer.selectTrack(trackIndex);
+            	if(menuIndex != subNum){
+            		mIsCloseSubtitle = false;
+            		mediaPlayer.setSubtitleVisible(true);
+            		mediaPlayer.selectTrack(trackIndex);
+            	}
+            	else{
+            		mIsCloseSubtitle = true;
+            		mediaPlayer.setSubtitleVisible(false);
+            	}
             	subId = menuIndex;
                /* Log.d(TAG, "subtitle 1 subNum:" + subNum);
                 mVVAdapter.setSubId(index);
