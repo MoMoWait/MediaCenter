@@ -1766,8 +1766,10 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                                 
                                 removeLogicalMessage(AudioPlayerMsg.MSG_REQUEST_LYRIC);
                                 sendLogicalMessage(obtainLogicalMessage(AudioPlayerMsg.MSG_REQUEST_LYRIC, 0, 0, mCurrentMediaInfo), 0);
-                            }                            
-
+                            }
+                            titleFromRetriever = "";
+                            artistFromRetriever = "";
+                            albumFromRetriever = "";
                             RetrieveInfoManager.getInstance().addTask(mCurrentMediaInfo, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT);
                             requestRefreshMediaInfo();
                             sendUiMessage(obtainUiMessage(AudioPlayerMsg.MSG_REFRESH_ALBUMICON, 0, 0,
@@ -2026,68 +2028,43 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                     String name = "";
                     String albumArtist = "";
                     String albumName = "";
-
-                    do
+                    if (StringUtils.isNotEmpty(titleFromRetriever))
                     {
-                    	/*
-                        if (mCurrentMediaInfo.getmDeviceType() == ConstData.DeviceType.DEVICE_TYPE_DMS)
+                        name = titleFromRetriever;
+                    }
+                    else
+                    {
+                        if (mCurrentMediaInfo != null)
                         {
-                            int devId = getDevId();
-                            if (devId != -1)
-                            {
-                                DlnaBaseObjectInfo info = ObjectFactory.getMediaBrowserClient().getMediaBaseInfoByObjId(devId,
-                                        mCurrentMediaInfo.getmObjectId());
-                                LocalMediaInfo localMediaInfo = MediaInfoConvertor.DlnaBaseObjectInfo2LocalMediaInfo(info);
-                                if (null != localMediaInfo)
-                                {
-                                    name = localMediaInfo.getmTitle();
-                                    albumArtist = localMediaInfo.getmArtist();
-                                    albumName = localMediaInfo.getmAlbum();
-                                }
-                                break;
-                            }
-                        }*/
-
-//                        if (StringUtils.isNotEmpty(titleFromRetriever))
-//                        {
-//                            name = titleFromRetriever;
-//                        }
-//                        else
-                        {
-                            if (mCurrentMediaInfo != null)
-                            {
-                                name = mCurrentMediaInfo.getmFileName();
-                            }
-                        }
-
-                        if (StringUtils.isNotEmpty(artistFromRetriever))
-                        {
-                            albumArtist = artistFromRetriever;
-                        }
-                        else
-                        {
-                            if (mCurrentMediaInfo != null)
-                            {
-                                albumArtist = StringUtils.isNotEmpty(mCurrentMediaInfo.getmArtist()) ? mCurrentMediaInfo.getmArtist()
-                                        : getResources().getString(R.string.unknown_artist);
-                            }
-                        }
-
-                        if (StringUtils.isNotEmpty(albumFromRetriever))
-                        {
-                            albumName = albumFromRetriever;
-                        }
-                        else
-                        {
-                            if (mCurrentMediaInfo != null)
-                            {
-                                albumName = StringUtils.isNotEmpty(mCurrentMediaInfo.getmAlbum()) ? mCurrentMediaInfo.getmAlbum() : getResources()
-                                        .getString(R.string.unknown_album);
-                            }
+                            name = mCurrentMediaInfo.getmFileName();
                         }
                     }
-                    while (false);
 
+                    if (StringUtils.isNotEmpty(artistFromRetriever))
+                    {
+                        albumArtist = artistFromRetriever;
+                    }
+                    else
+                    {
+                        if (mCurrentMediaInfo != null)
+                        {
+                            albumArtist = StringUtils.isNotEmpty(mCurrentMediaInfo.getmArtist()) ? mCurrentMediaInfo.getmArtist()
+                                    : getResources().getString(R.string.unknown_artist);
+                        }
+                    }
+
+                    if (StringUtils.isNotEmpty(albumFromRetriever))
+                    {
+                        albumName = albumFromRetriever;
+                    }
+                    else
+                    {
+                        if (mCurrentMediaInfo != null)
+                        {
+                            albumName = StringUtils.isNotEmpty(mCurrentMediaInfo.getmAlbum()) ? mCurrentMediaInfo.getmAlbum() : getResources()
+                                    .getString(R.string.unknown_album);
+                        }
+                    }
                     mAlbumInfoView.updateName(name);
                     mAlbumInfoView.updateOtherText(albumArtist + getString(R.string.newline) + albumName);
                     break;
@@ -2370,6 +2347,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                 if (mIsInitialized && mMediaPlayer != null)
                 {
                     mMediaPlayer.start();
+                    //requestRefreshMediaInfo();
                     // DTS2014011707941 播放之后在拉回。
                     if (mIsResumeNeedSeek)
                     {

@@ -9,19 +9,11 @@
  */
 
 package com.rockchips.mediacenter.activity;
-
-import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import org.xutils.x;
 import org.xutils.view.annotation.ViewInject;
-
-import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -31,29 +23,20 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.GridView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.rockchips.mediacenter.R;
 import com.rockchips.mediacenter.bean.LocalDeviceInfo;
 import com.rockchips.mediacenter.bean.LocalMediaInfo;
-import com.rockchips.mediacenter.utils.DiskUtil;
-import com.rockchips.mediacenter.adapter.FileListAdapter;
-import com.rockchips.mediacenter.adapter.FolderListAdapter;
 import com.rockchips.mediacenter.adapter.PhotoGridAdapter;
-import com.rockchips.mediacenter.audioplayer.InternalAudioPlayer;
 import com.rockchips.mediacenter.bean.LocalDevice;
 import com.rockchips.mediacenter.bean.LocalMediaFile;
 import com.rockchips.mediacenter.bean.LocalMediaFolder;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.imageplayer.InternalImagePlayer;
-import com.rockchips.mediacenter.modle.db.LocalMediaFileService;
 import com.rockchips.mediacenter.modle.task.FileLoadTask;
 import com.rockchips.mediacenter.modle.task.FolderLoadTask;
 import com.rockchips.mediacenter.utils.DialogUtils;
 import com.rockchips.mediacenter.utils.MediaFileUtils;
-import com.rockchips.mediacenter.videoplayer.InternalVideoPlayer;
-import com.rockchips.mediacenter.view.LoadingDialog;
 /**
  * 本地相册浏览
  * @author GaoFei
