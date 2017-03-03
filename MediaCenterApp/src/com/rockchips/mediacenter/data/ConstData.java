@@ -620,8 +620,10 @@ public class ConstData {
     	String CHECK_NETWORK = "com.rockchip.mediacenter.check_network";
     	String LOAD_AV_BITMAP = "com.rockchip.mediacenter.load_av_bitmap";
     	String REFRESH_AV_PREVIEW = "com.rockchip.mediacenter.refresh_av_preview";
+    	String LOAD_APK_PREVIEW = "com.rockchip.mediacenter.load_apk_preview";
     	String REFRESH_LOCAL_MEDIA_AV_PREVIEW = "com.rockchip.mediacenter.refresh_local_media_av_preview";
     	String REFRESH_PHOTO_PREVIEW = "com.rockchip.mediacenter.refresh_photo_preview";
+    	String REFRESH_APK_PREVIEW = "com.rockchip.mediacenter.refresh_apk_preview";
     	String LOAD_PHOTO_PREVIEW = "com.rockchip.mediacenter.load_photo_preview";
     	String LOAD_LOCAL_MEDIA_FILE_PREVIEW = "com.rockchip.mediacenter.load_local_media_file_preview";
     	String PAUSE_DEVICE_FILE_SCAN = "com.rockchip.mediacenter.pause_device_file_scan";
@@ -1366,4 +1368,12 @@ public class ConstData {
         // 数据库相关 ---------结束
     }
     
+    public interface DefaultFileIconKey{
+    	String FOLDER = "com.rockchips.meidacenter.meida.folder";
+    	String AUDIO = "com.rockchips.meidacenter.meida.audio";
+    	String VIDEO = "com.rockchips.meidacenter.meida.video";
+    	String IMAGE = "com.rockchips.meidacenter.meida.image";
+    	String APK = "com.rockchips.meidacenter.meida.apk";
+    	String UNKNOW_TYPE = "com.rockchips.meidacenter.meida.unknow_type";
+    }
 }

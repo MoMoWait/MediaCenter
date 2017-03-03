@@ -108,6 +108,10 @@ public class DeviceMonitorService extends Service {
 	 * 单线程池服务，音频，视频分类下预览图加载
 	 */
 	private ThreadPoolExecutor mLocalMediaPreviewService;
+	/**
+	 * 单线程池服务，APK预览图加载服务
+	 */
+	private ThreadPoolExecutor mApkPreviewLoadService;
 	private MountThread mountThread;
 	private boolean isMountRuning = true;
 	private List<NFSInfo> mNFSList;
@@ -228,6 +232,7 @@ public class DeviceMonitorService extends Service {
 	    mAVPreviewLoadService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
 	    mPhotoPreviewLoadService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
 	    mLocalMediaPreviewService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
+	    mApkPreviewLoadService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
 	    mLocalDeviceUpDownProcessService = Executors.newSingleThreadExecutor();
 	    mMountNetWorkDeviceService = Executors.newSingleThreadExecutor();
 		mPreviewLoadReceiver = new PreviewLoadReceiver();
@@ -867,6 +872,10 @@ public class DeviceMonitorService extends Service {
 	        	LocalMediaFile localMediaFile = (LocalMediaFile)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_LOCAL_MEDIA_FILE);
 	        	///将线程推入队列
 	        	mLocalMediaPreviewService.execute(new FileAVMediaDataLoadThread(localMediaFile, DeviceMonitorService.this, ConstData.THREAD_PRIORITY--));
+	        }else if(action.equals(ConstData.BroadCastMsg.LOAD_APK_PREVIEW)){
+	        	//将线程推入队列
+	        	 AllFileInfo allFileInfo = (AllFileInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_ALL_FILE_INFO);
+	        	 mApkPreviewLoadService.execute(new APKPreviewLoadThread(allFileInfo, DeviceMonitorService.this, ConstData.THREAD_PRIORITY--));
 	        }
 	    };
 	}

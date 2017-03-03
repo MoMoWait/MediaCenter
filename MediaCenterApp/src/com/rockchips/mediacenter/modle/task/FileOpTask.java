@@ -13,6 +13,7 @@ import com.rockchips.mediacenter.utils.FileOpUtils;
 
 import android.os.AsyncTask;
 import android.text.TextUtils;
+import android.util.Log;
 
 /**
  * @author GaoFei
@@ -20,6 +21,7 @@ import android.text.TextUtils;
  */
 public class FileOpTask extends AsyncTask<AllFileInfo, Integer, Integer> {
 	
+	private static final String TAG = "FileOpTask";
 	
 	public interface CallBack{
 		void onFinish();
@@ -54,6 +56,8 @@ public class FileOpTask extends AsyncTask<AllFileInfo, Integer, Integer> {
 				break;
 			case ConstData.FileOpMode.PASTE:
 				String srcPath = StorageUtils.getDataFromSharedPreference(ConstData.SharedKey.COPY_FILE_PATH);
+				Log.i(TAG, "paste srcPath:" + srcPath);
+				Log.i(TAG, "current directory:" + mAllFileInfo.getFile().getParentFile().getPath());
 				if(!TextUtils.isEmpty(srcPath)){
 					File srcCopyFile = new File(srcPath);
 					//拷贝文件

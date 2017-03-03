@@ -1,5 +1,6 @@
 package com.rockchips.mediacenter.activity;
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import momo.cn.edu.fjnu.androidutils.utils.BitmapUtils;
@@ -36,9 +37,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.icu.text.BreakIterator;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.util.LruCache;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -85,7 +88,6 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	private LinearLayout mLayoutContentPage;
 	@ViewInject(R.id.text_file_name)
 	private TextView mTextFileName;
-	private int mCurrMediaType;
 	/**
 	 * 当前设备
 	 */
@@ -95,11 +97,6 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	 */
 	private String mCurrFolder;
 	private AllFileListAdapter mAllFileListAdapter;
-	private FileListAdapter mFileAdapter;
-	private FolderLoadTask mFolderLoadTask;
-	private FileLoadTask mFileLoadTask;
-	private LocalMediaFolder mSelectFolder;
-	private LocalMediaFile mSelectFile;
 	/**
 	 * 文件列表加载器
 	 */
@@ -144,7 +141,13 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	/**
 	 * 文件重命名对话框
 	 */
-	private FileRenameDialog mRenameDialog;
+	private FileRenameDialog mRenameDialog;	
+	
+	/**
+	 * Bitmap内存缓存器
+	 */
+	private LruCache<String, Bitmap> mMemoryBitmapCache;
+	
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -172,8 +175,8 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	@Override
 	public boolean onItemLongClick(AdapterView<?> parent, View view,
 			int position, long id) {
-		//new FileOpDialog(this, (AllFileInfo)parent.getItemAtPosition(position), this).show();
-		return false;
+		new FileOpDialog(this, (AllFileInfo)parent.getItemAtPosition(position), this).show();
+		return true;
 	}
 	
 	@Override
@@ -208,6 +211,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	    IntentFilter refershFilter  = new IntentFilter();
 	    refershFilter.addAction(ConstData.BroadCastMsg.REFRESH_AV_PREVIEW);
 	    refershFilter.addAction(ConstData.BroadCastMsg.REFRESH_PHOTO_PREVIEW);
+	    refershFilter.addAction(ConstData.BroadCastMsg.REFRESH_APK_PREVIEW);
 	    LocalBroadcastManager.getInstance(this).registerReceiver(mRefreshPreviewReceiver, refershFilter);
 	}
 	
@@ -300,11 +304,16 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	
     public void initDataAndView(){
     	//重置复制，剪切数据
-    	StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.COPY_FILE_PATH, "");
-    	StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.MOVE_FILE_PATH, "");
+    	//StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.COPY_FILE_PATH, "");
+    	//StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.MOVE_FILE_PATH, "");
+    	mMemoryBitmapCache = new LruCache<String, Bitmap>((int)Runtime.getRuntime().maxMemory() / 8){
+    		@Override
+    		protected int sizeOf(String key, Bitmap value) {
+    			return value.getByteCount() / 1024;
+    		}
+    	};
         mRefreshPreviewReceiver = new RefreshPreviewReceiver();
     	mPregressLoading.setVisibility(View.GONE);
-    	mCurrMediaType = getIntent().getIntExtra(ConstData.IntentKey.EXTRAL_MEDIA_TYPE, -1);
     	mCurrDevice = (LocalDevice)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
     	//挂载目录作为当前目录
     	mCurrFolder = mCurrDevice.getMountPath();
@@ -332,37 +341,51 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
             	updateOtherText(fileInfo);
             	if(!fileInfo.isLoadPreview()){
             		loadBitmapForAVFile(fileInfo);
-            	}else{
+            	}else{   
+            		recycleOldPreview();
             		previewBitmap = BitmapUtils.getScaledBitmapFromFile(fileInfo.getPriviewPhotoPath(), SizeUtils.dp2px(this, 280), SizeUtils.dp2px(this, 280));
-        			if(previewBitmap != null){
+        			mOldBitmap = previewBitmap;
+            		if(previewBitmap != null){
         				mWidgetPreview.updateImage(previewBitmap);
         			}
             	}
                 break;
             case ConstData.MediaType.IMAGE:
-            	//previewBitmap = BitmapUtils.getScaledBitmapFromFile(fileInfo.getFile().getPath(), SizeUtils.dp2px(this, 280), SizeUtils.dp2px(this, 280));
             	if(!fileInfo.isLoadPreview()){
             		loadPreviewForPhoto(fileInfo);
             	}else{
+            		recycleOldPreview();
             		previewBitmap = BitmapUtils.getScaledBitmapFromFile(fileInfo.getPriviewPhotoPath(), SizeUtils.dp2px(this, 280), SizeUtils.dp2px(this, 280));
-        			if(previewBitmap != null){
+        			mOldBitmap = previewBitmap;
+            		if(previewBitmap != null){
         				mWidgetPreview.updateImage(previewBitmap);
         			}
             	}
             	updateOtherText(fileInfo);
                 break;
             case ConstData.MediaType.APK:
-                Drawable apkDrawable = APKUtils.getApkIcon(this, fileInfo.getFile().getPath());
-                if(apkDrawable != null){
-                    previewBitmap = ((BitmapDrawable)apkDrawable).getBitmap();
-                    if(previewBitmap != null){
-                        mWidgetPreview.updateImage(previewBitmap);
-                    }
-                }
+            	if(!fileInfo.isLoadPreview()){
+            		loadPreviewForAPK(fileInfo);
+            	}else{
+            		recycleOldPreview();
+            		previewBitmap = BitmapUtils.getScaledBitmapFromFile(fileInfo.getPriviewPhotoPath(), SizeUtils.dp2px(this, 280), SizeUtils.dp2px(this, 280));
+        			mOldBitmap = previewBitmap;
+            		if(previewBitmap != null){
+        				mWidgetPreview.updateImage(previewBitmap);
+        			}
+            	}
                 break;
         }  
 	
 
+    }
+    
+    /**
+     * 回收上次缓存文件
+     */
+    private void recycleOldPreview(){
+    	if(mOldBitmap != null && !mOldBitmap.isRecycled())
+			mOldBitmap.recycle();
     }
     
     /**
@@ -442,7 +465,13 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
     
     protected Bitmap getPreviewIcon(int type)
     {
-        int resId;
+    	String cacheKey = getCacheKey(type);
+    	if(cacheKey != null){
+    		Bitmap cacheBitmap = mMemoryBitmapCache.get(cacheKey);
+    		if(cacheBitmap != null)
+    			return cacheBitmap;
+    	}
+        int resId = R.drawable.icon_preview_unknow;
         switch (type)
         {
             case ConstData.MediaType.AUDIO:
@@ -463,18 +492,51 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
             case ConstData.MediaType.APK:
             	resId = R.drawable.icon_apk_preview;
             	break;
-            default:
+            case ConstData.MediaType.UNKNOWN_TYPE:
                 resId = R.drawable.icon_preview_unknow;
                 break;
         }
-        return getBitmapById(resId);
+        return getBitmapById(type, resId);
     }
 
-    private Bitmap getBitmapById(int id){
-    	Bitmap bitmap = BitmapFactory.decodeResource(getResources(), id);
-    	if(mOldBitmap != null && !mOldBitmap.isRecycled())
+    
+    /**
+     * 获取缓存key
+     * @param mediaType
+     * @return
+     */
+    public String getCacheKey(int mediaType){
+    	String cacheKey = null;
+    	switch(mediaType){
+    		case ConstData.MediaType.AUDIO:
+    			cacheKey = ConstData.DefaultFileIconKey.AUDIO;
+    			break;
+    		case ConstData.MediaType.VIDEO:
+    			cacheKey = ConstData.DefaultFileIconKey.VIDEO;
+    			break;
+    		case ConstData.MediaType.FOLDER:
+    			cacheKey = ConstData.DefaultFileIconKey.FOLDER;
+    			break;
+    		case ConstData.MediaType.IMAGE:
+    			cacheKey = ConstData.DefaultFileIconKey.IMAGE;
+    			break;
+    		case ConstData.MediaType.APK:
+    			cacheKey = ConstData.DefaultFileIconKey.APK;
+    			break;
+    		case ConstData.MediaType.UNKNOWN_TYPE:
+    			cacheKey = ConstData.DefaultFileIconKey.UNKNOW_TYPE;
+    			break;
+    	}
+    	return cacheKey;
+    }
+    
+    private Bitmap getBitmapById(int mediaType, int resId){
+    	Bitmap bitmap = BitmapFactory.decodeResource(getResources(), resId);
+    	/*if(mOldBitmap != null && !mOldBitmap.isRecycled())
     		mOldBitmap.recycle();
-    	mOldBitmap = bitmap;
+    	mOldBitmap = bitmap;*/
+    	if(bitmap != null)
+    		mMemoryBitmapCache.put(getCacheKey(mediaType), bitmap);
     	return bitmap;
     }
     
@@ -678,6 +740,14 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
         LocalBroadcastManager.getInstance(this).sendBroadcast(loadIntent);
     }
     
+    private void loadPreviewForAPK(AllFileInfo allFileInfo){
+    	//此处直接发送广播出去,服务接受后开始获取缩列图
+        Intent loadIntent = new Intent(ConstData.BroadCastMsg.LOAD_APK_PREVIEW);
+        loadIntent.putExtra(ConstData.IntentKey.EXTRA_ALL_FILE_INFO, allFileInfo);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(loadIntent);
+    }
+    
+    
     /**
      * 根据路径获取列表位置,最好改成异步实现
      * @param path
@@ -707,7 +777,8 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
 	        String action = intent.getAction();
-	        if(action.equals(ConstData.BroadCastMsg.REFRESH_AV_PREVIEW) || action.equals(ConstData.BroadCastMsg.REFRESH_PHOTO_PREVIEW)){
+	        if(action.equals(ConstData.BroadCastMsg.REFRESH_AV_PREVIEW) || action.equals(ConstData.BroadCastMsg.REFRESH_PHOTO_PREVIEW)
+	        		|| action.equals(ConstData.BroadCastMsg.REFRESH_APK_PREVIEW)){
 	            //更新预览图
 	            AllFileInfo allFileInfo = (AllFileInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_ALL_FILE_INFO);
 	            if(allFileInfo.getFile().getPath().equals(mCurrentFileInfo.getFile().getPath()))

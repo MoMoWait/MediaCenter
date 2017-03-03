@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-
 import com.rockchips.mediacenter.R;
 import com.rockchips.mediacenter.bean.AllFileInfo;
 import com.rockchips.mediacenter.utils.FileOpUtils;
