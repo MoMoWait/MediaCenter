@@ -1302,6 +1302,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
     private void progressGone()
     {
+    	Log.i("ProgressBar_Debug", "progressGone");
+    	
     	 setProgressBar(View.GONE);
     	
       /*  if (mCircleProgressBar.getVisibility() == View.VISIBLE)
@@ -3313,10 +3315,11 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                     if (!mVVAdapter.isPlaying())
                     {
                         mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_PAUSE);
-
                         setbAlwaysShowPopSeekbar(false);
                         mVVAdapter.setOnCompletionListener(onCompletionListener);
-                        Log.i(TAG, "mVVAdapter.start()");
+                        //再次隐藏加载栏
+                        //progressGone();
+                        Log.i("ProgressBar_Debug", "mVVAdapter.start()");
                         mVVAdapter.start();
                         //这里设置字幕是否显示
                         

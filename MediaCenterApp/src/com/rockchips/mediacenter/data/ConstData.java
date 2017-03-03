@@ -598,6 +598,7 @@ public class ConstData {
             {
                 case DEVICE_TYPE_SD:
                 case DEVICE_TYPE_U:
+                case DEVICE_TYPE_INTERNEL_STORAGE:
                     return true;
 
                 default:

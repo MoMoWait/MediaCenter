@@ -538,7 +538,8 @@ public class InternalImagePlayer extends ImagePlayerActivity implements OnSelect
             deviceId = String.valueOf(mLocalDeviceInfo.getmDeviceId());
             PlayStateInfo.setCurrentDevId(deviceId);
         }
-        else if (deviceType == ConstData.DeviceType.DEVICE_TYPE_U || deviceType == ConstData.DeviceType.DEVICE_TYPE_SD)
+        else if (deviceType == ConstData.DeviceType.DEVICE_TYPE_U || deviceType == ConstData.DeviceType.DEVICE_TYPE_SD
+        		|| deviceType == ConstData.DeviceType.DEVICE_TYPE_INTERNEL_STORAGE)
         { // U盘设备类型
           // SD盘设备类型,返回的类型为sta
             deviceId = mLocalDeviceInfo.getMountPath();
