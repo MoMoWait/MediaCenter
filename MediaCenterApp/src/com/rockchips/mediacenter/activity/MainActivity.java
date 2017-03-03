@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.json.JSONArray;
+import org.xutils.x;
+import org.xutils.view.annotation.ViewInject;
 import momo.cn.edu.fjnu.androidutils.utils.DeviceInfoUtils;
 import momo.cn.edu.fjnu.androidutils.utils.JsonUtils;
 import momo.cn.edu.fjnu.androidutils.utils.StorageUtils;
@@ -53,15 +54,11 @@ import android.util.Log;
  * @author GaoFei
  *
  */
-public class MainActivity extends AppBaseActivity implements OnDeviceSelectedListener, OnSearchListener
+public class MainActivity extends AppBaseActivity implements OnDeviceSelectedListener
 {
     private static final String TAG = "MediaCenter_MainActivity";
 
     private static final IICLOG LOG = IICLOG.getInstance();
-
-    private DevicesListView mDevicesListView;
-
-    //private ImageView mIvLogo; 
 
     private List<DeviceItem> mDeviceItemList = new ArrayList<DeviceItem>();
 
@@ -84,7 +81,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
      * NFS匹配信息
      */
     private Map<String, NFSInfo> mNFSMap = new HashMap<String, NFSInfo>();
-    private LinearLayout mLlNoDev;
 
     private static final int MEDIA_TYPE_FOLDER = 0;
 
@@ -95,8 +91,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     private static final int MEDIA_TYPE_VIDEO = 3;
 
     private static final int HANDLER_MSG_DEV_UPDATE = 1;
-
-    private static MainActivity mStMainActivity;
     
     private DeviceUpDownReceiver mDeviceUpDownReceiver;
 
@@ -106,15 +100,9 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     private static int BITMAP_WIDTH = 280;
     
     /**
-     * 设备列表
-     */
-    private RelativeLayout mLayoutDevices;
-    
-    /**
      * NFS信息数组
      */
     private JSONArray mNFSInfoArray;
-    //private Map<String, NFSInfo> mNFSMap;
     /**
      * Smb信息数组
      */
@@ -132,15 +120,20 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
      * 本地设备上下线监听
      */
     private LocalDeviceUpDownListener mLocalDeviceUpDownListener;
+    
+    @ViewInject(R.id.deviceList)
+    private DevicesListView mDevicesListView;
+    @ViewInject(R.id.layout_no_device)
+    private LinearLayout mLlNoDev;
+    @ViewInject(R.id.layout_devices)
+    private RelativeLayout mLayoutDevices;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        mStMainActivity = this;
         setContentView(R.layout.activity_main);
-        mDevicesListView = (DevicesListView) findViewById(R.id.deviceList);
-        mLlNoDev = (LinearLayout) findViewById(R.id.layout_no_device);
-        mDevicesListView.setOnSearchListener(this);
+        x.view().inject(this);
         initView();
         //初始化数据
         initData();
@@ -208,10 +201,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
 		LocalBroadcastManager.getInstance(MainActivity.this).sendBroadcast(netWrokIntent);
     }
     
-    public static MainActivity getInstance()
-    {
-        return mStMainActivity;
-    }
 
     /**
      * 初始化数据,读取网络设备相关信息
@@ -243,13 +232,11 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
      * 初始化视图
      */
     private void initView(){
-    	mLayoutDevices = (RelativeLayout)findViewById(R.id.layout_devices);
     	for(int i = 0; i != mLayoutDevices.getChildCount(); ++i){
     		TextView deviceTextView = (TextView)mLayoutDevices.getChildAt(i);
     		//设置DeviceItem的padding
     		RelativeLayout.LayoutParams textParams = (RelativeLayout.LayoutParams)deviceTextView.getLayoutParams();
     		textParams.leftMargin = (DeviceInfoUtils.getScreenWidth(this) - BITMAP_WIDTH * 4) / 2 + BITMAP_WIDTH / 2;
-    		//deviceTextView.setPadding((DeviceInfoUtils.getScreenWidth(this) - BITMAP_WIDTH * 4) / 2 + BITMAP_WIDTH / 2, 0, 0, 0);
     		deviceTextView.setLayoutParams(textParams);
     	}
     	
@@ -480,7 +467,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
         switch (offset)
         {
             case MEDIA_TYPE_FOLDER:
-            	//Log.i(TAG, "onSelected->offset:" + "MEDIA_TYPE_FOLDER");
                 intent.putExtra(ConstData.IntentKey.EXTRAL_MEDIA_TYPE, ConstData.MediaType.FOLDER);
                 if(selectDevice.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_DMS)
                 	intent.setClass(this, AllUpnpFileListActivity.class);
@@ -645,22 +631,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
 
     private static final int HANDLER_DELAY_TIME = 200;
     
-
-    @Override
-    public void onSearch(String key)
-    {
-        if (key == null || key.length() <= 0)
-        {
-        	ToastUtils.showToast(getString(R.string.search_tips));
-            return;
-        }
-        Intent intent = new Intent();
-        intent.setClass(this, FileListActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.putExtra(ConstData.EXTRA_IS_SEARCH, true);
-        //intent.putExtra(BaseActivity.SEARCH_KEY, key);
-        startActivity(intent);
-    }
     
     /**
      * 注册设备上下线监听器
