@@ -21,6 +21,8 @@ import android.util.Log;
 import android.media.iso.ISOManager;
 import com.rockchips.mediacenter.utils.HanziToPinyin;
 import com.rockchips.mediacenter.utils.HanziToPinyin.Token;
+import com.rockchips.mediacenter.bean.Device;
+import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.bean.LocalMediaInfo;
 import com.rockchips.mediacenter.bean.LocalDeviceInfo;
 import com.rockchips.mediacenter.bean.AllFileInfo;
@@ -46,9 +48,9 @@ public class MediaFileUtils {
 	 */
 	public static int getMediaTypeFromFile(File file){
 		//蓝光文件检测
-		if(file.isDirectory() && ISOManager.isBDDirectory(file.getPath())){
+		/*if(file.isDirectory() && ISOManager.isBDDirectory(file.getPath())){
 			return ConstData.MediaType.VIDEO;
-		}
+		}*/
 		String path = file.getPath();
 		int dotIndex = path.lastIndexOf(".");
 		if(dotIndex < 0)
@@ -63,9 +65,9 @@ public class MediaFileUtils {
 		if(Arrays.binarySearch(ConstData.VIDEO_SUFFIX, tailEx) >= 0){
 			return ConstData.MediaType.VIDEO;
 		}
-		if(Arrays.binarySearch(ConstData.SUBTITLE_SUFFIX, tailEx) >= 0){
+	/*	if(Arrays.binarySearch(ConstData.SUBTITLE_SUFFIX, tailEx) >= 0){
 			return ConstData.MediaType.SUBTITLE;
-		}
+		}*/
 		
 		if(Arrays.binarySearch(ConstData.IMAGE_SUFFIX, tailEx) >= 0){
 			return ConstData.MediaType.IMAGE;
@@ -282,6 +284,28 @@ public class MediaFileUtils {
     }
     
     /**
+     * 从文件种获取FileInfo
+     * @param file
+     * @param device
+     * @return
+     */
+    public static FileInfo getFileInfoFromFile(File file, Device device){
+    	int currentMediaType = getMediaTypeFromFile(file);
+    	if(currentMediaType == ConstData.MediaType.UNKNOWN_TYPE)
+    		return null;
+    	FileInfo fileInfo = new FileInfo();
+    	fileInfo.setDeviceID(device.getDeviceID());
+    	fileInfo.setModifyTime(file.lastModified());
+    	fileInfo.setName(file.getName());
+    	fileInfo.setPath(file.getPath());
+    	fileInfo.setSize(file.length());
+    	fileInfo.setType(currentMediaType);
+    	fileInfo.setParentPath(file.getParent());
+		return fileInfo;
+    }
+    
+    
+    /**
      * 获取蓝光视频文件,与getMediaFileFromFile区别开来，为了提高扫描效率
      * @param file
      * @return
@@ -302,6 +326,21 @@ public class MediaFileUtils {
 		return localMediaFile;
     }
     
+    /**
+     * 获取蓝光视频文件
+     * @param file
+     * @param device
+     * @return
+     */
+    public static FileInfo getBDFileInfo(File file, Device device){
+    	FileInfo fileInfo = new FileInfo();
+    	fileInfo.setDeviceID(device.getDeviceID());
+    	fileInfo.setModifyTime(file.lastModified());
+    	fileInfo.setName(file.getName());
+    	fileInfo.setPath(file.getPath());
+    	fileInfo.setType(ConstData.MediaType.VIDEO);
+    	return fileInfo;
+    }
     
     /**
      * 从文件中获取媒体文件夹
@@ -373,6 +412,39 @@ public class MediaFileUtils {
     		}
     	}
     	return mediaInfos;
+    }
+    
+    /**
+     * 从挂载路径生成Device
+     * @param mountPath
+     * @param deviceType
+     * @return
+     */
+    public static Device getDeviceFromMountPath(String mountPath, String netWorkPath , int deviceType){
+    	File mountFile = new File(mountPath);
+    	if(!mountFile.exists())
+    		return null;
+    	Device device = new Device();
+    	//本地设备有3种模式
+    	if(deviceType == ConstData.DeviceType.DEVICE_TYPE_LOCAL){
+    		if(StorageUtils.isMountUsb(CommonValues.application, mountPath)){
+    			device.setDeviceType(ConstData.DeviceType.DEVICE_TYPE_U);
+    		}else if(StorageUtils.isMountSdCard(CommonValues.application, mountPath)){
+    			device.setDeviceType(ConstData.DeviceType.DEVICE_TYPE_SD);
+    		}else{
+    			device.setDeviceType(ConstData.DeviceType.DEVICE_TYPE_INTERNEL_STORAGE);
+    		}
+    		device.setLocalMountPath(mountPath);
+    		device.setDeviceName(getDeviceIdFromMountFile(mountFile));
+    		device.setNetWorkPath(netWorkPath);
+    	}else{
+    		device.setDeviceName(getDeviceIdFromMountFile(mountFile));
+    		device.setDeviceType(deviceType);
+    		device.setLocalMountPath(mountPath);
+    		device.setNetWorkPath(netWorkPath);
+    	}
+    	
+    	return device;
     }
     
     /**
@@ -448,19 +520,19 @@ public class MediaFileUtils {
      * @param device
      * @return
      */
-    public static LocalDeviceInfo getDeviceInfoFromDevice(LocalDevice device){
+    public static LocalDeviceInfo getDeviceInfoFromDevice(Device device){
     	LocalDeviceInfo deviceInfo = new LocalDeviceInfo();
-    	deviceInfo.setTotalSize(device.getSize());
-    	deviceInfo.setUsedSize(device.getUsed());
-    	deviceInfo.setFreeSize(device.getFree());
-    	deviceInfo.setUsedPercent(device.getUsed());
-    	deviceInfo.setPhysicId(device.getPhysic_dev_id());
+    	deviceInfo.setTotalSize("");
+    	deviceInfo.setUsedSize("");
+    	deviceInfo.setFreeSize("");
+    	deviceInfo.setUsedPercent("");
+    	deviceInfo.setPhysicId(device.getDeviceName());
     	deviceInfo.setIsPhysicDev(1);
-    	deviceInfo.setMountPath(device.getMountPath());
+    	deviceInfo.setMountPath(device.getLocalMountPath());
     	deviceInfo.setIsScanned(1);
     	deviceInfo.setmDevCount(1);
     	deviceInfo.setmDeviceId(0);
-    	deviceInfo.setDeviceType(device.getDevices_type());
+    	deviceInfo.setDeviceType(device.getDeviceType());
     	return deviceInfo;
     }
     
@@ -618,6 +690,32 @@ public class MediaFileUtils {
     }
     
     
+    /**
+     * 获取某个媒体文件对应该目录下的所有文件
+     * @param allFileInfo
+     * @return
+     */
+    public static List<LocalMediaInfo> getLocalMediaInfos(List<FileInfo> fileInfos, Device device, int type){
+    	List<LocalMediaInfo> mediaInfos = new ArrayList<LocalMediaInfo>();
+    	if(fileInfos != null && fileInfos.size() > 0){
+    		for(FileInfo itemFileInfo : fileInfos){
+    			if(itemFileInfo.getType() != type)
+    				continue;
+    			LocalMediaInfo localMediaInfo = new LocalMediaInfo();
+    			localMediaInfo.setmFileName(itemFileInfo.getName());
+    			localMediaInfo.setmParentPath(itemFileInfo.getParentPath());
+    			localMediaInfo.setmModifyDate((int) (itemFileInfo.getModifyTime() / 1000));
+    			localMediaInfo.setmPinyin(MediaFileUtils.getFullPinYin(itemFileInfo.getName()));
+    			localMediaInfo.setmDeviceType(device.getDeviceType());
+    			localMediaInfo.setmPhysicId(device.getDeviceName());
+    			localMediaInfo.setmFileSize(itemFileInfo.getSize());
+    			localMediaInfo.setmFiles(0);
+    			localMediaInfo.setmFileType(itemFileInfo.getType());
+    			mediaInfos.add(localMediaInfo);
+    		}
+    	}
+    	return mediaInfos;
+    }
  
     /**
      * 获取当前目录下与upnpFileInfo对应的同类型的媒体文件列表

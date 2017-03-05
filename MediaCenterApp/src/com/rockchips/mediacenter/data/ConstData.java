@@ -79,8 +79,6 @@ public class ConstData {
 		String NFS_INFO = "nfs_info";
 		String EXTRAL_LOCAL_DEVICE = "extral_local_device";
 		String EXTRAL_MEDIA_TYPE = "extral_media_type";
-		//String IS_INTERNAL_PLAYER = "is_internal_palyer";
-		//String CURRENT_INDEX = "current_index";
 		String EXTRA_IS_SEARCH = "extra_is_search";
 		String EXTRA_DEVICE_TYPE = "extra_device_type";
 		String EXTRA_NFS_INFO = "extra_nfs_info";

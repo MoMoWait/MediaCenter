@@ -17,6 +17,8 @@ public class FileInfo
 	private String deviceID;
 	@Column(name = "path")
 	private String path;
+	@Column(name = "parentPath")
+	private String parentPath;
 	@Column(name = "name")
 	private String name;
 	@Column(name = "modifyTime")
@@ -33,6 +35,8 @@ public class FileInfo
 	private int imageCount;
 	@Column(name = "previewPath")
 	private String previewPath;
+	@Column(name = "childCount")
+	private int childCount;
 	@Column(name = "otherInfo")
 	private String otherInfo;
 	public int getId() {
@@ -107,13 +111,26 @@ public class FileInfo
 	public void setOtherInfo(String otherInfo) {
 		this.otherInfo = otherInfo;
 	}
+	public int getChildCount() {
+		return childCount;
+	}
+	public void setChildCount(int childCount) {
+		this.childCount = childCount;
+	}
+	public String getParentPath() {
+		return parentPath;
+	}
+	public void setParentPath(String parentPath) {
+		this.parentPath = parentPath;
+	}
 	@Override
 	public String toString() {
 		return "FileInfo [id=" + id + ", deviceID=" + deviceID + ", path="
-				+ path + ", name=" + name + ", modifyTime=" + modifyTime
-				+ ", size=" + size + ", type=" + type + ", musicCount="
-				+ musicCount + ", videoCount=" + videoCount + ", imageCount="
-				+ imageCount + ", previewPath=" + previewPath + ", otherInfo="
+				+ path + ", parentPath=" + parentPath + ", name=" + name
+				+ ", modifyTime=" + modifyTime + ", size=" + size + ", type="
+				+ type + ", musicCount=" + musicCount + ", videoCount="
+				+ videoCount + ", imageCount=" + imageCount + ", previewPath="
+				+ previewPath + ", childCount=" + childCount + ", otherInfo="
 				+ otherInfo + "]";
 	}
 	

@@ -87,7 +87,10 @@ public class DeviceMonitorService extends Service {
 	 * 当前设备的扫描状态
 	 */
 	private Map<String, Integer> mCurrProcessScanMsgs = new HashMap<String, Integer>();
-	private ThreadPoolExecutor mScanDeviceService;
+	/**
+	 * 固定大小线程池服务，用于执行文件扫描
+	 */
+	private ThreadPoolExecutor mFileScanService;
 	/**
 	 * 单线程池服务，用于挂载Samba设备，NFS设备
 	 */
@@ -112,6 +115,10 @@ public class DeviceMonitorService extends Service {
 	 * 单线程池服务，APK预览图加载服务
 	 */
 	private ThreadPoolExecutor mApkPreviewLoadService;
+	/**
+	 * 单线程池服务，设备
+	 */
+	private ExecutorService mDeviceMountService;
 	private MountThread mountThread;
 	private boolean isMountRuning = true;
 	private List<NFSInfo> mNFSList;
@@ -124,10 +131,6 @@ public class DeviceMonitorService extends Service {
 	 * 音频，视频缩列图加载监听器
 	 */
 	private PreviewLoadReceiver mPreviewLoadReceiver;
-	/**
-	 * 扫描状态接收器
-	 */
-	private ScanStatusReceiver mScanStatusReceiver;
 	/**
 	 * 获取接UPNP口服务
 	 */
@@ -168,20 +171,6 @@ public class DeviceMonitorService extends Service {
 	 * 是否有视频播放
 	 */
 	private boolean isHaveVideoPlay;
-	/**
-	 * 本地设备监听列表
-	 */
-	private List<LocalDeviceListener> mLocalDeviceListeners;
-	
-	/**
-	 * 本地设备监听器
-	 * @author GaoFei
-	 *
-	 */
-	public interface LocalDeviceListener{
-		//设备上下线
-		void onDeviceUpOrDown(Message message);
-	}
 	
 	@Override
 	public void onCreate() {
@@ -207,7 +196,6 @@ public class DeviceMonitorService extends Service {
 	public void onDestroy() {
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mNetWorkDeviceMountReceiver);
 		LocalBroadcastManager.getInstance(this).unregisterReceiver(mPreviewLoadReceiver);
-		LocalBroadcastManager.getInstance(this).unregisterReceiver(mScanStatusReceiver);
 		if (mStorageManager != null)
 			mStorageManager.unregisterListener(mountListener);
 		unBindServices();
@@ -225,17 +213,16 @@ public class DeviceMonitorService extends Service {
 	    mApkPreviewLoadService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
 	    mLocalDeviceUpDownProcessService = Executors.newSingleThreadExecutor();
 	    mMountNetWorkDeviceService = Executors.newSingleThreadExecutor();
+	    mDeviceMountService = Executors.newSingleThreadExecutor();
 		mPreviewLoadReceiver = new PreviewLoadReceiver();
 		mNetWorkDeviceMountReceiver = new NetWorkDeviceMountReceiver();
-		mScanStatusReceiver = new ScanStatusReceiver();
 		mDeviceHandler = new MountDeviceHandler();
 		mRegistryListener = new UpnpRegistryListener();
 		mBinder = new MonitorBinder();
 		mStorageManager = (StorageManager) getSystemService(Context.STORAGE_SERVICE);
 		mountListener = new MountListener();
-		mScanDeviceService = new ThreadPoolExecutor(5, 5, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+		mFileScanService = new ThreadPoolExecutor(5, 5, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 		mountThread = new MountThread();
-		mLocalDeviceListeners = new LinkedList<DeviceMonitorService.LocalDeviceListener>();
 		mUpnpConnection = new ServiceConnection() {
 
 			@Override
@@ -298,11 +285,6 @@ public class DeviceMonitorService extends Service {
 		previewLoadFilter.addAction(ConstData.BroadCastMsg.LOAD_PHOTO_PREVIEW);
 		previewLoadFilter.addAction(ConstData.BroadCastMsg.LOAD_LOCAL_MEDIA_FILE_PREVIEW);
 		LocalBroadcastManager.getInstance(this).registerReceiver(mPreviewLoadReceiver, previewLoadFilter);
-		//注册设备扫描请求
-		IntentFilter scanStatusFilter = new IntentFilter();
-		scanStatusFilter.addAction(ConstData.BroadCastMsg.PAUSE_DEVICE_FILE_SCAN);
-		scanStatusFilter.addAction(ConstData.BroadCastMsg.CONTINUE_DEVICE_FILE_SCAN);
-		LocalBroadcastManager.getInstance(this).registerReceiver(mScanStatusReceiver, scanStatusFilter);
 	}
 
 	/**
@@ -317,36 +299,20 @@ public class DeviceMonitorService extends Service {
 		//重新挂载SD卡，U盘
 		//挂载这些设备是耗时操作，需要开启线程
 		LocalDeviceMountThread localDeviceMountThread = new LocalDeviceMountThread(this);
-		mScanDeviceService.execute(localDeviceMountThread);
+		mFileScanService.execute(localDeviceMountThread);
 	}
 	
 	private void initNetWorkDevices(){
 		//重新挂载Samba,NFS设备
 		//挂载samba,NFS设备是耗时操作，需要开启线程操作
 		NetWorkDeviceMountThread deviceMountThread = new NetWorkDeviceMountThread(this, ConstData.NetWorkDeviceType.DEVICE_ALL);
-		mScanDeviceService.execute(deviceMountThread);
-	}
-	
-	/**
-	 * 注册本地设备监听
-	 * @param listener
-	 */
-	public void registerLocalDeviceListener(LocalDeviceListener listener){
-		mLocalDeviceListeners.add(listener);
-		Log.i(TAG, "mLocalDeviceListeners->size():" + mLocalDeviceListeners.size());
+		mFileScanService.execute(deviceMountThread);
 	}
 	
 	
-	/**
-	 * 取消本地监听
-	 */
-	public void unRegisterLocalDeviceListener(LocalDeviceListener listener){
-		if(mLocalDeviceListeners != null && mLocalDeviceListeners.size() > 0){
-			mLocalDeviceListeners.remove(listener);
-		}
-		Log.i(TAG, "mLocalDeviceListeners->size():" + mLocalDeviceListeners.size());
+	public ExecutorService getFileScanService(){
+		return mDeviceMountService;
 	}
-	
 	
 	/**
 	 * 处理U盘，SD卡，移动硬盘，Samba设备，NFS设备，DLNA设备的挂载，卸载信息
@@ -425,9 +391,6 @@ public class DeviceMonitorService extends Service {
 		message.arg1 = deviceType;
 		message.arg2 = (isAddNetWork ? 1 : 0);
 		message.obj = path;
-		//通知上下线
-		for(LocalDeviceListener listener : mLocalDeviceListeners)
-			listener.onDeviceUpOrDown(message);
 		mDeviceHandler.sendMessage(message);
 	}
 	
@@ -533,7 +496,7 @@ public class DeviceMonitorService extends Service {
 				try{
 					//等待2秒
 					TimeUnit.SECONDS.sleep(2);
-					while(mScanDeviceService.getActiveCount() != 0)
+					while(mFileScanService.getActiveCount() != 0)
 						TimeUnit.SECONDS.sleep(2);
 					return ConstData.TaskExecuteResult.SUCCESS;
 				}catch(Exception e){
@@ -590,6 +553,7 @@ public class DeviceMonitorService extends Service {
 		}
 		unbindService(mUpnpConnection);
 	}
+	
 	
 	
 	/**
@@ -660,17 +624,17 @@ public class DeviceMonitorService extends Service {
 					mCurrProcessScanMsgs.put(path, ConstData.DeviceScanStatus.INITIAL);
 				}
 
-				if (isMounted) {
+			/*	if (isMounted) {
 					// 启动文件扫描线程
 					LocalDeviceService deviceService = new LocalDeviceService();
 					LocalDevice device = deviceService.getDeviceByPath(path);
 					if(device != null){
-						mScanDeviceService.execute(new FileScanThread(DeviceMonitorService.this, device));
+						mFileScanService.execute(new FileScanThread(DeviceMonitorService.this, device));
 					}
 					//Log.i(TAG, "MountThread->run->device:" + device);
 					//Log.i(TAG, "execute FileScanThread");
 					
-				}
+				}*/
 				
 				// processSambaDevicesMountMsg(mSmbList);
 				// processNFSDevicesMountMsg(mNFSList);
@@ -717,10 +681,8 @@ public class DeviceMonitorService extends Service {
 				bundle.putInt(ConstData.DeviceMountMsg.MOUNT_TYPE, ConstData.DeviceType.DEVICE_TYPE_LOCAL);
 				bundle.putInt(ConstData.DeviceMountMsg.MOUNT_STATE, newState.equals(Environment.MEDIA_MOUNTED) ? ConstData.DeviceMountState.DEVICE_UP :
 					ConstData.DeviceMountState.DEVICE_DOWN);
-				//启动一个线程处理
-				
-				//mDeviceHandler.sendMessage(msg);
-				//processLocalDeviceMountMsg(path, newState, ConstData.DeviceType.DEVICE_TYPE_LOCAL, false);
+				//启动一个线程进行挂载，卸载处理
+				mDeviceMountService.execute(new DeviceMountThread(DeviceMonitorService.this, bundle));
 			}
 				
 		}
@@ -757,7 +719,7 @@ public class DeviceMonitorService extends Service {
 					message.obj = upnpDevice.getMountPath();
 					mDeviceHandler.sendMessageDelayed(message, DELAY_MESSAGE_TIME);
 					//启动扫描器
-					mScanDeviceService.execute(new UpnpFileScanThread(device, DeviceMonitorService.this, mUpnpService));
+					mFileScanService.execute(new UpnpFileScanThread(device, DeviceMonitorService.this, mUpnpService));
 				}
 			
 				
@@ -876,36 +838,4 @@ public class DeviceMonitorService extends Service {
 	    };
 	}
 	
-	/**
-	 * 扫描状态接收器
-	 * @author GaoFei
-	 *
-	 */
-	class ScanStatusReceiver extends BroadcastReceiver{
-		public void onReceive(Context context, Intent intent) {
-			if(intent.getAction().equals(ConstData.BroadCastMsg.PAUSE_DEVICE_FILE_SCAN)){
-				synchronized (mCurrProcessScanMsgs) {
-					Set<String> processScanSet = mCurrProcessScanMsgs.keySet();
-					Iterator<String> processScanIterator = processScanSet.iterator();
-					while(processScanIterator.hasNext()){
-						mCurrProcessScanMsgs.put(processScanIterator.next(), ConstData.DeviceScanStatus.PAUSE);
-					}
-				}
-			}else if(intent.getAction().equals(ConstData.BroadCastMsg.CONTINUE_DEVICE_FILE_SCAN)){
-				synchronized (mCurrProcessScanMsgs) {
-					LocalDeviceService deviceService = new LocalDeviceService();
-					Set<String> processScanSet = mCurrProcessScanMsgs.keySet();
-					Iterator<String> processScanIterator = processScanSet.iterator();
-					while(processScanIterator.hasNext()){
-						// 启动文件扫描线程
-						LocalDevice device = deviceService.getDeviceByPath(processScanIterator.next());
-						if(device != null){
-							mScanDeviceService.execute(new FileScanThread(DeviceMonitorService.this, device));
-						}
-					}
-				}
-				
-			}
-		};
-	}
 }

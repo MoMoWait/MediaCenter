@@ -30,9 +30,11 @@ import android.widget.TextView;
 import com.rockchips.mediacenter.R;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.utils.IICLOG;
+import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.bean.LocalDevice;
 import com.rockchips.mediacenter.bean.NFSInfo;
 import com.rockchips.mediacenter.bean.SmbInfo;
+import com.rockchips.mediacenter.modle.db.DeviceService;
 import com.rockchips.mediacenter.modle.db.LocalDeviceService;
 import com.rockchips.mediacenter.service.DeviceMonitorService;
 import com.rockchips.mediacenter.utils.DialogUtils;
@@ -61,7 +63,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
 
     private List<DeviceItem> mDeviceItemList = new ArrayList<DeviceItem>();
 
-    private List<LocalDevice> mDevInfoList = new ArrayList<LocalDevice>();
+    private List<Device> mDevInfoList = new ArrayList<Device>();
 
     /**
      * Smb设备列表
@@ -109,10 +111,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
      */
     private ServiceConnection mDeviceMonitorConnection;
     private DeviceMonitorService mDeviceMonitorService;
-    /**
-     * 本地设备上下线监听
-     */
-    private LocalDeviceUpDownListener mLocalDeviceUpDownListener;
     
     @ViewInject(R.id.deviceList)
     private DevicesListView mDevicesListView;
@@ -200,7 +198,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
      */
     private void initData(){
     	mDeviceUpDownReceiver = new DeviceUpDownReceiver();
-    	mLocalDeviceUpDownListener = new LocalDeviceUpDownListener();
     	mDeviceMonitorConnection = new ServiceConnection() {
 			
 			@Override
@@ -213,8 +210,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
 				LOG.i(TAG, "MainActivity->serviceConnection on ServiceConnected" );
 				DeviceMonitorService.MonitorBinder serviceBinder = (DeviceMonitorService.MonitorBinder)service;
 				mDeviceMonitorService = serviceBinder.getMonitorService();
-				//注册本地设备上下线监听
-				mDeviceMonitorService.registerLocalDeviceListener(mLocalDeviceUpDownListener);
 			}
 		};
 		
@@ -430,7 +425,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     {
         loadDeviceInfoList(false);
         registerDeviceUpDownListener();
-        //devUpdate();
         super.onResume();
     }
 
@@ -446,46 +440,44 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     {
     	unBindServices();
         mDevicesListView.recycle();
-        if(mDeviceMonitorService != null)
-        	mDeviceMonitorService.unRegisterLocalDeviceListener(mLocalDeviceUpDownListener);
         super.onDestroy();
     }
 
     @Override
-    public void onSelected(Object object, int offset)
+    public void onSelected(Device device, int offset)
     {
         Intent intent = new Intent();
-        LocalDevice selectDevice = (LocalDevice) object;
+        Device selectDevice = device;
         intent.putExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE, selectDevice);
         switch (offset)
         {
             case MEDIA_TYPE_FOLDER:
                 intent.putExtra(ConstData.IntentKey.EXTRAL_MEDIA_TYPE, ConstData.MediaType.FOLDER);
-                if(selectDevice.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_DMS)
+              /*  if(selectDevice.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_DMS)
                 	intent.setClass(this, AllUpnpFileListActivity.class);
-                else
-                	intent.setClass(this, AllFileListActivity.class);
+                else*/
+                intent.setClass(this, AllFileListActivity.class);
                 break;
             case MEDIA_TYPE_PHOTO:
                 intent.putExtra(ConstData.IntentKey.EXTRAL_MEDIA_TYPE, ConstData.MediaType.IMAGEFOLDER);
-                if(selectDevice.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_DMS)
+              /*  if(selectDevice.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_DMS)
                 	intent.setClass(this, UpnpImageActivity.class);
-                else
-                	intent.setClass(this, ALImageActivity.class);
+                else*/
+                intent.setClass(this, ALImageActivity.class);
                 break;
             case MEDIA_TYPE_MUSIC:
                 intent.putExtra(ConstData.IntentKey.EXTRAL_MEDIA_TYPE, ConstData.MediaType.AUDIOFOLDER);
-                if(selectDevice.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_DMS)
+              /*  if(selectDevice.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_DMS)
                 	intent.setClass(this, UpnpFileListActivity.class);
-                else
-                	intent.setClass(this, FileListActivity.class);
+                else*/
+                intent.setClass(this, AllFileListActivity.class);
                 break;
             case MEDIA_TYPE_VIDEO:
                 intent.putExtra(ConstData.IntentKey.EXTRAL_MEDIA_TYPE, ConstData.MediaType.VIDEOFOLDER);
-                if(selectDevice.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_DMS)
+              /*  if(selectDevice.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_DMS)
                 	intent.setClass(this, UpnpFileListActivity.class);
-                else
-                	intent.setClass(this, FileListActivity.class);
+                else*/
+                intent.setClass(this, AllFileListActivity.class);
                 break;
             default:
                 LOG.e(TAG, "onSelected, invalid offset:" + offset);
@@ -533,10 +525,10 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     
     private void devUpdate(boolean isAddNetWork)
     {
-        List<LocalDevice> tmpList;
+        List<Device> tmpList;
         mDevInfoList.clear();
-        LocalDeviceService deviceService = new LocalDeviceService();
-        tmpList = deviceService.getAll(LocalDevice.class);
+        DeviceService deviceService = new DeviceService();
+        tmpList = deviceService.getAll(Device.class);
 		
         if (tmpList != null && tmpList.size() > 0)
         {
@@ -570,8 +562,8 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
         String name;
         for (int i = 0; i < mDevInfoList.size(); ++i)
         {
-            LocalDevice info = mDevInfoList.get(i);
-            if(info.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_SMB ){
+            Device info = mDevInfoList.get(i);
+            /*if(info.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_SMB ){
             	name = DeviceTypeStr.getDevTypeStr(this, info.getDevices_type()) + mSmbMap.get(info.getMountPath()).getNetWorkPath() +
             			"(" + info.getPhysic_dev_id() + ")" ;
             }else if(info.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_NFS){
@@ -579,8 +571,8 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
             			"(" + info.getPhysic_dev_id() + ")" ;
             }else{
             	 name = DeviceTypeStr.getDevTypeStr(this, info.getDevices_type()) + info.getPhysic_dev_id();
-            }
-            device = new DeviceItem(info, name, imageIds, textIds);
+            }*/
+            device = new DeviceItem(info, info.getDeviceName(), imageIds, textIds);
             mDeviceItemList.add(device);
         }
 
@@ -663,35 +655,17 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     class DeviceUpDownReceiver extends BroadcastReceiver{
     	@Override
     	public void onReceive(Context context, Intent intent) {
-    		//Log.i(TAG, "DeviceUpDownReceiver->onReceive");
-    		//int deviceType = intent.getIntExtra(ConstData.IntentKey.EXTRA_DEVICE_TYPE, -1);
-    		//设备路径
-    		String devicePath = intent.getStringExtra(ConstData.IntentKey.EXTRA_DEVICE_PATH);
+    		Log.i(TAG, "DeviceUpDownReceiver->onReceive->currentTime:" + System.currentTimeMillis());
+    		loadDeviceInfoList(false);
+/*    		String devicePath = intent.getStringExtra(ConstData.IntentKey.EXTRA_DEVICE_PATH);
     		boolean isAddNetWork = intent.getBooleanExtra(ConstData.IntentKey.EXTRA_IS_ADD_NETWORK_DEVICE, false);
     		int deviceType = intent.getIntExtra(ConstData.IntentKey.EXTRA_DEVICE_TYPE, -1);
     		Log.i(TAG, "DeviceUpDownReceiver->devicePath:" + devicePath);
     		Log.i(TAG, "DeviceUpDownReceiver->isAddNetWork:" + isAddNetWork);
     		if(deviceType != ConstData.DeviceType.DEVICE_TYPE_SD && deviceType != ConstData.DeviceType.DEVICE_TYPE_U){
     			loadDeviceInfoList(isAddNetWork);
-    		}
-    		
+    		}*/
     	}
     }
     
-    /**
-     * 本地设备上下线监听
-     * @author GaoFei
-     *
-     */
-    class LocalDeviceUpDownListener implements DeviceMonitorService.LocalDeviceListener{
-
-		@Override
-		public void onDeviceUpOrDown(Message message) {
-			Log.i(TAG, "onDeviceUpOrDown");
-			Log.i(TAG, "currentTime:" + System.currentTimeMillis());
-			//刷新列表
-			loadDeviceInfoList(false);
-		}
-    	
-    }
 }

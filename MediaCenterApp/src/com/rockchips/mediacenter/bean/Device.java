@@ -1,5 +1,6 @@
 package com.rockchips.mediacenter.bean;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 import org.xutils.db.annotation.Column;
@@ -10,7 +11,11 @@ import org.xutils.db.annotation.Table;
  * 设备描述信息，包括本地存储(内部存储，SD卡，U盘，移动硬盘)，网络存储(DLNA，Samba,NFS)
  */
 @Table(name = "Device")
-public class Device {
+public class Device implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/**
 	 * 设备ID（唯一，UUID生成）
 	 */

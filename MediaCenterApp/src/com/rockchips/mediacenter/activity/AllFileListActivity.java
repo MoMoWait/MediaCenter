@@ -13,6 +13,8 @@ import com.rockchips.mediacenter.adapter.FileListAdapter;
 import com.rockchips.mediacenter.adapter.FolderListAdapter;
 import com.rockchips.mediacenter.audioplayer.InternalAudioPlayer;
 import com.rockchips.mediacenter.bean.AllFileInfo;
+import com.rockchips.mediacenter.bean.Device;
+import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.bean.LocalDevice;
 import com.rockchips.mediacenter.bean.LocalMediaFile;
 import com.rockchips.mediacenter.bean.LocalMediaFolder;
@@ -70,7 +72,7 @@ import com.rockchips.mediacenter.bean.LocalMediaInfo;
  */
 public class AllFileListActivity extends AppBaseActivity implements OnItemSelectedListener, OnItemClickListener, OnItemLongClickListener,FileOpDialog.Callback{
 
-	public static final String TAG = "FileListActivity";
+	public static final String TAG = "AllFileListActivity";
 	protected static final int START_PLAYER_REQUEST_CODE = 99;
 	@ViewInject(R.id.text_path_title)
 	private TextView mTextPathTitle;
@@ -91,11 +93,15 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	/**
 	 * 当前设备
 	 */
-	private LocalDevice mCurrDevice;
+	private Device mCurrDevice;
 	/**
 	 * 当前目录路径
 	 */
 	private String mCurrFolder;
+	/**
+	 * 当前媒体文件类型
+	 */
+	private int mCurrMediaType;
 	private AllFileListAdapter mAllFileListAdapter;
 	/**
 	 * 文件列表加载器
@@ -148,6 +154,11 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	 */
 	private LruCache<String, Bitmap> mMemoryBitmapCache;
 	
+	/**
+	 * 当前加载的文件列表
+	 */
+	private List<FileInfo> mLoadFileInfos;
+	
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -162,12 +173,12 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
-		AllFileInfo allFileInfo = (AllFileInfo)parent.getAdapter().getItem(position);
-		if(allFileInfo.getType() == ConstData.MediaType.FOLDER){
-			mCurrFolder = allFileInfo.getFile().getPath();
+		FileInfo fileInfo = (FileInfo)parent.getAdapter().getItem(position);
+		if(fileInfo.getType() == ConstData.MediaType.FOLDER){
+			mCurrFolder = fileInfo.getPath();
 			loadFiles();
 		}else{
-			loadActivity(allFileInfo);
+			loadActivity(fileInfo);
 		}
 	}
 
@@ -195,7 +206,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if(keyCode == KeyEvent.KEYCODE_BACK){
-			if(!mCurrFolder.equals(mCurrDevice.getMountPath())){
+			if(!mCurrFolder.equals(mCurrDevice.getLocalMountPath())){
 				mLastSelectPath = mCurrFolder;
 				mCurrFolder = new File(mCurrFolder).getParentFile().getPath();
 				loadFiles();
@@ -303,9 +314,6 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	}
 	
     public void initDataAndView(){
-    	//重置复制，剪切数据
-    	//StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.COPY_FILE_PATH, "");
-    	//StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.MOVE_FILE_PATH, "");
     	mMemoryBitmapCache = new LruCache<String, Bitmap>((int)Runtime.getRuntime().maxMemory() / 8){
     		@Override
     		protected int sizeOf(String key, Bitmap value) {
@@ -314,9 +322,10 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
     	};
         mRefreshPreviewReceiver = new RefreshPreviewReceiver();
     	mPregressLoading.setVisibility(View.GONE);
-    	mCurrDevice = (LocalDevice)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
+    	mCurrDevice = (Device)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
+    	mCurrMediaType = getIntent().getIntExtra(ConstData.IntentKey.EXTRAL_MEDIA_TYPE, -1);
     	//挂载目录作为当前目录
-    	mCurrFolder = mCurrDevice.getMountPath();
+    	mCurrFolder = mCurrDevice.getLocalMountPath();
     	loadFiles();
     }
 
@@ -405,7 +414,8 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 		startTimer(ConstData.MAX_LOAD_FILES_TIME);
 		mAllFileLoadTask = new AllFileLoadTask(new AllFileLoadTask.CallBack() {
 			@Override
-			public void onGetFiles(List<AllFileInfo> fileInfos) {
+			public void onGetFiles(List<FileInfo> fileInfos) {
+				mLoadFileInfos = fileInfos;
 			    endTimer();
 				DialogUtils.closeLoadingDialog();
 				if(isOverTimer())
@@ -427,7 +437,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 				}
 			}
 		});
-		mAllFileLoadTask.execute(mCurrFolder);
+		mAllFileLoadTask.execute(mCurrDevice, mCurrMediaType, mCurrFolder);
 	}
 	
 	
@@ -572,8 +582,8 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
     /**
      * 加载播放器
      */
-    public void loadActivity(AllFileInfo allFileInfo){
-    	int fileType = allFileInfo.getType();
+    public void loadActivity(FileInfo fileInfo){
+    	int fileType = fileInfo.getType();
     	if(fileType != ConstData.MediaType.AUDIO && fileType != ConstData.MediaType.VIDEO
     			&& fileType != ConstData.MediaType.IMAGE && fileType != ConstData.MediaType.APK){
     		return;
@@ -582,26 +592,26 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
         intent.putExtra(ConstData.IntentKey.IS_INTERNAL_PLAYER, true);
         intent.putExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE, mCurrDevice);
         intent.putExtra(LocalDeviceInfo.DEVICE_EXTRA_NAME, MediaFileUtils.getDeviceInfoFromDevice(mCurrDevice).compress());
-        List<LocalMediaInfo> mediaInfos = MediaFileUtils.getMediaInfosFromAllFileInfo(allFileInfo, mCurrDevice);
+        List<LocalMediaInfo> mediaInfos = MediaFileUtils.getLocalMediaInfos(mLoadFileInfos, mCurrDevice, fileType);
         List<Bundle> mediaInfoList = new ArrayList<Bundle>();
         for(LocalMediaInfo itemInfo : mediaInfos){
         	mediaInfoList.add(itemInfo.compress());
         }
         int newPosition = 0;
         for(int i = 0; i != mediaInfos.size(); ++i){
-        	if(allFileInfo.getFile().getName().equals(mediaInfos.get(i).getmFileName())){
+        	if(fileInfo.getName().equals(mediaInfos.get(i).getmFileName())){
         		newPosition = i;
         		break;
         	}
         }
         int requestCode = START_PLAYER_REQUEST_CODE;
-        if (allFileInfo.getType() == ConstData.MediaType.AUDIO)
+        if (fileInfo.getType() == ConstData.MediaType.AUDIO)
         {
             intent.setClass(this, InternalAudioPlayer.class);
             intent.putExtra(ConstData.IntentKey.CURRENT_INDEX, newPosition);
             InternalAudioPlayer.setMediaList(mediaInfoList, newPosition);
         }
-        else if (allFileInfo.getType() == ConstData.MediaType.VIDEO)
+        else if (fileInfo.getType() == ConstData.MediaType.VIDEO)
         {
         	requestCode = ConstData.ActivityRequestCode.REQUEST_VIDEO_PLAYER;
             intent.setClass(this, InternalVideoPlayer.class);
@@ -621,15 +631,15 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
             //LocalBroadcastManager.getInstance(this).sendBroadcast(pasueScanIntent);
             
         }
-        else if (allFileInfo.getType() == ConstData.MediaType.IMAGE)
+        else if (fileInfo.getType() == ConstData.MediaType.IMAGE)
         {
             intent.setClass(this, InternalImagePlayer.class);
             intent.putExtra(ConstData.IntentKey.IS_INTERNAL_PLAYER, true);
             intent.putExtra(ConstData.IntentKey.CURRENT_INDEX, newPosition);
             InternalImagePlayer.setMediaList(mediaInfoList, newPosition);
-        }else if(allFileInfo.getType() == ConstData.MediaType.APK){
+        }else if(fileInfo.getType() == ConstData.MediaType.APK){
         	Intent installIntent = new Intent(Intent.ACTION_VIEW);
-        	installIntent.setDataAndType(Uri.fromFile(allFileInfo.getFile()), "application/vnd.android.package-archive");
+        	installIntent.setDataAndType(Uri.fromFile(new File(fileInfo.getPath())), "application/vnd.android.package-archive");
         	installIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         	startActivity(installIntent);
         	return;
@@ -754,11 +764,11 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
      * @param allFileInfos
      * @return
      */
-	public int getFilePosition(String path, List<AllFileInfo> allFileInfos){
+	public int getFilePosition(String path, List<FileInfo> allFileInfos){
 		int position = 0;
 		if(allFileInfos != null && allFileInfos.size() > 0){
 			for(int i = 0; i < allFileInfos.size(); ++i){
-				if(allFileInfos.get(i).getFile().getPath().equals(path)){
+				if(allFileInfos.get(i).getPath().equals(path)){
 					position = i;
 					break;
 				}

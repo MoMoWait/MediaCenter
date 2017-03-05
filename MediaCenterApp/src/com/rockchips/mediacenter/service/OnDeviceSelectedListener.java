@@ -1,5 +1,7 @@
 package com.rockchips.mediacenter.service;
 
+import com.rockchips.mediacenter.bean.Device;
+
 /**
  * 设备被选中监听回调
  * @author GaoFei
@@ -7,5 +9,5 @@ package com.rockchips.mediacenter.service;
  */
 public interface OnDeviceSelectedListener
 {
-    void onSelected(Object object, int offset);
+    void onSelected(Device device, int offset);
 }

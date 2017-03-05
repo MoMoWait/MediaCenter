@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.rockchips.mediacenter.adapter.FileListAdapter.ViewHolder;
 import com.rockchips.mediacenter.bean.AllFileInfo;
+import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.bean.LocalMediaFile;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.R;
@@ -21,11 +22,11 @@ import android.widget.TextView;
  * @author GaoFei
  * 所有本地文件适配器
  */
-public class AllFileListAdapter extends ArrayAdapter<AllFileInfo> {
+public class AllFileListAdapter extends ArrayAdapter<FileInfo> {
 
 	private int mResourceId = 0;
 	private LayoutInflater mInflater;
-	public AllFileListAdapter(Context context, int resource, List<AllFileInfo> objects) {
+	public AllFileListAdapter(Context context, int resource, List<FileInfo> objects) {
 		super(context, resource, objects);
 		mResourceId = resource;
 		mInflater = LayoutInflater.from(context);
@@ -41,10 +42,8 @@ public class AllFileListAdapter extends ArrayAdapter<AllFileInfo> {
 			convertView.setTag(viewHolder);
 		}
 		ViewHolder holder = (ViewHolder)convertView.getTag();
-		/*ImageView fileIconImageView = (ImageView)convertView.findViewById(R.id.img_file_icon);
-		TextView fileNamTextView = (TextView)convertView.findViewById(R.id.text_file_name);*/
-		AllFileInfo allFileInfo = getItem(position);
-		int fileType = allFileInfo.getType();
+		FileInfo fileInfo = getItem(position);
+		int fileType = fileInfo.getType();
 		if(fileType == ConstData.MediaType.VIDEO){
 			holder.imgFileIcon.setImageResource(R.drawable.icon_local_video);
 		}else if(fileType == ConstData.MediaType.AUDIO){
@@ -58,12 +57,9 @@ public class AllFileListAdapter extends ArrayAdapter<AllFileInfo> {
 		}else{
 			holder.imgFileIcon.setImageResource(R.drawable.unknow_file_type);
 		}
-		holder.textFileName.setText(allFileInfo.getFile().getName());
+		holder.textFileName.setText(fileInfo.getName());
 		return convertView;
 	}
-
-	
-	
 	
 	final class ViewHolder{
 		ImageView imgFileIcon;

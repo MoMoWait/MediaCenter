@@ -7,8 +7,11 @@ import java.util.Comparator;
 import java.util.List;
 import android.media.iso.ISOManager;
 import com.rockchips.mediacenter.bean.AllFileInfo;
+import com.rockchips.mediacenter.bean.Device;
+import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.bean.LocalMediaFile;
 import com.rockchips.mediacenter.data.ConstData;
+import com.rockchips.mediacenter.modle.db.FileInfoService;
 import com.rockchips.mediacenter.utils.MediaFileUtils;
 
 import android.os.AsyncTask;
@@ -18,65 +21,84 @@ import android.util.Log;
  * @author GaoFei
  * 所有文件列表加载器
  */
-public class AllFileLoadTask extends AsyncTask<String, Integer, Integer> {
+public class AllFileLoadTask extends AsyncTask<Object, Integer, Integer> {
 	private static final String TAG = "AllFileLoadTask";
 	public interface CallBack{
-		void onGetFiles(List<AllFileInfo> fileInfos);
+		void onGetFiles(List<FileInfo> fileInfos);
 	}
 	
 	private CallBack mCallBack;
-	private List<AllFileInfo> mAllFileInfos = new ArrayList<AllFileInfo>();
+	private List<FileInfo> mFileInfos = new ArrayList<FileInfo>();
 	public AllFileLoadTask(CallBack callBack){
 		mCallBack = callBack;
 	}
 	
 	
 	@Override
-	protected Integer doInBackground(String... params) {
+	protected Integer doInBackground(Object... params) {
 		Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
-		String dirPath = params[0];
-		File dirFile = new File(dirPath);
-		AllFileInfo allFileInfo;
-		if(dirFile.exists()){
-			File[] files = dirFile.listFiles();
-			if(files != null && files.length > 0){
-				for(File itemFile : files){
-					allFileInfo = new AllFileInfo();
-					allFileInfo.setFile(itemFile);
-					if(itemFile.isDirectory()){
-						//如果是蓝光文件夹
-						if(ISOManager.isBDDirectory(itemFile.getPath())){
-							allFileInfo.setType(ConstData.MediaType.VIDEO);
+		Device device = (Device)params[0];
+		int mediaType = (Integer)params[1];
+		String currFolder = (String)params[2];
+		FileInfoService fileInfoService = new FileInfoService();
+		if(mediaType == ConstData.MediaType.FOLDER){
+			File dirFile = new File(currFolder);
+			FileInfo fileInfo;
+			if(dirFile.exists()){
+				File[] files = dirFile.listFiles();
+				if(files != null && files.length > 0){
+					for(File itemFile : files){
+						fileInfo = new FileInfo();
+						fileInfo.setDeviceID(device.getDeviceID());
+						fileInfo.setModifyTime(itemFile.lastModified());
+						fileInfo.setName(itemFile.getName());
+						fileInfo.setPath(itemFile.getPath());
+						if(itemFile.isDirectory()){
+							//如果是蓝光文件夹
+							if(ISOManager.isBDDirectory(itemFile.getPath())){
+								fileInfo.setType(ConstData.MediaType.VIDEO);
+							}else{
+								fileInfo.setType(ConstData.MediaType.FOLDER);
+								fileInfo.setChildCount(itemFile.listFiles().length);
+								fileInfo.setParentPath(currFolder);
+								fileInfo.setSize(itemFile.length());
+							}
 						}else{
-							allFileInfo.setType(ConstData.MediaType.FOLDER);
+							fileInfo.setType(MediaFileUtils.getMediaTypeFromFile(itemFile));
 						}
-					}else{
-						allFileInfo.setType(MediaFileUtils.getMediaTypeFromFile(itemFile));
+						mFileInfos.add(fileInfo);
 					}
-					mAllFileInfos.add(allFileInfo);
 				}
 			}
-		}
-		if(mAllFileInfos.size() > 1){
-			Collections.sort(mAllFileInfos, new Comparator<AllFileInfo>() {
+			if(mFileInfos.size() > 1){
+				Collections.sort(mFileInfos, new Comparator<FileInfo>() {
 
-				@Override
-				public int compare(AllFileInfo lhs, AllFileInfo rhs) {
-					if(lhs.getFile().isDirectory() && rhs.getFile().isFile())
-						return -1;
-					else if(lhs.getFile().isDirectory() && rhs.getFile().isDirectory()
-					        || lhs.getFile().isFile() && rhs.getFile().isFile())
-					    return lhs.getFile().getPath().compareTo(rhs.getFile().getPath());
-					return 0;
-				}
-			});
+					@Override
+					public int compare(FileInfo lhs, FileInfo rhs) {
+						File lFile = new File(lhs.getPath());
+						File rFile = new File(rhs.getPath());
+						if(lFile.isDirectory() && rFile.isFile())
+							return -1;
+						else if(lFile.isDirectory() && rFile.isDirectory()
+						        || lFile.isFile() && rFile.isFile())
+						    return lFile.getPath().compareTo(rFile.getPath());
+						return 0;
+					}
+				});
+			}
+		}else {
+			if(currFolder.equals(device.getLocalMountPath())){
+				mFileInfos = fileInfoService.getAllFolders(device.getDeviceID(), mediaType);
+			}else{
+				mFileInfos = fileInfoService.getFileInfos(device.getDeviceID(), currFolder, getFileTypeFromFolderType(mediaType));
+			}
 		}
 		return null;
 	}
 	
 	@Override
 	protected void onPostExecute(Integer result) {
-		mCallBack.onGetFiles(mAllFileInfos);
+		mCallBack.onGetFiles(mFileInfos);
 	}
 	
 	
@@ -84,8 +106,31 @@ public class AllFileLoadTask extends AsyncTask<String, Integer, Integer> {
 	 * 同步调用task
 	 * @param params
 	 */
-	public void run(String... params){
+	public void run(Object... params){
 		doInBackground(params);
-		mCallBack.onGetFiles(mAllFileInfos);
+		mCallBack.onGetFiles(mFileInfos);
+	}
+	
+	/**
+	 * 从文件夹类型获取对应的媒体文件类型
+	 * @param folderType
+	 * @return
+	 */
+	public int getFileTypeFromFolderType(int folderType){
+		int fileType = -1;
+		switch (folderType) {
+		case ConstData.MediaType.AUDIOFOLDER:
+			fileType = ConstData.MediaType.AUDIO;
+			break;
+		case ConstData.MediaType.VIDEOFOLDER:
+			fileType = ConstData.MediaType.VIDEO;
+			break;
+		case ConstData.MediaType.IMAGEFOLDER:
+			fileType = ConstData.MediaType.IMAGE;
+			break;
+		default:
+			break;
+		}
+		return fileType;
 	}
 }

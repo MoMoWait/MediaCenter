@@ -7,7 +7,7 @@ package com.rockchips.mediacenter.bean;
 public class DeviceItem
 {
     //上层用来识别设备的对象
-    public Object mObject;
+    public Device mObject;
     
     //设备名
     public String mName;
@@ -18,7 +18,7 @@ public class DeviceItem
     //设备要展示的所有媒体类型对应的文字的id
     public int[] mTextIds;
 
-    public DeviceItem(Object object, String name, int[] imageIds, int[] textIds)
+    public DeviceItem(Device object, String name, int[] imageIds, int[] textIds)
     {
         mObject = object;
         mName = name;
