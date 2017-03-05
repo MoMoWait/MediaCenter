@@ -111,7 +111,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	/**
 	 * 当前焦点文件
 	 */
-	private AllFileInfo mCurrentFileInfo;
+	private FileInfo mCurrentFileInfo;
 	/**
 	 * 当前文件夹列表选中的位置
 	 */
@@ -193,7 +193,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position,
 			long id) {
-		mCurrentFileInfo = (AllFileInfo)parent.getAdapter().getItem(position);
+		mCurrentFileInfo = (FileInfo)parent.getAdapter().getItem(position);
 		refreshPreview(mCurrentFileInfo);
 	}
 
@@ -335,11 +335,11 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
     	mListFile.setOnItemLongClickListener(this);
     }
     
-    private void refreshPreview(AllFileInfo fileInfo)
+    private void refreshPreview(FileInfo fileInfo)
     {
     	//更新头部信息
-        mTextFileName.setText(fileInfo.getFile().getName());
-    	mWidgetPreview.updateName(fileInfo.getFile().getName());
+        mTextFileName.setText(fileInfo.getName());
+    	mWidgetPreview.updateName(fileInfo.getName());
     	mWidgetPreview.updateOtherText(getAllFilePreviewInfo(fileInfo));
     	mWidgetPreview.updateImage(getPreviewIcon(fileInfo.getType()));
 		Bitmap previewBitmap = null;
@@ -443,17 +443,22 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	
     
     
-    private String getAllFilePreviewInfo(AllFileInfo fileInfo){
+    private String getAllFilePreviewInfo(FileInfo fileInfo){
     	String info = "";
-    	if(fileInfo.getFile().isDirectory()){
-    		info = getString(R.string.file_tip) + fileInfo.getFile().list().length;
+    	if(fileInfo.getType() == ConstData.MediaType.FOLDER){
+    		if(mCurrMediaType == ConstData.MediaType.FOLDER)
+    			info = getString(R.string.file_tip) + fileInfo.getChildCount();
+    		else if(mCurrMediaType == ConstData.MediaType.AUDIOFOLDER)
+    			info = getString(R.string.file_tip) + fileInfo.getMusicCount();
+    		else
+    			info = getString(R.string.file_tip) + fileInfo.getVideoCount();
     	}else{
     		 String dateStr = null;
-    	     dateStr = GetDateUtil.getTime(this, fileInfo.getFile().lastModified() / 1000);
+    	     dateStr = GetDateUtil.getTime(this, fileInfo.getModifyTime() / 1000);
     	     if (dateStr == null){
     	    	 dateStr = getString(R.string.unknown);
     	     }
-    	     info = getString(R.string.file_size_tip) + getFileSize(fileInfo.getFile().length()) + "\n" + getString(R.string.modify_time_tip) + dateStr;
+    	     info = getString(R.string.file_size_tip) + getFileSize(fileInfo.getSize()) + "\n" + getString(R.string.modify_time_tip) + dateStr;
     	}
     	return info;
     }
@@ -551,29 +556,29 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
     }
     
     
-    private void updateOtherText(AllFileInfo allFileInfo)
+    private void updateOtherText(FileInfo fileInfo)
     {
         String strInfo = null;
-        switch(allFileInfo.getType())
+        switch(fileInfo.getType())
         {
             case ConstData.MediaType.AUDIO:
             	strInfo = String.format(getString(R.string.audio_preview_info), 
-                		getFileSize(allFileInfo.getFile().length()), 
-                		getFileType(allFileInfo.getFile().getName(),getString(R.string.music), mCurrDevice.getDevices_type()), 
-                		getRunningTime(allFileInfo),
-                		formatCreateDate(allFileInfo),getDescription(""));
+                		getFileSize(fileInfo.getSize()), 
+                		getFileType(fileInfo.getName(),getString(R.string.music), mCurrDevice.getDeviceType()), 
+                		getRunningTime(fileInfo),
+                		formatCreateDate(fileInfo),getDescription(""));
             	break;
             case ConstData.MediaType.VIDEO:
             	strInfo = String.format(getString(R.string.audio_preview_info), 
-                		getFileSize(allFileInfo.getFile().length()), 
-                		getFileType(allFileInfo.getFile().getName(),getString(R.string.video), mCurrDevice.getDevices_type()), 
-                		getRunningTime(allFileInfo),
-                		formatCreateDate(allFileInfo),getDescription(""));
+                		getFileSize(fileInfo.getSize()), 
+                		getFileType(fileInfo.getName(),getString(R.string.music), mCurrDevice.getDeviceType()), 
+                		getRunningTime(fileInfo),
+                		formatCreateDate(fileInfo),getDescription(""));
               break;
             // 显示尺寸
             case ConstData.MediaType.IMAGE:
-                strInfo = String.format(getString(R.string.image_preview_info), getFileSize(allFileInfo.getFile().length()),
-                        getFileType(allFileInfo.getFile().getName(),getString(R.string.picture), mCurrDevice.getDevices_type()), formatCreateDate(allFileInfo),getDescription(""));
+                strInfo = String.format(getString(R.string.image_preview_info), getFileSize(fileInfo.getSize()),
+                        getFileType(fileInfo.getName(),getString(R.string.picture), mCurrDevice.getDeviceType()), formatCreateDate(fileInfo),getDescription(""));
                 break;
         }
         mWidgetPreview.updateOtherText(strInfo);
@@ -650,12 +655,14 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
     private static final int INDEX_OF_SPLIT_01 = -1;
     private static final int INDEX_OF_SPLIT_1 = 1;
     /** DTS2015012807455 解决音乐、视频，不显示时长的问题  by zWX238093 */
-    protected String getRunningTime(AllFileInfo fileInfo)
+    protected String getRunningTime(FileInfo fileInfo)
     {
-    	if(TextUtils.isEmpty(fileInfo.getDuration())){
+    	if(TextUtils.isEmpty(fileInfo.getOtherInfo())){
     		return getString(R.string.unknown_durnation);
     	}
-    	return fileInfo.getDuration();
+    	//解析json数据
+    	
+    	return "00:00:00";
     }
     
     private String getDescription(String description){	
@@ -666,9 +673,9 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 		return description;
 	}
     
-    private String formatCreateDate(AllFileInfo allFileInfo){
+    private String formatCreateDate(FileInfo fileInfo){
         String dataStr;
-        dataStr = GetDateUtil.getTime(AllFileListActivity.this, allFileInfo.getFile().lastModified() / 1000);
+        dataStr = GetDateUtil.getTime(AllFileListActivity.this, fileInfo.getModifyTime() / 1000);
         if (TextUtils.isEmpty(dataStr))
         {
             dataStr = getString(R.string.unknown);
@@ -683,7 +690,8 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 		if (deviceType == ConstData.DeviceType.DEVICE_TYPE_U 
 				|| deviceType == ConstData.DeviceType.DEVICE_TYPE_SD
 				|| deviceType == ConstData.DeviceType.DEVICE_TYPE_SMB
-				|| deviceType == ConstData.DeviceType.DEVICE_TYPE_NFS)
+				|| deviceType == ConstData.DeviceType.DEVICE_TYPE_NFS
+				|| deviceType == ConstData.DeviceType.DEVICE_TYPE_INTERNEL_STORAGE)
 		{					
 			fileType = filename.substring(filename.lastIndexOf(".")+1);
 		}		
