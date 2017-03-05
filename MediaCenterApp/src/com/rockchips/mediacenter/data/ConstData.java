@@ -1,6 +1,8 @@
 
 package com.rockchips.mediacenter.data;
 import java.util.Arrays;
+
+import android.R.integer;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -435,6 +437,12 @@ public class ConstData {
     	 * GaoFei Add
     	 */
     	public static final int DEVICE_TYPE_SMB = 2002;
+    	
+    	/**
+    	 * 本地存储
+    	 */
+    	public static final int DEVICE_TYPE_LOCAL = 2003;
+    	
     	/**内部存储设备*/
     	public static final int DEVICE_TYPE_INTERNEL_STORAGE = -13;
     	
@@ -1376,4 +1384,25 @@ public class ConstData {
     	String APK = "com.rockchips.meidacenter.meida.apk";
     	String UNKNOW_TYPE = "com.rockchips.meidacenter.meida.unknow_type";
     }
+    
+	/**
+	 * 设备上下线状态
+	 * @author GaoFei
+	 *
+	 */
+	public interface DeviceMountState{
+		int DEVICE_UP = 1;
+		int DEVICE_DOWN = 2;
+	}
+	
+	/**
+	 * 设备挂载卸载消息
+	 * @author GaoFei
+	 *
+	 */
+	public interface DeviceMountMsg{
+		String MOUNT_PATH = "com.rockchips.mediacenter.mount_path";
+		String MOUNT_STATE = "com.rockchips.mediacenter.mount_state";
+		String MOUNT_TYPE = "com.rockchips.mediacenter.mount_device_type";
+	}
 }

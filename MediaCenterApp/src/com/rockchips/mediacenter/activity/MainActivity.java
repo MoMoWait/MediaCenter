@@ -44,7 +44,6 @@ import com.rockchips.mediacenter.view.SambaAddDialog;
 import com.rockchips.mediacenter.bean.DeviceItem;
 import com.rockchips.mediacenter.view.DevicesListView;
 import com.rockchips.mediacenter.service.OnDeviceSelectedListener;
-import com.rockchips.mediacenter.view.DevicesListView.OnSearchListener;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -90,8 +89,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
 
     private static final int MEDIA_TYPE_VIDEO = 3;
 
-    private static final int HANDLER_MSG_DEV_UPDATE = 1;
-    
     private DeviceUpDownReceiver mDeviceUpDownReceiver;
 
     /**
@@ -112,10 +109,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
      */
     private ServiceConnection mDeviceMonitorConnection;
     private DeviceMonitorService mDeviceMonitorService;
-    /**
-     * 是否绑定DeviceMonitorService
-     */
-    private boolean isBindDeviceMonitorService;
     /**
      * 本地设备上下线监听
      */

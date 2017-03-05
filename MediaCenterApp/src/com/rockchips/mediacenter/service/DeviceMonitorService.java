@@ -174,16 +174,6 @@ public class DeviceMonitorService extends Service {
 	private List<LocalDeviceListener> mLocalDeviceListeners;
 	
 	/**
-	 * 设备上下线消息
-	 * @author GaoFei
-	 *
-	 */
-	interface DeviceMountMsgs{
-		int DEVICE_UP = 1;
-		int DEVICE_DOWN = 2;
-	}
-	
-	/**
 	 * 本地设备监听器
 	 * @author GaoFei
 	 *
@@ -390,11 +380,11 @@ public class DeviceMonitorService extends Service {
 				device = MediaFileUtils.getLocalDeviceFromFile(new File(path));
 				if(device != null){
 					localDeviceService.save(device);
-					message.what = DeviceMountMsgs.DEVICE_UP;
+					message.what = ConstData.DeviceMountState.DEVICE_UP;
 				}
 				
 			}else{
-				message.what = DeviceMountMsgs.DEVICE_DOWN;
+				message.what = ConstData.DeviceMountState.DEVICE_DOWN;
 			}
 			message.arg1 = deviceType;
 			message.arg2 = (isAddNetWork ? 1 : 0);
@@ -427,10 +417,10 @@ public class DeviceMonitorService extends Service {
 		}
 		Message message = new Message();
 		if (state.equals(Environment.MEDIA_MOUNTED)) {
-			message.what = DeviceMountMsgs.DEVICE_UP;
+			message.what = ConstData.DeviceMountState.DEVICE_UP;
 			
 		}else{
-			message.what = DeviceMountMsgs.DEVICE_DOWN;
+			message.what = ConstData.DeviceMountState.DEVICE_DOWN;
 		}
 		message.arg1 = deviceType;
 		message.arg2 = (isAddNetWork ? 1 : 0);
@@ -497,7 +487,7 @@ public class DeviceMonitorService extends Service {
 					}
 				}
 				Message message = new Message();
-				message.what = DeviceMountMsgs.DEVICE_DOWN;
+				message.what = ConstData.DeviceMountState.DEVICE_DOWN;
 				message.arg1 = ConstData.DeviceType.DEVICE_TYPE_DMS;
 				mDeviceHandler.sendMessageDelayed(message, DELAY_MESSAGE_TIME);
 				return null;
@@ -714,17 +704,23 @@ public class DeviceMonitorService extends Service {
 	class MountListener extends StorageEventListener {
 
 		public void onUsbMassStorageConnectionChanged(boolean connected) {
-			//Log.i(TAG, "onUsbMassStorageConnectionChanged->connected:"
-			//		+ connected);
+			
 		}
 
-		public void onStorageStateChanged(String path, String oldState,
-				String newState) {
+		public void onStorageStateChanged(String path, String oldState, String newState) {
 			if(newState.equals(Environment.MEDIA_MOUNTED) || newState.equals(Environment.MEDIA_UNMOUNTED)){
 				Log.i(TAG, "path =" + path + "   " + "oldState=" + oldState + "   " + "newState=" + newState);
 				Log.i(TAG, "currentTime:" + System.currentTimeMillis());
-				processLocalDeviceMountMsg(path, newState, ConstData.DeviceType.DEVICE_TYPE_SD, false);
-				//processMountMsg(path, newState, ConstData.DeviceType.DEVICE_TYPE_SD, false);
+				//这里改为线程处理
+				Bundle bundle = new Bundle();
+				bundle.putString(ConstData.DeviceMountMsg.MOUNT_PATH, path);
+				bundle.putInt(ConstData.DeviceMountMsg.MOUNT_TYPE, ConstData.DeviceType.DEVICE_TYPE_LOCAL);
+				bundle.putInt(ConstData.DeviceMountMsg.MOUNT_STATE, newState.equals(Environment.MEDIA_MOUNTED) ? ConstData.DeviceMountState.DEVICE_UP :
+					ConstData.DeviceMountState.DEVICE_DOWN);
+				//启动一个线程处理
+				
+				//mDeviceHandler.sendMessage(msg);
+				//processLocalDeviceMountMsg(path, newState, ConstData.DeviceType.DEVICE_TYPE_LOCAL, false);
 			}
 				
 		}
@@ -756,7 +752,7 @@ public class DeviceMonitorService extends Service {
 				synchronized (mCurrProcessMountMsgs) {
 					mCurrProcessMountMsgs.put(upnpDevice.getMountPath(), true);
 					Message message = new Message();
-					message.what = DeviceMountMsgs.DEVICE_UP;
+					message.what = ConstData.DeviceMountState.DEVICE_UP;
 					message.arg1 = ConstData.DeviceType.DEVICE_TYPE_DMS;
 					message.obj = upnpDevice.getMountPath();
 					mDeviceHandler.sendMessageDelayed(message, DELAY_MESSAGE_TIME);
@@ -775,7 +771,7 @@ public class DeviceMonitorService extends Service {
 				//移除远程设备
 				mRemoteDevices.remove(device.getIdentity().getDescriptorURL().toString());
 				Message message = new Message();
-				message.what = DeviceMountMsgs.DEVICE_DOWN;
+				message.what = ConstData.DeviceMountState.DEVICE_DOWN;
 				message.arg1 = ConstData.DeviceType.DEVICE_TYPE_DMS;
 				message.obj = device.getIdentity().getDescriptorURL().toString();
 				mDeviceHandler.sendMessageDelayed(message, DELAY_MESSAGE_TIME);
@@ -798,12 +794,12 @@ public class DeviceMonitorService extends Service {
 			intent.putExtra(ConstData.IntentKey.EXTRA_DEVICE_PATH, (String)msg.obj);
 			intent.putExtra(ConstData.IntentKey.EXTRA_IS_ADD_NETWORK_DEVICE, msg.arg2 == 1);
 			switch (msg.what) {
-			case DeviceMountMsgs.DEVICE_UP:
+			case ConstData.DeviceMountState.DEVICE_UP:
 				intent.setAction(ConstData.BroadCastMsg.DEVICE_UP);
 				//发送设备上线广播
 				LocalBroadcastManager.getInstance(DeviceMonitorService.this).sendBroadcast(intent);
 				break;
-			case DeviceMountMsgs.DEVICE_DOWN:
+			case ConstData.DeviceMountState.DEVICE_DOWN:
 				intent.setAction(ConstData.BroadCastMsg.DEVICE_DOWN);
 				//发送设备下线广播
 				LocalBroadcastManager.getInstance(DeviceMonitorService.this).sendBroadcast(intent);
