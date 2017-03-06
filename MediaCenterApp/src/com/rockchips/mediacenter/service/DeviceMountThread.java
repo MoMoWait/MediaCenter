@@ -10,6 +10,7 @@ import com.rockchips.mediacenter.utils.MediaFileUtils;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Telephony.Mms;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -33,10 +34,12 @@ public class DeviceMountThread extends Thread{
 		String mountPath = mMsg.getString(ConstData.DeviceMountMsg.MOUNT_PATH);
 		int mountState = mMsg.getInt(ConstData.DeviceMountMsg.MOUNT_STATE);
 		boolean isFromNetWork = mMsg.getBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK);
+		String netWrokPath = mMsg.getString(ConstData.DeviceMountMsg.NETWORK_PATH);
 		Log.i(TAG, "DeviceMountThread->deviceType:" + deviceType);
 		Log.i(TAG, "DeviceMountThread->mountPath:" + mountPath);
 		Log.i(TAG, "DeviceMountThread->mountState:" + mountState);
 		Log.i(TAG, "DeviceMountThread->isFromNetWork:" + mountState);
+		Log.i(TAG, "DeviceMountThread->netWorkPath:" + netWrokPath);
 		DeviceService deviceService = new DeviceService();
 		FileInfoService fileInfoService = new FileInfoService();
 		//删除相关数据
@@ -56,7 +59,7 @@ public class DeviceMountThread extends Thread{
 		if(mountState == ConstData.DeviceMountState.DEVICE_UP){
 			broadIntent.setAction(ConstData.BroadCastMsg.DEVICE_UP);
 			//通过路径构建Device
-			Device mountDevice = MediaFileUtils.getDeviceFromMountPath(mountPath, "", deviceType);
+			Device mountDevice = MediaFileUtils.getDeviceFromMountPath(mountPath, netWrokPath, deviceType);
 			//将设备存储至数据库中
 			deviceService.save(mountDevice);
 			//启动文件扫描线程

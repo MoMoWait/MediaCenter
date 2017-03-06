@@ -53,6 +53,7 @@ public class DeviceInitCheckThread extends Thread{
 				mountBundle.putInt(ConstData.DeviceMountMsg.MOUNT_STATE, ConstData.DeviceMountState.DEVICE_UP);
 				mountBundle.putInt(ConstData.DeviceMountMsg.MOUNT_TYPE, ConstData.DeviceType.DEVICE_TYPE_U);
 				mountBundle.putBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK, false);
+				mountBundle.putString(ConstData.DeviceMountMsg.NETWORK_PATH, "");
 				mService.getDeviceMountService().execute(new DeviceMountThread(mService, mountBundle));
 			}
 		}
@@ -64,6 +65,7 @@ public class DeviceInitCheckThread extends Thread{
 				mountBundle.putInt(ConstData.DeviceMountMsg.MOUNT_STATE, ConstData.DeviceMountState.DEVICE_UP);
 				mountBundle.putInt(ConstData.DeviceMountMsg.MOUNT_TYPE, ConstData.DeviceType.DEVICE_TYPE_SD);
 				mountBundle.putBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK, false);
+				mountBundle.putString(ConstData.DeviceMountMsg.NETWORK_PATH, "");
 				mService.getDeviceMountService().execute(new DeviceMountThread(mService, mountBundle));
 			}
 		}
@@ -72,6 +74,7 @@ public class DeviceInitCheckThread extends Thread{
 		mountBundle.putInt(ConstData.DeviceMountMsg.MOUNT_STATE, ConstData.DeviceMountState.DEVICE_UP);
 		mountBundle.putInt(ConstData.DeviceMountMsg.MOUNT_TYPE, ConstData.DeviceType.DEVICE_TYPE_INTERNEL_STORAGE);
 		mountBundle.putBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK, false);
+		mountBundle.putString(ConstData.DeviceMountMsg.NETWORK_PATH, "");
 		//添加内部存储
 		mService.getDeviceMountService().execute(new DeviceMountThread(mService, mountBundle));
 	

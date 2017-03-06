@@ -1412,5 +1412,6 @@ public class ConstData {
 		String MOUNT_STATE = "com.rockchips.mediacenter.mount_state";
 		String MOUNT_TYPE = "com.rockchips.mediacenter.mount_device_type";
 		String IS_FROM_NETWORK = "com.rockchips.mediacenter.is_from_network";
+		String NETWORK_PATH = "com.rockchips.mediacenter.network_path";
 	}
 }

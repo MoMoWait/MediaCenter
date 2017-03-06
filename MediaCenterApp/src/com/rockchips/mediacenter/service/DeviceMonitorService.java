@@ -805,8 +805,14 @@ public class DeviceMonitorService extends Service {
 			if(action.equals(ConstData.BroadCastMsg.NFS_MOUNT)){
 				NFSInfo nfsInfo = (NFSInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_NFS_INFO);
 				boolean isAddNetWork = intent.getBooleanExtra(ConstData.IntentKey.EXTRA_IS_ADD_NETWORK_DEVICE, false);
+				Bundle nfsBundle = new Bundle();
+				nfsBundle.putString(ConstData.DeviceMountMsg.MOUNT_PATH, nfsInfo.getLocalMountPath());
+				nfsBundle.putInt(ConstData.DeviceMountMsg.MOUNT_STATE, ConstData.DeviceMountState.DEVICE_UP);
+				nfsBundle.putInt(ConstData.DeviceMountMsg.MOUNT_TYPE, ConstData.DeviceType.DEVICE_TYPE_NFS);
+				nfsBundle.putBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK, isAddNetWork);
+				nfsBundle.putString(ConstData.DeviceMountMsg.NETWORK_PATH, nfsInfo.getNetWorkPath());
 				NFSDeviceMountThread nfsDeviceMountThread = new NFSDeviceMountThread(DeviceMonitorService.this, nfsInfo, isAddNetWork);
-				mMountNetWorkDeviceService.execute(nfsDeviceMountThread);
+				mDeviceMountService.execute(new DeviceMountThread(DeviceMonitorService.this, nfsBundle));
 			}else if(action.equals(ConstData.BroadCastMsg.SAMBA_MOUNT)){
 				SmbInfo smbInfo = (SmbInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_SAMBA_INFO);
 				boolean isAddNetWork = intent.getBooleanExtra(ConstData.IntentKey.EXTRA_IS_ADD_NETWORK_DEVICE, false);
@@ -815,7 +821,7 @@ public class DeviceMonitorService extends Service {
 				sambaBundle.putInt(ConstData.DeviceMountMsg.MOUNT_STATE, ConstData.DeviceMountState.DEVICE_UP);
 				sambaBundle.putInt(ConstData.DeviceMountMsg.MOUNT_TYPE, ConstData.DeviceType.DEVICE_TYPE_SMB);
 				sambaBundle.putBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK, isAddNetWork);
-				//SambaDeviceMountThread sambaDeviceMountThread = new SambaDeviceMountThread(DeviceMonitorService.this, smbInfo, isAddNetWork);
+				sambaBundle.putString(ConstData.DeviceMountMsg.NETWORK_PATH, smbInfo.getNetWorkPath());
 				mDeviceMountService.execute(new DeviceMountThread(DeviceMonitorService.this, sambaBundle));
 			}else if(action.equals(ConstData.BroadCastMsg.REFRESH_NETWORK_DEVICE)){
 				//刷新网络设备
