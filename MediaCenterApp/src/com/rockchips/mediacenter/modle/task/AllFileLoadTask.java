@@ -64,6 +64,7 @@ public class AllFileLoadTask extends AsyncTask<Object, Integer, Integer> {
 								fileInfo.setSize(itemFile.length());
 							}
 						}else{
+							fileInfo.setSize(itemFile.length());
 							fileInfo.setType(MediaFileUtils.getMediaTypeFromFile(itemFile));
 						}
 						mFileInfos.add(fileInfo);
@@ -88,9 +89,9 @@ public class AllFileLoadTask extends AsyncTask<Object, Integer, Integer> {
 			}
 		}else {
 			if(currFolder.equals(device.getLocalMountPath())){
-				mFileInfos = fileInfoService.getAllFolders(device.getDeviceID(), mediaType);
+				mFileInfos = fileInfoService.getAllFolders(device.getDeviceID(), mediaType, device.getLocalMountPath());
 			}else{
-				mFileInfos = fileInfoService.getFileInfos(device.getDeviceID(), currFolder, getFileTypeFromFolderType(mediaType));
+				mFileInfos = fileInfoService.getFileInfos(device.getDeviceID(), currFolder, MediaFileUtils.getFileTypeFromFolderType(mediaType));
 			}
 		}
 		return null;
@@ -111,26 +112,4 @@ public class AllFileLoadTask extends AsyncTask<Object, Integer, Integer> {
 		mCallBack.onGetFiles(mFileInfos);
 	}
 	
-	/**
-	 * 从文件夹类型获取对应的媒体文件类型
-	 * @param folderType
-	 * @return
-	 */
-	public int getFileTypeFromFolderType(int folderType){
-		int fileType = -1;
-		switch (folderType) {
-		case ConstData.MediaType.AUDIOFOLDER:
-			fileType = ConstData.MediaType.AUDIO;
-			break;
-		case ConstData.MediaType.VIDEOFOLDER:
-			fileType = ConstData.MediaType.VIDEO;
-			break;
-		case ConstData.MediaType.IMAGEFOLDER:
-			fileType = ConstData.MediaType.IMAGE;
-			break;
-		default:
-			break;
-		}
-		return fileType;
-	}
 }

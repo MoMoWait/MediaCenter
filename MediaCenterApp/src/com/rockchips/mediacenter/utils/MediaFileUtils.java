@@ -291,7 +291,8 @@ public class MediaFileUtils {
      */
     public static FileInfo getFileInfoFromFile(File file, Device device){
     	int currentMediaType = getMediaTypeFromFile(file);
-    	if(currentMediaType == ConstData.MediaType.UNKNOWN_TYPE)
+    	if(currentMediaType == ConstData.MediaType.UNKNOWN_TYPE ||
+    			currentMediaType == ConstData.MediaType.APK)
     		return null;
     	FileInfo fileInfo = new FileInfo();
     	fileInfo.setDeviceID(device.getDeviceID());
@@ -680,7 +681,8 @@ public class MediaFileUtils {
     		File[] subFiles = parentFile.listFiles();
     		if(subFiles != null && subFiles.length > 0){
     			for(File itemFile : subFiles){
-    				LocalMediaInfo localMediaInfo = getMediaInfoFromFile(itemFile, allFileInfo.getType(), getDeviceInfoFromDevice(device));
+    				//LocalMediaInfo localMediaInfo = getMediaInfoFromFile(itemFile, allFileInfo.getType(), getDeviceInfoFromDevice(device));
+    				LocalMediaInfo localMediaInfo = null;
     				if(localMediaInfo != null)
     					mediaInfos.add(localMediaInfo);
     			}
@@ -803,4 +805,29 @@ public class MediaFileUtils {
     	
     	return path;
     }
+    
+    
+	/**
+	 * 从文件夹类型获取对应的媒体文件类型
+	 * @param folderType
+	 * @return
+	 */
+	public static int getFileTypeFromFolderType(int folderType){
+		int fileType = -1;
+		switch (folderType) {
+		case ConstData.MediaType.AUDIOFOLDER:
+			fileType = ConstData.MediaType.AUDIO;
+			break;
+		case ConstData.MediaType.VIDEOFOLDER:
+			fileType = ConstData.MediaType.VIDEO;
+			break;
+		case ConstData.MediaType.IMAGEFOLDER:
+			fileType = ConstData.MediaType.IMAGE;
+			break;
+		default:
+			break;
+		}
+		return fileType;
+	}
+    
 }

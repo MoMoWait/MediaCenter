@@ -563,16 +563,17 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
         for (int i = 0; i < mDevInfoList.size(); ++i)
         {
             Device info = mDevInfoList.get(i);
-            /*if(info.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_SMB ){
-            	name = DeviceTypeStr.getDevTypeStr(this, info.getDevices_type()) + mSmbMap.get(info.getMountPath()).getNetWorkPath() +
-            			"(" + info.getPhysic_dev_id() + ")" ;
-            }else if(info.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_NFS){
-            	name = DeviceTypeStr.getDevTypeStr(this, info.getDevices_type()) + mNFSMap.get(info.getMountPath()).getNetWorkPath() +
-            			"(" + info.getPhysic_dev_id() + ")" ;
+/*            if(info.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_SMB ){
+            	name = DeviceTypeStr.getDevTypeStr(this, info.getDeviceType()) + mSmbMap.get(info.getLocalMountPath()).getNetWorkPath() +
+            			"(" + info.getDeviceID() + ")" ;
+            }else if(info.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_NFS){
+            	name = DeviceTypeStr.getDevTypeStr(this, info.getDeviceType()) + mNFSMap.get(info.getLocalMountPath()).getNetWorkPath() +
+            			"(" + info.getDeviceID() + ")" ;
             }else{
-            	 name = DeviceTypeStr.getDevTypeStr(this, info.getDevices_type()) + info.getPhysic_dev_id();
+            	 name = DeviceTypeStr.getDevTypeStr(this, info.getDeviceType()) + info.getDeviceName();
             }*/
-            device = new DeviceItem(info, info.getDeviceName(), imageIds, textIds);
+            name = DeviceTypeStr.getDevTypeStr(this, info.getDeviceType()) + info.getDeviceName();
+            device = new DeviceItem(info, name, imageIds, textIds);
             mDeviceItemList.add(device);
         }
 
@@ -656,7 +657,8 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     	@Override
     	public void onReceive(Context context, Intent intent) {
     		Log.i(TAG, "DeviceUpDownReceiver->onReceive->currentTime:" + System.currentTimeMillis());
-    		loadDeviceInfoList(false);
+    		boolean isFromNetwork = intent.getBooleanExtra(ConstData.DeviceMountMsg.IS_FROM_NETWORK, false);
+    		loadDeviceInfoList(isFromNetwork);
 /*    		String devicePath = intent.getStringExtra(ConstData.IntentKey.EXTRA_DEVICE_PATH);
     		boolean isAddNetWork = intent.getBooleanExtra(ConstData.IntentKey.EXTRA_IS_ADD_NETWORK_DEVICE, false);
     		int deviceType = intent.getIntExtra(ConstData.IntentKey.EXTRA_DEVICE_TYPE, -1);

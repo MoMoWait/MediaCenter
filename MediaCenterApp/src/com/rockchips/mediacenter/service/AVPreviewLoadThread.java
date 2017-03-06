@@ -17,35 +17,33 @@ import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
 import android.provider.MediaStore.Video.Thumbnails;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.TextUtils;
 import android.util.Log;
-
-import com.rockchips.mediacenter.bean.AllFileInfo;
+import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.data.ConstData;
+import com.rockchips.mediacenter.modle.db.FileInfoService;
 
 /**
  * @author GaoFei
  * 文件浏览时音频/视频文件预览图加载线程
  */
-public class AVPreviewLoadThread extends Thread implements Comparable<AVPreviewLoadThread>{
+public class AVPreviewLoadThread extends AbstractPreviewLoadThread{
     private static final String TAG = "AVPreviewLoadThread";
     
-    private AllFileInfo mAllFileInfo;
+    private FileInfo mFileInfo;
     private DeviceMonitorService mService;
-    private int mPriority;
     private boolean isOOM;
-    public AVPreviewLoadThread(AllFileInfo fileInfo, DeviceMonitorService service, int priority){
-        mAllFileInfo = fileInfo;
+    public AVPreviewLoadThread(FileInfo fileInfo, DeviceMonitorService service){
+        mFileInfo = fileInfo;
         mService = service;
-        mPriority = priority;
     }
     
     @Override
     public void run() {
-        if(mAllFileInfo.isLoadPreview())
-            return;
-        
         if(mService.isHaveVideoPlay())
         	return;
+        if(!TextUtils.isEmpty(mFileInfo.getPreviewPath()))
+            return;
     	long startTime = System.currentTimeMillis();
 		Log.i(TAG, "AVPreviewLoadThread->startTime:" + startTime);
         /**
@@ -54,7 +52,7 @@ public class AVPreviewLoadThread extends Thread implements Comparable<AVPreviewL
         MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
         try{
             //此处发生异常，直接导致文件元数据无法解析
-            mediaMetadataRetriever.setDataSource(mAllFileInfo.getFile().getPath());
+            mediaMetadataRetriever.setDataSource(mFileInfo.getPath());
         }catch (Exception e){
             //存在发生异常的可能性
             Log.e(TAG, "AVPreviewLoadThread->setDataSource->exception:" + e);
@@ -69,11 +67,11 @@ public class AVPreviewLoadThread extends Thread implements Comparable<AVPreviewL
         }
         Log.i(TAG, "AVPreviewLoadThread->durationStr:" + durationStr);
         if(durationStr != null){
-            mAllFileInfo.setDuration(getDuration(Long.parseLong(durationStr)));
+            mFileInfo.setDuration(getDuration(Long.parseLong(durationStr)));
         }
         Bitmap priviewBitmap = null;
-        if(mAllFileInfo.getType() == ConstData.MediaType.VIDEO){
-            priviewBitmap = ThumbnailUtils.createVideoThumbnail(mAllFileInfo.getFile().getPath(), Thumbnails.MICRO_KIND);
+        if(mFileInfo.getType() == ConstData.MediaType.VIDEO){
+            priviewBitmap = ThumbnailUtils.createVideoThumbnail(mFileInfo.getPath(), Thumbnails.MICRO_KIND);
         }else{
             byte[] albumData = mediaMetadataRetriever.getEmbeddedPicture();
             if(albumData != null && albumData.length > 0){
@@ -110,13 +108,26 @@ public class AVPreviewLoadThread extends Thread implements Comparable<AVPreviewL
             cacheImageDirFile.mkdirs();
         String savePath = cacheImageDirFile.getPath() + "/" + UUID.randomUUID().toString() + ".png";
         if(priviewBitmap != null && BitmapUtils.saveBitmapToImage(priviewBitmap, savePath, CompressFormat.PNG, 80))
-            mAllFileInfo.setPriviewPhotoPath(savePath);
+            mFileInfo.setPreviewPath(savePath);
         //未发生OOM异常
         if(!isOOM){
-            mAllFileInfo.setLoadPreview(true);
+        	//为发生异常，获取缩列图为null,文件存在问题或者无法获取
+        	if(priviewBitmap == null){
+        		mFileInfo.setPreviewPath(ConstData.UNKNOW);
+        	}
+        	if(mFileInfo.getId() != -1){
+        		//尝试更新至数据库
+            	FileInfoService fileInfoService = new FileInfoService();
+            	fileInfoService.update(mFileInfo);
+        	}
             //发送广播
-            Intent previewIntent = new Intent(ConstData.BroadCastMsg.REFRESH_AV_PREVIEW);
-            previewIntent.putExtra(ConstData.IntentKey.EXTRA_ALL_FILE_INFO, mAllFileInfo);
+            Intent previewIntent = new Intent();
+            if(mFileInfo.getType() == ConstData.MediaType.AUDIO){
+            	previewIntent.setAction(ConstData.BroadCastMsg.REFRESH_VIDEO_PREVIEW);
+            }else{
+            	previewIntent.setAction(ConstData.BroadCastMsg.REFRESH_AUDIO_PREVIEW);
+            }
+            previewIntent.putExtra(ConstData.IntentKey.EXTRA_FILE_INFO, mFileInfo);
             LocalBroadcastManager.getInstance(mService).sendBroadcast(previewIntent);
         }
         long endTime = System.currentTimeMillis();
@@ -135,12 +146,8 @@ public class AVPreviewLoadThread extends Thread implements Comparable<AVPreviewL
     }
 
 	@Override
-	public int compareTo(AVPreviewLoadThread o) {
-		if(mPriority < o.mPriority)
-			return -1;
-		else if(mPriority == o.mPriority)
-			return 0;
-		return 1;
+	public int getThreadPriporty() {
+		return ConstData.THREAD_PRIORITY--;
 	}
 
 }

@@ -183,7 +183,7 @@ public class UpnpImageActivity extends AppBaseActivity implements OnItemClickLis
 					mLayoutNoFiles.setVisibility(View.GONE);
 					mLocalMediaFolders = mediaFolders;
 					mGridAlbum.setVisibility(View.VISIBLE);
-					mAlbumAdapter = new PhotoGridAdapter(UpnpImageActivity.this, R.layout.adapter_photo_grid_item, MediaFileUtils.getMediaInfoListFromUpnpFolders(mediaFolders, ConstData.MediaType.IMAGEFOLDER));
+					//mAlbumAdapter = new PhotoGridAdapter(UpnpImageActivity.this, R.layout.adapter_photo_grid_item, MediaFileUtils.getMediaInfoListFromUpnpFolders(mediaFolders, ConstData.MediaType.IMAGEFOLDER));
 					mGridAlbum.setAdapter(mAlbumAdapter);
 					mGridAlbum.setFocusable(true);
 					mGridAlbum.setFocusableInTouchMode(true);
@@ -238,7 +238,7 @@ public class UpnpImageActivity extends AppBaseActivity implements OnItemClickLis
 					mLayoutNoFiles.setVisibility(View.GONE);
 					//mGridAlbum.setVisibility(View.GONE);
 					mLocalMediaInfos = MediaFileUtils.getMediaInfoListFromUpnpFileList(mediaFiles);
-					mPhotoAdapter = new PhotoGridAdapter(UpnpImageActivity.this,  R.layout.adapter_photo_grid_item, mLocalMediaInfos);
+					//mPhotoAdapter = new PhotoGridAdapter(UpnpImageActivity.this,  R.layout.adapter_photo_grid_item, mLocalMediaInfos);
 					mGridImage.setAdapter(mPhotoAdapter);
 					mGridImage.setFocusable(true);
 					mGridImage.setFocusableInTouchMode(true);
@@ -276,7 +276,7 @@ public class UpnpImageActivity extends AppBaseActivity implements OnItemClickLis
         Intent intent = new Intent();
         intent.putExtra(ConstData.IntentKey.IS_INTERNAL_PLAYER, true);
         intent.putExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE, mCurrDevice);
-        intent.putExtra(LocalDeviceInfo.DEVICE_EXTRA_NAME, MediaFileUtils.getDeviceInfoFromDevice(mCurrDevice).compress());
+        //intent.putExtra(LocalDeviceInfo.DEVICE_EXTRA_NAME, MediaFileUtils.getDeviceInfoFromDevice(mCurrDevice).compress());
         List<LocalMediaInfo> mediaInfos =mLocalMediaInfos;
         List<Bundle> mediaInfoList = new ArrayList<Bundle>();
         for(LocalMediaInfo itemInfo : mediaInfos){

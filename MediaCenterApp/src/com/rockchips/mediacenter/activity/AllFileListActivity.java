@@ -1,6 +1,5 @@
 package com.rockchips.mediacenter.activity;
 import java.io.File;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import momo.cn.edu.fjnu.androidutils.utils.BitmapUtils;
@@ -9,23 +8,18 @@ import momo.cn.edu.fjnu.androidutils.utils.StorageUtils;
 import org.xutils.x;
 import org.xutils.view.annotation.ViewInject;
 import com.rockchips.mediacenter.adapter.AllFileListAdapter;
-import com.rockchips.mediacenter.adapter.FileListAdapter;
 import com.rockchips.mediacenter.adapter.FolderListAdapter;
 import com.rockchips.mediacenter.audioplayer.InternalAudioPlayer;
 import com.rockchips.mediacenter.bean.AllFileInfo;
 import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.bean.FileInfo;
-import com.rockchips.mediacenter.bean.LocalDevice;
 import com.rockchips.mediacenter.bean.LocalMediaFile;
 import com.rockchips.mediacenter.bean.LocalMediaFolder;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.imageplayer.InternalImagePlayer;
 import com.rockchips.mediacenter.modle.task.AVBitmapLoadTask;
 import com.rockchips.mediacenter.modle.task.AllFileLoadTask;
-import com.rockchips.mediacenter.modle.task.FileLoadTask;
 import com.rockchips.mediacenter.modle.task.FileOpTask;
-import com.rockchips.mediacenter.modle.task.FolderLoadTask;
-import com.rockchips.mediacenter.utils.APKUtils;
 import com.rockchips.mediacenter.utils.ActivityUtils;
 import com.rockchips.mediacenter.utils.DialogUtils;
 import com.rockchips.mediacenter.utils.MediaFileUtils;
@@ -37,9 +31,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.icu.text.BreakIterator;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
@@ -220,7 +211,8 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	protected void onResume() {
 	    super.onResume();
 	    IntentFilter refershFilter  = new IntentFilter();
-	    refershFilter.addAction(ConstData.BroadCastMsg.REFRESH_AV_PREVIEW);
+	    refershFilter.addAction(ConstData.BroadCastMsg.REFRESH_VIDEO_PREVIEW);
+	    refershFilter.addAction(ConstData.BroadCastMsg.REFRESH_AUDIO_PREVIEW);
 	    refershFilter.addAction(ConstData.BroadCastMsg.REFRESH_PHOTO_PREVIEW);
 	    refershFilter.addAction(ConstData.BroadCastMsg.REFRESH_APK_PREVIEW);
 	    LocalBroadcastManager.getInstance(this).registerReceiver(mRefreshPreviewReceiver, refershFilter);
@@ -348,11 +340,16 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
             case ConstData.MediaType.AUDIO:
             case ConstData.MediaType.VIDEO:
             	updateOtherText(fileInfo);
-            	if(!fileInfo.isLoadPreview()){
-            		loadBitmapForAVFile(fileInfo);
-            	}else{   
+            	if(TextUtils.isEmpty(fileInfo.getPreviewPath())){
+            		if(fileInfo.getType() == ConstData.MediaType.VIDEO){
+            			loadBitmapForVideoFile(fileInfo);
+            		}else{
+            			loadBitmapForAudioFile(fileInfo);
+            		}
+            		
+            	}else if(!ConstData.UNKNOW.equals(fileInfo.getPreviewPath())){   
             		recycleOldPreview();
-            		previewBitmap = BitmapUtils.getScaledBitmapFromFile(fileInfo.getPriviewPhotoPath(), SizeUtils.dp2px(this, 280), SizeUtils.dp2px(this, 280));
+            		previewBitmap = BitmapUtils.getScaledBitmapFromFile(fileInfo.getPreviewPath(), SizeUtils.dp2px(this, 280), SizeUtils.dp2px(this, 280));
         			mOldBitmap = previewBitmap;
             		if(previewBitmap != null){
         				mWidgetPreview.updateImage(previewBitmap);
@@ -360,11 +357,11 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
             	}
                 break;
             case ConstData.MediaType.IMAGE:
-            	if(!fileInfo.isLoadPreview()){
-            		loadPreviewForPhoto(fileInfo);
+            	if(TextUtils.isEmpty(fileInfo.getPreviewPath())){
+            		loadBitmapForPhotoFile(fileInfo);
             	}else{
             		recycleOldPreview();
-            		previewBitmap = BitmapUtils.getScaledBitmapFromFile(fileInfo.getPriviewPhotoPath(), SizeUtils.dp2px(this, 280), SizeUtils.dp2px(this, 280));
+            		previewBitmap = BitmapUtils.getScaledBitmapFromFile(fileInfo.getPreviewPath(), SizeUtils.dp2px(this, 280), SizeUtils.dp2px(this, 280));
         			mOldBitmap = previewBitmap;
             		if(previewBitmap != null){
         				mWidgetPreview.updateImage(previewBitmap);
@@ -373,11 +370,11 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
             	updateOtherText(fileInfo);
                 break;
             case ConstData.MediaType.APK:
-            	if(!fileInfo.isLoadPreview()){
-            		loadPreviewForAPK(fileInfo);
+            	if(TextUtils.isEmpty(fileInfo.getPreviewPath())){
+            		loadBitmapForApkFile(fileInfo);
             	}else{
             		recycleOldPreview();
-            		previewBitmap = BitmapUtils.getScaledBitmapFromFile(fileInfo.getPriviewPhotoPath(), SizeUtils.dp2px(this, 280), SizeUtils.dp2px(this, 280));
+            		previewBitmap = BitmapUtils.getScaledBitmapFromFile(fileInfo.getPreviewPath(), SizeUtils.dp2px(this, 280), SizeUtils.dp2px(this, 280));
         			mOldBitmap = previewBitmap;
             		if(previewBitmap != null){
         				mWidgetPreview.updateImage(previewBitmap);
@@ -657,12 +654,10 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
     /** DTS2015012807455 解决音乐、视频，不显示时长的问题  by zWX238093 */
     protected String getRunningTime(FileInfo fileInfo)
     {
-    	if(TextUtils.isEmpty(fileInfo.getOtherInfo())){
+    	if(TextUtils.isEmpty(fileInfo.getDuration())){
     		return getString(R.string.unknown_durnation);
     	}
-    	//解析json数据
-    	
-    	return "00:00:00";
+    	return fileInfo.getDuration();
     }
     
     private String getDescription(String description){	
@@ -737,31 +732,46 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
     }
     
     /**
-     * 获取音屏和视频文件的缩列图
+     * 加载视频文件缩列图
      * @param allFileInfo
      */
-    private void loadBitmapForAVFile(AllFileInfo allFileInfo){
+    private void loadBitmapForAudioFile(FileInfo fileInfo){
         //此处直接发送广播出去,服务接受后开始获取缩列图
-        Intent loadIntent = new Intent(ConstData.BroadCastMsg.LOAD_AV_BITMAP);
-        loadIntent.putExtra(ConstData.IntentKey.EXTRA_ALL_FILE_INFO, allFileInfo);
+        Intent loadIntent = new Intent(ConstData.BroadCastMsg.LOAD_AUDIO_PREVIEW);
+        loadIntent.putExtra(ConstData.IntentKey.EXTRA_FILE_INFO, fileInfo);
         LocalBroadcastManager.getInstance(this).sendBroadcast(loadIntent);
     }
     
     /**
-     * 获取图片的预览图
-     * @param allFileInfo
+     * 获取视频文件的缩列图
+     * @param fileInfo
      */
-    private void loadPreviewForPhoto(AllFileInfo allFileInfo){
+    private void loadBitmapForVideoFile(FileInfo fileInfo){
     	//此处直接发送广播出去,服务接受后开始获取缩列图
-        Intent loadIntent = new Intent(ConstData.BroadCastMsg.LOAD_PHOTO_PREVIEW);
-        loadIntent.putExtra(ConstData.IntentKey.EXTRA_ALL_FILE_INFO, allFileInfo);
+        Intent loadIntent = new Intent(ConstData.BroadCastMsg.LOAD_VIDEO_PREVIEW);
+        loadIntent.putExtra(ConstData.IntentKey.EXTRA_FILE_INFO, fileInfo);
         LocalBroadcastManager.getInstance(this).sendBroadcast(loadIntent);
     }
     
-    private void loadPreviewForAPK(AllFileInfo allFileInfo){
+   /**
+    * 获取图片文件的预览图
+    * @param allFileInfo
+    */
+    private void loadBitmapForPhotoFile(FileInfo fileInfo){
+    	//此处直接发送广播出去,服务接受后开始获取缩列图
+        Intent loadIntent = new Intent(ConstData.BroadCastMsg.LOAD_PHOTO_PREVIEW);
+        loadIntent.putExtra(ConstData.IntentKey.EXTRA_FILE_INFO, fileInfo);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(loadIntent);
+    }
+    
+    /**
+     * 获取APK文件的预览图
+     * @param fileInfo
+     */
+    private void loadBitmapForApkFile(FileInfo fileInfo){
     	//此处直接发送广播出去,服务接受后开始获取缩列图
         Intent loadIntent = new Intent(ConstData.BroadCastMsg.LOAD_APK_PREVIEW);
-        loadIntent.putExtra(ConstData.IntentKey.EXTRA_ALL_FILE_INFO, allFileInfo);
+        loadIntent.putExtra(ConstData.IntentKey.EXTRA_FILE_INFO, fileInfo);
         LocalBroadcastManager.getInstance(this).sendBroadcast(loadIntent);
     }
     
@@ -794,15 +804,10 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	class RefreshPreviewReceiver extends BroadcastReceiver{
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
-	        String action = intent.getAction();
-	        if(action.equals(ConstData.BroadCastMsg.REFRESH_AV_PREVIEW) || action.equals(ConstData.BroadCastMsg.REFRESH_PHOTO_PREVIEW)
-	        		|| action.equals(ConstData.BroadCastMsg.REFRESH_APK_PREVIEW)){
-	            //更新预览图
-	            AllFileInfo allFileInfo = (AllFileInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_ALL_FILE_INFO);
-	            if(allFileInfo.getFile().getPath().equals(mCurrentFileInfo.getFile().getPath()))
-	                refreshPreview(allFileInfo);
-	        }
-	        
+	    	//更新预览图
+            FileInfo fileInfo = (FileInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_FILE_INFO);
+            if(fileInfo != null && fileInfo.getPath().equals(mCurrentFileInfo.getPath()))
+                refreshPreview(fileInfo);
 	    }
 	}
 	

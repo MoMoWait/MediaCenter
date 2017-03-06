@@ -507,7 +507,7 @@ public class UpnpFileListActivity extends AppBaseActivity  implements OnItemSele
         Intent intent = new Intent();
         intent.putExtra(ConstData.IntentKey.IS_INTERNAL_PLAYER, true);
         intent.putExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE, mCurrDevice);
-        intent.putExtra(LocalDeviceInfo.DEVICE_EXTRA_NAME, MediaFileUtils.getDeviceInfoFromDevice(mCurrDevice).compress());
+        //intent.putExtra(LocalDeviceInfo.DEVICE_EXTRA_NAME, MediaFileUtils.getDeviceInfoFromDevice(mCurrDevice).compress());
         UpnpFileService upnpFileService = new UpnpFileService();
         List<UpnpFile> mediaFiles = new ArrayList<UpnpFile>();
         if(mCurrMediaType == ConstData.MediaType.AUDIOFOLDER)

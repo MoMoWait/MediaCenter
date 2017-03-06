@@ -536,7 +536,7 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
         Intent intent = new Intent();
         intent.putExtra(ConstData.IntentKey.IS_INTERNAL_PLAYER, true);
         intent.putExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE, mCurrDevice);
-        intent.putExtra(LocalDeviceInfo.DEVICE_EXTRA_NAME, MediaFileUtils.getDeviceInfoFromDevice(mCurrDevice).compress());
+        //intent.putExtra(LocalDeviceInfo.DEVICE_EXTRA_NAME, MediaFileUtils.getDeviceInfoFromDevice(mCurrDevice).compress());
         LocalMediaFileService localMediaFileService = new LocalMediaFileService();
         List<LocalMediaFile> mediaFiles = new ArrayList<LocalMediaFile>();
         if(mCurrMediaType == ConstData.MediaType.AUDIOFOLDER)

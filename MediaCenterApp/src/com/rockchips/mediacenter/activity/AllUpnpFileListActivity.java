@@ -577,7 +577,7 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
         Intent intent = new Intent();
         intent.putExtra(ConstData.IntentKey.IS_INTERNAL_PLAYER, true);
         intent.putExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE, mCurrDevice);
-        intent.putExtra(LocalDeviceInfo.DEVICE_EXTRA_NAME, MediaFileUtils.getDeviceInfoFromDevice(mCurrDevice).compress());
+        //intent.putExtra(LocalDeviceInfo.DEVICE_EXTRA_NAME, MediaFileUtils.getDeviceInfoFromDevice(mCurrDevice).compress());
         //UpnpFileService upnpFileService = new UpnpFileService();
         //List<UpnpFile> mediaFiles = upnpFileService.getFilesByDeviceIdAndParentId(mediaFile.getDeviceID(), mediaFile.getParentId(), mediaFile.getType());
         List<LocalMediaInfo> mediaInfos = MediaFileUtils.getMediaInfosFromAllUpnpFileInfo(upnpFileInfo, mDidlContent, mCurrDevice);

@@ -4,6 +4,7 @@ import java.util.List;
 
 import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
 
+import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.bean.LocalDevice;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.utils.ActivityExitUtils;
@@ -29,7 +30,7 @@ import com.rockchips.mediacenter.R;
 public class AppBaseActivity extends Activity{
 	private static final String TAG = "AppBaseActivity";
 	private DeviceUpDownReceiver mDeviceUpDownReceiver;
-	private LocalDevice mCurrDevice;
+	private Device mCurrDevice;
     /**
      * 定时器处理
      */
@@ -54,7 +55,7 @@ public class AppBaseActivity extends Activity{
 	
 	
 	private void initData(){
-		mCurrDevice = (LocalDevice)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
+		mCurrDevice = (Device)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
 		mDeviceUpDownReceiver = new DeviceUpDownReceiver();
 		mTimeHandler = new Handler();
 		mTimerTask = new TimerTask();
@@ -156,7 +157,7 @@ public class AppBaseActivity extends Activity{
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String mountPath = intent.getStringExtra(ConstData.IntentKey.EXTRA_DEVICE_PATH);
-			if(mCurrDevice != null && mCurrDevice.getMountPath().equals(mountPath)){
+			if(mCurrDevice != null && mCurrDevice.getLocalMountPath().equals(mountPath)){
 				//退出Activity
 				List<Activity> allActivities = ActivityExitUtils.getAllActivities();
 				if(allActivities != null && allActivities.size() > 0){

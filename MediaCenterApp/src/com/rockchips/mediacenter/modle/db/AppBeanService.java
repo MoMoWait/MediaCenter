@@ -96,6 +96,7 @@ public abstract class AppBeanService<T> implements BaseBeanService<T>{
         try {
             MediaCenterApplication.mDBManager.saveOrUpdate(objects);
         } catch (DbException e) {
+        	Log.i(TAG, "saveOrUpdateAll->exception:" + e);
             e.printStackTrace();
         }
     }

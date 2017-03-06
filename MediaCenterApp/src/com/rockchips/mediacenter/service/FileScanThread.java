@@ -26,9 +26,8 @@ import android.util.Log;
  *
  */
 public class FileScanThread extends Thread{
-	public static final String TAG = FileScanThread.class.getSimpleName();
+	public static final String TAG = "FileScanThread";
 	private DeviceMonitorService mService;
-	private boolean mIsMounted;
 	private String mPath;
 	private Device mDevice;
 	private FileInfoService mFileInfoService;
@@ -48,10 +47,6 @@ public class FileScanThread extends Thread{
 	 */
 	private List<FileInfo> mTmpFileInfos = new ArrayList<FileInfo>();
 	/**
-	 * 文件夹列表
-	 */
-	private List<LocalMediaFolder> mTmpFolders = new ArrayList<LocalMediaFolder>(); 
-	/**
 	 * 扫描的目录列表
 	 */
 	private LinkedList<ScanDirectory> mScanDirectories = new LinkedList<ScanDirectory>();
@@ -63,12 +58,9 @@ public class FileScanThread extends Thread{
 		this.mService = service;
 		this.mDevice = device;
 		this.mPath = device.getLocalMountPath();
-		this.mIsMounted = true;
 	    mScanDirectories.add(new ScanDirectory(mPath, mDevice.getDeviceID()));
 		mFileInfoService = new FileInfoService();
-		mediaFolderService = new LocalMediaFolderService();
 		mScanDirectoryService = new ScanDirectoryService();
-		mLocalDeviceService = new LocalDeviceService();
 	}
 	
 	
@@ -85,7 +77,6 @@ public class FileScanThread extends Thread{
 		    }catch (Exception e){
 		        Log.i(TAG, "FileScanThread exception:" + e);
 		    }
-			mIsMounted = mService.isMounted(mPath);
 			if(mTmpFileInfos.size() >= 100){
 				//入库
 				mFileInfoService.saveAll(mTmpFileInfos);
@@ -95,19 +86,20 @@ public class FileScanThread extends Thread{
 			if(mScanDirectories.size() > MAX_DIRS){
 				//超过了最大缓存目录标记
 				mIsOverMaxDirs = true;
-			}else if(mScanDirectories.size() < MAX_DIRS / 2){
+			}else if(mScanDirectories.size() < MAX_DIRS / 2 && mIsOverMaxDirs){
 				//设置最大缓存标记为false
 				mIsOverMaxDirs = false;
 				//从数据库拿出数据
 				loadScanDirectoriesFromDB();
 			}
 			File dirFile = new File(mScanDirectories.remove().getPath());
+			Log.i(TAG, "ScanDirectory->dirFile:" + dirFile);
+			int musicCount = 0;
+			int imageCount = 0;
+			int videoCount = 0;
+			int mediaCount = 0; 
 			if(dirFile != null && dirFile.exists()){
 				File[] subFiles = dirFile.listFiles();
-				int musicCount = 0;
-				int imageCount = 0;
-				int videoCount = 0;
-				int mediaCount = 0;
 				//拔插时候，容易出现subFiles为null
 				if(subFiles == null || subFiles.length == 0)
 					continue;
@@ -117,6 +109,7 @@ public class FileScanThread extends Thread{
 						if(ISOManager.isBDDirectory(subFile.getPath())){
 							FileInfo fileInfo = MediaFileUtils.getBDFileInfo(subFile, mDevice);
 							mTmpFileInfos.add(fileInfo);
+							++mediaCount;
 							++videoCount;
 						}
 						else if(mIsOverMaxDirs){
@@ -175,8 +168,9 @@ public class FileScanThread extends Thread{
 				
 			}
 		}
+		Log.i(TAG, "mTmpFileInfos->size:" + mTmpFileInfos.size());
 		//文件入库
-		mFileInfoService.saveOrUpdateAll(mTmpFileInfos);
+		mFileInfoService.saveAll(mTmpFileInfos);
 		mTmpFileInfos.clear();
 		long endTime = System.currentTimeMillis();
 		Log.i(TAG, "FileScanThread end time:" + endTime);

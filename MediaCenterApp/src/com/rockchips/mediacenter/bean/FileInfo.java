@@ -1,5 +1,7 @@
 package com.rockchips.mediacenter.bean;
 
+import java.io.Serializable;
+
 import org.xutils.db.annotation.Column;
 import org.xutils.db.annotation.Table;
 
@@ -9,10 +11,10 @@ import org.xutils.db.annotation.Table;
  * 文件描述信息
  */
 @Table(name = "FileInfo")
-public class FileInfo
+public class FileInfo implements Serializable
 {
 	@Column(name = "id", isId = true, autoGen = true)
-	private int id;
+	private int id = -1;
 	@Column(name = "deviceID")
 	private String deviceID;
 	@Column(name = "path")
@@ -37,6 +39,8 @@ public class FileInfo
 	private String previewPath;
 	@Column(name = "childCount")
 	private int childCount;
+	@Column(name = "duration")
+	private String duration;
 	@Column(name = "otherInfo")
 	private String otherInfo;
 	public int getId() {
@@ -123,6 +127,12 @@ public class FileInfo
 	public void setParentPath(String parentPath) {
 		this.parentPath = parentPath;
 	}
+	public String getDuration() {
+		return duration;
+	}
+	public void setDuration(String duration) {
+		this.duration = duration;
+	}
 	@Override
 	public String toString() {
 		return "FileInfo [id=" + id + ", deviceID=" + deviceID + ", path="
@@ -130,8 +140,8 @@ public class FileInfo
 				+ ", modifyTime=" + modifyTime + ", size=" + size + ", type="
 				+ type + ", musicCount=" + musicCount + ", videoCount="
 				+ videoCount + ", imageCount=" + imageCount + ", previewPath="
-				+ previewPath + ", childCount=" + childCount + ", otherInfo="
-				+ otherInfo + "]";
+				+ previewPath + ", childCount=" + childCount + ", duration="
+				+ duration + ", otherInfo=" + otherInfo + "]";
 	}
 	
 }

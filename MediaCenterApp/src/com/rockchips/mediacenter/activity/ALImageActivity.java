@@ -28,13 +28,11 @@ import com.rockchips.mediacenter.R;
 import com.rockchips.mediacenter.bean.LocalDeviceInfo;
 import com.rockchips.mediacenter.bean.LocalMediaInfo;
 import com.rockchips.mediacenter.adapter.PhotoGridAdapter;
-import com.rockchips.mediacenter.bean.LocalDevice;
-import com.rockchips.mediacenter.bean.LocalMediaFile;
-import com.rockchips.mediacenter.bean.LocalMediaFolder;
+import com.rockchips.mediacenter.bean.Device;
+import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.imageplayer.InternalImagePlayer;
-import com.rockchips.mediacenter.modle.task.FileLoadTask;
-import com.rockchips.mediacenter.modle.task.FolderLoadTask;
+import com.rockchips.mediacenter.modle.task.AllFileLoadTask;
 import com.rockchips.mediacenter.utils.DialogUtils;
 import com.rockchips.mediacenter.utils.MediaFileUtils;
 /**
@@ -56,23 +54,23 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 	@ViewInject(R.id.layout_no_files)
 	private ViewGroup mLayoutNoFiles;
 	
-	private LocalDevice mCurrDevice; 
+	private Device mCurrDevice; 
 	private int mCurrMediaType;
-	private FolderLoadTask mFolderLoadTask;
-	private FileLoadTask mFileLoadTask;
+	private AllFileLoadTask mFolderLoadTask;
+	private AllFileLoadTask mFileLoadTask;
 	private PhotoGridAdapter mAlbumAdapter;
 	private PhotoGridAdapter mPhotoAdapter;
-	private List<LocalMediaFolder> mLocalMediaFolders;
+	private List<FileInfo> mLocalMediaFolders;
 	private List<LocalMediaInfo> mLocalMediaInfos;
-	private List<LocalMediaFile> mLocalMediaFiles;
+	private List<FileInfo> mLocalMediaFiles;
 	/**
 	 * 当前选中的文件
 	 */
-	private LocalMediaFile mSelectFile;
+	private FileInfo mSelectFile;
 	/**
 	 * 当前选中的目录
 	 */
-	private LocalMediaFolder mSelectMediaFolder;
+	private FileInfo mSelectMediaFolder;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -128,7 +126,7 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 	
 	public void initDataAndView(){
 		mCurrMediaType = getIntent().getIntExtra(ConstData.IntentKey.EXTRAL_MEDIA_TYPE, -1);
-    	mCurrDevice = (LocalDevice)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
+    	mCurrDevice = (Device)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
 		loadFolders();
 	}
 	
@@ -146,28 +144,27 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 	public void loadFolders(){
 		DialogUtils.showLoadingDialog(this, false);
 		startTimer(ConstData.MAX_LOAD_FILES_TIME);
-    	mFolderLoadTask = new FolderLoadTask(new FolderLoadTask.Callback() {
+		mFolderLoadTask = new AllFileLoadTask(new AllFileLoadTask.CallBack() {
 			@Override
-			public void onSuccess(List<LocalMediaFolder> mediaFolders) {
+			public void onGetFiles(List<FileInfo> fileInfos) {
 			    endTimer();
 				DialogUtils.closeLoadingDialog();
 				if(isOverTimer())
 				    return;
-				mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id());
-				//Log.i(TAG, "onSuccess->mediaFolders:" + mediaFolders);
+				mTextPathTitle.setText(mCurrDevice.getDeviceName());
 				mGridImage.setVisibility(View.GONE);
-				if(mediaFolders != null && mediaFolders.size() > 0){
+				if(fileInfos != null && fileInfos.size() > 0){
 					mLayoutNoFiles.setVisibility(View.GONE);
-					mLocalMediaFolders = mediaFolders;
+					mLocalMediaFolders = fileInfos;
 					mGridAlbum.setVisibility(View.VISIBLE);
-					mAlbumAdapter = new PhotoGridAdapter(ALImageActivity.this, R.layout.adapter_photo_grid_item, MediaFileUtils.getMediaInfoListFromFolders(mediaFolders));
+					mAlbumAdapter = new PhotoGridAdapter(ALImageActivity.this, R.layout.adapter_photo_grid_item, fileInfos);
 					mGridAlbum.setAdapter(mAlbumAdapter);
 					mGridAlbum.setFocusable(true);
 					mGridAlbum.setFocusableInTouchMode(true);
 					mGridAlbum.requestFocus();
 					int selectIndex = 0;
 					if(mSelectMediaFolder != null){
-						selectIndex = getFolderIndex(mSelectMediaFolder, mediaFolders);
+						selectIndex = getFolderIndex(mSelectMediaFolder, fileInfos);
 					}
 					if(selectIndex >= 0){
 						mGridAlbum.setSelection(selectIndex);
@@ -180,48 +177,43 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 					mLayoutNoFiles.setVisibility(View.VISIBLE);
 					mGridAlbum.setVisibility(View.GONE);
 				}
-			}
 			
-			@Override
-			public void onFailed() {
-				DialogUtils.closeLoadingDialog();
 			}
 		});
-    	
-    	mFolderLoadTask.execute("" + mCurrMediaType, mCurrDevice.getDeviceID());
+		
+    	mFolderLoadTask.execute(mCurrDevice, mCurrMediaType, mCurrDevice.getLocalMountPath());
 	}
 	
 	
 	/**
 	 * 加载文件列表
 	 */
-	public void loadFiles(final LocalMediaFolder mediaFolder){
+	public void loadFiles(final FileInfo folderFileInfo){
 		DialogUtils.showLoadingDialog(this, false);
 		startTimer(ConstData.MAX_LOAD_FILES_TIME);
-    	mFileLoadTask = new FileLoadTask(new FileLoadTask.Callback() {
+		mFileLoadTask = new AllFileLoadTask(new AllFileLoadTask.CallBack() {
 			@Override
-			public void onSuccess(List<LocalMediaFile> mediaFiles) {
+			public void onGetFiles(List<FileInfo> fileInfos) {
 			    endTimer();
 				DialogUtils.closeLoadingDialog();
 				if(isOverTimer())
 				    return;
-				mLocalMediaFiles = mediaFiles;
+				mLocalMediaFiles = fileInfos;
 				mGridAlbum.setVisibility(View.GONE);
-				mTextPathTitle.setText(mCurrDevice.getPhysic_dev_id() + ">" + mediaFolder.getName());
+				mTextPathTitle.setText(mCurrDevice.getDeviceName() + ">" + folderFileInfo.getName());
 				//Log.i(TAG, "loadFiles->onSuccess->mediaFiles:" + mediaFiles);
-				if(mediaFiles != null && mediaFiles.size() > 0){
+				if(fileInfos != null && fileInfos.size() > 0){
 					mGridImage.setVisibility(View.VISIBLE);
 					mGridImage.requestFocus();
 					mLayoutNoFiles.setVisibility(View.GONE);
-					mLocalMediaInfos = MediaFileUtils.getMediaInfoList(mediaFiles);
-					mPhotoAdapter = new PhotoGridAdapter(ALImageActivity.this,  R.layout.adapter_photo_grid_item, mLocalMediaInfos);
+					mPhotoAdapter = new PhotoGridAdapter(ALImageActivity.this,  R.layout.adapter_photo_grid_item, mLocalMediaFiles);
 					mGridImage.setAdapter(mPhotoAdapter);
 					mGridImage.setFocusable(true);
 					mGridImage.setFocusableInTouchMode(true);
 					mGridImage.requestFocus();
 					int selectIndex = 0;
 					if(mSelectFile != null){
-						selectIndex = getFileIndex(mSelectFile, mediaFiles);
+						selectIndex = getFileIndex(mSelectFile, mLocalMediaFiles);
 					}
 					if(selectIndex >= 0)
 						mGridImage.setSelection(selectIndex);
@@ -232,15 +224,10 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 					mLayoutNoFiles.setVisibility(View.VISIBLE);
 					mGridImage.setVisibility(View.GONE);
 				}
-			}
 			
-			@Override
-			public void onFailed() {
-				DialogUtils.closeLoadingDialog();
 			}
-		});
-    	
-    	mFileLoadTask.execute(mediaFolder.getPath(), "" + ConstData.MediaType.IMAGE, mCurrDevice.getDeviceID());
+		});    	
+    	mFileLoadTask.execute(mCurrDevice, mCurrMediaType, mSelectMediaFolder.getPath());
 	}
 
 	
@@ -274,13 +261,13 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
      * @param mediaFiles
      * @return
      */
-     private int getFolderIndex(LocalMediaFolder mediaFolder, List<LocalMediaFolder> mediaFiles){
-     	if(mediaFolder == null)
+     private int getFolderIndex(FileInfo folderFileInfo, List<FileInfo> fileInfos){
+     	if(folderFileInfo == null)
      		return -1;
-     	if(mediaFiles == null || mediaFiles.size() == 0)
+     	if(fileInfos == null || fileInfos.size() == 0)
      		return -1;
-     	for(int i = 0; i != mediaFiles.size(); ++i){
-     		if(mediaFiles.get(i).getFolderId() == mediaFolder.getFolderId()){
+     	for(int i = 0; i != fileInfos.size(); ++i){
+     		if(fileInfos.get(i).getId() == folderFileInfo.getId()){
      			return i;
      		}
      	}
@@ -293,13 +280,13 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
       * @param mediaFiles
       * @return
       */
-     private int getFileIndex(LocalMediaFile mediaFile, List<LocalMediaFile> mediaFiles){
-     	if(mediaFile == null)
+     private int getFileIndex(FileInfo fileInfo, List<FileInfo> fileInfos){
+     	if(fileInfo == null)
      		return -1;
-     	if(mediaFiles == null || mediaFiles.size() == 0)
+     	if(fileInfos == null || fileInfos.size() == 0)
      		return -1;
-     	for(int i = 0; i != mediaFiles.size(); ++i){
-     		if(mediaFiles.get(i).getFileId() == mediaFile.getFileId()){
+     	for(int i = 0; i != fileInfos.size(); ++i){
+     		if(fileInfos.get(i).getId() == fileInfo.getId()){
      			return i;
      		}
      	}

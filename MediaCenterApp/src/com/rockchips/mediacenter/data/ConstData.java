@@ -1,8 +1,6 @@
 
 package com.rockchips.mediacenter.data;
 import java.util.Arrays;
-
-import android.R.integer;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -21,7 +19,7 @@ public class ConstData {
 	 */
 	public static long MAX_LOAD_FILES_TIME = 20 * 1000L;
 	/**全局线程优先级*/
-	public static int THREAD_PRIORITY = Integer.MAX_VALUE;
+	public static volatile int THREAD_PRIORITY = Integer.MAX_VALUE;
 	/**
 	 * PIP播放视频时，是否显示字幕
 	 */
@@ -32,6 +30,7 @@ public class ConstData {
 	public static final String NETWORK_DEVICE_MOUNT_DIR = "/data" + "/mediacenter_networkdevice";
 	public static final String MEDIACENTER_PERMISSION = "com.android.rockchips.permission.MEDIACENTER_SEND_RECV";
 	public static final String EXTRA_IS_SEARCH = "is_search";
+	public static final String UNKNOW = "unknow";
 	public class NFS{
 		//挂载路径
 		public static final String MOUNT_PATH = "/mnt/sdcard/nfs";
@@ -87,6 +86,7 @@ public class ConstData {
 		String EXTRA_IS_ADD_SAMBA = "extra_is_add_samba";
 		String EXTRA_IS_ADD_NETWORK_DEVICE = "extra_is_add_network_device";
 		String EXTRA_ALL_FILE_INFO = "extra_all_file_info";
+		String EXTRA_FILE_INFO = "extra_file_info";
 		String EXTRA_LOCAL_MEDIA_FILE = "extra_local_media_file";
 		/**本地设备挂载点目录*/
 		String EXTRA_LOCAL_DEVICE_MOUNT_PATH = "extra_local_device_mount_path";
@@ -626,6 +626,8 @@ public class ConstData {
     	String CHECK_NETWORK = "com.rockchip.mediacenter.check_network";
     	String LOAD_AV_BITMAP = "com.rockchip.mediacenter.load_av_bitmap";
     	String REFRESH_AV_PREVIEW = "com.rockchip.mediacenter.refresh_av_preview";
+    	String REFRESH_VIDEO_PREVIEW = "com.rockchip.mediacenter.refresh_video_preview";
+    	String REFRESH_AUDIO_PREVIEW = "com.rockchip.mediacenter.refresh_audio_preview";
     	String LOAD_APK_PREVIEW = "com.rockchip.mediacenter.load_apk_preview";
     	String REFRESH_LOCAL_MEDIA_AV_PREVIEW = "com.rockchip.mediacenter.refresh_local_media_av_preview";
     	String REFRESH_PHOTO_PREVIEW = "com.rockchip.mediacenter.refresh_photo_preview";
@@ -634,7 +636,14 @@ public class ConstData {
     	String LOAD_LOCAL_MEDIA_FILE_PREVIEW = "com.rockchip.mediacenter.load_local_media_file_preview";
     	String PAUSE_DEVICE_FILE_SCAN = "com.rockchip.mediacenter.pause_device_file_scan";
     	String CONTINUE_DEVICE_FILE_SCAN = "com.rockchip.mediacenter.continue_device_file_scan";
-    	
+    	/**
+    	 * 加载视频缩列图
+    	 */
+    	String LOAD_VIDEO_PREVIEW = "com.rockchips.mediacenter.load_video_preview";
+    	/**
+    	 * 加载音乐缩列图
+    	 */
+    	String LOAD_AUDIO_PREVIEW = "com.rockchips.mediacenter.load_audio_preview";
     	// 消息广播相关------开始
 
         /**
@@ -1402,5 +1411,6 @@ public class ConstData {
 		String MOUNT_PATH = "com.rockchips.mediacenter.mount_path";
 		String MOUNT_STATE = "com.rockchips.mediacenter.mount_state";
 		String MOUNT_TYPE = "com.rockchips.mediacenter.mount_device_type";
+		String IS_FROM_NETWORK = "com.rockchips.mediacenter.is_from_network";
 	}
 }

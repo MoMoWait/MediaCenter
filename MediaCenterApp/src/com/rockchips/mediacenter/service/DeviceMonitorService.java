@@ -26,6 +26,7 @@ import org.fourthline.cling.registry.DefaultRegistryListener;
 import org.fourthline.cling.registry.Registry;
 
 import com.rockchips.mediacenter.bean.AllFileInfo;
+import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.bean.LocalDevice;
 import com.rockchips.mediacenter.bean.LocalMediaFile;
 import com.rockchips.mediacenter.bean.NFSInfo;
@@ -100,9 +101,13 @@ public class DeviceMonitorService extends Service {
 	 */
 	private ExecutorService mLocalDeviceUpDownProcessService;
 	/**
-	 * 单线程池服务，加载音频和视频文件的预览图
+	 * 单线程池服务，加载视频文件缩列图
 	 */
-	private ThreadPoolExecutor mAVPreviewLoadService;
+	private ThreadPoolExecutor mVideoPreviewLoadService;
+	/**
+	 * 单线程池服务，加载音乐，图片，APK文件缩列图
+	 */
+	private ThreadPoolExecutor mOtherPreviewLoadService;
 	/**
 	 * 单线程池服务，加载图片的预览图
 	 */
@@ -116,7 +121,7 @@ public class DeviceMonitorService extends Service {
 	 */
 	private ThreadPoolExecutor mApkPreviewLoadService;
 	/**
-	 * 单线程池服务，设备
+	 * 单线程池服务，设备挂载，卸载线程
 	 */
 	private ExecutorService mDeviceMountService;
 	private MountThread mountThread;
@@ -207,7 +212,8 @@ public class DeviceMonitorService extends Service {
 	 * 初始化数据
 	 */
 	private void initData() {
-	    mAVPreviewLoadService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
+	    mVideoPreviewLoadService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
+	    mOtherPreviewLoadService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
 	    mPhotoPreviewLoadService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
 	    mLocalMediaPreviewService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
 	    mApkPreviewLoadService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
@@ -281,9 +287,10 @@ public class DeviceMonitorService extends Service {
 		LocalBroadcastManager.getInstance(this).registerReceiver(mNetWorkDeviceMountReceiver, netWorkDeviceMountFilter);
 		//注册预览图加载请求
 		IntentFilter previewLoadFilter = new IntentFilter();
-		previewLoadFilter.addAction(ConstData.BroadCastMsg.LOAD_AV_BITMAP);
+		previewLoadFilter.addAction(ConstData.BroadCastMsg.LOAD_APK_PREVIEW);
 		previewLoadFilter.addAction(ConstData.BroadCastMsg.LOAD_PHOTO_PREVIEW);
-		previewLoadFilter.addAction(ConstData.BroadCastMsg.LOAD_LOCAL_MEDIA_FILE_PREVIEW);
+		previewLoadFilter.addAction(ConstData.BroadCastMsg.LOAD_AUDIO_PREVIEW);
+		previewLoadFilter.addAction(ConstData.BroadCastMsg.LOAD_VIDEO_PREVIEW);
 		LocalBroadcastManager.getInstance(this).registerReceiver(mPreviewLoadReceiver, previewLoadFilter);
 	}
 
@@ -298,8 +305,8 @@ public class DeviceMonitorService extends Service {
 	private void initLocalDevices(){
 		//重新挂载SD卡，U盘
 		//挂载这些设备是耗时操作，需要开启线程
-		LocalDeviceMountThread localDeviceMountThread = new LocalDeviceMountThread(this);
-		mFileScanService.execute(localDeviceMountThread);
+		DeviceInitCheckThread deviceInitCheckThread = new DeviceInitCheckThread(this);
+		mFileScanService.execute(deviceInitCheckThread);
 	}
 	
 	private void initNetWorkDevices(){
@@ -309,8 +316,19 @@ public class DeviceMonitorService extends Service {
 		mFileScanService.execute(deviceMountThread);
 	}
 	
-	
+	/**
+	 * 获取文件扫描服务线程池
+	 * @return
+	 */
 	public ExecutorService getFileScanService(){
+		return mFileScanService;
+	}
+	
+	/**
+	 * 获取设备，挂载卸载线程
+	 * @return
+	 */
+	public ExecutorService getDeviceMountService(){
 		return mDeviceMountService;
 	}
 	
@@ -681,6 +699,7 @@ public class DeviceMonitorService extends Service {
 				bundle.putInt(ConstData.DeviceMountMsg.MOUNT_TYPE, ConstData.DeviceType.DEVICE_TYPE_LOCAL);
 				bundle.putInt(ConstData.DeviceMountMsg.MOUNT_STATE, newState.equals(Environment.MEDIA_MOUNTED) ? ConstData.DeviceMountState.DEVICE_UP :
 					ConstData.DeviceMountState.DEVICE_DOWN);
+				bundle.putBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK, false);
 				//启动一个线程进行挂载，卸载处理
 				mDeviceMountService.execute(new DeviceMountThread(DeviceMonitorService.this, bundle));
 			}
@@ -791,8 +810,13 @@ public class DeviceMonitorService extends Service {
 			}else if(action.equals(ConstData.BroadCastMsg.SAMBA_MOUNT)){
 				SmbInfo smbInfo = (SmbInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_SAMBA_INFO);
 				boolean isAddNetWork = intent.getBooleanExtra(ConstData.IntentKey.EXTRA_IS_ADD_NETWORK_DEVICE, false);
-				SambaDeviceMountThread sambaDeviceMountThread = new SambaDeviceMountThread(DeviceMonitorService.this, smbInfo, isAddNetWork);
-				mMountNetWorkDeviceService.execute(sambaDeviceMountThread);
+				Bundle sambaBundle = new Bundle();
+				sambaBundle.putString(ConstData.DeviceMountMsg.MOUNT_PATH, smbInfo.getLocalMountPath());
+				sambaBundle.putInt(ConstData.DeviceMountMsg.MOUNT_STATE, ConstData.DeviceMountState.DEVICE_UP);
+				sambaBundle.putInt(ConstData.DeviceMountMsg.MOUNT_TYPE, ConstData.DeviceType.DEVICE_TYPE_SMB);
+				sambaBundle.putBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK, isAddNetWork);
+				//SambaDeviceMountThread sambaDeviceMountThread = new SambaDeviceMountThread(DeviceMonitorService.this, smbInfo, isAddNetWork);
+				mDeviceMountService.execute(new DeviceMountThread(DeviceMonitorService.this, sambaBundle));
 			}else if(action.equals(ConstData.BroadCastMsg.REFRESH_NETWORK_DEVICE)){
 				//刷新网络设备
 				searchUpnpDevice();
@@ -818,22 +842,20 @@ public class DeviceMonitorService extends Service {
 	class PreviewLoadReceiver extends BroadcastReceiver{
 	    public void onReceive(Context context, Intent intent) {
 	        String action = intent.getAction();
-	        if(action.equals(ConstData.BroadCastMsg.LOAD_AV_BITMAP)){
-	            AllFileInfo allFileInfo = (AllFileInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_ALL_FILE_INFO);
-	            //将线程推入队列
-	            mAVPreviewLoadService.execute(new AVPreviewLoadThread(allFileInfo, DeviceMonitorService.this, ConstData.THREAD_PRIORITY--));
-	        }else if(action.equals(ConstData.BroadCastMsg.LOAD_PHOTO_PREVIEW)){
-	        	 AllFileInfo allFileInfo = (AllFileInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_ALL_FILE_INFO);
+	        FileInfo fileInfo = (FileInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_FILE_INFO);
+	        if(action.equals(ConstData.BroadCastMsg.LOAD_VIDEO_PREVIEW)){
+	             //将线程推入队列
+	             mVideoPreviewLoadService.execute(new AVPreviewLoadThread(fileInfo, DeviceMonitorService.this));
+	        }else if(action.equals(ConstData.BroadCastMsg.LOAD_AUDIO_PREVIEW)){
 		         //将线程推入队列
-		         mPhotoPreviewLoadService.execute(new PhotoPreviewLoadThread(allFileInfo, DeviceMonitorService.this, ConstData.THREAD_PRIORITY--));
-	        }else if(action.equals(ConstData.BroadCastMsg.LOAD_LOCAL_MEDIA_FILE_PREVIEW)){
-	        	LocalMediaFile localMediaFile = (LocalMediaFile)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_LOCAL_MEDIA_FILE);
-	        	///将线程推入队列
-	        	mLocalMediaPreviewService.execute(new FileAVMediaDataLoadThread(localMediaFile, DeviceMonitorService.this, ConstData.THREAD_PRIORITY--));
+		         mOtherPreviewLoadService.execute(new AVPreviewLoadThread(fileInfo, DeviceMonitorService.this));
+	        }
+	        else if(action.equals(ConstData.BroadCastMsg.LOAD_PHOTO_PREVIEW)){
+		         //将线程推入队列
+		         mOtherPreviewLoadService.execute(new PhotoPreviewLoadThread(fileInfo, DeviceMonitorService.this));
 	        }else if(action.equals(ConstData.BroadCastMsg.LOAD_APK_PREVIEW)){
 	        	//将线程推入队列
-	        	 AllFileInfo allFileInfo = (AllFileInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_ALL_FILE_INFO);
-	        	 mApkPreviewLoadService.execute(new APKPreviewLoadThread(allFileInfo, DeviceMonitorService.this, ConstData.THREAD_PRIORITY--));
+	        	 mOtherPreviewLoadService.execute(new APKPreviewLoadThread(fileInfo, DeviceMonitorService.this));
 	        }
 	    };
 	}
