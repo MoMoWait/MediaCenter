@@ -74,15 +74,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
      */
     private List<NFSInfo> mNFSList;
     
-    /**
-     * Smb匹配信息
-     */
-    private Map<String, SmbInfo> mSmbMap = new HashMap<String, SmbInfo>();
-    /**
-     * NFS匹配信息
-     */
-    private Map<String, NFSInfo> mNFSMap = new HashMap<String, NFSInfo>();
-
     private static final int MEDIA_TYPE_FOLDER = 0;
 
     private static final int MEDIA_TYPE_PHOTO = 1;
@@ -130,35 +121,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
         initData();
         //绑定设备监听服务
         attachServices();
-        //初始化网络设备
-        initNetWorkDevices();
-    }
-
-  
-    
-    /**
-     * 初始化网络设备(NFS,Samba,DLNA)
-     */
-    private void initNetWorkDevices(){
-    	//检测网络
-    	checkNetWork();
-    	mNFSList = readNFSInfos();
-    	mSmbList = readSmbInfos();
-    	if(mNFSList != null && mNFSList.size() > 0){
-    		for(NFSInfo nfsInfo : mNFSList){
-    			mNFSMap.put(nfsInfo.getLocalMountPath(), nfsInfo);
-    			//尝试挂载NFS设备
-    			mountNFSDevice(nfsInfo);
-    		}
-    	}
-    	
-    	if(mSmbList != null && mSmbList.size() > 0){
-    		for(SmbInfo smbInfo : mSmbList){
-    			mSmbMap.put(smbInfo.getLocalMountPath(), smbInfo);
-    			//尝试挂载samba设备
-    			mountSmbDevice(smbInfo);
-    		}
-    	}
     }
     
     /**
@@ -212,8 +174,8 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
 				mDeviceMonitorService = serviceBinder.getMonitorService();
 			}
 		};
-		
-		
+		//mNFSList = readNFSInfos();
+    	//mSmbList = readSmbInfos();
     }
     
     /**
@@ -322,14 +284,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
 			public void onGetNFSInfo(NFSInfo nfsInfo) {
 				mNFSList = readNFSInfos();
 				mNFSList.add(nfsInfo);
-				mNFSMap.put(nfsInfo.getLocalMountPath(), nfsInfo);
 				final NFSInfo newNfsInfo = nfsInfo;
-				//存储至SharedPreference
-				try{
-					StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.NFS_INFOS, JsonUtils.listToJsonArray(mNFSList).toString());
-				}catch (Exception e){
-					LOG.i(TAG, "showNFSAddDialog->e" + e);
-				}
 				DialogUtils.showLoadingDialog(MainActivity.this, false);
 				new AsyncTask<Void, Integer, Integer>(){
 					protected  Integer doInBackground(Void[] params) {
@@ -342,6 +297,12 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
 					protected void onPostExecute(Integer result) {
 						DialogUtils.closeLoadingDialog();
 						if(result == ConstData.TaskExecuteResult.SUCCESS){
+							//存储至SharedPreference
+							try{
+								StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.NFS_INFOS, JsonUtils.listToJsonArray(mNFSList).toString());
+							}catch (Exception e){
+								LOG.i(TAG, "showNFSAddDialog->e" + e);
+							}
 						    //提示挂载成功
 						    ToastUtils.showToast(getString(R.string.mount_success));
 							//发送广播
@@ -350,6 +311,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
 							nfsMountIntent.putExtra(ConstData.IntentKey.EXTRA_IS_ADD_NETWORK_DEVICE, true);
 							LocalBroadcastManager.getInstance(MainActivity.this).sendBroadcast(nfsMountIntent);
 						}else{
+							mNFSList.remove(newNfsInfo);
 							//提示挂载失败
 							ToastUtils.showToast(getString(R.string.mount_fail));
 						}
@@ -371,14 +333,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
 			public void onGetSambaInfo(SmbInfo smbInfo) {
 				mSmbList = readSmbInfos();
 				mSmbList.add(smbInfo);
-				mSmbMap.put(smbInfo.getLocalMountPath(), smbInfo);
 				final SmbInfo  newSambaInfo = smbInfo;
-				//存储至SharedPreference
-				try{
-					StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.SMB_INFOS, JsonUtils.listToJsonArray(mSmbList).toString());
-				}catch (Exception e){
-					LOG.i(TAG, "showSambaAddDialog->e" + e);
-				}
 				DialogUtils.showLoadingDialog(MainActivity.this, false);
 				new AsyncTask<Void, Integer, Integer>(){
 					protected  Integer doInBackground(Void[] params) {
@@ -392,6 +347,12 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
 						DialogUtils.closeLoadingDialog();
 						//Log.i(TAG, "showSambaAddDialog->mountResult:" + result);
 						if(result == ConstData.TaskExecuteResult.SUCCESS){
+							//存储至SharedPreference
+							try{
+								StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.SMB_INFOS, JsonUtils.listToJsonArray(mSmbList).toString());
+							}catch (Exception e){
+								LOG.i(TAG, "showSambaAddDialog->e" + e);
+							}
 							//提示挂载成功
 							ToastUtils.showToast(getString(R.string.mount_success));
 							//发送广播
@@ -400,6 +361,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
 							sambaMountIntent.putExtra(ConstData.IntentKey.EXTRA_IS_ADD_NETWORK_DEVICE, true);
 							LocalBroadcastManager.getInstance(MainActivity.this).sendBroadcast(sambaMountIntent);
 						}else{
+							mSmbList.remove(newSambaInfo);
 							//提示挂载失败
 							ToastUtils.showToast(getString(R.string.mount_fail));
 						}
@@ -563,16 +525,17 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
         for (int i = 0; i < mDevInfoList.size(); ++i)
         {
             Device info = mDevInfoList.get(i);
-/*            if(info.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_SMB ){
-            	name = DeviceTypeStr.getDevTypeStr(this, info.getDeviceType()) + mSmbMap.get(info.getLocalMountPath()).getNetWorkPath() +
-            			"(" + info.getDeviceID() + ")" ;
+            if(info.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_SMB ){
+            	String deviceID = info.getDeviceID();
+            	name = DeviceTypeStr.getDevTypeStr(this, info.getDeviceType()) + info.getNetWorkPath() +
+            			"(" + deviceID.substring(deviceID.length() - 8, deviceID.length()) + ")" ;
             }else if(info.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_NFS){
-            	name = DeviceTypeStr.getDevTypeStr(this, info.getDeviceType()) + mNFSMap.get(info.getLocalMountPath()).getNetWorkPath() +
-            			"(" + info.getDeviceID() + ")" ;
+            	String deviceID = info.getDeviceID();
+            	name = DeviceTypeStr.getDevTypeStr(this, info.getDeviceType()) + info.getNetWorkPath() +
+            			"(" + deviceID.substring(deviceID.length() - 8, deviceID.length())  + ")" ;
             }else{
             	 name = DeviceTypeStr.getDevTypeStr(this, info.getDeviceType()) + info.getDeviceName();
-            }*/
-            name = DeviceTypeStr.getDevTypeStr(this, info.getDeviceType()) + info.getDeviceName();
+            }
             device = new DeviceItem(info, name, imageIds, textIds);
             mDeviceItemList.add(device);
         }

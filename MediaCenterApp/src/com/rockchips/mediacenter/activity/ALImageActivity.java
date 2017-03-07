@@ -240,7 +240,9 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
         intent.putExtra(ConstData.IntentKey.IS_INTERNAL_PLAYER, true);
         intent.putExtra(LocalDeviceInfo.DEVICE_EXTRA_NAME, MediaFileUtils.getDeviceInfoFromDevice(mCurrDevice).compress());
         intent.putExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE, mCurrDevice);
-        List<LocalMediaInfo> mediaInfos =mLocalMediaInfos;
+        List<LocalMediaInfo> mediaInfos = MediaFileUtils.getLocalMediaInfos(mLocalMediaFiles, mCurrDevice, ConstData.MediaType.IMAGE);
+        if(mediaInfos == null || mediaInfos.size() == 0)
+        	return;
         List<Bundle> mediaInfoList = new ArrayList<Bundle>();
         for(LocalMediaInfo itemInfo : mediaInfos){
         	mediaInfoList.add(itemInfo.compress());

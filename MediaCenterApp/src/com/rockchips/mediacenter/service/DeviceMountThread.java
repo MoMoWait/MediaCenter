@@ -7,10 +7,8 @@ import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.modle.db.DeviceService;
 import com.rockchips.mediacenter.modle.db.FileInfoService;
 import com.rockchips.mediacenter.utils.MediaFileUtils;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Telephony.Mms;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 

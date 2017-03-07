@@ -199,7 +199,10 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 		if(keyCode == KeyEvent.KEYCODE_BACK){
 			if(!mCurrFolder.equals(mCurrDevice.getLocalMountPath())){
 				mLastSelectPath = mCurrFolder;
-				mCurrFolder = new File(mCurrFolder).getParentFile().getPath();
+				if(mCurrMediaType == ConstData.MediaType.FOLDER)
+					mCurrFolder = new File(mCurrFolder).getParentFile().getPath();
+				else
+					mCurrFolder = mCurrDevice.getLocalMountPath();
 				loadFiles();
 				return true;
 			}

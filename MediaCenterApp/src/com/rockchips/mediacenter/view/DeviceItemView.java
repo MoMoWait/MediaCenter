@@ -4,6 +4,7 @@ import momo.cn.edu.fjnu.androidutils.data.CommonValues;
 import momo.cn.edu.fjnu.androidutils.utils.DeviceInfoUtils;
 import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
 import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
+import android.R.integer;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -14,6 +15,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Paint.Style;
 import android.graphics.PaintFlagsDrawFilter;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -54,7 +56,7 @@ public class DeviceItemView extends View implements OnGestureListener
     private static final int MAX_OFFSETX = 260;
 
     private static final int NAMESIZE = 20;
-
+    
     private Bitmap[] mIconReflectedImage = new Bitmap[COUNTVISIABLE];
 
     private static final float REFLECTRATESIZE = 0.3f;
@@ -80,18 +82,8 @@ public class DeviceItemView extends View implements OnGestureListener
     /**第一次绘制*/
     private boolean mIsFirstDraw = true;
     private Canvas mCanvas;
-    
     private GestureDetector mGestureDetector;
-
-    private boolean mBMoving;
-    
-    private static final int TRANSLATE_OFFSET_X_PLUS = 52;
-
-    private static final float SCALEOFFSET_PLUS = 0.08f;
-
-    private static final int ALPHA_PLUS = 50;
-
-    private static final int ANIMATION_DELAY_TIME = 40;
+        
     private static final int[] IMAGEIDS =
     {  R.drawable.file_icon, R.drawable.photo_icon, R.drawable.music_icon, R.drawable.video_icon};
 
@@ -133,65 +125,15 @@ public class DeviceItemView extends View implements OnGestureListener
     {
         mDeviceItem = deviceItem;
     }
-
-    private Handler mHandler = new Handler()
-    {
-        public void handleMessage(android.os.Message msg)
-        {
-            switch (msg.what)
-            {
-                case ANIMATIONING_REFRESH_MSG:
-                    mBeFristLoading = true;
-                    mRightKey = true;
-                    DeviceItemView.this.invalidate();
-                    Log.d(TAG, "ANIMATIONING_REFRESH_MSG");
-                    break;
-
-                default:
-                    mBMoving = true;
-                    if (mTranslateOffsetX >= MAX_OFFSETX)
-                    {
-                        mTranslateOffsetX = 0;
-                        mScaleOffset = 0;
-                        mAlpha = 0;
-                        if (mRightKey)
-                        {
-                            mOffset++;
-                        }
-                        else
-                        {
-                            mOffset += (COUNTVISIABLE - 1);
-                        }
-                        mOffset %= COUNTVISIABLE;
-
-                        mBMoving = false;
-                    }
-                    else
-                    {
-
-                        mTranslateOffsetX += TRANSLATE_OFFSET_X_PLUS;
-                        mScaleOffset += SCALEOFFSET_PLUS;
-                        mAlpha += ALPHA_PLUS;
-
-                        DeviceItemView.this.invalidate();
-                        mHandler.sendEmptyMessageDelayed(ANIMATIONING_MSG_WHAT, ANIMATION_DELAY_TIME);
-                    }
-                    break;
-            }
-
-        };
-    };
-
-    public void refresh()
-    {
-        mHandler.sendEmptyMessage(ANIMATIONING_REFRESH_MSG);
-    }
-
+    
+    
     private void initView()
     {
         mGestureDetector = new GestureDetector(mContext, this);
         mPaint = new Paint();
-
+        mPaint.setColor(Color.WHITE);
+    	mPaint.setStrokeWidth(SizeUtils.dp2px(mContext, 4));
+    	mPaint.setStyle(Style.STROKE);
         mShadowPaint = new Paint();
         mShadowPaint.setAntiAlias(true);
         mShadowPaint.setFilterBitmap(true);
@@ -218,14 +160,10 @@ public class DeviceItemView extends View implements OnGestureListener
 
             if (srcBitmap != null)
             {
-                // 鐢熸垚鍊掑奖鍥剧墖
                 mIconReflectedImage[i] = ImageHelper.createReflectedImage(srcBitmap, REFLECTRATESIZE);
     
-                // 鍦ㄥ浘鐗囦笂娣诲姞鏂囧瓧
                 ImageHelper.addText(mIconReflectedImage[i], mContext.getString(TEXTIDS[i]), NAMESIZE, Color.WHITE, BITMAP_WIDTH / 2, BITMAP_HEIGHT
                         - NAMESIZE);
-    
-                // 閲婃斁婧愬浘鐗�
                 srcBitmap.recycle();
                 srcBitmap = null;
             }
@@ -325,14 +263,15 @@ public class DeviceItemView extends View implements OnGestureListener
     	canvas.translate(offsetX + BITMAP_WIDTH, (getHeight() - mBitmapHeight) / 2);
     	canvas.scale(1.2f, 1.2f, BITMAP_WIDTH / 2, BITMAP_HEIGHT / 2);
     	canvas.drawBitmap(mIconReflectedImage[mOffset], 0, 0, null);
+    	canvas.drawRect(0, 0, BITMAP_WIDTH, BITMAP_HEIGHT, mPaint);
     	canvas.restore();
     }
     
-    private void leftMove(Canvas canvas)
+    private void leftMove(final Canvas canvas)
     {
+    	
     	Log.i(TAG, "leftMove");
     	int offsetX = (SCREEN_WIDTH - BITMAP_WIDTH * 4) / 2;
-    	
     	canvas.save();
     	canvas.translate(offsetX, (getHeight() - mBitmapHeight) / 2);
     	int index = 0;
@@ -354,9 +293,8 @@ public class DeviceItemView extends View implements OnGestureListener
     	canvas.translate(offsetX + BITMAP_WIDTH, (getHeight() - mBitmapHeight) / 2);
     	canvas.scale(1.2f, 1.2f, BITMAP_WIDTH / 2, BITMAP_HEIGHT / 2);
     	canvas.drawBitmap(mIconReflectedImage[mOffset], 0, 0, null);
+    	canvas.drawRect(0, 0, BITMAP_WIDTH, BITMAP_HEIGHT, mPaint);
     	canvas.restore();
-    	
-    	
     }
 
     private Bitmap getDestBmp(int index)
@@ -447,7 +385,6 @@ public class DeviceItemView extends View implements OnGestureListener
  
     public void initDraw(Canvas canvas){
     	int offsetX = (SCREEN_WIDTH - BITMAP_WIDTH * 4) / 2;
-    	
     	canvas.save();
     	canvas.translate(offsetX, (getHeight() - mBitmapHeight) / 2);
     	canvas.drawBitmap(mIconReflectedImage[0], 0, 0, null);
@@ -459,7 +396,8 @@ public class DeviceItemView extends View implements OnGestureListener
     	canvas.save();
     	canvas.translate(offsetX + BITMAP_WIDTH, (getHeight() - mBitmapHeight) / 2);
     	canvas.scale(1.2f, 1.2f, BITMAP_WIDTH / 2, BITMAP_HEIGHT / 2);
-    	canvas.drawBitmap(mIconReflectedImage[1], 0, 0, null);
+    	canvas.drawBitmap(mIconReflectedImage[1], 0 , 0, null);
+    	canvas.drawRect(0, 0, BITMAP_WIDTH, BITMAP_HEIGHT, mPaint);
     	canvas.restore();
     	
     	Activity currentActivity = (Activity)mContext;

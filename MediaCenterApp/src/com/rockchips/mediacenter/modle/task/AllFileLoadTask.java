@@ -53,6 +53,7 @@ public class AllFileLoadTask extends AsyncTask<Object, Integer, Integer> {
 						fileInfo.setModifyTime(itemFile.lastModified());
 						fileInfo.setName(itemFile.getName());
 						fileInfo.setPath(itemFile.getPath());
+						fileInfo.setParentPath(currFolder);
 						if(itemFile.isDirectory()){
 							//如果是蓝光文件夹
 							if(ISOManager.isBDDirectory(itemFile.getPath())){
@@ -60,7 +61,6 @@ public class AllFileLoadTask extends AsyncTask<Object, Integer, Integer> {
 							}else{
 								fileInfo.setType(ConstData.MediaType.FOLDER);
 								fileInfo.setChildCount(itemFile.listFiles().length);
-								fileInfo.setParentPath(currFolder);
 								fileInfo.setSize(itemFile.length());
 							}
 						}else{

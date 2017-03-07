@@ -95,6 +95,7 @@ import com.rockchips.mediacenter.utils.StringUtils;
 import com.rockchips.mediacenter.service.IMediaPlayerAdapter;
 import com.rockchips.mediacenter.service.IVideoViewAdapter;
 import com.rockchips.mediacenter.bean.AudioInfoOfVideo;
+import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.bean.SubInfo;
 import com.rockchips.mediacenter.service.OnBufferingUpdateListener;
 import com.rockchips.mediacenter.service.OnCompleteListener;
@@ -272,7 +273,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     //begin add by caochao for DTS2014111006777 媒体中心视频时概率性出现“该视频无法播放”
     private int mBufferUpdatePercent = 0;
     //end add by caochao for DTS2014111006777 媒体中心视频时概率性出现“该视频无法播放”
-    private LocalDevice mCurrentDevice;
+    private Device mCurrentDevice;
     /**
      * 是否关闭字幕
      */
@@ -311,10 +312,10 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             Log.i(TAG, "onCreate->navigationBarHeight:" + navigationBarHeight);
         }
         SCREEN_HEIGHT = DeviceInfoUtils.getScreenHeight(CommonValues.application) + navigationBarHeight;
-        mCurrentDevice = (LocalDevice)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
+        mCurrentDevice = (Device)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
         if(mExtraVideoUri != null){
-        	mCurrentDevice = new LocalDevice();
-        	mCurrentDevice.setDevices_type(ConstData.DeviceType.DEVICE_TYPE_OTHER);
+        	mCurrentDevice = new Device();
+        	mCurrentDevice.setDeviceType(ConstData.DeviceType.DEVICE_TYPE_OTHER);
         }
         	
         initVideoPlayPreferences();
@@ -1026,7 +1027,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                         @Override
                         public void run()
                         {
-                            // TODO Auto-generated method stub
                             if (mVVAdapter.isSeeking())
                             {
                                 timeWhenSeek += 1000;
@@ -3186,8 +3186,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 						}else{
 							uri = Uri.parse(Uri.encode(strurl));
 						}
-						if(mCurrentDevice.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_DMS || 
-								mCurrentDevice.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_OTHER)
+						if(mCurrentDevice.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_DMS || 
+								mCurrentDevice.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_OTHER)
 							uri = Uri.parse(strurl);
                         // mVV.setVideoPath(strurl);
                         Log.e(TAG, "要播放的视频URL为 ：" + String.valueOf(uri));
@@ -4200,20 +4200,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     private static final String BD_PREFIX = "bluray:";
 
     private String mBdMntPath;
-
-    private static IMountService getMountService()
-    {
-        IBinder service = ServiceManager.getService("mount");
-        if (service != null)
-        {
-            return IMountService.Stub.asInterface(service);
-        }
-        else
-        {
-            Log.e("MediaFileListService", "Can't get mount service");
-        }
-        return null;
-    }
 
     @Override
     public void onSelectType(MenuItemImpl menuItem)

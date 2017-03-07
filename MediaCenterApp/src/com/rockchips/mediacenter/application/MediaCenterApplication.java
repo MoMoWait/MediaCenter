@@ -36,9 +36,9 @@ public class MediaCenterApplication extends BaseApplication
         }
         
         ActivityExitUtils.clearActivities();
+        //x.Ext.setDebug(false);
         //初始化xutils3框架
         x.Ext.init(this);
-        //传入Application实例给ObjectFactory
         //初始化服务
         initService();
         //初始化数据库

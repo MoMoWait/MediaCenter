@@ -34,7 +34,7 @@ public class DeviceInitCheckThread extends Thread{
 		List<String> allSdCardPaths = StorageUtils.getSdCardPaths(mService);
 		DeviceService deviceService = new DeviceService();
 		FileInfoService fileInfoService = new FileInfoService();
-		List<Device> devices = deviceService.getAll(Device.class);
+		List<Device> devices = deviceService.getAllLocalDevices();
 		if(devices != null && devices.size() > 0){
 			for(Device itemDevice : devices){
 				deviceService.delete(itemDevice);
@@ -77,7 +77,8 @@ public class DeviceInitCheckThread extends Thread{
 		mountBundle.putString(ConstData.DeviceMountMsg.NETWORK_PATH, "");
 		//添加内部存储
 		mService.getDeviceMountService().execute(new DeviceMountThread(mService, mountBundle));
-	
+		//启动网络监测线程
+		//mService.getNetworkCheckService().execute(new NetWorCheckThread(mService));
 		Log.i(TAG, "DeviceInitCheckThread->endTime:" + System.currentTimeMillis());
 	}
 }

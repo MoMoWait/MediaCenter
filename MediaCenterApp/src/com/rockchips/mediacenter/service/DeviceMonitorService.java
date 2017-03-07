@@ -15,16 +15,13 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
 import momo.cn.edu.fjnu.androidutils.utils.NetWorkUtils;
 import momo.cn.edu.fjnu.androidutils.utils.StorageUtils;
-
 import org.fourthline.cling.android.AndroidUpnpService;
 import org.fourthline.cling.android.AndroidUpnpServiceImpl;
 import org.fourthline.cling.model.meta.RemoteDevice;
 import org.fourthline.cling.registry.DefaultRegistryListener;
 import org.fourthline.cling.registry.Registry;
-
 import com.rockchips.mediacenter.bean.AllFileInfo;
 import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.bean.LocalDevice;
@@ -109,22 +106,13 @@ public class DeviceMonitorService extends Service {
 	 */
 	private ThreadPoolExecutor mOtherPreviewLoadService;
 	/**
-	 * 单线程池服务，加载图片的预览图
+	 * 单线程池服务，网络监测处理
 	 */
-	private ThreadPoolExecutor mPhotoPreviewLoadService;
-	/**
-	 * 单线程池服务，音频，视频分类下预览图加载
-	 */
-	private ThreadPoolExecutor mLocalMediaPreviewService;
-	/**
-	 * 单线程池服务，APK预览图加载服务
-	 */
-	private ThreadPoolExecutor mApkPreviewLoadService;
+	private ExecutorService mNetWorkCheckService;
 	/**
 	 * 单线程池服务，设备挂载，卸载线程
 	 */
 	private ExecutorService mDeviceMountService;
-	private MountThread mountThread;
 	private boolean isMountRuning = true;
 	private List<NFSInfo> mNFSList;
 	private List<SmbInfo> mSmbList;
@@ -181,7 +169,7 @@ public class DeviceMonitorService extends Service {
 	public void onCreate() {
 		initData();
 		attachService();
-		initStorage();
+		initLocalDevices();
 		initEvent();
 	}
 
@@ -214,9 +202,7 @@ public class DeviceMonitorService extends Service {
 	private void initData() {
 	    mVideoPreviewLoadService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
 	    mOtherPreviewLoadService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
-	    mPhotoPreviewLoadService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
-	    mLocalMediaPreviewService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
-	    mApkPreviewLoadService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
+	    mNetWorkCheckService = Executors.newSingleThreadExecutor();
 	    mLocalDeviceUpDownProcessService = Executors.newSingleThreadExecutor();
 	    mMountNetWorkDeviceService = Executors.newSingleThreadExecutor();
 	    mDeviceMountService = Executors.newSingleThreadExecutor();
@@ -228,7 +214,6 @@ public class DeviceMonitorService extends Service {
 		mStorageManager = (StorageManager) getSystemService(Context.STORAGE_SERVICE);
 		mountListener = new MountListener();
 		mFileScanService = new ThreadPoolExecutor(5, 5, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
-		mountThread = new MountThread();
 		mUpnpConnection = new ServiceConnection() {
 
 			@Override
@@ -276,7 +261,6 @@ public class DeviceMonitorService extends Service {
 	 */
 	private void initEvent() {
 		mStorageManager.registerListener(mountListener);
-		mountThread.start();
 		//注册NFS，Samba设备挂载请求
 		IntentFilter netWorkDeviceMountFilter = new IntentFilter();
 		netWorkDeviceMountFilter.addAction(ConstData.BroadCastMsg.NFS_MOUNT);
@@ -293,14 +277,6 @@ public class DeviceMonitorService extends Service {
 		previewLoadFilter.addAction(ConstData.BroadCastMsg.LOAD_VIDEO_PREVIEW);
 		LocalBroadcastManager.getInstance(this).registerReceiver(mPreviewLoadReceiver, previewLoadFilter);
 	}
-
-	/**
-	 * 初始化本地存储
-	 */
-	private void initStorage(){
-		initLocalDevices();
-		initNetWorkDevices();
-	}
 	
 	private void initLocalDevices(){
 		//重新挂载SD卡，U盘
@@ -309,12 +285,6 @@ public class DeviceMonitorService extends Service {
 		mFileScanService.execute(deviceInitCheckThread);
 	}
 	
-	private void initNetWorkDevices(){
-		//重新挂载Samba,NFS设备
-		//挂载samba,NFS设备是耗时操作，需要开启线程操作
-		NetWorkDeviceMountThread deviceMountThread = new NetWorkDeviceMountThread(this, ConstData.NetWorkDeviceType.DEVICE_ALL);
-		mFileScanService.execute(deviceMountThread);
-	}
 	
 	/**
 	 * 获取文件扫描服务线程池
@@ -332,51 +302,8 @@ public class DeviceMonitorService extends Service {
 		return mDeviceMountService;
 	}
 	
-	/**
-	 * 处理U盘，SD卡，移动硬盘，Samba设备，NFS设备，DLNA设备的挂载，卸载信息
-	 * @param path
-	 * @param state
-	 * @param deviceType
-	 */
-	public synchronized void processMountMsg(String path, String state, int deviceType, boolean isAddNetWork) {
-		synchronized (mountMsgs) {
-			LocalMediaFileService mediaFileService = new LocalMediaFileService();
-			LocalMediaFolderService folderService = new LocalMediaFolderService();
-			ScanDirectoryService scanDirectoryService = new ScanDirectoryService();
-			LocalDeviceService localDeviceService = new LocalDeviceService();
-			/**
-			 * 根据挂载路径搜索数据库对应的设备
-			 */
-			LocalDevice device = localDeviceService.getDeviceByPath(path);
-			localDeviceService.deleteDeviceByPath(path);
-			if (device != null) {
-				/** 删除该设备对应的文件夹 */
-				folderService.deleteFoldersByPhysicId(device.getPhysic_dev_id());
-				/** 删除该设备对应的文件 */
-				mediaFileService.deleteFilesByPhysicId(device.getPhysic_dev_id());
-				/**
-				 * 删除扫描缓存目录
-				 */
-				scanDirectoryService.deleteDirectoriesByDeviceId(device.getDeviceID());
-			}
-			Message message = new Message();
-			if (state.equals(Environment.MEDIA_MOUNTED)) {
-				device = MediaFileUtils.getLocalDeviceFromFile(new File(path));
-				if(device != null){
-					localDeviceService.save(device);
-					message.what = ConstData.DeviceMountState.DEVICE_UP;
-				}
-				
-			}else{
-				message.what = ConstData.DeviceMountState.DEVICE_DOWN;
-			}
-			message.arg1 = deviceType;
-			message.arg2 = (isAddNetWork ? 1 : 0);
-			message.obj = path;
-			mDeviceHandler.sendMessage(message);
-			mountMsgs.put(path, state.equals(Environment.MEDIA_MOUNTED));
-		}
-
+	public ExecutorService getNetworkCheckService(){
+		return mNetWorkCheckService;
 	}
 	
 	/**
@@ -529,7 +456,7 @@ public class DeviceMonitorService extends Service {
 			protected void onPostExecute(Integer result) {
 				if(result == ConstData.TaskExecuteResult.SUCCESS){
 					//Log.i(TAG, "refreshAllDevices->onPostExecute->success");
-					initStorage();
+					initLocalDevices();
 					searchUpnpDevice();
 				}
 				
@@ -616,66 +543,6 @@ public class DeviceMonitorService extends Service {
 	    return isHaveVideoPlay;
 	}
 	
-	/**
-	 * 循环监测挂载队列的数据
-	 * 
-	 * @author GaoFei
-	 * 
-	 */
-	class MountThread extends Thread {
-		@Override
-		public void run() {
-			while (isMountRuning) {
-				String path = "";
-				boolean isMounted = false;
-
-				synchronized (mountMsgs) {
-					if (!mountMsgs.isEmpty()) {
-						path = mountMsgs.keySet().iterator().next();
-						isMounted = mountMsgs.get(path);
-						mountMsgs.remove(path);
-					}
-				}
-
-				if (!TextUtils.isEmpty(path)) {
-					mCurrProcessMountMsgs.put(path, isMounted);
-					mCurrProcessScanMsgs.put(path, ConstData.DeviceScanStatus.INITIAL);
-				}
-
-			/*	if (isMounted) {
-					// 启动文件扫描线程
-					LocalDeviceService deviceService = new LocalDeviceService();
-					LocalDevice device = deviceService.getDeviceByPath(path);
-					if(device != null){
-						mFileScanService.execute(new FileScanThread(DeviceMonitorService.this, device));
-					}
-					//Log.i(TAG, "MountThread->run->device:" + device);
-					//Log.i(TAG, "execute FileScanThread");
-					
-				}*/
-				
-				// processSambaDevicesMountMsg(mSmbList);
-				// processNFSDevicesMountMsg(mNFSList);
-				
-				boolean haveNetWork = NetWorkUtils.haveInternet(DeviceMonitorService.this);
-				if(isHaveNetwork != haveNetWork){
-					isHaveNetwork = haveNetWork;
-					searchUpnpDevice();
-				}
-				
-				isHaveVideoPlay = MediaUtils.hasMediaClient();
-				
-				//Log.i(TAG, "haveVideoPlay:" + isHaveVideoPlay);
-				
-				try {
-					Thread.sleep(1000);
-				} catch (Exception e) {
-					//Log.i(TAG, "MountThread->e:" + e);
-				}
-
-			}
-		}
-	}
 
 	/**
 	 * 设备挂载，卸载监听
@@ -811,7 +678,6 @@ public class DeviceMonitorService extends Service {
 				nfsBundle.putInt(ConstData.DeviceMountMsg.MOUNT_TYPE, ConstData.DeviceType.DEVICE_TYPE_NFS);
 				nfsBundle.putBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK, isAddNetWork);
 				nfsBundle.putString(ConstData.DeviceMountMsg.NETWORK_PATH, nfsInfo.getNetWorkPath());
-				NFSDeviceMountThread nfsDeviceMountThread = new NFSDeviceMountThread(DeviceMonitorService.this, nfsInfo, isAddNetWork);
 				mDeviceMountService.execute(new DeviceMountThread(DeviceMonitorService.this, nfsBundle));
 			}else if(action.equals(ConstData.BroadCastMsg.SAMBA_MOUNT)){
 				SmbInfo smbInfo = (SmbInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_SAMBA_INFO);
@@ -830,6 +696,7 @@ public class DeviceMonitorService extends Service {
 				//刷新所有设备
 				refreshAllDevices();
 			}else if(action.equals(ConstData.BroadCastMsg.CHECK_NETWORK)){
+				mNetWorkCheckService.execute(new NetWorCheckThread(DeviceMonitorService.this));
 				//检测网络
 				if(!NetWorkUtils.haveInternet(getApplicationContext())){
 					//刷新网络设备
@@ -865,5 +732,6 @@ public class DeviceMonitorService extends Service {
 	        }
 	    };
 	}
+	
 	
 }

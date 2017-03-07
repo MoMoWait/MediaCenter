@@ -695,7 +695,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
             public void onAnimationEnd(Animation animation)
             {
                 mBDeviceItemScale = false;
-                mDeviceItem.refresh();
+                //mDeviceItem.refresh();
             }
         });
         mDeviceItemZoomInSet.addAnimation(scaleAnima);

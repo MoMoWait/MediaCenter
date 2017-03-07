@@ -11,9 +11,12 @@ import android.content.Intent;
 import android.graphics.Bitmap.CompressFormat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
+import android.util.Log;
+
 import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.modle.db.FileInfoService;
+import com.rockchips.mediacenter.utils.MediaUtils;
 
 /**
  * @author GaoFei
@@ -31,7 +34,9 @@ public class PhotoPreviewLoadThread extends AbstractPreviewLoadThread{
     @Override
     public void run() {
     	//存在视频播放，关闭缩列图获取
-        if(mService.isHaveVideoPlay())
+    	boolean haveVideoPlay = MediaUtils.hasMediaClient();
+		Log.i(TAG, "PhotoPreviewLoadThread->haveVideoPlay:" + haveVideoPlay);
+        if(haveVideoPlay)
             return;
         if(!TextUtils.isEmpty(mFileInfo.getPreviewPath()))
         	return;
@@ -54,10 +59,5 @@ public class PhotoPreviewLoadThread extends AbstractPreviewLoadThread{
         }
             
     }
-
-	@Override
-	public int getThreadPriporty() {
-		return ConstData.THREAD_PRIORITY--;
-	}
     
 }

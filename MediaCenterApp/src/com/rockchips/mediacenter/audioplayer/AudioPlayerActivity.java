@@ -51,6 +51,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import com.rockchips.mediacenter.R;
 import com.rockchips.mediacenter.service.LocalDeviceManager;
+import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.bean.LocalDeviceInfo;
 import com.rockchips.mediacenter.bean.LocalMediaInfo;
 import com.rockchips.mediacenter.data.ConstData;
@@ -368,15 +369,15 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     private int mMCSSeekTarget = 0;
     private static final int BG_IMAGE_SHOW_DELAY_TIME = 10 * 1000;
     private static final int TOAST_SHOW_TIME = 500;
-    private LocalDevice mCurrentDevice;
+    private Device mCurrentDevice;
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
     	//Log.i(TAG, "onCreate");
-    	mCurrentDevice = (LocalDevice)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
+    	mCurrentDevice = (Device)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
     	if(mCurrentDevice == null){
-    		mCurrentDevice = new LocalDevice();
-    		mCurrentDevice.setDevices_type(ConstData.DeviceType.DEVICE_TYPE_OTHER);
+    		mCurrentDevice = new Device();
+    		mCurrentDevice.setDeviceType(ConstData.DeviceType.DEVICE_TYPE_OTHER);
     	}
 /*        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -2295,8 +2296,8 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                     mMediaPlayer.setOnSeekCompleteListener(mOnSeekCompleteListener);
                     mMediaPlayer.setOnBufferingUpdateListener(mOnBufferingUpdateListener);
                     //Log.i(TAG, "setDataSourceAsync->path:" + path);
-                    if(mCurrentDevice.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_DMS
-                    		|| mCurrentDevice.getDevices_type() == ConstData.DeviceType.DEVICE_TYPE_OTHER)
+                    if(mCurrentDevice.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_DMS
+                    		|| mCurrentDevice.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_OTHER)
                     	mMediaPlayer.setVideoURI(Uri.parse(path));
                     else
                     	mMediaPlayer.setVideoURI(Uri.parse(Uri.encode(path)));

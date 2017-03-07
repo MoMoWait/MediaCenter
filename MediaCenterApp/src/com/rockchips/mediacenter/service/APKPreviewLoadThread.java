@@ -33,7 +33,9 @@ public class APKPreviewLoadThread extends AbstractPreviewLoadThread{
 	
 	@Override
 	public void run() {
-		if(mService.isHaveVideoPlay())
+		boolean haveVideoPlay = MediaUtils.hasMediaClient();
+		Log.i(TAG, "APKPreviewLoadThread->haveVideoPlay:" + haveVideoPlay);
+		if(haveVideoPlay)
 			return;
 		if(!TextUtils.isEmpty(mFileInfo.getPreviewPath()))
 			return;
@@ -58,10 +60,4 @@ public class APKPreviewLoadThread extends AbstractPreviewLoadThread{
         }
 	}
 
-	@Override
-	public int getThreadPriporty() {
-		return ConstData.THREAD_PRIORITY--;
-	}
-
-	
 }

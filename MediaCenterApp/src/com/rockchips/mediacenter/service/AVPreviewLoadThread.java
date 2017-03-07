@@ -22,6 +22,7 @@ import android.util.Log;
 import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.modle.db.FileInfoService;
+import com.rockchips.mediacenter.utils.MediaUtils;
 
 /**
  * @author GaoFei
@@ -40,7 +41,10 @@ public class AVPreviewLoadThread extends AbstractPreviewLoadThread{
     
     @Override
     public void run() {
-        if(mService.isHaveVideoPlay())
+    	boolean haveVideoPlay = MediaUtils.hasMediaClient();
+		Log.i(TAG, "AVPreviewLoadThread->haveVideoPlay:" + haveVideoPlay);
+		Log.i(TAG, "AVPreviewLoadThread->proprity:" + getThreadPriporty());
+        if(haveVideoPlay)
         	return;
         if(!TextUtils.isEmpty(mFileInfo.getPreviewPath()))
             return;
@@ -144,10 +148,5 @@ public class AVPreviewLoadThread extends AbstractPreviewLoadThread{
         duration = String.format("%02d:%02d:%02d", hour, minute, second);
         return duration;
     }
-
-	@Override
-	public int getThreadPriporty() {
-		return ConstData.THREAD_PRIORITY--;
-	}
-
+    
 }

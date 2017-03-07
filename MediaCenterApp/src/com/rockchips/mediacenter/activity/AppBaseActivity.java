@@ -156,7 +156,7 @@ public class AppBaseActivity extends Activity{
 	class DeviceUpDownReceiver extends BroadcastReceiver{
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			String mountPath = intent.getStringExtra(ConstData.IntentKey.EXTRA_DEVICE_PATH);
+			String mountPath = intent.getStringExtra(ConstData.DeviceMountMsg.MOUNT_PATH);
 			if(mCurrDevice != null && mCurrDevice.getLocalMountPath().equals(mountPath)){
 				//退出Activity
 				List<Activity> allActivities = ActivityExitUtils.getAllActivities();
