@@ -30,6 +30,21 @@ public class FileInfoService extends AppBeanService<FileInfo> {
 			e.printStackTrace();
 		}
 	}
+	/**
+	 * 根据设备ID获取文件信息
+	 * @param deviceID
+	 * @return
+	 */
+	public List<FileInfo> getFileInfosByDeviceID(String deviceID){
+		List<FileInfo> fileInfos = null;
+		try {
+			fileInfos = MediaCenterApplication.mDBManager.selector(FileInfo.class).where("deviceID", "=", deviceID).findAll();
+		} catch (DbException e) {
+			e.printStackTrace();
+		}
+		return fileInfos;
+	}
+	
 	
 	/**
 	 * 获取所有文件夹

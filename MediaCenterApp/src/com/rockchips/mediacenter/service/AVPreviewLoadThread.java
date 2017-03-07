@@ -20,8 +20,10 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 import com.rockchips.mediacenter.bean.FileInfo;
+import com.rockchips.mediacenter.bean.PreviewPhotoInfo;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.modle.db.FileInfoService;
+import com.rockchips.mediacenter.modle.db.PreviewPhotoInfoService;
 import com.rockchips.mediacenter.utils.MediaUtils;
 
 /**
@@ -30,7 +32,6 @@ import com.rockchips.mediacenter.utils.MediaUtils;
  */
 public class AVPreviewLoadThread extends AbstractPreviewLoadThread{
     private static final String TAG = "AVPreviewLoadThread";
-    
     private FileInfo mFileInfo;
     private DeviceMonitorService mService;
     private boolean isOOM;
@@ -48,6 +49,16 @@ public class AVPreviewLoadThread extends AbstractPreviewLoadThread{
         	return;
         if(!TextUtils.isEmpty(mFileInfo.getPreviewPath()))
             return;
+	    //读取缓存数据库
+		PreviewPhotoInfoService previewPhotoInfoService = new PreviewPhotoInfoService();
+		PreviewPhotoInfo photoInfo = previewPhotoInfoService.getPreviewPhotoInfo(mFileInfo.getDeviceID(), mFileInfo.getPath());
+		if(photoInfo != null){
+			mFileInfo.setPreviewPath(photoInfo.getPreviewPath());
+			mFileInfo.setDuration(photoInfo.getDuration());
+			updateToDB();
+			sendRefreshBroadCast();
+			return;
+		}
     	long startTime = System.currentTimeMillis();
 		Log.i(TAG, "AVPreviewLoadThread->startTime:" + startTime);
         /**
@@ -119,20 +130,18 @@ public class AVPreviewLoadThread extends AbstractPreviewLoadThread{
         	if(priviewBitmap == null){
         		mFileInfo.setPreviewPath(ConstData.UNKNOW);
         	}
-        	if(mFileInfo.getId() != -1){
-        		//尝试更新至数据库
-            	FileInfoService fileInfoService = new FileInfoService();
-            	fileInfoService.update(mFileInfo);
+        	updateToDB();
+        	if(mFileInfo.getId() == -1){
+        		//缓存信息存储至数据库
+        		PreviewPhotoInfo saveInfo = new PreviewPhotoInfo();
+        		saveInfo.setDeviceID(mFileInfo.getDeviceID());
+        		saveInfo.setOriginPath(mFileInfo.getPath());
+        		saveInfo.setDuration(durationStr);
+        		saveInfo.setPreviewPath(savePath);
+        		previewPhotoInfoService.save(saveInfo);
         	}
             //发送广播
-            Intent previewIntent = new Intent();
-            if(mFileInfo.getType() == ConstData.MediaType.AUDIO){
-            	previewIntent.setAction(ConstData.BroadCastMsg.REFRESH_VIDEO_PREVIEW);
-            }else{
-            	previewIntent.setAction(ConstData.BroadCastMsg.REFRESH_AUDIO_PREVIEW);
-            }
-            previewIntent.putExtra(ConstData.IntentKey.EXTRA_FILE_INFO, mFileInfo);
-            LocalBroadcastManager.getInstance(mService).sendBroadcast(previewIntent);
+            sendRefreshBroadCast();
         }
         long endTime = System.currentTimeMillis();
 		Log.i(TAG, "AVPreviewLoadThread->endTime:" + endTime);
@@ -148,5 +157,29 @@ public class AVPreviewLoadThread extends AbstractPreviewLoadThread{
         duration = String.format("%02d:%02d:%02d", hour, minute, second);
         return duration;
     }
+    
+	/**
+	 * 更新至数据库
+	 */
+	private void updateToDB(){
+		if(mFileInfo.getId() != -1){
+    		FileInfoService fileInfoService = new FileInfoService();
+    		fileInfoService.update(mFileInfo);
+    	}
+	}
+	
+	/**
+	 * 发送更新广播
+	 */
+	private void sendRefreshBroadCast(){
+		 Intent previewIntent = new Intent();
+         if(mFileInfo.getType() == ConstData.MediaType.AUDIO){
+         	previewIntent.setAction(ConstData.BroadCastMsg.REFRESH_VIDEO_PREVIEW);
+         }else{
+         	previewIntent.setAction(ConstData.BroadCastMsg.REFRESH_AUDIO_PREVIEW);
+         }
+         previewIntent.putExtra(ConstData.IntentKey.EXTRA_FILE_INFO, mFileInfo);
+         LocalBroadcastManager.getInstance(mService).sendBroadcast(previewIntent);
+	}
     
 }

@@ -1,15 +1,20 @@
 package com.rockchips.mediacenter.service;
 
+import java.io.File;
 import java.util.List;
 
 import com.rockchips.mediacenter.bean.Device;
+import com.rockchips.mediacenter.bean.FileInfo;
+import com.rockchips.mediacenter.bean.PreviewPhotoInfo;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.modle.db.DeviceService;
 import com.rockchips.mediacenter.modle.db.FileInfoService;
+import com.rockchips.mediacenter.modle.db.PreviewPhotoInfoService;
 import com.rockchips.mediacenter.utils.MediaFileUtils;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 /**
@@ -40,11 +45,33 @@ public class DeviceMountThread extends Thread{
 		Log.i(TAG, "DeviceMountThread->netWorkPath:" + netWrokPath);
 		DeviceService deviceService = new DeviceService();
 		FileInfoService fileInfoService = new FileInfoService();
+		PreviewPhotoInfoService previewPhotoInfoService = new PreviewPhotoInfoService();
 		//删除相关数据
 		List<Device> devices = deviceService.getDeviceByMountPath(mountPath);
 		if(devices != null && devices.size() > 0){
 			for(Device device : devices){
 				deviceService.delete(device);
+				List<FileInfo> fileInfos = fileInfoService.getFileInfosByDeviceID(device.getDeviceID());
+				if(fileInfos != null && fileInfos.size() > 0){
+					for(FileInfo itemFileInfo : fileInfos){
+						if(!TextUtils.isEmpty(itemFileInfo.getPreviewPath())){
+							File itemFile = new File(itemFileInfo.getPreviewPath());
+							if(itemFile.exists())
+								itemFile.delete();
+						}
+					}
+				}
+				List<PreviewPhotoInfo> previewPhotoInfos = previewPhotoInfoService.getPreviewPhotoInfosByDeviceID(device.getDeviceID());
+				if(previewPhotoInfos != null && previewPhotoInfos.size() > 0){
+					for(PreviewPhotoInfo itemPreviewPhotoInfo : previewPhotoInfos){
+						if(!TextUtils.isEmpty(itemPreviewPhotoInfo.getPreviewPath())){
+							File itemFile = new File(itemPreviewPhotoInfo.getPreviewPath());
+							if(itemFile.exists())
+								itemFile.delete();
+						}
+					}
+				}
+				previewPhotoInfoService.deletePreviewPhotoByDeviceID(device.getDeviceID());
 				fileInfoService.deleteFileInfosByDeviceID(device.getDeviceID());
 			}
 		}

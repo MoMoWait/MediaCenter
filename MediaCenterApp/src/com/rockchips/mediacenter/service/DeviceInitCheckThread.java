@@ -1,14 +1,9 @@
 package com.rockchips.mediacenter.service;
 
 import java.util.List;
-
 import android.os.Bundle;
 import android.util.Log;
-
-import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.data.ConstData;
-import com.rockchips.mediacenter.modle.db.DeviceService;
-import com.rockchips.mediacenter.modle.db.FileInfoService;
 import com.rockchips.mediacenter.utils.StorageUtils;
 
 /**
@@ -32,15 +27,6 @@ public class DeviceInitCheckThread extends Thread{
 		String internelStoragePath = StorageUtils.getFlashStoragePath();
 		List<String> allUsbPaths = StorageUtils.getUSBPaths(mService);
 		List<String> allSdCardPaths = StorageUtils.getSdCardPaths(mService);
-		DeviceService deviceService = new DeviceService();
-		FileInfoService fileInfoService = new FileInfoService();
-		List<Device> devices = deviceService.getAllLocalDevices();
-		if(devices != null && devices.size() > 0){
-			for(Device itemDevice : devices){
-				deviceService.delete(itemDevice);
-				fileInfoService.deleteFileInfosByDeviceID(itemDevice.getDeviceID());
-			}
-		}
 		Log.i(TAG, "DeviceInitCheckThread->allUsbPaths:" + allUsbPaths);
 		Log.i(TAG, "DeviceInitCheckThread->allSdCardPaths:" + allSdCardPaths);
 		Log.i(TAG, "DeviceInitCheckThread->internelStoragePath:" + internelStoragePath);
@@ -77,8 +63,6 @@ public class DeviceInitCheckThread extends Thread{
 		mountBundle.putString(ConstData.DeviceMountMsg.NETWORK_PATH, "");
 		//添加内部存储
 		mService.getDeviceMountService().execute(new DeviceMountThread(mService, mountBundle));
-		//启动网络监测线程
-		//mService.getNetworkCheckService().execute(new NetWorCheckThread(mService));
 		Log.i(TAG, "DeviceInitCheckThread->endTime:" + System.currentTimeMillis());
 	}
 }

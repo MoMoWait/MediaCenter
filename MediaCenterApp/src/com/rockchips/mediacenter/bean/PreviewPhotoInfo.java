@@ -20,6 +20,8 @@ public class PreviewPhotoInfo {
 	private String previewPath;
 	@Column(name = "originPath")
 	private String originPath;
+	@Column(name = "duration")
+	private String duration;
 	public int getId() {
 		return id;
 	}
@@ -44,11 +46,16 @@ public class PreviewPhotoInfo {
 	public void setOriginPath(String originPath) {
 		this.originPath = originPath;
 	}
+	public String getDuration() {
+		return duration;
+	}
+	public void setDuration(String duration) {
+		this.duration = duration;
+	}
 	@Override
 	public String toString() {
 		return "PreviewPhotoInfo [id=" + id + ", deviceID=" + deviceID
 				+ ", previewPath=" + previewPath + ", originPath=" + originPath
-				+ "]";
+				+ ", duration=" + duration + "]";
 	}
-	
 }
