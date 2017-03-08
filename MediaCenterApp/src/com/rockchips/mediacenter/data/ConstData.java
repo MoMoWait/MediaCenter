@@ -1414,4 +1414,22 @@ public class ConstData {
 		String IS_FROM_NETWORK = "com.rockchips.mediacenter.is_from_network";
 		String NETWORK_PATH = "com.rockchips.mediacenter.network_path";
 	}
+	
+	/**
+	 * 文件操作错误码
+	 * @author GaoFei
+	 *
+	 */
+	public interface FileOpErrorCode{
+		/**没有错误*/
+		int NO_ERR = 0;
+		/**没有写权限*/
+		int WRITE_ERR = 1;
+		/**拷贝在子文件夹错误*/
+		int COPY_CHILD_DIR_ERR = 2;
+		/**拷贝已存在该文件*/
+		int COPY_EXIST_ERR = 3;
+		/**删除错误*/
+		int DELETE_ERR = 4;
+	}
 }

@@ -33,6 +33,7 @@ import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.imageplayer.InternalImagePlayer;
 import com.rockchips.mediacenter.modle.task.AllFileLoadTask;
+import com.rockchips.mediacenter.modle.task.ImageFileLoadTask;
 import com.rockchips.mediacenter.utils.DialogUtils;
 import com.rockchips.mediacenter.utils.MediaFileUtils;
 /**
@@ -56,8 +57,8 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 	
 	private Device mCurrDevice; 
 	private int mCurrMediaType;
-	private AllFileLoadTask mFolderLoadTask;
-	private AllFileLoadTask mFileLoadTask;
+	private ImageFileLoadTask mFolderLoadTask;
+	private ImageFileLoadTask mFileLoadTask;
 	private PhotoGridAdapter mAlbumAdapter;
 	private PhotoGridAdapter mPhotoAdapter;
 	private List<FileInfo> mLocalMediaFolders;
@@ -84,7 +85,7 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if(keyCode == KeyEvent.KEYCODE_BACK){
 			if(mGridImage.getVisibility() == View.VISIBLE){
-				loadFolders();
+				loadFolders(true);
 				return true;
 			}
 		}
@@ -109,7 +110,7 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 		Log.i(TAG, "onItemClick");
 		if(parent == mGridAlbum){
 			mSelectMediaFolder = mLocalMediaFolders.get(position);
-			loadFiles(mSelectMediaFolder);
+			loadFiles(mSelectMediaFolder, false);
 		}else{
 			mSelectFile = mLocalMediaFiles.get(position);
 			loadActivity(position);
@@ -120,14 +121,14 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if(requestCode == START_PLAYER_REQUEST_CODE){
-			loadFiles(mSelectMediaFolder);
+			loadFiles(mSelectMediaFolder, false);
 		}
 	}
 	
 	public void initDataAndView(){
 		mCurrMediaType = getIntent().getIntExtra(ConstData.IntentKey.EXTRAL_MEDIA_TYPE, -1);
     	mCurrDevice = (Device)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
-		loadFolders();
+		loadFolders(true);
 	}
 	
 	public void initEvent(){
@@ -141,10 +142,10 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 	/**
 	 * 加载文件夹列表
 	 */
-	public void loadFolders(){
+	public void loadFolders(boolean isLoadRoot){
 		DialogUtils.showLoadingDialog(this, false);
 		startTimer(ConstData.MAX_LOAD_FILES_TIME);
-		mFolderLoadTask = new AllFileLoadTask(new AllFileLoadTask.CallBack() {
+		mFolderLoadTask = new ImageFileLoadTask(new ImageFileLoadTask.CallBack() {
 			@Override
 			public void onGetFiles(List<FileInfo> fileInfos) {
 			    endTimer();
@@ -181,17 +182,17 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 			}
 		});
 		
-    	mFolderLoadTask.execute(mCurrDevice, mCurrMediaType, mCurrDevice.getLocalMountPath());
+    	mFolderLoadTask.execute(mCurrDevice, mCurrMediaType, mCurrDevice.getLocalMountPath(), isLoadRoot);
 	}
 	
 	
 	/**
 	 * 加载文件列表
 	 */
-	public void loadFiles(final FileInfo folderFileInfo){
+	public void loadFiles(final FileInfo folderFileInfo, boolean isLoadRoot){
 		DialogUtils.showLoadingDialog(this, false);
 		startTimer(ConstData.MAX_LOAD_FILES_TIME);
-		mFileLoadTask = new AllFileLoadTask(new AllFileLoadTask.CallBack() {
+		mFileLoadTask = new ImageFileLoadTask(new ImageFileLoadTask.CallBack() {
 			@Override
 			public void onGetFiles(List<FileInfo> fileInfos) {
 			    endTimer();
@@ -227,7 +228,7 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 			
 			}
 		});    	
-    	mFileLoadTask.execute(mCurrDevice, mCurrMediaType, mSelectMediaFolder.getPath());
+    	mFileLoadTask.execute(mCurrDevice, mCurrMediaType, mSelectMediaFolder.getPath(), isLoadRoot);
 	}
 
 	

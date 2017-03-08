@@ -57,7 +57,7 @@ public class PhotoGridAdapter extends ArrayAdapter<FileInfo> {
 		ViewHolder holder = (ViewHolder)convertView.getTag();
 		FileInfo fileInfo = getItem(position);
 		holder.textFileName.setText(fileInfo.getName());
-		holder.textFileCount.setText("" + fileInfo.getChildCount());
+		holder.textFileCount.setText("" + fileInfo.getImageCount());
 		holder.textFileCount.setVisibility(View.GONE);
 		if(new File(fileInfo.getPath()).isFile())
 			x.image().bind(holder.imgPhoto, fileInfo.getParentPath() + "/" + fileInfo.getName(), mImageOptions, null);

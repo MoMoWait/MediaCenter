@@ -60,14 +60,11 @@ public class APKPreviewLoadThread extends AbstractPreviewLoadThread{
             if(previewBitmap != null && BitmapUtils.saveBitmapToImage(previewBitmap, savePath, CompressFormat.PNG, 80)){
             	mFileInfo.setPreviewPath(savePath);
             	updateToDB();
-            	if(mFileInfo.getId() == -1){
-            		//缓存信息存储至数据库
-            		PreviewPhotoInfo saveInfo = new PreviewPhotoInfo();
-            		saveInfo.setDeviceID(mFileInfo.getDeviceID());
-            		saveInfo.setOriginPath(mFileInfo.getPath());
-            		saveInfo.setPreviewPath(savePath);
-            		previewPhotoInfoService.save(saveInfo);
-            	}
+            	PreviewPhotoInfo saveInfo = new PreviewPhotoInfo();
+        		saveInfo.setDeviceID(mFileInfo.getDeviceID());
+        		saveInfo.setOriginPath(mFileInfo.getPath());
+        		saveInfo.setPreviewPath(savePath);
+        		previewPhotoInfoService.save(saveInfo);
             	sendRefreshBroadCast();
             }
         }

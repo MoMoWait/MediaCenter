@@ -10,6 +10,7 @@ import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
 import org.xutils.view.annotation.ViewInject;
 
 import com.rockchips.mediacenter.bean.AllFileInfo;
+import com.rockchips.mediacenter.bean.FileInfo;
 
 import android.R.raw;
 import android.content.Context;
@@ -31,7 +32,7 @@ public class FileRenameDialog extends AppBaseDialog implements View.OnClickListe
 		void onFinish();
 	}
 	
-	private AllFileInfo mAllFileInfo;
+	private FileInfo mFileInfo;
 	private Callback mCallback;
 	private Context mContext;
 	@ViewInject(R.id.edit_file_name)
@@ -40,9 +41,9 @@ public class FileRenameDialog extends AppBaseDialog implements View.OnClickListe
 	private Button mBtnOk;
 	@ViewInject(R.id.btn_cancel)
 	private Button mBtnCancel;
-	public FileRenameDialog(Context context, AllFileInfo allFileInfo, Callback callback) {
+	public FileRenameDialog(Context context, FileInfo fileInfo, Callback callback) {
 		super(context);
-		mAllFileInfo = allFileInfo;
+		mFileInfo = fileInfo;
 		mCallback = callback;
 		mContext = context;
 	}
@@ -55,7 +56,7 @@ public class FileRenameDialog extends AppBaseDialog implements View.OnClickListe
 	
 	@Override
 	public void initData() {
-		mEditFileNmae.setText(mAllFileInfo.getFile().getName());
+		mEditFileNmae.setText(mFileInfo.getName());
 	}
 
 
@@ -77,9 +78,13 @@ public class FileRenameDialog extends AppBaseDialog implements View.OnClickListe
 				ToastUtils.showToast(mContext.getString(R.string.enter_new_file_name));
 				return;
 			}
-			mAllFileInfo.getFile().renameTo(new File(mAllFileInfo.getFile().getParentFile() + File.separator + fileName));
-			mCallback.onFinish();
-			dismiss();
+			if(fileName.equals(mFileInfo.getName())){
+				ToastUtils.showToast(mContext.getString(R.string.enter_diff_name));
+			}else{
+				new File(mFileInfo.getPath()).renameTo(new File(new File(mFileInfo.getParentPath()), fileName));
+				mCallback.onFinish();
+				dismiss();
+			}
 			break;
 		case R.id.btn_cancel:
 			dismiss();
@@ -90,9 +95,9 @@ public class FileRenameDialog extends AppBaseDialog implements View.OnClickListe
 	}
 
 	
-	public void setAllFileInfo(AllFileInfo allFileInfo){
-		mAllFileInfo = allFileInfo;
-		mEditFileNmae.setText(mAllFileInfo.getFile().getName());
+	public void setAllFileInfo(FileInfo fileInfo){
+		mFileInfo = fileInfo;
+		mEditFileNmae.setText(mFileInfo.getName());
 	}
 	
 }

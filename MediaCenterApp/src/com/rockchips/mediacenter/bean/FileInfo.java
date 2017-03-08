@@ -5,6 +5,8 @@ import java.io.Serializable;
 import org.xutils.db.annotation.Column;
 import org.xutils.db.annotation.Table;
 
+import com.rockchips.mediacenter.data.ConstData;
+
 /**
  * 
  * @author GaoFei
@@ -133,6 +135,16 @@ public class FileInfo implements Serializable
 	public void setDuration(String duration) {
 		this.duration = duration;
 	}
+	
+	/**
+	 * 是否是媒体文件类型
+	 * @return
+	 */
+	public boolean isMediaFile(){
+		return (type == ConstData.MediaType.VIDEO || type == ConstData.MediaType.AUDIO || type == ConstData.MediaType.IMAGE);
+	}
+	
+	
 	@Override
 	public String toString() {
 		return "FileInfo [id=" + id + ", deviceID=" + deviceID + ", path="

@@ -29,7 +29,8 @@
         android:layout_marginTop="10dp"
         android:textSize="20sp"
         android:paddingLeft="10dp"
-        android:background="@drawable/common_edit_background"/>
+        android:background="@drawable/common_edit_background"
+        android:textCursorDrawable="@null"/>
     <TextView 
         android:id="@+id/text_ex_nfs_address"
         android:layout_width="wrap_content"

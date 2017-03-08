@@ -45,6 +45,21 @@ public class FileInfoService extends AppBeanService<FileInfo> {
 		return fileInfos;
 	}
 	
+	/**
+	 * 根据设备ID和文件路径获取文件信息
+	 * @param deviceID
+	 * @return
+	 */
+	public FileInfo getFileInfosByDeviceIDAndPath(String deviceID, String path){
+		FileInfo fileInfo = null;
+		try {
+			fileInfo = MediaCenterApplication.mDBManager.selector(FileInfo.class).
+					where(WhereBuilder.b("deviceID", "=", deviceID).and("path", "=", path)).findFirst();
+		} catch (DbException e) {
+			e.printStackTrace();
+		}
+		return fileInfo;
+	}
 	
 	/**
 	 * 获取所有文件夹
@@ -77,7 +92,7 @@ public class FileInfoService extends AppBeanService<FileInfo> {
 				e.printStackTrace();
 			}
 		}
-		FileInfo rootFileInfo = null;
+		/*FileInfo rootFileInfo = null;
 		if(mediaType == ConstData.MediaType.AUDIOFOLDER || mediaType == ConstData.MediaType.VIDEOFOLDER){
 			if(fileInfos != null && fileInfos.size() > 0){
 				for(FileInfo itemFileInfo : fileInfos){
@@ -96,7 +111,7 @@ public class FileInfoService extends AppBeanService<FileInfo> {
 				if(rootFileInfos != null && rootFileInfos.size() > 0)
 					fileInfos.addAll(rootFileInfos);
 			}
-		}
+		}*/
 		
 		return fileInfos;
 	}

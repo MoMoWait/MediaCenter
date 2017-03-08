@@ -60,14 +60,12 @@ public class PhotoPreviewLoadThread extends AbstractPreviewLoadThread{
         	mFileInfo.setPreviewPath(savePath);
         	//更新至数据库
         	updateToDB();
-        	if(mFileInfo.getId() == -1){
-        		//缓存信息存储至数据库
-        		PreviewPhotoInfo saveInfo = new PreviewPhotoInfo();
-        		saveInfo.setDeviceID(mFileInfo.getDeviceID());
-        		saveInfo.setOriginPath(mFileInfo.getPath());
-        		saveInfo.setPreviewPath(savePath);
-        		previewPhotoInfoService.save(saveInfo);
-        	}
+        	//缓存信息存储至数据库
+    		PreviewPhotoInfo saveInfo = new PreviewPhotoInfo();
+    		saveInfo.setDeviceID(mFileInfo.getDeviceID());
+    		saveInfo.setOriginPath(mFileInfo.getPath());
+    		saveInfo.setPreviewPath(savePath);
+    		previewPhotoInfoService.save(saveInfo);
             //发送广播
             sendRefreshBroadCast();
         }

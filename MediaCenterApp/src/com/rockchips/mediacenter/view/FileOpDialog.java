@@ -19,6 +19,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import com.rockchips.mediacenter.R;
 import com.rockchips.mediacenter.bean.AllFileInfo;
+import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.utils.FileOpUtils;
 /**
  * @author GaoFei
@@ -31,25 +32,25 @@ public class FileOpDialog extends AppBaseDialog implements OnItemClickListener{
 	/**
 	 * 当前文件信息
 	 */
-	private AllFileInfo mAllFileInfo;
+	private FileInfo mFileInfo;
 	/**文件操作栏*/
 	@ViewInject(R.id.list_file_op)
 	private ListView mListFileOp;
 	
 	public interface Callback{
-		void onCopy(AllFileInfo allFileInfo);
-		void onDelete(AllFileInfo allFileInfo);
-		void onMove(AllFileInfo allFileInfo);
-		void onPaste(AllFileInfo allFileInfo);
-		void onRename(AllFileInfo allFileInfo);
+		void onCopy(FileInfo fileInfo);
+		void onDelete(FileInfo fileInfo);
+		void onMove(FileInfo fileInfo);
+		void onPaste(FileInfo fileInfo);
+		void onRename(FileInfo fileInfo);
 	}
 	
 	private Callback mCallback;
 	
-	public FileOpDialog(Context context, AllFileInfo allFileInfo, Callback callback) {
+	public FileOpDialog(Context context, FileInfo fileInfo, Callback callback) {
 		super(context);
 		mContext = context;
-		mAllFileInfo = allFileInfo;
+		mFileInfo = fileInfo;
 		mCallback = callback;
 	}
 
@@ -86,23 +87,23 @@ public class FileOpDialog extends AppBaseDialog implements OnItemClickListener{
 			long id) {
 		switch (position) {
 		case 0:
-			mCallback.onCopy(mAllFileInfo);
+			mCallback.onCopy(mFileInfo);
 			dismiss();
 			break;
 		case 1:
-			mCallback.onDelete(mAllFileInfo);
+			mCallback.onDelete(mFileInfo);
 			dismiss();
 			break;
 		case 2:
-			mCallback.onMove(mAllFileInfo);
+			mCallback.onMove(mFileInfo);
 			dismiss();
 			break;
 		case 3:
-			mCallback.onPaste(mAllFileInfo);
+			mCallback.onPaste(mFileInfo);
 			dismiss();
 			break;
 		case 4:
-			mCallback.onRename(mAllFileInfo);
+			mCallback.onRename(mFileInfo);
 			dismiss();
 			break;
 		default:

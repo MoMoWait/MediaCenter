@@ -49,8 +49,8 @@ public class AVPreviewLoadThread extends AbstractPreviewLoadThread{
         	return;
         if(!TextUtils.isEmpty(mFileInfo.getPreviewPath()))
             return;
-	    //读取缓存数据库
 		PreviewPhotoInfoService previewPhotoInfoService = new PreviewPhotoInfoService();
+		//读取缓存数据库
 		PreviewPhotoInfo photoInfo = previewPhotoInfoService.getPreviewPhotoInfo(mFileInfo.getDeviceID(), mFileInfo.getPath());
 		if(photoInfo != null){
 			mFileInfo.setPreviewPath(photoInfo.getPreviewPath());
@@ -66,8 +66,13 @@ public class AVPreviewLoadThread extends AbstractPreviewLoadThread{
          * */
         MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
         try{
+        	long sourceStart = System.currentTimeMillis();
+        	Log.i(TAG, "AVPreviewLoadThread->setDataSource->start:" + sourceStart);
             //此处发生异常，直接导致文件元数据无法解析
             mediaMetadataRetriever.setDataSource(mFileInfo.getPath());
+            long sourceEnd = System.currentTimeMillis();
+            Log.i(TAG, "AVPreviewLoadThread->setDataSource->end:" + sourceEnd);
+            Log.i(TAG, "AVPreviewLoadThread->setDataSource->all:" + (sourceEnd - sourceStart) / 1000);
         }catch (Exception e){
             //存在发生异常的可能性
             Log.e(TAG, "AVPreviewLoadThread->setDataSource->exception:" + e);
@@ -75,18 +80,30 @@ public class AVPreviewLoadThread extends AbstractPreviewLoadThread{
         
         String durationStr = null;
         try{
-             durationStr = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+        	long timeStart = System.currentTimeMillis();
+        	Log.i(TAG, "AVPreviewLoadThread->getTime->start:" + timeStart);
+            durationStr = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+            long timeEnd = System.currentTimeMillis();
+            Log.i(TAG, "AVPreviewLoadThread->getTime->end:" + timeEnd);
+            Log.i(TAG, "AVPreviewLoadThread->getTime->all:" + (timeEnd - timeStart) / 1000 + "s");
         }catch (Exception e){
             //存在发生异常的可能性
-            Log.e(TAG, "AVPreviewLoadThread->extractMetadata->exception:" + e);
+            Log.e(TAG, "AVPreviewLoadThread->getTime->exception:" + e);
         }
-        Log.i(TAG, "AVPreviewLoadThread->durationStr:" + durationStr);
+        String timeDuration = null;
         if(durationStr != null){
-            mFileInfo.setDuration(getDuration(Long.parseLong(durationStr)));
+        	timeDuration = getDuration(Long.parseLong(durationStr));
+        	Log.i(TAG, "AVPreviewLoadThread->timeDuration:" + timeDuration);
+            mFileInfo.setDuration(timeDuration);
         }
         Bitmap priviewBitmap = null;
         if(mFileInfo.getType() == ConstData.MediaType.VIDEO){
+        	long videoThumbnailStart = System.currentTimeMillis();
+        	Log.i(TAG, "AVPreviewLoadThread->getVideoThumbnail->start:" + videoThumbnailStart);
             priviewBitmap = ThumbnailUtils.createVideoThumbnail(mFileInfo.getPath(), Thumbnails.MICRO_KIND);
+            long videoThumbnailEnd = System.currentTimeMillis();
+            Log.i(TAG, "AVPreviewLoadThread->getVideoThumbnail->start:" + videoThumbnailEnd);
+            Log.i(TAG, "AVPreviewLoadThread->getVideoThumbnail->all:" + (videoThumbnailEnd - videoThumbnailStart) / 1000 + "s");
         }else{
             byte[] albumData = mediaMetadataRetriever.getEmbeddedPicture();
             if(albumData != null && albumData.length > 0){
@@ -131,15 +148,12 @@ public class AVPreviewLoadThread extends AbstractPreviewLoadThread{
         		mFileInfo.setPreviewPath(ConstData.UNKNOW);
         	}
         	updateToDB();
-        	if(mFileInfo.getId() == -1){
-        		//缓存信息存储至数据库
-        		PreviewPhotoInfo saveInfo = new PreviewPhotoInfo();
-        		saveInfo.setDeviceID(mFileInfo.getDeviceID());
-        		saveInfo.setOriginPath(mFileInfo.getPath());
-        		saveInfo.setDuration(durationStr);
-        		saveInfo.setPreviewPath(savePath);
-        		previewPhotoInfoService.save(saveInfo);
-        	}
+        	PreviewPhotoInfo saveInfo = new PreviewPhotoInfo();
+        	saveInfo.setDeviceID(mFileInfo.getDeviceID());
+        	saveInfo.setOriginPath(mFileInfo.getPath());
+        	saveInfo.setDuration(timeDuration);
+        	saveInfo.setPreviewPath(savePath);
+        	previewPhotoInfoService.save(saveInfo);
             //发送广播
             sendRefreshBroadCast();
         }

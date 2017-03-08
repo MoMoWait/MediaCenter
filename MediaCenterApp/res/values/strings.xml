@@ -371,4 +371,10 @@
     <string name="list_finish_left_tip">请按</string>
     <string name="media_center">媒体中心</string>
     <string name="close_subtitle">关闭字幕</string>
+    <string name="enter_diff_name">请输入不同的名字</string>
+    <string name="op_progress">操作进度</string>
+    <string name="num_one">1</string>
+    <string name="num_zero">0</string>
+    <string name="stop">停止</string>
+    <string name="no_delete_permission">没有删除权限</string>
 </resources>

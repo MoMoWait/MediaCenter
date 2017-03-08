@@ -370,4 +370,10 @@
     <string name="list_finish_left_tip">please press</string>
     <string name="media_center">Media Center</string>
     <string name="close_subtitle">Close subtitle</string>
+    <string name="enter_diff_name">Please enter different name</string>
+    <string name="op_progress">Opration progress</string>
+    <string name="num_one">1</string>
+    <string name="num_zero">0</string>
+    <string name="stop">Stop</string>
+    <string name="no_delete_permission">No delete permission</string>
 </resources>

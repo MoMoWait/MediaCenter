@@ -3,12 +3,19 @@
  */
 package com.rockchips.mediacenter.utils;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
+import com.rockchips.mediacenter.service.ProgressUpdateListener;
+
+import momo.cn.edu.fjnu.androidutils.data.CommonValues;
+import android.media.MediaScannerConnection;
 import android.util.Log;
 
 /**
@@ -27,14 +34,21 @@ public class FileOpUtils {
 	 * @return
 	 */
 	public static boolean deleteFile(File targetFile){
+		Log.i(TAG, "deleteFile->canRead:" + targetFile.canRead());
+		Log.i(TAG, "deleteFile->canWrite:" + targetFile.canWrite());
+		Log.i(TAG, "deleteFile->canExecute:" + targetFile.canExecute());
 		//目录文件列表
 		LinkedList<File> dirFiles = new LinkedList<File>();
 		//待删除目录列表
 		LinkedList<File> delDirFiles = new LinkedList<File>();
-		if(targetFile.isFile())
+		//被删除的文件列表
+		List<String> delFilePaths = new ArrayList<String>();
+		if(targetFile.isFile()){
 			targetFile.delete();
-		else
+			delFilePaths.add(targetFile.getPath());
+		}else{
 			dirFiles.add(targetFile);
+		}
 		//删除文件
 		while(!dirFiles.isEmpty()){
 			File lastDirFile = dirFiles.removeFirst();
@@ -49,6 +63,7 @@ public class FileOpUtils {
 					if(childFile.isFile()){
 						++fileCount;
 						childFile.delete();
+						delFilePaths.add(childFile.getPath());
 					}else{
 						dirFiles.add(childFile);
 					}
@@ -65,6 +80,9 @@ public class FileOpUtils {
 		while(!delDirFiles.isEmpty()){
 			delDirFiles.removeLast().delete();
 		}
+		//更新媒体库
+		if(delFilePaths != null && delDirFiles.size() > 0)
+			MediaScannerConnection.scanFile(CommonValues.application, delFilePaths.toArray(new String[0]), null, null);
 		return true;
 	}
 	
@@ -74,12 +92,15 @@ public class FileOpUtils {
 	 * @param targetFile
 	 * @return
 	 */
-	public static boolean copyFile(File srcFile, File targetFile){
+	public static boolean copyFile(File srcFile, File targetFile, ProgressUpdateListener updateListener){
 		//父文件夹相同，无法复制
 		//不能将父文件夹复制到子文件夹
+		long allTotalSize = getAllFilesSize(srcFile);
+		Log.i(TAG, "copyFile->allTotalSize:" + allTotalSize);
+		long currentProgressSize = 0;
 		if(srcFile.isFile()){
 			try{
-				copyRealFile(srcFile, targetFile);
+				copyRealFile(srcFile, targetFile, updateListener, allTotalSize, currentProgressSize);
 			}catch (Exception e){
 				Log.i(TAG, "copyFile->exception1:" + e);
 			}
@@ -97,12 +118,15 @@ public class FileOpUtils {
 				for(File childFile : childFiles){
 					if(childFile.isFile()){
 						try{
-							copyFile(childFile, new File(lastDirFile, childFile.getName()));
+							copyRealFile(childFile, new File(lastDirFile, childFile.getName()), updateListener, allTotalSize, currentProgressSize);
+							currentProgressSize += childFile.length();
+							Log.i(TAG, "copyFile->currentProgressSize:" + allTotalSize);
 						}catch (Exception e){
 							Log.i(TAG, "copyFile->exception2:" + e);
 						}
 					}else{
-						new File(lastDirFile, childFile.getPath()).mkdir();
+						srcDirFiles.add(childFile);
+						new File(lastDirFile, childFile.getName()).mkdir();
 					}
 				}
 			}
@@ -117,16 +141,53 @@ public class FileOpUtils {
 	 * @param targetFile
 	 * @throws Exception
 	 */
-	public static void copyRealFile(File srcFile, File targetFile) throws Exception{
-		FileInputStream srcInputStream = new FileInputStream(srcFile);
-		FileOutputStream targetOutputStream = new FileOutputStream(targetFile);
-		FileChannel inChannel = srcInputStream.getChannel();
-		FileChannel outChannel = targetOutputStream.getChannel();
-		inChannel.transferTo(0, inChannel.size(), outChannel);
-		inChannel.close();
-		outChannel.close();
-		srcInputStream.close();
-		targetOutputStream.close();
+	public static void copyRealFile(File srcFile, File targetFile, ProgressUpdateListener updateListener, long totalSize, long currentProgressSize){
+		try{
+			long curretnSize = currentProgressSize;
+			BufferedInputStream srcInputStream = new BufferedInputStream(new FileInputStream(srcFile));
+			BufferedOutputStream targetOutputStream = new BufferedOutputStream(new FileOutputStream(targetFile));
+			byte[] buffer = new byte[2048];
+			int readLength = 0;
+			while((readLength = srcInputStream.read(buffer)) > 0){
+				curretnSize += readLength;
+				targetOutputStream.write(buffer, 0, readLength);
+				updateListener.onUpdateProgress((int)(curretnSize * 1.0f / totalSize * 100));
+				
+			}
+			targetOutputStream.flush();
+			targetOutputStream.close();
+			srcInputStream.close();
+		}catch (Exception e){
+			Log.i(TAG, "copyRealFile->exception:" + e);
+		}
+	}
+	
+	/**
+	 * 计算所有文件的字节数
+	 * @param targetFile
+	 * @return
+	 */
+	public static long getAllFilesSize(File targetFile){
+		long total = 0;
+		if(targetFile.isFile())
+			total += targetFile.length();
+		else{
+			List<File> dirFiles = new LinkedList<File>();
+			dirFiles.add(targetFile);
+			while(!dirFiles.isEmpty()){
+				File dirFile = dirFiles.remove(0);
+				File[] childFiles = dirFile.listFiles();
+				if(childFiles != null && childFiles.length > 0){
+					for(File childFile : childFiles){
+						if(childFile.isFile())
+							total += childFile.length();
+						else
+							dirFiles.add(childFile);
+					}
+				}
+			}
+		}
+		return total;
 	}
 	
 }
