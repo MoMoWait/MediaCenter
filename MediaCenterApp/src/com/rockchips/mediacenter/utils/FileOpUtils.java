@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.rockchips.mediacenter.bean.FileInfo;
+import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.modle.db.FileInfoService;
 import com.rockchips.mediacenter.service.ProgressUpdateListener;
 
@@ -80,8 +81,8 @@ public class FileOpUtils {
 		while(!delDirFiles.isEmpty()){
 			delDirFiles.removeLast().delete();
 		}
-		//更新媒体库
-		if(delFilePaths != null && delDirFiles.size() > 0)
+		//更新媒体库,Samba，NFS目录下的文件不更新
+		if(delFilePaths != null && delDirFiles.size() > 0 && !targetFileInfo.getPath().startsWith(ConstData.NETWORK_DEVICE_MOUNT_DIR))
 			MediaScannerConnection.scanFile(CommonValues.application, delFilePaths.toArray(new String[0]), null, null);
 		//更新本地数据库
 		FileInfoService fileInfoService = new FileInfoService();
