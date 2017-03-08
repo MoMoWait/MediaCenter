@@ -14,6 +14,7 @@ import com.rockchips.mediacenter.bean.FileInfo;
 
 import android.R.raw;
 import android.content.Context;
+import android.media.MediaScannerConnection;
 import android.text.TextUtils;
 import android.view.KeyboardShortcutGroup;
 import android.view.Menu;
@@ -80,8 +81,12 @@ public class FileRenameDialog extends AppBaseDialog implements View.OnClickListe
 			}
 			if(fileName.equals(mFileInfo.getName())){
 				ToastUtils.showToast(mContext.getString(R.string.enter_diff_name));
+			}else if(!new File(mFileInfo.getParentPath()).canWrite()){
+				//没有写权限
+				ToastUtils.showToast(mContext.getString(R.string.no_write_permission));
 			}else{
 				new File(mFileInfo.getPath()).renameTo(new File(new File(mFileInfo.getParentPath()), fileName));
+				//MediaScannerConnection.scanFile(mContext, mFileInfo.getpa, mimeTypes, callback)
 				mCallback.onFinish();
 				dismiss();
 			}

@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.rockchips.mediacenter.bean.FileInfo;
+import com.rockchips.mediacenter.modle.db.FileInfoService;
 import com.rockchips.mediacenter.service.ProgressUpdateListener;
 
 import momo.cn.edu.fjnu.androidutils.data.CommonValues;
@@ -33,10 +35,8 @@ public class FileOpUtils {
 	 * @param targetFile
 	 * @return
 	 */
-	public static boolean deleteFile(File targetFile){
-		Log.i(TAG, "deleteFile->canRead:" + targetFile.canRead());
-		Log.i(TAG, "deleteFile->canWrite:" + targetFile.canWrite());
-		Log.i(TAG, "deleteFile->canExecute:" + targetFile.canExecute());
+	public static boolean deleteFile(FileInfo targetFileInfo){
+		File targetFile = new File(targetFileInfo.getPath());
 		//目录文件列表
 		LinkedList<File> dirFiles = new LinkedList<File>();
 		//待删除目录列表
@@ -83,6 +83,9 @@ public class FileOpUtils {
 		//更新媒体库
 		if(delFilePaths != null && delDirFiles.size() > 0)
 			MediaScannerConnection.scanFile(CommonValues.application, delFilePaths.toArray(new String[0]), null, null);
+		//更新本地数据库
+		FileInfoService fileInfoService = new FileInfoService();
+		fileInfoService.deleteFileInfos(targetFileInfo.getDeviceID(), targetFileInfo.getPath());
 		return true;
 	}
 	

@@ -55,7 +55,7 @@ public class FileOpTask extends AsyncTask<FileInfo, Integer, Integer> {
 					//没有写权限
 					result = ConstData.FileOpErrorCode.WRITE_ERR;
 				}else{
-					FileOpUtils.deleteFile(delFile);
+					FileOpUtils.deleteFile(mFileInfo);
 					result = ConstData.FileOpErrorCode.NO_ERR;
 				}
 				
@@ -91,7 +91,7 @@ public class FileOpTask extends AsyncTask<FileInfo, Integer, Integer> {
 						}
 					});
 					//删除源文件
-					FileOpUtils.deleteFile(srcMoveFile);
+					//FileOpUtils.deleteFile(srcMoveFile);
 				}
 				StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.COPY_FILE_PATH, "");
 				StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.MOVE_FILE_PATH, "");

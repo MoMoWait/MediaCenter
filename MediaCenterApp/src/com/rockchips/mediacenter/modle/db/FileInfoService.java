@@ -92,7 +92,7 @@ public class FileInfoService extends AppBeanService<FileInfo> {
 				e.printStackTrace();
 			}
 		}
-		/*FileInfo rootFileInfo = null;
+		FileInfo rootFileInfo = null;
 		if(mediaType == ConstData.MediaType.AUDIOFOLDER || mediaType == ConstData.MediaType.VIDEOFOLDER){
 			if(fileInfos != null && fileInfos.size() > 0){
 				for(FileInfo itemFileInfo : fileInfos){
@@ -111,7 +111,7 @@ public class FileInfoService extends AppBeanService<FileInfo> {
 				if(rootFileInfos != null && rootFileInfos.size() > 0)
 					fileInfos.addAll(rootFileInfos);
 			}
-		}*/
+		}
 		
 		return fileInfos;
 	}
@@ -129,16 +129,16 @@ public class FileInfoService extends AppBeanService<FileInfo> {
 	}
 	
 	/**
-	 * 查找Path对应的位置，二分搜索
-	 * @param fileInfos
-	 * @param path
-	 * @return
+	 * 删除deviceID下包含includePath的数据
+	 * @param deviceID
+	 * @param includePath
 	 */
-	public int getPositionByPath(List<FileInfo> fileInfos, String path){
-		int left = 0;
-		int right = fileInfos.size() - 1;
-		int mid = (left + right) / 2;
-		
-		return -1;
+	public void deleteFileInfos(String deviceID, String includePath){
+		try {
+			MediaCenterApplication.mDBManager.delete(FileInfo.class, WhereBuilder.b("deviceID", "=", deviceID)
+					.and("path", "like", includePath + "%"));
+		} catch (DbException e) {
+			e.printStackTrace();
+		}
 	}
 }

@@ -377,4 +377,5 @@
     <string name="num_zero">0</string>
     <string name="stop">停止</string>
     <string name="no_delete_permission">没有删除权限</string>
+    <string name="no_write_permission">没有写权限</string>
 </resources>
