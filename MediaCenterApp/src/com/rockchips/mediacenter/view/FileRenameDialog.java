@@ -11,10 +11,17 @@ import org.xutils.view.annotation.ViewInject;
 
 import com.rockchips.mediacenter.bean.AllFileInfo;
 import com.rockchips.mediacenter.bean.FileInfo;
+import com.rockchips.mediacenter.data.ConstData;
+import com.rockchips.mediacenter.modle.db.FileInfoService;
+import com.rockchips.mediacenter.utils.DialogUtils;
+import com.rockchips.mediacenter.utils.FileOpUtils;
 
 import android.R.raw;
 import android.content.Context;
+import android.content.Intent;
 import android.media.MediaScannerConnection;
+import android.os.AsyncTask;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.view.KeyboardShortcutGroup;
 import android.view.Menu;
@@ -30,7 +37,7 @@ import com.rockchips.mediacenter.R;
 public class FileRenameDialog extends AppBaseDialog implements View.OnClickListener{
 	
 	public interface Callback{
-		void onFinish();
+		void onFinish(int errorCode);
 	}
 	
 	private FileInfo mFileInfo;
@@ -74,7 +81,7 @@ public class FileRenameDialog extends AppBaseDialog implements View.OnClickListe
 	public void onClick(View v) {
 		switch(v.getId()){
 		case R.id.btn_ok:
-			String fileName = mEditFileNmae.getText().toString().trim();
+			final String fileName = mEditFileNmae.getText().toString().trim();
 			if(TextUtils.isEmpty(fileName)){
 				ToastUtils.showToast(mContext.getString(R.string.enter_new_file_name));
 				return;
@@ -85,10 +92,48 @@ public class FileRenameDialog extends AppBaseDialog implements View.OnClickListe
 				//没有写权限
 				ToastUtils.showToast(mContext.getString(R.string.no_write_permission));
 			}else{
-				new File(mFileInfo.getPath()).renameTo(new File(new File(mFileInfo.getParentPath()), fileName));
-				//MediaScannerConnection.scanFile(mContext, mFileInfo.getpa, mimeTypes, callback)
-				mCallback.onFinish();
 				dismiss();
+				DialogUtils.showLoadingDialog(mContext, false);
+				//启动一个异步任务操作
+				new AsyncTask<FileInfo, Integer, Integer>() {
+					@Override
+					protected Integer doInBackground(FileInfo... params) {
+						File currentFile = new File(mFileInfo.getPath());
+						File destFile = new File(currentFile.getParentFile(), fileName);
+						//检测是否具备写权限
+						boolean canWrite = destFile.canWrite();
+						if(!canWrite){
+							//目标文件不可写
+							return ConstData.FileOpErrorCode.WRITE_ERR;
+						}
+						//获取重命名之前的所有文件路径
+						List<String> allBeforePaths = FileOpUtils.getAllFilePaths(currentFile);
+						boolean success = currentFile.renameTo(destFile);
+						//获取重命名之后的所有文件路径
+						List<String> afterPaths = FileOpUtils.getAllFilePaths(destFile);
+						if(!success)
+							return ConstData.FileOpErrorCode.RENAME_ERR;
+						else{
+							//更新媒体库文件
+							MediaScannerConnection.scanFile(mContext, allBeforePaths.toArray(new String[0]), null, null);
+							MediaScannerConnection.scanFile(mContext, afterPaths.toArray(new String[0]), null, null);
+							//更新本地数据库文件
+							FileInfoService fileInfoService = new FileInfoService();
+							fileInfoService.deleteFileInfos(mFileInfo.getDeviceID(), currentFile.getPath());
+							//发送重新触发扫描广播
+							Intent broadIntent = new Intent(ConstData.BroadCastMsg.RESCAN_DEVICE);
+							LocalBroadcastManager.getInstance(mContext).sendBroadcast(broadIntent);
+							return ConstData.FileOpErrorCode.NO_ERR;
+						}
+							
+					}
+					
+					protected void onPostExecute(Integer result) {
+						mCallback.onFinish(result);
+					};
+					
+				}.execute(mFileInfo);
+				
 			}
 			break;
 		case R.id.btn_cancel:

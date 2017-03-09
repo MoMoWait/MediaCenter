@@ -328,7 +328,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 		if(mRenameDialog == null){
 			mRenameDialog = new FileRenameDialog(this, fileInfo, new FileRenameDialog.Callback() {
 				@Override
-				public void onFinish() {
+				public void onFinish(int errorCode) {
 					loadFiles();
 				}
 			});

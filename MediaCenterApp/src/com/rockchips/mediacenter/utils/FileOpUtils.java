@@ -194,4 +194,29 @@ public class FileOpUtils {
 		return total;
 	}
 	
+	/**
+	 * 获取所有子文件路径
+	 * @param targetFile
+	 * @return
+	 */
+	public static List<String> getAllFilePaths(File targetFile){
+		List<String> paths = new ArrayList<String>();
+		if(targetFile.isFile())
+			paths.add(targetFile.getPath());
+		else{
+			LinkedList<File> dirFiles = new LinkedList<File>();
+			dirFiles.add(targetFile);
+			while(!dirFiles.isEmpty()){
+				File dirFile = dirFiles.removeFirst();
+				File[] childFiles = dirFile.listFiles();
+				for(File childFile : childFiles){
+					if(childFile.isFile())
+						paths.add(childFile.getPath());
+					else
+						dirFiles.add(childFile);
+				}
+			}
+		}
+		return paths;
+	}
 }

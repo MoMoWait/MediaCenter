@@ -25,6 +25,7 @@ import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.modle.db.LocalDeviceService;
 import com.rockchips.mediacenter.modle.db.UpnpFileService;
 import com.rockchips.mediacenter.modle.db.UpnpFolderService;
+import com.rockchips.mediacenter.utils.MediaUtils;
 
 import android.util.Log;
 
@@ -161,7 +162,7 @@ public class UpnpFileScanThread extends Thread {
 			
 			if(mContainers.isEmpty()){
 			    try{
-	                while(mService.isHaveVideoPlay()){
+	                while(MediaUtils.hasMediaClient()){
 	                    //睡眠1s
 	                    Thread.sleep(1000);
 	                }

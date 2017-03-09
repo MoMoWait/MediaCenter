@@ -7,6 +7,7 @@ import java.util.List;
 import android.media.iso.ISOManager;
 import android.net.Uri;
 import com.rockchips.mediacenter.bean.Device;
+import com.rockchips.mediacenter.bean.DeviceScanInfo;
 import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.bean.LocalDevice;
 import com.rockchips.mediacenter.bean.LocalMediaFile;
@@ -71,14 +72,26 @@ public class FileScanThread extends Thread{
 		long startTime = System.currentTimeMillis();
 		Log.i(TAG, "FileScanThread start time:" + startTime);
 		while(!mScanDirectories.isEmpty()){
-		    try{
-		        while(MediaUtils.hasMediaClient()){
-		            //睡眠1s
-	                Thread.sleep(1000);
-	            }
-		    }catch (Exception e){
-		        Log.i(TAG, "FileScanThread exception:" + e);
-		    }
+/*		    //获取设备扫描信息
+			int mountState = mService.getDeviceScanInfo(mDevice.getDeviceID()).getMountState();
+			if(mountState == ConstData.DeviceMountState.DEVICE_DOWN){
+				//设备已经下线，不扫描直接返回
+				Log.i(TAG, mDevice.getDeviceName() + "is offline");
+				return;
+			}*/
+			//存在视频播放，并且设备已经上线
+			boolean haveVideoPlay = MediaUtils.hasMediaClient();
+			try {
+				while (MediaUtils.hasMediaClient()) {
+					// 睡眠1s
+					Thread.sleep(1000);
+					Log.i(TAG, "FileScanThread->haveVideoPlay:" + haveVideoPlay);
+				}
+			}catch(Exception e){
+				
+			}
+	      
+		    
 			if(mTmpFileInfos.size() >= 100){
 				//入库
 				mFileInfoService.saveAll(mTmpFileInfos);
@@ -106,6 +119,8 @@ public class FileScanThread extends Thread{
 				if(subFiles == null || subFiles.length == 0)
 					continue;
 				for(File subFile : subFiles){
+					if(!subFile.exists())
+						continue;
 					if(subFile.isDirectory()){
 						//如果是蓝光文件夹
 						if(ISOManager.isBDDirectory(subFile.getPath())){

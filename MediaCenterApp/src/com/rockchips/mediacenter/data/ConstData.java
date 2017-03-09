@@ -636,6 +636,7 @@ public class ConstData {
     	String LOAD_LOCAL_MEDIA_FILE_PREVIEW = "com.rockchip.mediacenter.load_local_media_file_preview";
     	String PAUSE_DEVICE_FILE_SCAN = "com.rockchip.mediacenter.pause_device_file_scan";
     	String CONTINUE_DEVICE_FILE_SCAN = "com.rockchip.mediacenter.continue_device_file_scan";
+    	String RESCAN_DEVICE = "com.rockchips.mediacenter.rescan_device";
     	/**
     	 * 加载视频缩列图
     	 */
@@ -1431,5 +1432,7 @@ public class ConstData {
 		int COPY_EXIST_ERR = 3;
 		/**删除错误*/
 		int DELETE_ERR = 4;
+		/**重命名错误*/
+		int RENAME_ERR = 5;
 	}
 }

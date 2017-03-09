@@ -23,6 +23,7 @@ import org.fourthline.cling.model.meta.RemoteDevice;
 import org.fourthline.cling.registry.DefaultRegistryListener;
 import org.fourthline.cling.registry.Registry;
 import com.rockchips.mediacenter.bean.AllFileInfo;
+import com.rockchips.mediacenter.bean.DeviceScanInfo;
 import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.bean.LocalDevice;
 import com.rockchips.mediacenter.bean.LocalMediaFile;
@@ -113,7 +114,6 @@ public class DeviceMonitorService extends Service {
 	 * 单线程池服务，设备挂载，卸载线程
 	 */
 	private ExecutorService mDeviceMountService;
-	private boolean isMountRuning = true;
 	private List<NFSInfo> mNFSList;
 	private List<SmbInfo> mSmbList;
 	/**
@@ -154,16 +154,10 @@ public class DeviceMonitorService extends Service {
 	 * Upnp设备搜索器
 	 */
 	private AsyncTask<String, Integer, Integer> mUpnpSearchTask;
-	
 	/**
-	 * 是否有网络
+	 * 设备扫描信息匹配表
 	 */
-	private boolean isHaveNetwork;
-	
-	/**
-	 * 是否有视频播放
-	 */
-	private boolean isHaveVideoPlay;
+	private volatile Map<String, DeviceScanInfo> mDeviceScanInfos = new HashMap<String, DeviceScanInfo>();
 	
 	@Override
 	public void onCreate() {
@@ -192,8 +186,6 @@ public class DeviceMonitorService extends Service {
 		if (mStorageManager != null)
 			mStorageManager.unregisterListener(mountListener);
 		unBindServices();
-		isMountRuning = false;
-		
 	}
 
 	/**
@@ -348,26 +340,12 @@ public class DeviceMonitorService extends Service {
 		
 	}
 
-	/**
-	 * 获取扫描状态
-	 * @return
-	 */
-	public int getScanStatus(String path){
-		int scanStatus = ConstData.DeviceScanStatus.INITIAL;
-		synchronized (mCurrProcessScanMsgs) {
-			scanStatus = mCurrProcessScanMsgs.get(path);
-		}
-		return scanStatus;
+	public DeviceScanInfo getDeviceScanInfo(String deviceID){
+		return mDeviceScanInfos.get(deviceID);
 	}
 	
-	/**
-	 * 设置扫描状态
-	 * @param path
-	 */
-	public void setScanStatus(String path, Integer scanStatus){
-		synchronized (mCurrProcessScanMsgs) {
-			mCurrProcessScanMsgs.put(path, scanStatus);
-		}
+	public void setDeviceScanInfo(String deviceID, DeviceScanInfo deviceScanInfo){
+		mDeviceScanInfos.put(deviceID, deviceScanInfo);
 	}
 	
 	/**
@@ -534,16 +512,6 @@ public class DeviceMonitorService extends Service {
 		return mRemoteDevices;
 	}
 	
-	
-	/**
-	 * 是否有视频播放
-	 * @return
-	 */
-	public boolean isHaveVideoPlay(){
-	    return isHaveVideoPlay;
-	}
-	
-
 	/**
 	 * 设备挂载，卸载监听
 	 * 

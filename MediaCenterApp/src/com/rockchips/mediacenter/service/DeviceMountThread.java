@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 
 import com.rockchips.mediacenter.bean.Device;
+import com.rockchips.mediacenter.bean.DeviceScanInfo;
 import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.bean.PreviewPhotoInfo;
 import com.rockchips.mediacenter.data.ConstData;
@@ -87,10 +88,18 @@ public class DeviceMountThread extends Thread{
 			Device mountDevice = MediaFileUtils.getDeviceFromMountPath(mountPath, netWrokPath, deviceType);
 			//将设备存储至数据库中
 			deviceService.save(mountDevice);
+			//标记设备已经上线
+			DeviceScanInfo scanInfo = new DeviceScanInfo();
+			scanInfo.setMountState(ConstData.DeviceMountState.DEVICE_UP);
+			scanInfo.setNeedRescan(false);
+		    mService.setDeviceScanInfo(mountDevice.getDeviceID(), scanInfo);
 			//启动文件扫描线程
 			mService.getFileScanService().execute(new FileScanThread(mService, mountDevice));
 		}else{
-			//设备下线
+			//标记设备已下线
+			DeviceScanInfo scanInfo = new DeviceScanInfo();
+			scanInfo.setMountState(ConstData.DeviceMountState.DEVICE_DOWN);
+			scanInfo.setNeedRescan(false);
 			broadIntent.setAction(ConstData.BroadCastMsg.DEVICE_DOWN);
 		}
 		
