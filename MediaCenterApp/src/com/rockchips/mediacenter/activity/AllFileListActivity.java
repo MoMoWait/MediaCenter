@@ -51,6 +51,8 @@ import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
+
+import com.rockchips.mediacenter.view.FileDeleteTipDialog;
 import com.rockchips.mediacenter.view.FileOpDialog;
 import com.rockchips.mediacenter.view.FileRenameDialog;
 import com.rockchips.mediacenter.view.OprationProgressDialog;
@@ -265,27 +267,39 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 
 	@Override
 	public void onDelete(final FileInfo fileInfo) {
-		mFileOpTask = new FileOpTask(new FileOpTask.CallBack() {
+		FileDeleteTipDialog deleteTipDialog = new FileDeleteTipDialog(this, new FileDeleteTipDialog.CallBack() {
 			@Override
-			public void onFinish(int errorCode) {
-				DialogUtils.closeLoadingDialog();
-				if(errorCode == ConstData.FileOpErrorCode.WRITE_ERR){
-					//没有写权限
-					ToastUtils.showToast(getString(R.string.no_delete_permission));
-				}else{
-					loadFiles();
-				}
-				
+			public void onOK() {
+				mFileOpTask = new FileOpTask(new FileOpTask.CallBack() {
+					@Override
+					public void onFinish(int errorCode) {
+						DialogUtils.closeLoadingDialog();
+						if(errorCode == ConstData.FileOpErrorCode.WRITE_ERR){
+							//没有写权限
+							ToastUtils.showToast(getString(R.string.no_delete_permission));
+						}else{
+							loadFiles();
+						}
+						
+					}
+					
+					@Override
+					public void onProgress(int value) {
+						
+					}
+				});
+				mFileOpTask.setOpMode(ConstData.FileOpMode.DELETE);
+				DialogUtils.showLoadingDialog(AllFileListActivity.this, false);
+				mFileOpTask.execute(fileInfo);
 			}
 			
 			@Override
-			public void onProgress(int value) {
+			public void onCancel() {
 				
 			}
 		});
-		mFileOpTask.setOpMode(ConstData.FileOpMode.DELETE);
-		DialogUtils.showLoadingDialog(this, false);
-		mFileOpTask.execute(fileInfo);
+		deleteTipDialog.show();
+
 	}
 
 

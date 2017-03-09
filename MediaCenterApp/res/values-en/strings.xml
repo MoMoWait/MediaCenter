@@ -377,4 +377,5 @@
     <string name="stop">Stop</string>
     <string name="no_delete_permission">No delete permission</string>
     <string name="no_write_permission">No write permission</string>
+    <string name="confirm_delete">Confirm delete?</string>
 </resources>
