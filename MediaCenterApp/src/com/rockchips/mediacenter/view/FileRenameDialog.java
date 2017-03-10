@@ -100,12 +100,12 @@ public class FileRenameDialog extends AppBaseDialog implements View.OnClickListe
 					protected Integer doInBackground(FileInfo... params) {
 						File currentFile = new File(mFileInfo.getPath());
 						File destFile = new File(currentFile.getParentFile(), fileName);
-						//检测是否具备写权限
+						/*//检测是否具备写权限
 						boolean canWrite = destFile.canWrite();
 						if(!canWrite){
 							//目标文件不可写
 							return ConstData.FileOpErrorCode.WRITE_ERR;
-						}
+						}*/
 						//获取重命名之前的所有文件路径
 						List<String> allBeforePaths = FileOpUtils.getAllFilePaths(currentFile);
 						boolean success = currentFile.renameTo(destFile);
@@ -122,6 +122,7 @@ public class FileRenameDialog extends AppBaseDialog implements View.OnClickListe
 							fileInfoService.deleteFileInfos(mFileInfo.getDeviceID(), currentFile.getPath());
 							//发送重新触发扫描广播
 							Intent broadIntent = new Intent(ConstData.BroadCastMsg.RESCAN_DEVICE);
+							broadIntent.putExtra(ConstData.IntentKey.EXTRA_DEVICE_ID, mFileInfo.getDeviceID());
 							LocalBroadcastManager.getInstance(mContext).sendBroadcast(broadIntent);
 							return ConstData.FileOpErrorCode.NO_ERR;
 						}

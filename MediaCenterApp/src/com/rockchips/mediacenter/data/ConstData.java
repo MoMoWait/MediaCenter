@@ -94,6 +94,7 @@ public class ConstData {
 		String EXTRA_LOCAL_DEVICE_MOUNT_STATE = "extra_local_device_mount_state";
 		/**本地设备ID*/
 		String EXTRA_LOCAL_DEVICE_ID = "extra_local_device_id";
+		String EXTRA_DEVICE_ID = "extra_device_id";
         /**
          * 获取媒体列表的key键
          */
@@ -1434,5 +1435,16 @@ public class ConstData {
 		int DELETE_ERR = 4;
 		/**重命名错误*/
 		int RENAME_ERR = 5;
+	}
+	
+	/**
+	 * 音频的其他信息
+	 * @author GaoFei
+	 *
+	 */
+	public interface AudioOtherInfo{
+		String TITLE = "title";
+		String ALBUM = "album";
+		String ARTIST = "artist";
 	}
 }

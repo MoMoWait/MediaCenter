@@ -6,6 +6,9 @@ package com.rockchips.mediacenter.service;
 import java.io.File;
 import java.util.UUID;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import momo.cn.edu.fjnu.androidutils.data.CommonValues;
 import momo.cn.edu.fjnu.androidutils.utils.BitmapUtils;
 import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
@@ -106,6 +109,22 @@ public class AVPreviewLoadThread extends AbstractPreviewLoadThread{
             Log.i(TAG, "AVPreviewLoadThread->getVideoThumbnail->all:" + (videoThumbnailEnd - videoThumbnailStart) / 1000 + "s");
         }else{
             byte[] albumData = mediaMetadataRetriever.getEmbeddedPicture();
+            String title = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+            String album = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+            String artist = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+            Log.i(TAG, "AVPreviewLoadThread->title:" + title);
+            Log.i(TAG, "AVPreviewLoadThread->albumName:" + album);
+            Log.i(TAG, "AVPreviewLoadThread->artist:" + artist);
+            JSONObject otherInfoObject = new JSONObject();
+            try {
+				otherInfoObject.put(ConstData.AudioOtherInfo.TITLE, title == null ? "" : title);
+				otherInfoObject.put(ConstData.AudioOtherInfo.ALBUM, album == null ? "" : album);
+				otherInfoObject.put(ConstData.AudioOtherInfo.ARTIST, title == null ? "" : artist);
+				mFileInfo.setOtherInfo(otherInfoObject.toString());
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+            
             if(albumData != null && albumData.length > 0){
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 int targetWidth  = SizeUtils.dp2px(CommonValues.application, 280);
@@ -153,6 +172,7 @@ public class AVPreviewLoadThread extends AbstractPreviewLoadThread{
         	saveInfo.setOriginPath(mFileInfo.getPath());
         	saveInfo.setDuration(timeDuration);
         	saveInfo.setPreviewPath(savePath);
+        	saveInfo.setOhterInfo(mFileInfo.getOtherInfo());
         	previewPhotoInfoService.save(saveInfo);
             //发送广播
             sendRefreshBroadCast();

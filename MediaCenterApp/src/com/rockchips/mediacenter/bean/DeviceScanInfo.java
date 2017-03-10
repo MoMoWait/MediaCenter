@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.rockchips.mediacenter.bean;
 
 /**
@@ -10,6 +7,8 @@ package com.rockchips.mediacenter.bean;
 public class DeviceScanInfo {
 	private int mountState;
 	private boolean needRescan;
+	private int deviceType;
+	private String mountPath;
 	public int getMountState() {
 		return mountState;
 	}
@@ -21,6 +20,18 @@ public class DeviceScanInfo {
 	}
 	public void setNeedRescan(boolean needRescan) {
 		this.needRescan = needRescan;
+	}
+	public int getDeviceType() {
+		return deviceType;
+	}
+	public void setDeviceType(int deviceType) {
+		this.deviceType = deviceType;
+	}
+	public String getMountPath() {
+		return mountPath;
+	}
+	public void setMountPath(String mountPath) {
+		this.mountPath = mountPath;
 	}
 	
 }

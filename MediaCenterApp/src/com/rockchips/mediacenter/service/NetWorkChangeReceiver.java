@@ -16,7 +16,7 @@ public class NetWorkChangeReceiver extends BroadcastReceiver{
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Log.i(TAG, "onReceive->intent:" + intent);
+		Log.i(TAG, "onReceive->intent->action:" + intent.getAction());
 		LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(ConstData.BroadCastMsg.CHECK_NETWORK));
 		
 	}

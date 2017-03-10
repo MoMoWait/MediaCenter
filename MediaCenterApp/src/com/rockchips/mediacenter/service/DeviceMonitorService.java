@@ -260,6 +260,7 @@ public class DeviceMonitorService extends Service {
 		netWorkDeviceMountFilter.addAction(ConstData.BroadCastMsg.REFRESH_NETWORK_DEVICE);
 		netWorkDeviceMountFilter.addAction(ConstData.BroadCastMsg.REFRESH_ALL_DEVICES);
 		netWorkDeviceMountFilter.addAction(ConstData.BroadCastMsg.CHECK_NETWORK);
+		netWorkDeviceMountFilter.addAction(ConstData.BroadCastMsg.RESCAN_DEVICE);
 		LocalBroadcastManager.getInstance(this).registerReceiver(mNetWorkDeviceMountReceiver, netWorkDeviceMountFilter);
 		//注册预览图加载请求
 		IntentFilter previewLoadFilter = new IntentFilter();
@@ -669,6 +670,19 @@ public class DeviceMonitorService extends Service {
 				if(!NetWorkUtils.haveInternet(getApplicationContext())){
 					//刷新网络设备
 					searchUpnpDevice();
+				}
+			}else if(action.equals(ConstData.BroadCastMsg.RESCAN_DEVICE)){
+				//重新扫描设备
+				String deviceID = intent.getStringExtra(ConstData.IntentKey.EXTRA_DEVICE_ID);
+				DeviceScanInfo scanInfo = mDeviceScanInfos.get(deviceID);
+				//只有设备在线，才重新扫描
+				if(scanInfo != null && scanInfo.getMountState() == ConstData.DeviceMountState.DEVICE_UP){
+					Bundle mountBundle = new Bundle();
+					mountBundle.putBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK, false);
+					mountBundle.putString(ConstData.DeviceMountMsg.MOUNT_PATH, scanInfo.getMountPath());
+					mountBundle.putInt(ConstData.DeviceMountMsg.MOUNT_STATE, ConstData.DeviceMountState.DEVICE_UP);
+					mountBundle.putInt(ConstData.DeviceMountMsg.MOUNT_TYPE, scanInfo.getDeviceType());
+					mDeviceMountService.execute(new DeviceMountThread(DeviceMonitorService.this, mountBundle));
 				}
 			}
 		}

@@ -22,6 +22,9 @@ public class PreviewPhotoInfo {
 	private String originPath;
 	@Column(name = "duration")
 	private String duration;
+	//以json格式数据存储
+	@Column(name = "ohterInfo")
+	private String ohterInfo;
 	public int getId() {
 		return id;
 	}
@@ -52,10 +55,17 @@ public class PreviewPhotoInfo {
 	public void setDuration(String duration) {
 		this.duration = duration;
 	}
+	public String getOhterInfo() {
+		return ohterInfo;
+	}
+	public void setOhterInfo(String ohterInfo) {
+		this.ohterInfo = ohterInfo;
+	}
 	@Override
 	public String toString() {
 		return "PreviewPhotoInfo [id=" + id + ", deviceID=" + deviceID
 				+ ", previewPath=" + previewPath + ", originPath=" + originPath
-				+ ", duration=" + duration + "]";
+				+ ", duration=" + duration + ", ohterInfo=" + ohterInfo + "]";
 	}
+	
 }

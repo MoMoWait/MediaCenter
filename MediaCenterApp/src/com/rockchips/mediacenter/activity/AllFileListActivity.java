@@ -109,22 +109,6 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	 * 当前焦点文件
 	 */
 	private FileInfo mCurrentFileInfo;
-	/**
-	 * 当前文件夹列表选中的位置
-	 */
-	private int mFolderSelection = 0;
-	/**
-	 * 当前文件列表选中位置
-	 */
-	private int mFileSelection = 0;
-	/**
-	 * 当前焦点位置
-	 */
-	private int mCurrentFocusPosition;
-	/**
-	 * 视频，音乐文件缩列图文件获取器
-	 */
-	private AVBitmapLoadTask mBitmapLoadTask;
 	
 	private Bitmap mOldBitmap;
 	
@@ -740,43 +724,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 		return fileType;
 	}
     
-   /**
-    * 获取文件夹索引
-    * @param mediaFolder
-    * @param mediaFiles
-    * @return
-    */
-    private int getFolderIndex(LocalMediaFolder mediaFolder, List<LocalMediaFolder> mediaFiles){
-    	if(mediaFolder == null)
-    		return -1;
-    	if(mediaFiles == null || mediaFiles.size() == 0)
-    		return -1;
-    	for(int i = 0; i != mediaFiles.size(); ++i){
-    		if(mediaFiles.get(i).getFolderId() == mediaFolder.getFolderId()){
-    			return i;
-    		}
-    	}
-    	return -1;
-    }
     
-    /**
-     * 获取文件索引
-     * @param mediaFile
-     * @param mediaFiles
-     * @return
-     */
-    private int getFileIndex(LocalMediaFile mediaFile, List<LocalMediaFile> mediaFiles){
-    	if(mediaFile == null)
-    		return -1;
-    	if(mediaFiles == null || mediaFiles.size() == 0)
-    		return -1;
-    	for(int i = 0; i != mediaFiles.size(); ++i){
-    		if(mediaFiles.get(i).getFileId() == mediaFile.getFileId()){
-    			return i;
-    		}
-    	}
-    	return -1;
-    }
     
     /**
      * 加载视频文件缩列图

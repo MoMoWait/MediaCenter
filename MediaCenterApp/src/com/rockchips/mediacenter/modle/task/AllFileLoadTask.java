@@ -83,6 +83,8 @@ public class AllFileLoadTask extends AsyncTask<Object, Integer, Integer> {
 						else if(lFile.isDirectory() && rFile.isDirectory()
 						        || lFile.isFile() && rFile.isFile())
 						    return lFile.getPath().compareTo(rFile.getPath());
+						else if(lFile.isFile() && rFile.isDirectory())
+							return 1;
 						return 0;
 					}
 				});

@@ -86,21 +86,27 @@ public class DeviceMountThread extends Thread{
 			broadIntent.setAction(ConstData.BroadCastMsg.DEVICE_UP);
 			//通过路径构建Device
 			Device mountDevice = MediaFileUtils.getDeviceFromMountPath(mountPath, netWrokPath, deviceType);
+			if(mountDevice == null)
+				return;
 			//将设备存储至数据库中
 			deviceService.save(mountDevice);
 			//标记设备已经上线
 			DeviceScanInfo scanInfo = new DeviceScanInfo();
 			scanInfo.setMountState(ConstData.DeviceMountState.DEVICE_UP);
 			scanInfo.setNeedRescan(false);
+			scanInfo.setDeviceType(mountDevice.getDeviceType());
+			scanInfo.setMountPath(mountDevice.getLocalMountPath());
 		    mService.setDeviceScanInfo(mountDevice.getDeviceID(), scanInfo);
 			//启动文件扫描线程
 			mService.getFileScanService().execute(new FileScanThread(mService, mountDevice));
 		}else{
+			broadIntent.setAction(ConstData.BroadCastMsg.DEVICE_DOWN);
 			//标记设备已下线
 			DeviceScanInfo scanInfo = new DeviceScanInfo();
 			scanInfo.setMountState(ConstData.DeviceMountState.DEVICE_DOWN);
 			scanInfo.setNeedRescan(false);
-			broadIntent.setAction(ConstData.BroadCastMsg.DEVICE_DOWN);
+			if(devices != null && devices.size() > 0)
+				mService.setDeviceScanInfo(devices.get(0).getDeviceID(), scanInfo);
 		}
 		
 		//发送设备上下线广播

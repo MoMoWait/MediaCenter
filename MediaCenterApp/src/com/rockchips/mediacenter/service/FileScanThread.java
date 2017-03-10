@@ -72,23 +72,27 @@ public class FileScanThread extends Thread{
 		long startTime = System.currentTimeMillis();
 		Log.i(TAG, "FileScanThread start time:" + startTime);
 		while(!mScanDirectories.isEmpty()){
-/*		    //获取设备扫描信息
+		    //获取设备扫描信息
 			int mountState = mService.getDeviceScanInfo(mDevice.getDeviceID()).getMountState();
 			if(mountState == ConstData.DeviceMountState.DEVICE_DOWN){
 				//设备已经下线，不扫描直接返回
 				Log.i(TAG, mDevice.getDeviceName() + "is offline");
 				return;
-			}*/
+			}
 			//存在视频播放，并且设备已经上线
 			boolean haveVideoPlay = MediaUtils.hasMediaClient();
+			Log.i(TAG, "FileScanThread->haveVideoPlay:" + haveVideoPlay);
 			try {
-				while (MediaUtils.hasMediaClient()) {
+				//存在视频播放，并且设备已经挂载
+				while (haveVideoPlay && mountState == ConstData.DeviceMountState.DEVICE_UP) {
 					// 睡眠1s
 					Thread.sleep(1000);
 					Log.i(TAG, "FileScanThread->haveVideoPlay:" + haveVideoPlay);
+					haveVideoPlay = MediaUtils.hasMediaClient();
+					mountState = mService.getDeviceScanInfo(mDevice.getDeviceID()).getMountState();
 				}
 			}catch(Exception e){
-				
+				Log.e(TAG, "FileScanThread->sleep->exception:" + e);
 			}
 	      
 		    

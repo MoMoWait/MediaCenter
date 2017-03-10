@@ -225,6 +225,8 @@
         <receiver android:name="com.rockchips.mediacenter.service.NetWorkChangeReceiver">
             <intent-filter >
                 <action android:name= "android.net.conn.CONNECTIVITY_CHANGE"/>
+                <action android:name="android.net.ethernet.ETHERNET_STATE_CHANGED"/>
+                <action android:name="android.net.pppoe.PPPOE_STATE_CHANGED" />
             </intent-filter>
         </receiver>
         
