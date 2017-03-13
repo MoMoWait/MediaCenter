@@ -8,9 +8,13 @@ import java.util.List;
 import java.util.Locale;
 import org.fourthline.cling.model.meta.RemoteDevice;
 import org.fourthline.cling.support.model.DIDLContent;
+import org.fourthline.cling.support.model.Res;
+import org.fourthline.cling.support.model.DIDLObject.Property;
 import org.fourthline.cling.support.model.container.Container;
 import org.fourthline.cling.support.model.item.Item;
 import org.json.JSONArray;
+import org.json.JSONObject;
+
 import momo.cn.edu.fjnu.androidutils.data.CommonValues;
 import momo.cn.edu.fjnu.androidutils.utils.JsonUtils;
 import android.R.integer;
@@ -18,9 +22,11 @@ import android.os.Environment;
 import android.provider.SyncStateContract.Constants;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.media.iso.ISOManager;
 import com.rockchips.mediacenter.utils.HanziToPinyin;
 import com.rockchips.mediacenter.utils.HanziToPinyin.Token;
+import com.rockchips.mediacenter.adapter.AllUpnpFileListAdapter;
 import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.bean.LocalMediaInfo;
@@ -421,11 +427,11 @@ public class MediaFileUtils {
      * @param deviceType
      * @return
      */
-    public static Device getDeviceFromMountPath(String mountPath, String netWorkPath , int deviceType){
-    	File mountFile = new File(mountPath);
-    	if(!mountFile.exists())
-    		return null;
+    public static Device getDeviceFromMountPath(String mountPath, String netWorkPath , int deviceType, String deviceName){
     	Device device = new Device();
+    	File mountFile = new File(mountPath);
+    	if(!mountFile.exists() && deviceType != ConstData.DeviceType.DEVICE_TYPE_DMS)
+    		return null;
     	//本地设备有3种模式
     	if(deviceType == ConstData.DeviceType.DEVICE_TYPE_LOCAL){
     		if(StorageUtils.isMountUsb(CommonValues.application, mountPath)){
@@ -439,12 +445,14 @@ public class MediaFileUtils {
     		device.setDeviceName(getDeviceIdFromMountFile(mountFile));
     		device.setNetWorkPath(netWorkPath);
     	}else{
-    		device.setDeviceName(getDeviceIdFromMountFile(mountFile));
+    		if(deviceType != ConstData.DeviceType.DEVICE_TYPE_DMS)
+    			device.setDeviceName(getDeviceIdFromMountFile(mountFile));
+    		else
+    			device.setDeviceName(deviceName);
     		device.setDeviceType(deviceType);
     		device.setLocalMountPath(mountPath);
     		device.setNetWorkPath(netWorkPath);
     	}
-    	
     	return device;
     }
     
@@ -830,4 +838,91 @@ public class MediaFileUtils {
 		return fileType;
 	}
     
+	/**
+	 * 获取文件列表信息
+	 * @param content
+	 * @return
+	 */
+	public static List<FileInfo> getFileInfos(DIDLContent content, Device device){
+		Log.i(TAG, "getFileInfos->content:" + content);
+		DialogUtils.closeLoadingDialog();
+		List<Container> containers = content.getContainers();
+		List<Item> items = content.getItems();
+		List<FileInfo> fileInfos = new ArrayList<FileInfo>();
+		Log.i(TAG, "fillUpnpFileAdapter->containers:" + containers);
+		if(containers != null && containers.size() > 0){
+			try{
+				for(Container itemContainer : containers){
+					List<Property> properties = itemContainer.getProperties();
+					if(properties != null && properties.size() > 0){
+						for(Property property : properties){
+							Log.i(TAG, "Container->property->name:" + property.getDescriptorName() + " "
+									+ "Container->property->value:" + property.getValue().toString());
+							
+						}
+					}
+					FileInfo fileInfo = new FileInfo();
+					fileInfo.setChildCount(itemContainer.getChildCount());
+					fileInfo.setDeviceID(device.getDeviceID());
+					fileInfo.setName(itemContainer.getTitle());
+					fileInfo.setType(ConstData.MediaType.FOLDER);
+					JSONObject jsonInfo = new JSONObject();
+					jsonInfo.put(ConstData.UpnpFileOhterInfo.ID, itemContainer.getId());
+					jsonInfo.put(ConstData.UpnpFileOhterInfo.PARENT_ID, itemContainer.getParentID());
+					jsonInfo.put(ConstData.UpnpFileOhterInfo.DATE, "2017-3-13");
+					fileInfo.setOtherInfo(jsonInfo.toString());
+					fileInfos.add(fileInfo);
+				}
+			}catch (Exception e){
+				
+			}
+
+			
+		}
+		Log.i(TAG, "fillUpnpFileAdapter->items:" + items);
+		if(items != null && items.size() > 0){
+			try{
+				for(Item item : items){
+					List<Property> properties = item.getProperties();
+					if(properties != null && properties.size() > 0){
+						for(Property property : properties){
+							Log.i(TAG, "Item->property->name:" + property.getDescriptorName() + " "
+									+ "Item->property->value:" + property.getValue().toString());
+							
+						}
+					}
+					FileInfo fileInfo = new FileInfo();
+					fileInfo.setDeviceID(device.getDeviceID());
+					fileInfo.setName(item.getTitle());
+					JSONObject jsonInfo = new JSONObject();
+					jsonInfo.put(ConstData.UpnpFileOhterInfo.ID, item.getId());
+					jsonInfo.put(ConstData.UpnpFileOhterInfo.PARENT_ID, item.getParentID());
+					jsonInfo.put(ConstData.UpnpFileOhterInfo.DATE, "2017-3-13");
+					fileInfo.setOtherInfo(jsonInfo.toString());
+					List<Res> resources = item.getResources();
+					if(resources != null &&  resources.size() > 0 && resources.get(0) != null && resources.get(0).getProtocolInfo() != null
+							&& resources.get(0).getProtocolInfo().getContentFormat() != null){
+						String contentFormat = resources.get(0).getProtocolInfo().getContentFormat();
+						fileInfo.setPath(resources.get(0).getValue());
+						if(contentFormat.contains("audio")){
+							fileInfo.setType(ConstData.MediaType.AUDIO);
+						}else if(contentFormat.contains("video")){
+							fileInfo.setType(ConstData.MediaType.VIDEO);
+						}else if(contentFormat.contains("image")){
+							fileInfo.setType(ConstData.MediaType.IMAGE);
+						}else {
+							fileInfo.setType(ConstData.MediaType.UNKNOWN_TYPE);
+						}
+					}else{
+						fileInfo.setType(ConstData.MediaType.UNKNOWN_TYPE);
+					}
+					fileInfos.add(fileInfo);
+				}
+			}catch (Exception e){
+				
+			}
+
+		}
+		return fileInfos;
+	}
 }

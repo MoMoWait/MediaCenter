@@ -329,5 +329,11 @@ public class UpnpImageActivity extends AppBaseActivity implements OnItemClickLis
      	}
      	return -1;
      }
+
+	@Override
+	public void onServiceConnected() {
+		// TODO Auto-generated method stub
+		
+	}
     
 }

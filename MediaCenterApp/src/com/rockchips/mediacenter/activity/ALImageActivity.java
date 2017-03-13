@@ -295,5 +295,11 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
      	}
      	return -1;
      }
+
+	@Override
+	public void onServiceConnected() {
+		// TODO Auto-generated method stub
+		
+	}
     
 }

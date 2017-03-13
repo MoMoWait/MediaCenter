@@ -39,11 +39,13 @@ public class DeviceMountThread extends Thread{
 		int mountState = mMsg.getInt(ConstData.DeviceMountMsg.MOUNT_STATE);
 		boolean isFromNetWork = mMsg.getBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK);
 		String netWrokPath = mMsg.getString(ConstData.DeviceMountMsg.NETWORK_PATH);
+		String deviceName = mMsg.getString(ConstData.DeviceMountMsg.DEVICE_NAME);
 		Log.i(TAG, "DeviceMountThread->deviceType:" + deviceType);
 		Log.i(TAG, "DeviceMountThread->mountPath:" + mountPath);
 		Log.i(TAG, "DeviceMountThread->mountState:" + mountState);
 		Log.i(TAG, "DeviceMountThread->isFromNetWork:" + mountState);
 		Log.i(TAG, "DeviceMountThread->netWorkPath:" + netWrokPath);
+		Log.i(TAG, "DeviceMountThread->deviceName:" + deviceName);
 		DeviceService deviceService = new DeviceService();
 		FileInfoService fileInfoService = new FileInfoService();
 		PreviewPhotoInfoService previewPhotoInfoService = new PreviewPhotoInfoService();
@@ -85,7 +87,7 @@ public class DeviceMountThread extends Thread{
 		if(mountState == ConstData.DeviceMountState.DEVICE_UP){
 			broadIntent.setAction(ConstData.BroadCastMsg.DEVICE_UP);
 			//通过路径构建Device
-			Device mountDevice = MediaFileUtils.getDeviceFromMountPath(mountPath, netWrokPath, deviceType);
+			Device mountDevice = MediaFileUtils.getDeviceFromMountPath(mountPath, netWrokPath, deviceType, deviceName);
 			if(mountDevice == null)
 				return;
 			//将设备存储至数据库中
@@ -98,7 +100,8 @@ public class DeviceMountThread extends Thread{
 			scanInfo.setMountPath(mountDevice.getLocalMountPath());
 		    mService.setDeviceScanInfo(mountDevice.getDeviceID(), scanInfo);
 			//启动文件扫描线程
-			mService.getFileScanService().execute(new FileScanThread(mService, mountDevice));
+		    if(deviceType != ConstData.DeviceType.DEVICE_TYPE_DMS)
+		    	mService.getFileScanService().execute(new FileScanThread(mService, mountDevice));
 		}else{
 			broadIntent.setAction(ConstData.BroadCastMsg.DEVICE_DOWN);
 			//标记设备已下线

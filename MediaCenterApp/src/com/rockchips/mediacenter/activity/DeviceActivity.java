@@ -84,5 +84,11 @@ public class DeviceActivity extends AppBaseActivity
             }
         }
     }
+
+	@Override
+	public void onServiceConnected() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 

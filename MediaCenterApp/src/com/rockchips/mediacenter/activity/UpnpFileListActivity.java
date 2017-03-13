@@ -664,4 +664,11 @@ public class UpnpFileListActivity extends AppBaseActivity  implements OnItemSele
     	mUpnpFileMediaDataLoadTask.execute(upnpFile);
     }
 
+
+	@Override
+	public void onServiceConnected() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

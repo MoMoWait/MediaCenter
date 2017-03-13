@@ -1,22 +1,23 @@
 package com.rockchips.mediacenter.activity;
 
 import java.util.List;
-
 import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
-
 import com.rockchips.mediacenter.bean.Device;
-import com.rockchips.mediacenter.bean.LocalDevice;
 import com.rockchips.mediacenter.data.ConstData;
+import com.rockchips.mediacenter.service.DeviceMonitorService;
 import com.rockchips.mediacenter.utils.ActivityExitUtils;
 import com.rockchips.mediacenter.utils.DialogUtils;
-
 import android.app.Activity;
+import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
@@ -27,7 +28,7 @@ import com.rockchips.mediacenter.R;
  * @author GaoFei
  * App基本Activity
  */
-public class AppBaseActivity extends Activity{
+public abstract class AppBaseActivity extends Activity{
 	private static final String TAG = "AppBaseActivity";
 	private DeviceUpDownReceiver mDeviceUpDownReceiver;
 	private Device mCurrDevice;
@@ -43,6 +44,11 @@ public class AppBaseActivity extends Activity{
      * 是否超时
      */
     private boolean mIsOverTime;
+    /**
+     * 设备监听服务
+     */
+    protected DeviceMonitorService mDeviceMonitorService;
+    private ServiceConnection mDeviceMonitorConnection;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -59,6 +65,22 @@ public class AppBaseActivity extends Activity{
 		mDeviceUpDownReceiver = new DeviceUpDownReceiver();
 		mTimeHandler = new Handler();
 		mTimerTask = new TimerTask();
+		mDeviceMonitorConnection = new ServiceConnection() {
+			
+			@Override
+			public void onServiceDisconnected(ComponentName name) {
+				
+			}
+			
+			@Override
+			public void onServiceConnected(ComponentName name, IBinder service) {
+				Log.i(TAG, "AppBaseActivity->serviceConnection on ServiceConnected" );
+				DeviceMonitorService.MonitorBinder serviceBinder = (DeviceMonitorService.MonitorBinder)service;
+				mDeviceMonitorService = serviceBinder.getMonitorService();
+				AppBaseActivity.this.onServiceConnected();
+			}
+		};
+		//attachServices();
 	}
 	
 	@Override
@@ -84,6 +106,7 @@ public class AppBaseActivity extends Activity{
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		unBindServices();
 		ActivityExitUtils.removeActivity(this);
 	}
 	
@@ -119,7 +142,31 @@ public class AppBaseActivity extends Activity{
 		});
 	}
 	
+	 /**
+     * 绑定各种服务
+     */
+    protected void attachServices(){
+    	Intent intent = new Intent(this, DeviceMonitorService.class);
+    	//绑定设备监听服务
+    	bindService(intent, mDeviceMonitorConnection, Service.BIND_AUTO_CREATE);
+    }
 	
+    
+    /**
+     * 解除服务绑定
+     * @author GaoFei
+     *
+     */
+    
+    public void unBindServices(){
+    	unbindService(mDeviceMonitorConnection);
+    }
+    
+    /**
+     * 服务连接回调
+     */
+    public abstract void onServiceConnected();
+    
 	/**
 	 * 启动定时器
 	 * @param time 处罚时间

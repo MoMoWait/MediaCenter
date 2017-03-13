@@ -63,6 +63,8 @@ public class DeviceInitCheckThread extends Thread{
 		mountBundle.putString(ConstData.DeviceMountMsg.NETWORK_PATH, "");
 		//添加内部存储
 		mService.getDeviceMountService().execute(new DeviceMountThread(mService, mountBundle));
+		//启动网络监测线程
+		mService.getNetworkCheckService().execute(new NetWorkCheckThread(mService));
 		Log.i(TAG, "DeviceInitCheckThread->endTime:" + System.currentTimeMillis());
 	}
 }

@@ -1415,6 +1415,7 @@ public class ConstData {
 		String MOUNT_TYPE = "com.rockchips.mediacenter.mount_device_type";
 		String IS_FROM_NETWORK = "com.rockchips.mediacenter.is_from_network";
 		String NETWORK_PATH = "com.rockchips.mediacenter.network_path";
+		String DEVICE_NAME = "com.rockchips.mediacenter.device_name";
 	}
 	
 	/**
@@ -1446,5 +1447,28 @@ public class ConstData {
 		String TITLE = "title";
 		String ALBUM = "album";
 		String ARTIST = "artist";
+	}
+	
+	/**
+	 * Upnp文件浏览状态
+	 * @author GaoFei
+	 *
+	 */
+	public interface UpnpFileBrowserState{
+		/**接收成功*/
+		int RECEIVED_SUCCESS = 0;
+		/**接收失败*/
+		int RECEIVED_FAILED = 1;
+	}
+	
+	/**
+	 * Upnp文件的其他信息
+	 * @author GaoFei
+	 *
+	 */
+	public interface UpnpFileOhterInfo{
+		String ID = "id";
+		String PARENT_ID = "parent_id";
+		String DATE = "date";
 	}
 }

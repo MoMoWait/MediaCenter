@@ -19,10 +19,20 @@ import momo.cn.edu.fjnu.androidutils.utils.NetWorkUtils;
 import momo.cn.edu.fjnu.androidutils.utils.StorageUtils;
 import org.fourthline.cling.android.AndroidUpnpService;
 import org.fourthline.cling.android.AndroidUpnpServiceImpl;
+import org.fourthline.cling.model.action.ActionInvocation;
+import org.fourthline.cling.model.message.UpnpResponse;
 import org.fourthline.cling.model.meta.RemoteDevice;
+import org.fourthline.cling.model.types.UDAServiceType;
 import org.fourthline.cling.registry.DefaultRegistryListener;
 import org.fourthline.cling.registry.Registry;
+import org.fourthline.cling.support.contentdirectory.callback.Browse;
+import org.fourthline.cling.support.model.BrowseFlag;
+import org.fourthline.cling.support.model.DIDLContent;
+import org.fourthline.cling.support.model.DIDLObject;
+import org.fourthline.cling.support.model.SortCriterion;
+import org.fourthline.cling.support.model.container.Container;
 import com.rockchips.mediacenter.bean.AllFileInfo;
+import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.bean.DeviceScanInfo;
 import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.bean.LocalDevice;
@@ -82,10 +92,6 @@ public class DeviceMonitorService extends Service {
 	 * 当前正在处理的消息
 	 */
 	private Map<String, Boolean> mCurrProcessMountMsgs = new HashMap<String, Boolean>();
-	/**
-	 * 当前设备的扫描状态
-	 */
-	private Map<String, Integer> mCurrProcessScanMsgs = new HashMap<String, Integer>();
 	/**
 	 * 固定大小线程池服务，用于执行文件扫描
 	 */
@@ -157,8 +163,35 @@ public class DeviceMonitorService extends Service {
 	/**
 	 * 设备扫描信息匹配表
 	 */
-	private volatile Map<String, DeviceScanInfo> mDeviceScanInfos = new HashMap<String, DeviceScanInfo>();
-	
+	private  Map<String, DeviceScanInfo> mDeviceScanInfos = Collections.synchronizedMap(new HashMap<String, DeviceScanInfo>());
+	/**
+	 * Upnp文件浏览消息处理器
+	 */
+	private UpnpFileBrowserHandler mUpnpFileBrowserHandler;
+	/**
+	 * 排序依据
+	 */
+	private SortCriterion[] mSortCriterions =  {new SortCriterion(true, "dc:title")};
+	/**
+	 * 当前文件浏览
+	 */
+	private FileBrowser mCurrFileBrowser;
+	/**
+	 * 当前目录
+	 */
+	private Container mCurrContainer;
+	/**
+	 * 上一次目录
+	 */
+	private Container mLastContainer;
+	/**
+	 * Upnp文件加载完成的回调接口
+	 */
+	private UpnpFileLoadCallback mUpnpFileLoadCallback;
+	/**
+	 * Upnp设备
+	 */
+	private Device mUpnpDevice;
 	@Override
 	public void onCreate() {
 		initData();
@@ -201,6 +234,7 @@ public class DeviceMonitorService extends Service {
 		mPreviewLoadReceiver = new PreviewLoadReceiver();
 		mNetWorkDeviceMountReceiver = new NetWorkDeviceMountReceiver();
 		mDeviceHandler = new MountDeviceHandler();
+		mUpnpFileBrowserHandler = new UpnpFileBrowserHandler();
 		mRegistryListener = new UpnpRegistryListener();
 		mBinder = new MonitorBinder();
 		mStorageManager = (StorageManager) getSystemService(Context.STORAGE_SERVICE);
@@ -215,7 +249,9 @@ public class DeviceMonitorService extends Service {
 			@Override
 			public void onServiceConnected(ComponentName name, IBinder service) {
 				mUpnpService = (AndroidUpnpService) service;
-				if(mUpnpSearchTask != null && mUpnpSearchTask.getStatus() == Status.RUNNING)
+				mUpnpService.getRegistry().addListener(mRegistryListener);
+				mUpnpService.getControlPoint().search();
+/*				if(mUpnpSearchTask != null && mUpnpSearchTask.getStatus() == Status.RUNNING)
 					mUpnpSearchTask.cancel(true);
 				mUpnpSearchTask = new AsyncTask<String, Integer, Integer>(){
 					protected  Integer doInBackground(String[] params) {
@@ -242,7 +278,7 @@ public class DeviceMonitorService extends Service {
 						mUpnpService.getControlPoint().search();
 					};
 				};
-				mUpnpSearchTask.execute();
+				mUpnpSearchTask.execute();*/
 				
 			}
 		};
@@ -458,7 +494,7 @@ public class DeviceMonitorService extends Service {
 	 * 绑定各种服务
 	 */
 	private void attachService() {
-		Intent upnpIntent = new Intent(this, AndroidUpnpServiceImpl.class);
+		Intent upnpIntent = new Intent(this, MediaUpnpService.class);
 		try{
 			// 绑定UPNP服务
 			bindService(upnpIntent, mUpnpConnection, Service.BIND_AUTO_CREATE);
@@ -514,6 +550,20 @@ public class DeviceMonitorService extends Service {
 	}
 	
 	/**
+	 * 加载Upnp文件
+	 * @param container
+	 * @param callback
+	 */
+	public void loadUpnpFile(Container container, Device device, UpnpFileLoadCallback callback){
+		mUpnpFileLoadCallback = callback;
+		mUpnpDevice = device;
+		Log.i(TAG, "loadUpnpFile->mRemoteDevices:" + mRemoteDevices);
+		Log.i(TAG, "loadUpnpFile->remoteDevice:" + mRemoteDevices.get(device.getLocalMountPath()));
+		//mCurrFileBrowser = new FileBrowser(mRemoteDevices.get(device.getLocalMountPath()).findService(new UDAServiceType("ContentDirectory")), mCurrContainer.getId(), BrowseFlag.DIRECT_CHILDREN, "*", 0, 100000L, mSortCriterions);
+		//mUpnpService.getControlPoint().execute(mCurrFileBrowser);
+	}
+	
+	/**
 	 * 设备挂载，卸载监听
 	 * 
 	 * @author GaoFei
@@ -549,20 +599,57 @@ public class DeviceMonitorService extends Service {
 		}
 	}
 
+	
+	/**
+	 * @author GaoFei
+	 * UPNP文件浏览
+	 */
+	
+	class FileBrowser extends Browse{
+		
+		public FileBrowser(org.fourthline.cling.model.meta.Service service, String objectID, BrowseFlag flag,String filter, long firstResult, Long maxResults, SortCriterion[] orderBy) {
+			super(service, objectID, flag, filter, firstResult, maxResults, orderBy);
+		}
+
+		@Override
+		public void received(ActionInvocation actionInvocation, DIDLContent didl) {
+			Log.i("FileBrowser", "FileBrowser->received");
+			Message receivedMessage = new Message();
+			receivedMessage.what = ConstData.UpnpFileBrowserState.RECEIVED_SUCCESS;
+			receivedMessage.obj = didl;
+			mUpnpFileBrowserHandler.sendMessage(receivedMessage);
+			//List<Container> containers = didl.getContainers();
+			//List<Item> items = didl.getItems();
+		}
+
+		@Override
+		public void updateStatus(Status status) {
+			Log.i("FileBrowser", "FileBrowser->updateStatus:" + status);
+		}
+		@Override
+		public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg) {
+			Log.i("FileBrowser", "FileBrowser->failure");
+			Message failedMessage = new Message();
+			failedMessage.what = ConstData.UpnpFileBrowserState.RECEIVED_FAILED;
+			mUpnpFileBrowserHandler.sendMessage(failedMessage);
+		}
+		
+	}
+	
 	/**
 	 * Upnp设备上下线监听器
 	 * 
 	 * @author GaoFei
 	 */
 	class UpnpRegistryListener extends DefaultRegistryListener {
-		LocalDeviceService localDeviceService = new LocalDeviceService();
+		//LocalDeviceService localDeviceService = new LocalDeviceService();
 
 		@Override
 		public void remoteDeviceAdded(Registry registry, RemoteDevice device) {
 			if(device.getType().getType().equals("MediaServer")){
-				deleteUpnpDatas(device);
+				//deleteUpnpDatas(device);
 				// 添加至数据库或更新数据库数据
-				LocalDevice upnpDevice = MediaFileUtils.getLocalDeviceFromRemoteDevice(device);
+/*				LocalDevice upnpDevice = MediaFileUtils.getLocalDeviceFromRemoteDevice(device);
 				String friendName = device.getDetails().getFriendlyName();
 				localDeviceService.saveOrUpdate(upnpDevice);
 				mRemoteDevices.put(upnpDevice.getMountPath(), device);
@@ -575,28 +662,65 @@ public class DeviceMonitorService extends Service {
 					mDeviceHandler.sendMessageDelayed(message, DELAY_MESSAGE_TIME);
 					//启动扫描器
 					mFileScanService.execute(new UpnpFileScanThread(device, DeviceMonitorService.this, mUpnpService));
-				}
-			
-				
+				}*/
+				Bundle mountBundle = new Bundle();
+				mountBundle.putBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK, false);
+				mountBundle.putString(ConstData.DeviceMountMsg.MOUNT_PATH, device.getIdentity().getDescriptorURL().toString());
+				mountBundle.putInt(ConstData.DeviceMountMsg.MOUNT_STATE, ConstData.DeviceMountState.DEVICE_UP);
+				mountBundle.putInt(ConstData.DeviceMountMsg.MOUNT_TYPE, ConstData.DeviceType.DEVICE_TYPE_DMS);
+				mountBundle.putString(ConstData.DeviceMountMsg.NETWORK_PATH, device.getIdentity().getDescriptorURL().toString());
+				mountBundle.putString(ConstData.DeviceMountMsg.DEVICE_NAME, device.getDetails().getFriendlyName());
+				mRemoteDevices.put(device.getIdentity().getDescriptorURL().toString(), device);
+				mDeviceMountService.execute(new DeviceMountThread(DeviceMonitorService.this, mountBundle));
 			}
 		}
 
 		@Override
 		public void remoteDeviceRemoved(Registry registry, RemoteDevice device) {
 			if(device.getType().getType().equals("MediaServer")){
-				deleteUpnpDatas(device);
+				Bundle downBundle = new Bundle();
+				downBundle.putBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK, false);
+				downBundle.putString(ConstData.DeviceMountMsg.MOUNT_PATH, device.getIdentity().getDescriptorURL().toString());
+				downBundle.putInt(ConstData.DeviceMountMsg.MOUNT_STATE, ConstData.DeviceMountState.DEVICE_DOWN);
+				downBundle.putInt(ConstData.DeviceMountMsg.MOUNT_TYPE, ConstData.DeviceType.DEVICE_TYPE_DMS);
+				downBundle.putString(ConstData.DeviceMountMsg.NETWORK_PATH, device.getIdentity().getDescriptorURL().toString());
+				downBundle.putString(ConstData.DeviceMountMsg.DEVICE_NAME, device.getDetails().getFriendlyName());
+				mRemoteDevices.remove(device.getIdentity().getDescriptorURL().toString());
+				//mRemoteDevices.remove(device.getIdentity().getDescriptorURL().toString(), device);
+				mDeviceMountService.execute(new DeviceMountThread(DeviceMonitorService.this, downBundle));
+				/*deleteUpnpDatas(device);
 				//移除远程设备
 				mRemoteDevices.remove(device.getIdentity().getDescriptorURL().toString());
 				Message message = new Message();
 				message.what = ConstData.DeviceMountState.DEVICE_DOWN;
 				message.arg1 = ConstData.DeviceType.DEVICE_TYPE_DMS;
 				message.obj = device.getIdentity().getDescriptorURL().toString();
-				mDeviceHandler.sendMessageDelayed(message, DELAY_MESSAGE_TIME);
+				mDeviceHandler.sendMessageDelayed(message, DELAY_MESSAGE_TIME);*/
 			}
 			
 		}
 	}
 	
+	/**
+	 * Upnp文件浏览处理
+	 * @author GaoFei
+	 *
+	 */
+	class UpnpFileBrowserHandler extends Handler{
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case ConstData.UpnpFileBrowserState.RECEIVED_FAILED:
+				break;
+
+			case ConstData.UpnpFileBrowserState.RECEIVED_SUCCESS:
+				DIDLContent content = (DIDLContent)msg.obj;
+				List<FileInfo> fileInfos = MediaFileUtils.getFileInfos(content, mUpnpDevice);
+				mUpnpFileLoadCallback.onSuccess(fileInfos);
+				break;
+			}
+		}
+	}
 	
 	/**
 	 * 设备上下线处理
@@ -665,7 +789,7 @@ public class DeviceMonitorService extends Service {
 				//刷新所有设备
 				refreshAllDevices();
 			}else if(action.equals(ConstData.BroadCastMsg.CHECK_NETWORK)){
-				mNetWorkCheckService.execute(new NetWorCheckThread(DeviceMonitorService.this));
+				mNetWorkCheckService.execute(new NetWorkCheckThread(DeviceMonitorService.this));
 				//检测网络
 				if(!NetWorkUtils.haveInternet(getApplicationContext())){
 					//刷新网络设备

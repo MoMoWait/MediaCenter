@@ -7,8 +7,12 @@ import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
 import momo.cn.edu.fjnu.androidutils.utils.StorageUtils;
 import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
 
+import org.fourthline.cling.support.model.SortCriterion;
+import org.fourthline.cling.support.model.container.Container;
 import org.xutils.x;
 import org.xutils.view.annotation.ViewInject;
+
+import com.rockchips.mediacenter.activity.AllUpnpFileListActivity.FileBrowser;
 import com.rockchips.mediacenter.adapter.AllFileListAdapter;
 import com.rockchips.mediacenter.adapter.FolderListAdapter;
 import com.rockchips.mediacenter.audioplayer.InternalAudioPlayer;
@@ -22,6 +26,7 @@ import com.rockchips.mediacenter.imageplayer.InternalImagePlayer;
 import com.rockchips.mediacenter.modle.task.AVBitmapLoadTask;
 import com.rockchips.mediacenter.modle.task.AllFileLoadTask;
 import com.rockchips.mediacenter.modle.task.FileOpTask;
+import com.rockchips.mediacenter.service.UpnpFileLoadCallback;
 import com.rockchips.mediacenter.utils.ActivityUtils;
 import com.rockchips.mediacenter.utils.DialogUtils;
 import com.rockchips.mediacenter.utils.MediaFileUtils;
@@ -139,6 +144,14 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	 * 当前加载的文件列表
 	 */
 	private List<FileInfo> mLoadFileInfos;
+	/**
+	 * Upnp文件加载器
+	 */
+	private UpnpFileLoad mUpnpFileLoad = new UpnpFileLoad();
+	/**
+	 * 当前Upnp文件目录
+	 */
+	private Container mCurrentContainer;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -148,6 +161,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
         x.view().inject(this);
         initDataAndView();
         initEvent();
+        attachServices();
     }
     
     
@@ -238,7 +252,12 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 		}*/
 	}
 	
-	
+	@Override
+	public void onServiceConnected() {
+		mCurrentContainer = createRootContainer();
+		Log.i(TAG, "onServiceConnected->mCurrDevice:" + mCurrDevice);
+		mDeviceMonitorService.loadUpnpFile(mCurrentContainer, mCurrDevice, mUpnpFileLoad);
+	}
 	
 	@Override
 	public void onCopy(FileInfo fileInfo) {
@@ -349,7 +368,13 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
     	mCurrMediaType = getIntent().getIntExtra(ConstData.IntentKey.EXTRAL_MEDIA_TYPE, -1);
     	//挂载目录作为当前目录
     	mCurrFolder = mCurrDevice.getLocalMountPath();
-    	loadFiles();
+    	if(mCurrDevice.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_DMS &&
+    			mCurrMediaType == ConstData.MediaType.FOLDER){
+    		//mCurrContainer = createRootContainer();
+    	}else{
+    		loadFiles();
+    	}
+    	
     }
 
     public void initEvent(){
@@ -791,6 +816,52 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	}
 	
 	
+    /**
+     * 创建UPNP根目录
+     * @return
+     */
+	private Container createRootContainer() {
+		Container rootContainer = new Container();
+		rootContainer.setId("0");
+		rootContainer.setTitle(mCurrDevice.getDeviceName());
+		return rootContainer;
+	}
+	
+	
+	class UpnpFileLoad implements UpnpFileLoadCallback{
+
+		@Override
+		public void onSuccess(List<FileInfo> fileInfos) {
+			mLoadFileInfos = fileInfos;
+		    endTimer();
+			DialogUtils.closeLoadingDialog();
+			if(isOverTimer())
+			    return;
+			mTextPathTitle.setText("222");
+			if(fileInfos != null && fileInfos.size() > 0){
+				mLayoutContentPage.setVisibility(View.VISIBLE);
+				mLayoutNoFiles.setVisibility(View.GONE);
+				mListFile.requestFocus();
+				mAllFileListAdapter = new AllFileListAdapter(AllFileListActivity.this, R.layout.adapter_file_list_item, fileInfos);
+				mListFile.setAdapter(mAllFileListAdapter);
+				if(!TextUtils.isEmpty(mLastSelectPath)){
+					int position = getFilePosition(mLastSelectPath, fileInfos);
+					mListFile.setSelection(position);
+				}
+			}else{
+				mLayoutContentPage.setVisibility(View.GONE);
+				mLayoutNoFiles.setVisibility(View.VISIBLE);
+			}
+		
+		}
+
+		@Override
+		public void onFailed() {
+			
+		}
+		
+	}
+	
 	/**
 	 * 
 	 * @author GaoFei
@@ -801,7 +872,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	    public void onReceive(Context context, Intent intent) {
 	    	//更新预览图
             FileInfo fileInfo = (FileInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_FILE_INFO);
-            if(fileInfo != null && fileInfo.getPath().equals(mCurrentFileInfo.getPath()))
+            if(mCurrentFileInfo != null && fileInfo != null && fileInfo.getPath().equals(mCurrentFileInfo.getPath()))
                 refreshPreview(fileInfo);
 	    }
 	}

@@ -40,6 +40,7 @@ import com.rockchips.mediacenter.service.DeviceMonitorService;
 import com.rockchips.mediacenter.utils.DialogUtils;
 import com.rockchips.mediacenter.utils.MountUtils;
 import com.rockchips.mediacenter.utils.DeviceTypeStr;
+import com.rockchips.mediacenter.utils.NetUtils;
 import com.rockchips.mediacenter.view.NFSAddDialog;
 import com.rockchips.mediacenter.view.NetDeviceAddSelectDialog;
 import com.rockchips.mediacenter.view.SambaAddDialog;
@@ -100,8 +101,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     /**
      * 本地设备(U盘，SD卡，移动硬盘)监听绑定器
      */
-    private ServiceConnection mDeviceMonitorConnection;
-    private DeviceMonitorService mDeviceMonitorService;
     
     @ViewInject(R.id.deviceList)
     private DevicesListView mDevicesListView;
@@ -119,7 +118,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
         initView();
         //初始化数据
         initData();
-        //绑定设备监听服务
         attachServices();
     }
     
@@ -131,49 +129,12 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     	LocalBroadcastManager.getInstance(MainActivity.this).sendBroadcast(intent);
     }
     
-    
-    private void mountSmbDevice(SmbInfo smbInfo){
-    	Intent smbMountIntent = new Intent(ConstData.BroadCastMsg.SAMBA_MOUNT);
-    	smbMountIntent.putExtra(ConstData.IntentKey.EXTRA_SAMBA_INFO, smbInfo);
-    	smbMountIntent.putExtra(ConstData.IntentKey.EXTRA_IS_ADD_NETWORK_DEVICE, false);
-		LocalBroadcastManager.getInstance(MainActivity.this).sendBroadcast(smbMountIntent);
-    }
-    
-    private void mountNFSDevice(NFSInfo nfsInfo){
-    	Intent nfsMountIntent = new Intent(ConstData.BroadCastMsg.NFS_MOUNT);
-		nfsMountIntent.putExtra(ConstData.IntentKey.EXTRA_NFS_INFO, nfsInfo);
-		nfsMountIntent.putExtra(ConstData.IntentKey.EXTRA_IS_ADD_NETWORK_DEVICE, false);
-		LocalBroadcastManager.getInstance(MainActivity.this).sendBroadcast(nfsMountIntent);
-    }
-    
-    /**
-     * 发送网络检测广播
-     */
-    private void checkNetWork(){
-    	Intent netWrokIntent = new Intent(ConstData.BroadCastMsg.CHECK_NETWORK);
-		LocalBroadcastManager.getInstance(MainActivity.this).sendBroadcast(netWrokIntent);
-    }
-    
 
     /**
      * 初始化数据,读取网络设备相关信息
      */
     private void initData(){
     	mDeviceUpDownReceiver = new DeviceUpDownReceiver();
-    	mDeviceMonitorConnection = new ServiceConnection() {
-			
-			@Override
-			public void onServiceDisconnected(ComponentName name) {
-				
-			}
-			
-			@Override
-			public void onServiceConnected(ComponentName name, IBinder service) {
-				LOG.i(TAG, "MainActivity->serviceConnection on ServiceConnected" );
-				DeviceMonitorService.MonitorBinder serviceBinder = (DeviceMonitorService.MonitorBinder)service;
-				mDeviceMonitorService = serviceBinder.getMonitorService();
-			}
-		};
 		//mNFSList = readNFSInfos();
     	//mSmbList = readSmbInfos();
     }
@@ -400,7 +361,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     @Override
     protected void onDestroy()
     {
-    	unBindServices();
         mDevicesListView.recycle();
         super.onDestroy();
     }
@@ -476,7 +436,12 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     }
     
     
-    /**
+    @Override
+	public void onServiceConnected() {
+		
+	}
+
+	/**
      * 加载所有挂载设备信息的列表
      */
     public void loadDeviceInfoList(boolean isAddNetWork){
@@ -525,11 +490,11 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
         for (int i = 0; i < mDevInfoList.size(); ++i)
         {
             Device info = mDevInfoList.get(i);
-            if(info.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_SMB ){
+            if(info.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_SMB && NetUtils.isConnectNetWork()){
             	String deviceID = info.getDeviceID();
             	name = DeviceTypeStr.getDevTypeStr(this, info.getDeviceType()) + info.getNetWorkPath() +
             			"(" + deviceID.substring(deviceID.length() - 8, deviceID.length()) + ")" ;
-            }else if(info.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_NFS){
+            }else if(info.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_NFS && NetUtils.isConnectNetWork()){
             	String deviceID = info.getDeviceID();
             	name = DeviceTypeStr.getDevTypeStr(this, info.getDeviceType()) + info.getNetWorkPath() +
             			"(" + deviceID.substring(deviceID.length() - 8, deviceID.length())  + ")" ;
@@ -548,38 +513,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
         }
     }
     
-    /**
-     * 刷新NFS设备,存储至SharedPreference
-     */
-    private void refreshNFSDevice(){
-    	//mNFSList = readNFSInfos();
-    	if(mNFSList != null && mNFSList.size() > 0){
-    		//此时数据重新写入SharedPreference
-    		StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.NFS_INFOS, JsonUtils.listToJsonArray(mNFSList).toString());
-    	}else{
-    		StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.NFS_INFOS, "");
-    	}
-    	
-    }
-    
-    /**
-     * 刷新SMB设备,存储至SharedPreference
-     * @return
-     */
-    private void refreshSmbDevice(){
-    	//mSmbList = readSmbInfos();
-    	if(mSmbList != null && mSmbList.size() > 0){
-    		//此时数据重新写入SharedPreference
-    		StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.SMB_INFOS, JsonUtils.listToJsonArray(mSmbList).toString());
-    	}else{
-    		StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.SMB_INFOS, "");
-    	}
-    	
-    }
-    
-
-    private static final int HANDLER_DELAY_TIME = 200;
-    
     
     /**
      * 注册设备上下线监听器
@@ -595,25 +528,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
      */
     public void unRegisterDeviceUpDownListener(){
     	LocalBroadcastManager.getInstance(this).unregisterReceiver(mDeviceUpDownReceiver);
-    }
-    
-    /**
-     * 绑定各种服务
-     */
-    public void attachServices(){
-    	Intent intent = new Intent(this, DeviceMonitorService.class);
-    	//绑定设备监听服务
-    	bindService(intent, mDeviceMonitorConnection, Service.BIND_AUTO_CREATE);
-    }
-    
-    /**
-     * 解除服务绑定
-     * @author GaoFei
-     *
-     */
-    
-    public void unBindServices(){
-    	unbindService(mDeviceMonitorConnection);
     }
     
     class DeviceUpDownReceiver extends BroadcastReceiver{

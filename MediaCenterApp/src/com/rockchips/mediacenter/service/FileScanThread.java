@@ -81,7 +81,7 @@ public class FileScanThread extends Thread{
 			}
 			//存在视频播放，并且设备已经上线
 			boolean haveVideoPlay = MediaUtils.hasMediaClient();
-			Log.i(TAG, "FileScanThread->haveVideoPlay:" + haveVideoPlay);
+			//Log.i(TAG, "FileScanThread->haveVideoPlay:" + haveVideoPlay);
 			try {
 				//存在视频播放，并且设备已经挂载
 				while (haveVideoPlay && mountState == ConstData.DeviceMountState.DEVICE_UP) {
@@ -112,7 +112,7 @@ public class FileScanThread extends Thread{
 				loadScanDirectoriesFromDB();
 			}
 			File dirFile = new File(mScanDirectories.remove().getPath());
-			Log.i(TAG, "ScanDirectory->dirFile:" + dirFile);
+			//Log.i(TAG, "ScanDirectory->dirFile:" + dirFile);
 			int musicCount = 0;
 			int imageCount = 0;
 			int videoCount = 0;

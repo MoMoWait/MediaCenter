@@ -709,5 +709,11 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
 	        
 	    }
 	}
+
+	@Override
+	public void onServiceConnected() {
+		// TODO Auto-generated method stub
+		
+	}
 }
 

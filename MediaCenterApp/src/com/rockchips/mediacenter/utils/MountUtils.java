@@ -64,7 +64,7 @@ public class MountUtils {
 			mountDirPath.mkdirs();
 		}
 		//尝试卸载NFS设备
-		umountNFS(nfsInfo);
+		//umountNFS(nfsInfo);
 		writeCommandToShellFile("busybox mount -t nfs -o nolock " + nfsInfo.getNetWorkPath() + " " + nfsInfo.getLocalMountPath());
 		for(int i = 0; i < MAX_MOOUNT_COUNT; ++i){
 			SystemProperties.set("ctl.start", "cifsmanager");
@@ -107,7 +107,7 @@ public class MountUtils {
 			mountDirPath.mkdirs();
 		}
 		//尝试卸载Samba设备
-		umountSamba(smbInfo);
+		//umountSamba(smbInfo);
 		if(smbInfo.isUnknowName())
 			writeCommandToShellFile("busybox mount -t cifs -o iocharset=utf8,username=guest,uid=1000,gid=1015,file_mode=0775,dir_mode=0775,rw " + smbInfo.getNetWorkPath() + " " + smbInfo.getLocalMountPath());
 		else
@@ -135,7 +135,7 @@ public class MountUtils {
 	 * 卸载NFS设备
 	 */
 	public static void umountNFS(NFSInfo nfsInfo){
-		writeCommandToShellFile("busybox umount -fl " + nfsInfo.getLocalMountPath());
+		writeCommandToShellFile("busybox umount " + nfsInfo.getLocalMountPath());
 		SystemProperties.set("ctl.start", "cifsmanager");
 		try{
 			Thread.sleep(2000);
@@ -155,17 +155,22 @@ public class MountUtils {
 	 * @param result
 	 */
 	public static void umountSamba(SmbInfo smbInfo){
-		writeCommandToShellFile("busybox umount -fl " + smbInfo.getLocalMountPath());
+		Log.i(TAG, "umountSamba->smbInfo:" + smbInfo);
+		writeCommandToShellFile("busybox umount " + smbInfo.getLocalMountPath());
 		SystemProperties.set("ctl.start", "cifsmanager");
-		try{
-			Thread.sleep(2000);
-		}catch(Exception ex){
-			Log.e(TAG, "umountNFS: " + ex);
-		}
-		if(isUMountSuccess(smbInfo.getLocalMountPath())){
-			mUnMountResult = ConstData.UMOUNT_RESULT.UMOUNT_SUCC;
-			return;
-		}
+		/*for(int i = 0; i < MAX_MOOUNT_COUNT; ++i){
+			try{
+				Thread.sleep(30000);
+			}catch(Exception ex){
+				Log.e(TAG, "umountSamba: " + ex);
+			}
+			
+			if(isUMountSuccess(smbInfo.getLocalMountPath())){
+				Log.i(TAG, "unMountSuccess->mountPath:" + smbInfo.getLocalMountPath());
+				mUnMountResult = ConstData.UMOUNT_RESULT.UMOUNT_SUCC;
+				return;
+			}
+		}*/
 		mUnMountResult = ConstData.UMOUNT_RESULT.UMOUNT_FAIL;
 	}
 	
@@ -244,7 +249,6 @@ public class MountUtils {
 	 */
 	public static boolean isUMountSuccess(String mountDir){
 		List<String> lines = ShellUtils.getDfMsgs();
-		//Log.i(TAG, "isMountSuccess->lines:" + lines);
 		File dirFile = new File(mountDir);
 		String[] fileNames = dirFile.list();
 		for(String line : lines){

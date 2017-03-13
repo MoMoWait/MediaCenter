@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
+import momo.cn.edu.fjnu.androidutils.data.CommonValues;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -24,10 +24,11 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
-
+import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
-
 /**
  * 
  * NetUtils
@@ -39,6 +40,17 @@ import android.util.Log;
  */
 public class NetUtils
 {
+	
+	/**
+	 * 是否已经连接网络
+	 * @return
+	 */
+	public static boolean isConnectNetWork(){
+		ConnectivityManager cm = (ConnectivityManager)CommonValues.application.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+		boolean isConnected = activeNetwork != null && activeNetwork.isConnected();
+		return isConnected;
+	}
     public static InputStream getInputStreamFromNet(String url)
     {
         InputStream inputStream = null;

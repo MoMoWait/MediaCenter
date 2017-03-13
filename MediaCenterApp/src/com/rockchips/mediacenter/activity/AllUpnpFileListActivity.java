@@ -914,5 +914,10 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
 			}
 		}
 	}
+	@Override
+	public void onServiceConnected() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
