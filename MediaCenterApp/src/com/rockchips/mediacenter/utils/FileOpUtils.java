@@ -36,7 +36,7 @@ public class FileOpUtils {
 	 * @param targetFile
 	 * @return
 	 */
-	public static boolean deleteFile(FileInfo targetFileInfo){
+	public static int deleteFile(FileInfo targetFileInfo){
 		File targetFile = new File(targetFileInfo.getPath());
 		//目录文件列表
 		LinkedList<File> dirFiles = new LinkedList<File>();
@@ -53,6 +53,8 @@ public class FileOpUtils {
 		//删除文件
 		while(!dirFiles.isEmpty()){
 			File lastDirFile = dirFiles.removeFirst();
+			if(!lastDirFile.canWrite())
+				lastDirFile.setWritable(true);
 			File[] childFiles = lastDirFile.listFiles();
 			//空目录可以直接删除
 			if(childFiles == null || childFiles.length == 0)
@@ -63,6 +65,8 @@ public class FileOpUtils {
 				for(File childFile : childFiles){
 					if(childFile.isFile()){
 						++fileCount;
+						if(!childFile.canWrite())
+							childFile.setWritable(true);
 						childFile.delete();
 						delFilePaths.add(childFile.getPath());
 					}else{
@@ -87,7 +91,12 @@ public class FileOpUtils {
 		//更新本地数据库
 		FileInfoService fileInfoService = new FileInfoService();
 		fileInfoService.deleteFileInfos(targetFileInfo.getDeviceID(), targetFileInfo.getPath());
-		return true;
+		targetFile = new File(targetFileInfo.getPath());
+		//不存在，表示文件已经成功删除
+		if(!targetFile.exists())
+			return ConstData.FileOpErrorCode.NO_ERR;
+		return ConstData.FileOpErrorCode.DELETE_PART_FILE_ERR;
+		
 	}
 	
 	/**
@@ -147,6 +156,12 @@ public class FileOpUtils {
 	 */
 	public static void copyRealFile(File srcFile, File targetFile, ProgressUpdateListener updateListener, long totalSize, long currentProgressSize){
 		try{
+			boolean isCreateSuccess = targetFile.createNewFile();
+			Log.i(TAG, "copyRealFile->isCreateSuccess:" + isCreateSuccess);
+			if(isCreateSuccess && !targetFile.canWrite()){
+				boolean isWriteable = targetFile.setWritable(true);
+				Log.i(TAG, "copyRealFile->isWriteable:" + isWriteable);
+			}
 			long curretnSize = currentProgressSize;
 			BufferedInputStream srcInputStream = new BufferedInputStream(new FileInputStream(srcFile));
 			BufferedOutputStream targetOutputStream = new BufferedOutputStream(new FileOutputStream(targetFile));
@@ -219,4 +234,6 @@ public class FileOpUtils {
 		}
 		return paths;
 	}
+	
+	
 }

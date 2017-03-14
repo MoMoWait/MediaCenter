@@ -3,6 +3,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import momo.cn.edu.fjnu.androidutils.utils.BitmapUtils;
+import momo.cn.edu.fjnu.androidutils.utils.JsonUtils;
 import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
 import momo.cn.edu.fjnu.androidutils.utils.StorageUtils;
 import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
@@ -56,7 +57,6 @@ import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
-
 import com.rockchips.mediacenter.view.FileDeleteTipDialog;
 import com.rockchips.mediacenter.view.FileOpDialog;
 import com.rockchips.mediacenter.view.FileRenameDialog;
@@ -157,11 +157,6 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_file_list);
-        x.view().inject(this);
-        initDataAndView();
-        initEvent();
-        attachServices();
     }
     
     
@@ -217,6 +212,10 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 				}
 				return true;
 			}
+		}else if(keyCode == KeyEvent.KEYCODE_MENU){
+			//唤醒文件操作对话框
+			new FileOpDialog(this, mCurrentFileInfo, this).show();
+			return true;
 		}
 		return super.onKeyDown(keyCode, event);
 	}
@@ -254,15 +253,33 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	
 	@Override
 	public void onServiceConnected() {
-		mCurrentContainer = createRootContainer();
-		Log.i(TAG, "onServiceConnected->mCurrDevice:" + mCurrDevice);
-		mDeviceMonitorService.loadUpnpFile(mCurrentContainer, mCurrDevice, mUpnpFileLoad);
+		if(mCurrDevice.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_DMS && 
+				mCurrMediaType == ConstData.MediaType.FOLDER){
+			mCurrentContainer = createRootContainer();
+			Log.i(TAG, "onServiceConnect ed->mCurrDevice:" + mCurrDevice);
+			//暂时屏蔽
+			//mDeviceMonitorService.loadUpnpFile(mCurrentContainer, mCurrDevice, mUpnpFileLoad);
+		}
+	
+	}
+	
+	@Override
+	public int getLayoutRes() {
+		return R.layout.activity_file_list;
+	}
+	
+	
+	
+	@Override
+	public void init() {
+		initDataAndView();
+		initEvent();
 	}
 	
 	@Override
 	public void onCopy(FileInfo fileInfo) {
 		//拷贝文件,存储当前待拷贝文件
-		StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.COPY_FILE_PATH, fileInfo.getPath());
+		StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.COPY_FILE_PATH, JsonUtils.objectToJson(fileInfo).toString());
 		//接切信息设为空
 		StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.MOVE_FILE_PATH, "");
 	}
@@ -280,6 +297,9 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 						if(errorCode == ConstData.FileOpErrorCode.WRITE_ERR){
 							//没有写权限
 							ToastUtils.showToast(getString(R.string.no_delete_permission));
+						}else if(errorCode == ConstData.FileOpErrorCode.DELETE_PART_FILE_ERR){
+							//部分文件无法删除
+							ToastUtils.showToast(getString(R.string.delete_part_file_error));
 						}else{
 							loadFiles();
 						}
@@ -308,7 +328,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 
 	@Override
 	public void onMove(FileInfo fileInfo) {
-		StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.MOVE_FILE_PATH, fileInfo.getPath());
+		StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.MOVE_FILE_PATH, JsonUtils.objectToJson(fileInfo).toString());
 		StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.COPY_FILE_PATH,"");
 	}
 
@@ -316,7 +336,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	@Override
 	public void onPaste(FileInfo fileInfo) {
 		final OprationProgressDialog opProgressDialog = new OprationProgressDialog(this);
-		opProgressDialog.setCancelable(true);
+		opProgressDialog.setCancelable(false);
 		opProgressDialog.show();
 		//黏贴文件
 		mFileOpTask = new FileOpTask(new FileOpTask.CallBack() {
@@ -325,7 +345,14 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 			public void onFinish(int errorCode) {
 				if(opProgressDialog != null && opProgressDialog.isShowing())
 					opProgressDialog.dismiss();
-				loadFiles();
+				if(errorCode == ConstData.FileOpErrorCode.WRITE_ERR)
+					ToastUtils.showToast(getString(R.string.no_write_permission));
+				else if(errorCode == ConstData.FileOpErrorCode.PASTE_ERR)
+					ToastUtils.showToast(getString(R.string.paste_error));
+				else if(errorCode == ConstData.FileOpErrorCode.PASTE_SAME_FILE)
+					ToastUtils.showToast(getString(R.string.exist_same_file));
+				else
+					loadFiles();
 			}
 			
 			@Override
@@ -335,7 +362,6 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 			}
 		});
 		mFileOpTask.setOpMode(ConstData.FileOpMode.PASTE);
-		//DialogUtils.showLoadingDialog(this, false);
 		mFileOpTask.execute(fileInfo);
 	}
 

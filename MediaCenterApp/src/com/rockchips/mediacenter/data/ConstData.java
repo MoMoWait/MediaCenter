@@ -1436,6 +1436,12 @@ public class ConstData {
 		int DELETE_ERR = 4;
 		/**重命名错误*/
 		int RENAME_ERR = 5;
+		/**黏贴失败*/
+		int PASTE_ERR = 6;
+		/**黏贴时存在相同文件*/
+		int PASTE_SAME_FILE = 7;
+		/**部分文件无法删除*/
+		int DELETE_PART_FILE_ERR = 8;
 	}
 	
 	/**

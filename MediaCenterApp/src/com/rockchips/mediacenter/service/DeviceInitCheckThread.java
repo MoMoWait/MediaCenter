@@ -3,7 +3,10 @@ package com.rockchips.mediacenter.service;
 import java.util.List;
 import android.os.Bundle;
 import android.util.Log;
+
+import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.data.ConstData;
+import com.rockchips.mediacenter.modle.db.DeviceService;
 import com.rockchips.mediacenter.utils.StorageUtils;
 
 /**
@@ -23,6 +26,9 @@ public class DeviceInitCheckThread extends Thread{
 	@Override
 	public void run() {
 		Log.i(TAG, "DeviceInitCheckThread->startTime:" + System.currentTimeMillis());
+		DeviceService deviceService = new DeviceService();
+		List<Device> allDevices = deviceService.getAll(Device.class);
+		deviceService.deleteAll(allDevices);
 		//内部存储路径
 		String internelStoragePath = StorageUtils.getFlashStoragePath();
 		List<String> allUsbPaths = StorageUtils.getUSBPaths(mService);

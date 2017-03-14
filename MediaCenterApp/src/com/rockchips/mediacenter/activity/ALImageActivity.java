@@ -75,10 +75,6 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		 setContentView(R.layout.local_image_browser);
-		 x.view().inject(this);
-		 initDataAndView();
-		 initEvent();
 	}
 	
 	@Override
@@ -298,8 +294,18 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 
 	@Override
 	public void onServiceConnected() {
-		// TODO Auto-generated method stub
 		
 	}
     
+	
+	@Override
+	public int getLayoutRes() {
+		return R.layout.local_image_browser;
+	}
+	
+	@Override
+	public void init() {
+		initDataAndView();
+		initEvent();
+	}
 }

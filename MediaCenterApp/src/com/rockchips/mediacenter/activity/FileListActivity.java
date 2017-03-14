@@ -712,7 +712,16 @@ public class FileListActivity extends AppBaseActivity implements OnItemSelectedL
 
 	@Override
 	public void onServiceConnected() {
-		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public int getLayoutRes() {
+		return 0;
+	}
+	
+	@Override
+	public void init() {
 		
 	}
 }

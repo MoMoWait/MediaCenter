@@ -31,6 +31,7 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.rockchips.mediacenter.bean.LocalDeviceInfo;
+import com.rockchips.mediacenter.utils.IICLOG;
 import com.rockchips.mediacenter.utils.StringUtils;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.activity.DeviceActivity;
@@ -50,7 +51,7 @@ import com.rockchips.mediacenter.view.BottomPopMenu.VolumeKeyListener;
 public abstract class PlayerBaseActivity extends DeviceActivity
 {
     private static final String TAG = "PlayerBaseActivity";
-    
+    private IICLOG Log = IICLOG.getInstance();
     /*
      * 标示播放的是否为来自Media Center Service的数据
      */
@@ -139,7 +140,6 @@ public abstract class PlayerBaseActivity extends DeviceActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         Log.d(TAG, "onCreate - IN");
-        super.onCreate(savedInstanceState);
         //获取国家代码 modify zwx143228
         String able= getResources().getConfiguration().locale.getCountry();
         Log.d(TAG, "locale.getCountry() = " + able);
@@ -152,7 +152,7 @@ public abstract class PlayerBaseActivity extends DeviceActivity
             mbAR = false;
         }
         // 加载资源
-        loadResource();
+        //loadResource();
         
         // 初始化音量管理器
         if (audioManager == null)
@@ -181,6 +181,7 @@ public abstract class PlayerBaseActivity extends DeviceActivity
         {
             dobind();
         }
+        super.onCreate(savedInstanceState);
     }
     
     @Override

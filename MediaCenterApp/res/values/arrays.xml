@@ -31,8 +31,20 @@
         <item>@string/file_op_copy</item>
         <item>@string/file_op_delete</item>
         <item>@string/file_op_move</item>
+        <item>@string/file_op_rename</item>
         <item>@string/file_op_paste</item>
+    </string-array>
+    
+    <!-- 文件操作，不包含paste -->
+    <string-array name="file_oprations_no_paste">
+        <item>@string/file_op_copy</item>
+        <item>@string/file_op_delete</item>
+        <item>@string/file_op_move</item>
         <item>@string/file_op_rename</item>
     </string-array>
     
+    <!-- 文件操作，只有paste -->
+    <string-array name="file_oprations_only_paste">
+        <item>@string/file_op_paste</item>
+    </string-array>
 </resources>

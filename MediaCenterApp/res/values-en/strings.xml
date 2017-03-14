@@ -378,4 +378,7 @@
     <string name="no_delete_permission">No delete permission</string>
     <string name="no_write_permission">No write permission</string>
     <string name="confirm_delete">Confirm delete?</string>
+    <string name="paste_error">Paste error</string>
+    <string name="exist_same_file">Exist same file(folder)</string>
+    <string name="delete_part_file_error">Can not delete some files</string>
 </resources>

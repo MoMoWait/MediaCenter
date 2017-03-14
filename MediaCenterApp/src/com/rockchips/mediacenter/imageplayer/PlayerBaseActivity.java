@@ -136,26 +136,8 @@ public abstract class PlayerBaseActivity extends DeviceActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         Log.d(TAG, "onCreate - IN");
-        super.onCreate(savedInstanceState);
         mPlayStateInfo = new PlayStateInfo();        
         Log.d(TAG, "mPlayStateInfo = c"+mPlayStateInfo);
-        
-        //全屏
-   /*     if (Integer.parseInt(Build.VERSION.SDK) < 14)
-        {
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            requestWindowFeature(Window.FEATURE_NO_TITLE);
-        }
-        else
-        {
-            requestWindowFeature(Window.FEATURE_NO_TITLE);
-            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
-            getWindow().getDecorView().setSystemUiVisibility(View.INVISIBLE);
-        }*/
-        
-        // 加载资源
-        loadResource();
-        
         // 初始化音量管理器
         if (audioManager == null)
         {
@@ -190,6 +172,22 @@ public abstract class PlayerBaseActivity extends DeviceActivity
         {
             dobind();
         }
+        super.onCreate(savedInstanceState);
+        //全屏
+   /*     if (Integer.parseInt(Build.VERSION.SDK) < 14)
+        {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            requestWindowFeature(Window.FEATURE_NO_TITLE);
+        }
+        else
+        {
+            requestWindowFeature(Window.FEATURE_NO_TITLE);
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+            getWindow().getDecorView().setSystemUiVisibility(View.INVISIBLE);
+        }*/
+        
+        // 加载资源
+        //loadResource();
     }
     
     @Override

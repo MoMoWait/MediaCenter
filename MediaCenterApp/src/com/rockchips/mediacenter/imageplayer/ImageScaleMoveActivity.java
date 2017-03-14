@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import com.rockchips.mediacenter.R;
 import com.rockchips.mediacenter.utils.BitmapUtil;
+import com.rockchips.mediacenter.utils.IICLOG;
 import com.rockchips.mediacenter.utils.StringUtils;
 import com.rockchips.mediacenter.service.MultiThreadDownloader;
 import com.rockchips.mediacenter.activity.DeviceActivity;
@@ -46,7 +47,7 @@ import com.rockchips.mediacenter.activity.DeviceActivity;
 public class ImageScaleMoveActivity extends DeviceActivity
 {
     private static final String TAG = "MediaCenterApp";
-
+    private IICLOG Log = IICLOG.getInstance();
     private enum ENUM_MODE
     {
         SCALE, MOVE
@@ -99,30 +100,6 @@ public class ImageScaleMoveActivity extends DeviceActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_image_scale_move);
-        mIvDisplay = (ImageView) findViewById(R.id.iv_ivscalemove_image);
-        mTvHintOk = (TextView) findViewById(R.id.tv_hint_ok_text);
-        mTvHintBack = (TextView) findViewById(R.id.tv_hint_back_text);
-
-        mVgScaleZoomArea = (ViewGroup) findViewById(R.id.rl_scale_zoom_area);
-        mIvZoomOut = (ImageView) findViewById(R.id.iv_scale_mode_zoom_out);
-        mIvZoomIn = (ImageView) findViewById(R.id.iv_scale_mode_zoom_in);
-        mIvZoomIndictor = (ImageView) findViewById(R.id.iv_scale_mode_zoom_indictor);
-        mIvZoomBar = (ImageView) findViewById(R.id.iv_scale_mode_zoom_bar);
-        mIvMoveUpIndictor = (ImageView) findViewById(R.id.iv_move_mode_up_indictor);
-        mIvMoveDownIndictor = (ImageView) findViewById(R.id.iv_move_mode_down_indictor);
-        mIvMoveLeftIndictor = (ImageView) findViewById(R.id.iv_move_mode_left_indictor);
-        mIvMoveRightIndictor = (ImageView) findViewById(R.id.iv_move_mode_right_indictor);
-        mVgThumbnailDispArea = (ViewGroup) findViewById(R.id.rl_move_mode_thumbnail_area);
-        mIvThumbnailDisp = (ImageView) findViewById(R.id.iv_move_mode_thumbnail_disp);
-
-        updateUIWhenModeChanged(mMode);
-
-        mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-        mWindowDisplayMetrics = new DisplayMetrics();
-        mWindowManager.getDefaultDisplay().getMetrics(mWindowDisplayMetrics);
-        initMoveStep();
-        loadBitmapAsBigAsPossibleInBackground();
     }
 
     @Override
@@ -865,5 +842,39 @@ public class ImageScaleMoveActivity extends DeviceActivity
         mIvThumbnailDisp.setImageBitmap(mBmpDisplay);
     }
     /* =========结束移动示意缩略图相关代码======== */
+
+	@Override
+	public void onServiceConnected() {
+		
+	}
+
+	@Override
+	public int getLayoutRes() {
+		return R.layout.layout_image_scale_move;
+	}
+
+	@Override
+	public void init() {
+		mIvDisplay = (ImageView) findViewById(R.id.iv_ivscalemove_image);
+		mTvHintOk = (TextView) findViewById(R.id.tv_hint_ok_text);
+		mTvHintBack = (TextView) findViewById(R.id.tv_hint_back_text);
+		mVgScaleZoomArea = (ViewGroup) findViewById(R.id.rl_scale_zoom_area);
+		mIvZoomOut = (ImageView) findViewById(R.id.iv_scale_mode_zoom_out);
+		mIvZoomIn = (ImageView) findViewById(R.id.iv_scale_mode_zoom_in);
+		mIvZoomIndictor = (ImageView) findViewById(R.id.iv_scale_mode_zoom_indictor);
+		mIvZoomBar = (ImageView) findViewById(R.id.iv_scale_mode_zoom_bar);
+		mIvMoveUpIndictor = (ImageView) findViewById(R.id.iv_move_mode_up_indictor);
+		mIvMoveDownIndictor = (ImageView) findViewById(R.id.iv_move_mode_down_indictor);
+		mIvMoveLeftIndictor = (ImageView) findViewById(R.id.iv_move_mode_left_indictor);
+		mIvMoveRightIndictor = (ImageView) findViewById(R.id.iv_move_mode_right_indictor);
+		mVgThumbnailDispArea = (ViewGroup) findViewById(R.id.rl_move_mode_thumbnail_area);
+		mIvThumbnailDisp = (ImageView) findViewById(R.id.iv_move_mode_thumbnail_disp);
+		updateUIWhenModeChanged(mMode);
+		mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+		mWindowDisplayMetrics = new DisplayMetrics();
+		mWindowManager.getDefaultDisplay().getMetrics(mWindowDisplayMetrics);
+		initMoveStep();
+		loadBitmapAsBigAsPossibleInBackground();
+	}
 }
 /* END: Modified by r00178559 for DTS2014022410217 2014/02/25 */

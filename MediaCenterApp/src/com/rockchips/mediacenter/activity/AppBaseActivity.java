@@ -1,6 +1,9 @@
 package com.rockchips.mediacenter.activity;
 
 import java.util.List;
+
+import org.xutils.x;
+
 import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
 import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.data.ConstData;
@@ -57,6 +60,10 @@ public abstract class AppBaseActivity extends Activity{
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		initBaseEvent();
+		setContentView(getLayoutRes());
+		x.view().inject(this);
+		init();
+		attachServices();
 	}
 	
 	
@@ -80,7 +87,6 @@ public abstract class AppBaseActivity extends Activity{
 				AppBaseActivity.this.onServiceConnected();
 			}
 		};
-		//attachServices();
 	}
 	
 	@Override
@@ -166,7 +172,15 @@ public abstract class AppBaseActivity extends Activity{
      * 服务连接回调
      */
     public abstract void onServiceConnected();
-    
+    /**
+     * 
+     * 获取布局资源
+     */
+    public abstract int getLayoutRes();
+    /**
+     * 初始化相关
+     */
+    public abstract void init();
 	/**
 	 * 启动定时器
 	 * @param time 处罚时间

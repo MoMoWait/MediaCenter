@@ -916,8 +916,16 @@ public class AllUpnpFileListActivity extends AppBaseActivity implements OnItemSe
 	}
 	@Override
 	public void onServiceConnected() {
-		// TODO Auto-generated method stub
 		
 	}
 	
+	@Override
+	public int getLayoutRes() {
+		return 0;
+	}
+	
+	@Override
+	public void init() {
+		
+	}
 }

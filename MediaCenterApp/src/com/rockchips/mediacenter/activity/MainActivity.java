@@ -1,9 +1,7 @@
 package com.rockchips.mediacenter.activity;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.json.JSONArray;
 import org.xutils.x;
 import org.xutils.view.annotation.ViewInject;
@@ -21,7 +19,6 @@ import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.Message;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -31,11 +28,9 @@ import com.rockchips.mediacenter.R;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.utils.IICLOG;
 import com.rockchips.mediacenter.bean.Device;
-import com.rockchips.mediacenter.bean.LocalDevice;
 import com.rockchips.mediacenter.bean.NFSInfo;
 import com.rockchips.mediacenter.bean.SmbInfo;
 import com.rockchips.mediacenter.modle.db.DeviceService;
-import com.rockchips.mediacenter.modle.db.LocalDeviceService;
 import com.rockchips.mediacenter.service.DeviceMonitorService;
 import com.rockchips.mediacenter.utils.DialogUtils;
 import com.rockchips.mediacenter.utils.MountUtils;
@@ -113,12 +108,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        x.view().inject(this);
-        initView();
-        //初始化数据
-        initData();
-        attachServices();
     }
     
     /**
@@ -441,6 +430,19 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
 		
 	}
 
+    @Override
+    public int getLayoutRes() {
+    	return R.layout.activity_main;
+    }
+
+    @Override
+    public void init() {
+    	initView();
+    	//初始化数据
+    	initData();
+    }
+
+    
 	/**
      * 加载所有挂载设备信息的列表
      */

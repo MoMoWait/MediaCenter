@@ -28,6 +28,7 @@ import android.os.Process;
 
 import com.rockchips.mediacenter.bean.LocalMediaInfo;
 import com.rockchips.mediacenter.data.ConstData;
+import com.rockchips.mediacenter.utils.IICLOG;
 import com.rockchips.mediacenter.utils.StringUtils;
 import com.rockchips.mediacenter.service.IMediaPlayerAdapter;
 import com.rockchips.mediacenter.activity.DeviceActivity;
@@ -46,7 +47,7 @@ import com.rockchips.mediacenter.playerclient.MediaCenterPlayerClient;
 public abstract class PlayerBaseActivity extends DeviceActivity
 {
     private static final String TAG = "AudioPlayer_Base";
-
+    private IICLOG Log = IICLOG.getInstance();
     /*
      * 标示播放的是否为来自Media Center Service的数据
      */

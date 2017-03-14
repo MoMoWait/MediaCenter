@@ -301,57 +301,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     {
         Log.d(TAG, "VideoPlayerActivity --> onCreate()--");
         super.onCreate(savedInstanceState);
-        Log.i(TAG, "onCreate->screenWidth:" + SCREEN_WIDTH);
-        Log.i(TAG, "onCreate->screenHeight:" + SCREEN_HEIGHT);
-        
-        Resources resources = getResources();
-        int navigationBarHeight = 0;
-        int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            navigationBarHeight = resources.getDimensionPixelSize(resourceId);
-            Log.i(TAG, "onCreate->navigationBarHeight:" + navigationBarHeight);
-        }
-        SCREEN_HEIGHT = DeviceInfoUtils.getScreenHeight(CommonValues.application) + navigationBarHeight;
-        mCurrentDevice = (Device)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
-        if(mExtraVideoUri != null){
-        	mCurrentDevice = new Device();
-        	mCurrentDevice.setDeviceType(ConstData.DeviceType.DEVICE_TYPE_OTHER);
-        }
-        	
-        initVideoPlayPreferences();
-        initViews();
-        // 初始化杜比的弹出视窗
-        doblyPopWin = new DoblyPopWin(this);
-
-        timer = new Timer(true);
-
-        /* BEGIN: Added by r00178559 for AR-0000698413 2014/02/13 */
-        loadChannelModeResources();
-        /* END: Added by r00178559 for AR-0000698413 2014/02/13 */
-
-        if (isSenderMyMedia())
-        {
-        	//保存在内存当中，PlayMode
-            setPlayMode(mPreferences.getInt(CYCLE_PLAY_MODE, DEFAULT_CYCLE_PLAY_MODE_INDEX));
-        }
-        else
-        {
-            // 不是myMedia过来的请求,默认全体循环
-            setPlayMode(ConstData.MediaPlayMode.MP_MODE_ALL_CYC);
-        }
-        if (mSeekHandlerThread == null)
-        {
-            mSeekHandlerThread = new HandlerThread(SEEK_THREAD_TAG);
-            mSeekHandlerThread.start();
-        }
-
-        if (mSeekHandler == null)
-        {
-            mSeekHandler = new SeekHandler(mSeekHandlerThread.getLooper());
-        }
-
-        bIsPausedByUser = false;
-
         //initExtSubTitleInBackground();
     }
 
@@ -2878,10 +2827,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     }
 
     @Override
-    protected void loadResource()
-    {
-        setContentView(R.layout.video_video_fullscreen);
-        x.view().inject(this);
+    protected void loadResource(){
+    	
     }
 
     @Override
@@ -4639,6 +4586,61 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     		return mVVAdapter.getDuration();
     	return -1;
     }
-    
+
+	@Override
+	public void onServiceConnected() {
+		
+	}
+
+	@Override
+	public int getLayoutRes() {
+		return R.layout.video_video_fullscreen;
+	}
+
+	@Override
+	public void init() {
+		Log.i(TAG, "onCreate->screenWidth:" + SCREEN_WIDTH);
+		Log.i(TAG, "onCreate->screenHeight:" + SCREEN_HEIGHT);
+
+		Resources resources = getResources();
+		int navigationBarHeight = 0;
+		int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+		if (resourceId > 0) {
+			navigationBarHeight = resources.getDimensionPixelSize(resourceId);
+			Log.i(TAG, "onCreate->navigationBarHeight:" + navigationBarHeight);
+		}
+		SCREEN_HEIGHT = DeviceInfoUtils.getScreenHeight(CommonValues.application) + navigationBarHeight;
+		mCurrentDevice = (Device) getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
+		if (mExtraVideoUri != null) {
+			mCurrentDevice = new Device();
+			mCurrentDevice.setDeviceType(ConstData.DeviceType.DEVICE_TYPE_OTHER);
+		}
+		initVideoPlayPreferences();
+		initViews();
+		// 初始化杜比的弹出视窗
+		doblyPopWin = new DoblyPopWin(this);
+		timer = new Timer(true);
+		/* BEGIN: Added by r00178559 for AR-0000698413 2014/02/13 */
+		loadChannelModeResources();
+		/* END: Added by r00178559 for AR-0000698413 2014/02/13 */
+		if (isSenderMyMedia()) {
+			// 保存在内存当中，PlayMode
+			setPlayMode(mPreferences.getInt(CYCLE_PLAY_MODE, DEFAULT_CYCLE_PLAY_MODE_INDEX));
+		} else {
+			// 不是myMedia过来的请求,默认全体循环
+			setPlayMode(ConstData.MediaPlayMode.MP_MODE_ALL_CYC);
+		}
+		if (mSeekHandlerThread == null) {
+			mSeekHandlerThread = new HandlerThread(SEEK_THREAD_TAG);
+			mSeekHandlerThread.start();
+		}
+
+		if (mSeekHandler == null) {
+			mSeekHandler = new SeekHandler(mSeekHandlerThread.getLooper());
+		}
+
+		bIsPausedByUser = false;
+
+	}
     
 }

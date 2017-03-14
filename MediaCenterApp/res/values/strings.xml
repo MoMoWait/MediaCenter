@@ -379,4 +379,7 @@
     <string name="no_delete_permission">没有删除权限</string>
     <string name="no_write_permission">没有写权限</string>
     <string name="confirm_delete">确认删除?</string>
+    <string name="paste_error">黏贴错误</string>
+    <string name="exist_same_file">存在同名文件(夹)</string>
+    <string name="delete_part_file_error">部分文件无法删除</string>
 </resources>

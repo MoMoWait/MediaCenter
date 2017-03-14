@@ -301,194 +301,6 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
     {
         mLog.d(TAG, "onCreate -- 1");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.ip_image_fullscreen);
-        
-        mContext = getApplicationContext();
-        isNeedRejectKey = PlatformUtil.isGDDX();
-        UriTexture.registerShareReceiver(getApplicationContext());
-        UriTexture.bCanceled = false;
-        mCachePath = getCacheDir().getAbsolutePath();
-        mLog.d(TAG, "mCachePath------>" + mCachePath);
-        
-        // 海思:默认情况下，Android应用程序的2D部分的buffer是rgb565格式的。要改成32bit
-        // buffer，需要在应用程序Activity的onCreate函数中加入：
-        getWindow().setFormat(PixelFormat.TRANSLUCENT);
-        
-        mContainer = (RelativeLayout)findViewById(R.id.imagecontainer);
-        if (mContainer != null)
-        {
-            mContainer.requestFocus();
-            mContainer.setFocusable(true);
-            mContainer.setOnTouchListener(this);
-        }
-        
-        mOperationTextView = (TextView)findViewById(R.id.operation_text_id);
-        setOperationText();
-        mIMPRL = (RelativeLayout)findViewById(R.id.fullRelative);
-        mDisplayException = (LinearLayout)findViewById(R.id.image_exception);
-        
-        mImageErrorInfo = (TextView)findViewById(R.id.text_info);
-        mLog.d(TAG, "onCreate -- 2");
-        // 左右导航
-        mLeftNavigation = findViewById(R.id.leftNavigationImageView);
-        mRightNavigation = findViewById(R.id.rightNavigationImageView);
-        
-        // 详细信息
-        mPicPlayerDetailLayout = (RelativeLayout)findViewById(R.id.detail);
-        mPicTitle = (TextView)findViewById(R.id.pic_detail_title);
-        mPicPos = (TextView)findViewById(R.id.pic_detail_pos);
-        
-        mImageDetailInfo = (LinearLayout)findViewById(R.id.image_detail_info);
-        
-        mImagesize = (TextView)findViewById(R.id.image_size);
-        mImageTime = (TextView)findViewById(R.id.imageplayer_image_time);
-		mImageOrder = (TextView)findViewById(R.id.image_order);
-        mLog.d(TAG, " onCreate -- 3");
-        
-        // 进度条
-        mProgressBar = (ProgressBar)findViewById(R.id.circleProgressBar);
-        mOperatingHint = (LinearLayout)findViewById(R.id.Operating_hint);
-        if (mProgressBar != null)
-        {
-            mProgressBar.setVisibility(View.GONE);
-        }
-        
-        Animation inleft = AnimationUtils.loadAnimation(this.getApplicationContext(), android.R.anim.fade_in);
-        inleft.setDuration(100);
-        
-        Animation outright = AnimationUtils.loadAnimation(this.getApplicationContext(), android.R.anim.fade_out);
-        outright.setDuration(800);
-        if (mLeftNavigation != null)
-        {
-            mLeftNavigation.setAnimation(inleft);
-            mLeftNavigation.setVisibility(View.GONE);
-        }
-        if (mRightNavigation != null)
-        {
-            mRightNavigation.setAnimation(outright);
-            mRightNavigation.setVisibility(View.GONE);
-        }
-        
-        // Toast初始化
-        if (mCanntPreToast == null)
-        {
-            mCanntPreToast = Toast.makeText(getApplicationContext(), R.string.image_cannot_pre, TOAST_SHOW_TIME);
-        }
-        
-        if (mCanntNextToast == null)
-        {
-            mCanntNextToast = Toast.makeText(getApplicationContext(), R.string.image_cannot_next, TOAST_SHOW_TIME);
-        }
-        
-        if (mStartAutoPlay == null)
-        {
-            mStartAutoPlay = Toast.makeText(getApplicationContext(), R.string.image_start_autoplay, TOAST_SHOW_TIME);
-        }
-        
-        if (mStopAutoPlay == null)
-        {
-            mStopAutoPlay = Toast.makeText(getApplicationContext(), R.string.image_stop_autoplay, TOAST_SHOW_TIME);
-        }
-        
-        if (mCanntShow == null)
-        {
-            mCanntShow = Toast.makeText(getApplicationContext(), R.string.image_cannt_display, TOAST_SHOW_TIME);
-        }
-        
-        if (mRotatedFailed == null)
-        {
-            mRotatedFailed = Toast.makeText(getApplicationContext(), R.string.image_rotated_failed, TOAST_SHOW_TIME);
-        }
-        
-        mLog.d(TAG, " onCreate -- 4");
-        initPlaySet();
-        if (mImageSwitcher == null)
-        {
-            mLog.d(TAG, " onCreate -- 5");
-            mImageSwitcher = new DLNAImageSwitcher(this);
-            mImageSwitcher.init();
-            UriTexture.setCacheDir(mCachePath);
-            mImageSwitcher.setBackgroundColor(Color.TRANSPARENT);
-            
-            mImageSwitcher.setProgress(mProgressBar);
-            mImageSwitcher.setOperatingHint(mOperatingHint);
-            mImageSwitcher.setAnimateFirstView(false);
-            mImageSwitcher.setListener(this);
-            mImageSwitcher.setPlayInfo(getPlayStateInfo());
-            mImageSwitcher.setInternalPlayer(mbInternalPlayer);
-            
-            mLayoutParams =
-                new android.widget.RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-            mLayoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-            
-            if (mIMPRL != null)
-            {
-                mIMPRL.addView(mImageSwitcher, mLayoutParams);
-            }
-            
-            //注册播放gif图监听
-            mImageSwitcher.setGifListener(new OnGifListener()
-            {
-                
-                @Override
-                public void stopPlay()
-                {
-                    if (mGifView != null)
-                    {
-                        mGifView.stop();
-                        mGifView.setVisibility(View.GONE);
-                        if (mImageSwitcher != null)
-                        {
-                            mImageSwitcher.setVisibility(View.VISIBLE);
-                        }
-                        
-                        if (mIMPRL != null)
-                        {
-                            mIMPRL.removeView(mGifView);
-                        }
-                        mGifView = null;
-                    }
-                }
-                
-                @Override
-                public void startPlay()
-                {
-                }
-                
-                @Override
-                public void setGifImage(GifOpenHelper gif)
-                {
-                    if (gif != null)
-                    {
-                        mLog.d(TAG, "switcher gif");
-                        if (mGifView != null)
-                        {
-                            mIMPRL.removeView(mGifView);
-                            //                            mGifView.free();
-                            mGifView = null;
-                        }
-                        
-                        mGifView = new GifView(getApplicationContext());
-                        if (mIMPRL != null)
-                        {
-                            mIMPRL.addView(mGifView, mLayoutParams);
-                        }
-                        mGifView.setGifOpenHelper(gif);
-                        if (mImageSwitcher != null)
-                        {
-                            mImageSwitcher.setVisibility(View.INVISIBLE);
-                        }
-                    }
-                    
-                }
-            });
-            
-        }
-        if (mMediaCenterPlayerClient != null)
-        {
-            mMediaCenterPlayerClient.play();
-        }
-        mDetector = new GestureDetector(this);
     }
     
     /**
@@ -798,7 +610,7 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
     @Override
     protected void loadResource()
     {
-        setContentView(R.layout.ip_image_fullscreen);
+        //setContentView(R.layout.ip_image_fullscreen);
     }
     
     /*
@@ -2850,4 +2662,187 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
         }
 	}
 	//end add by caochao for  DTS2014111107357 随心控推送图片到盒子播放，推送成功后等待5S后，手机端提示“远端服务已经停止”
+
+	@Override
+	public void onServiceConnected() {
+		
+	}
+
+	@Override
+	public int getLayoutRes() {
+		return R.layout.ip_image_fullscreen;
+	}
+
+	@Override
+	public void init() {
+		mContext = getApplicationContext();
+		isNeedRejectKey = PlatformUtil.isGDDX();
+		UriTexture.registerShareReceiver(getApplicationContext());
+		UriTexture.bCanceled = false;
+		mCachePath = getCacheDir().getAbsolutePath();
+		mLog.d(TAG, "mCachePath------>" + mCachePath);
+
+		// 海思:默认情况下，Android应用程序的2D部分的buffer是rgb565格式的。要改成32bit
+		// buffer，需要在应用程序Activity的onCreate函数中加入：
+		getWindow().setFormat(PixelFormat.TRANSLUCENT);
+
+		mContainer = (RelativeLayout) findViewById(R.id.imagecontainer);
+		if (mContainer != null) {
+			mContainer.requestFocus();
+			mContainer.setFocusable(true);
+			mContainer.setOnTouchListener(this);
+		}
+
+		mOperationTextView = (TextView) findViewById(R.id.operation_text_id);
+		setOperationText();
+		mIMPRL = (RelativeLayout) findViewById(R.id.fullRelative);
+		mDisplayException = (LinearLayout) findViewById(R.id.image_exception);
+
+		mImageErrorInfo = (TextView) findViewById(R.id.text_info);
+		mLog.d(TAG, "onCreate -- 2");
+		// 左右导航
+		mLeftNavigation = findViewById(R.id.leftNavigationImageView);
+		mRightNavigation = findViewById(R.id.rightNavigationImageView);
+
+		// 详细信息
+		mPicPlayerDetailLayout = (RelativeLayout) findViewById(R.id.detail);
+		mPicTitle = (TextView) findViewById(R.id.pic_detail_title);
+		mPicPos = (TextView) findViewById(R.id.pic_detail_pos);
+
+		mImageDetailInfo = (LinearLayout) findViewById(R.id.image_detail_info);
+
+		mImagesize = (TextView) findViewById(R.id.image_size);
+		mImageTime = (TextView) findViewById(R.id.imageplayer_image_time);
+		mImageOrder = (TextView) findViewById(R.id.image_order);
+		mLog.d(TAG, " onCreate -- 3");
+
+		// 进度条
+		mProgressBar = (ProgressBar) findViewById(R.id.circleProgressBar);
+		mOperatingHint = (LinearLayout) findViewById(R.id.Operating_hint);
+		if (mProgressBar != null) {
+			mProgressBar.setVisibility(View.GONE);
+		}
+
+		Animation inleft = AnimationUtils.loadAnimation(this.getApplicationContext(), android.R.anim.fade_in);
+		inleft.setDuration(100);
+
+		Animation outright = AnimationUtils.loadAnimation(this.getApplicationContext(), android.R.anim.fade_out);
+		outright.setDuration(800);
+		if (mLeftNavigation != null) {
+			mLeftNavigation.setAnimation(inleft);
+			mLeftNavigation.setVisibility(View.GONE);
+		}
+		if (mRightNavigation != null) {
+			mRightNavigation.setAnimation(outright);
+			mRightNavigation.setVisibility(View.GONE);
+		}
+
+		// Toast初始化
+		if (mCanntPreToast == null) {
+			mCanntPreToast = Toast.makeText(getApplicationContext(),
+					R.string.image_cannot_pre, TOAST_SHOW_TIME);
+		}
+
+		if (mCanntNextToast == null) {
+			mCanntNextToast = Toast.makeText(getApplicationContext(),
+					R.string.image_cannot_next, TOAST_SHOW_TIME);
+		}
+
+		if (mStartAutoPlay == null) {
+			mStartAutoPlay = Toast.makeText(getApplicationContext(),
+					R.string.image_start_autoplay, TOAST_SHOW_TIME);
+		}
+
+		if (mStopAutoPlay == null) {
+			mStopAutoPlay = Toast.makeText(getApplicationContext(),
+					R.string.image_stop_autoplay, TOAST_SHOW_TIME);
+		}
+
+		if (mCanntShow == null) {
+			mCanntShow = Toast.makeText(getApplicationContext(),
+					R.string.image_cannt_display, TOAST_SHOW_TIME);
+		}
+
+		if (mRotatedFailed == null) {
+			mRotatedFailed = Toast.makeText(getApplicationContext(),
+					R.string.image_rotated_failed, TOAST_SHOW_TIME);
+		}
+
+		mLog.d(TAG, " onCreate -- 4");
+		initPlaySet();
+		if (mImageSwitcher == null) {
+			mLog.d(TAG, " onCreate -- 5");
+			mImageSwitcher = new DLNAImageSwitcher(this);
+			mImageSwitcher.init();
+			UriTexture.setCacheDir(mCachePath);
+			mImageSwitcher.setBackgroundColor(Color.TRANSPARENT);
+
+			mImageSwitcher.setProgress(mProgressBar);
+			mImageSwitcher.setOperatingHint(mOperatingHint);
+			mImageSwitcher.setAnimateFirstView(false);
+			mImageSwitcher.setListener(this);
+			mImageSwitcher.setPlayInfo(getPlayStateInfo());
+			mImageSwitcher.setInternalPlayer(mbInternalPlayer);
+
+			mLayoutParams = new android.widget.RelativeLayout.LayoutParams(
+					LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+			mLayoutParams.addRule(RelativeLayout.CENTER_IN_PARENT,
+					RelativeLayout.TRUE);
+
+			if (mIMPRL != null) {
+				mIMPRL.addView(mImageSwitcher, mLayoutParams);
+			}
+
+			// 注册播放gif图监听
+			mImageSwitcher.setGifListener(new OnGifListener() {
+
+				@Override
+				public void stopPlay() {
+					if (mGifView != null) {
+						mGifView.stop();
+						mGifView.setVisibility(View.GONE);
+						if (mImageSwitcher != null) {
+							mImageSwitcher.setVisibility(View.VISIBLE);
+						}
+
+						if (mIMPRL != null) {
+							mIMPRL.removeView(mGifView);
+						}
+						mGifView = null;
+					}
+				}
+
+				@Override
+				public void startPlay() {
+				}
+
+				@Override
+				public void setGifImage(GifOpenHelper gif) {
+					if (gif != null) {
+						mLog.d(TAG, "switcher gif");
+						if (mGifView != null) {
+							mIMPRL.removeView(mGifView);
+							// mGifView.free();
+							mGifView = null;
+						}
+
+						mGifView = new GifView(getApplicationContext());
+						if (mIMPRL != null) {
+							mIMPRL.addView(mGifView, mLayoutParams);
+						}
+						mGifView.setGifOpenHelper(gif);
+						if (mImageSwitcher != null) {
+							mImageSwitcher.setVisibility(View.INVISIBLE);
+						}
+					}
+
+				}
+			});
+
+		}
+		if (mMediaCenterPlayerClient != null) {
+			mMediaCenterPlayerClient.play();
+		}
+		mDetector = new GestureDetector(this);
+	}
 }

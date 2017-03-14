@@ -12,10 +12,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
 import momo.cn.edu.fjnu.androidutils.utils.DeviceInfoUtils;
 import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -38,8 +36,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
@@ -63,6 +59,7 @@ import com.rockchips.mediacenter.utils.BitmapUtil;
 import com.rockchips.mediacenter.utils.CharsetUtils;
 import com.rockchips.mediacenter.utils.DateUtil;
 import com.rockchips.mediacenter.utils.ID3V2;
+import com.rockchips.mediacenter.utils.IICLOG;
 import com.rockchips.mediacenter.utils.Lyric;
 import com.rockchips.mediacenter.utils.SearchLrc;
 import com.rockchips.mediacenter.utils.UriTexture;
@@ -77,10 +74,8 @@ import com.rockchips.mediacenter.service.OnInfoListener;
 import com.rockchips.mediacenter.service.OnPreparedListener;
 import com.rockchips.mediacenter.service.OnSeekCompleteListener;
 import com.rockchips.mediacenter.view.OrigVideoViewNoView;
-import com.rockchips.mediacenter.view.ThumbnailManager;
 import com.rockchips.mediacenter.activity.MainActivity;
 import com.rockchips.mediacenter.audioplayer.AudioPlayStateInfo.OnPlayListSyncCompletedListener;
-import com.rockchips.mediacenter.bean.LocalDevice;
 import com.rockchips.mediacenter.dobly.DoblyPopWin;
 import com.rockchips.mediacenter.imageplayer.DLNAImageSwitcher;
 import com.rockchips.mediacenter.imageplayer.DLNAImageSwitcher.DLNAImageSwitcherListener;
@@ -94,7 +89,6 @@ import com.rockchips.mediacenter.view.BottomPopMenu;
 import com.rockchips.mediacenter.view.MenuCategory;
 import com.rockchips.mediacenter.view.MenuItemImpl;
 import com.rockchips.mediacenter.view.OnSelectTypeListener;
-import com.rockchips.mediacenter.view.PopMenu;
 import com.rockchips.mediacenter.view.GlobalFocus;
 import com.rockchips.mediacenter.view.PlayListView;
 import com.rockchips.mediacenter.view.PlayListView.OnItemTouchListener;
@@ -110,7 +104,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         OnSelectPopupListener, DLNAImageSwitcherListener
 {
     private static final String TAG = "AudioPlayer_REAL";
-
+    private IICLOG Log = IICLOG.getInstance();
     private static final String ACTION = "com.rockchips.iptv.stb.dlna.action.exitplayer";
 
     private boolean bResumePlay;
@@ -387,113 +381,6 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         mImagePlayStateInfo = new PlayStateInfo();
         
         super.onCreate(savedInstanceState);
-
-        mLocalDeviceManager = LocalDeviceManager.getInstance(getBaseContext());
-
-        setContentView(R.layout.activity_audio_player);
-
-        // xWX184171 DTS2014021910705 需要断电保存 add by 2014.2.20
-        getBackgroundPicFlag();
-
-//        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-
-//        CacheManager.getInstance().setCacheDir(getBaseContext().getCacheDir().toString() + "/");
-
-        synchronized (mHandlerLock)
-        {
-            // 创建过程执行线程
-            mLogicalThread = new HandlerThread(this.getClass().toString());
-            mLogicalThread.start();
-            mLogicalHandler = new Handler(mLogicalThread.getLooper(), mLogicalHandlerCallback);
-
-        }
-
-        mParentLinear = (LinearLayout) findViewById(R.id.parent_linear);
-
-        // 音乐专辑组件
-        mAlbumInfoView = (PreviewWidget) findViewById(R.id.music_info);
-
-        // 进度条
-        mSeekBar = (SeekBar) findViewById(R.id.music_seekbar);
-        mSeekBar.setFocusable(false);
-        mSeekBar.setOnSeekBarChangeListener(mOnSeekBarChangeListener);
-
-        mMusicPlayer = new MusicPlayer();
-
-        // 创建焦点框
-        mGlobalFocus = new GlobalFocus(this);
-        mGlobalFocus.setFocusRes(R.drawable.music_list_focus_background);
-        mGlobalFocus.setVisibility(View.INVISIBLE);
-
-        LayoutParams params = new LayoutParams(DeviceInfoUtils.getScreenWidth(this) / 2 - SizeUtils.dp2px(this, 20), 50);
-
-        params.topMargin = -SizeUtils.dp2px(this, 620);
-        params.leftMargin = DeviceInfoUtils.getScreenWidth(this) / 2 ;
-        mGlobalFocus.setFocusInitParams(params);
-        mParentLinear.addView(mGlobalFocus);
-        
-        
-        // 播放列表组件
-        mPlayListView = (PlayListView) findViewById(R.id.music_playlist);
-        mPlayListView.setOnMenuListener(mOnMenuListener);
-        mPlayListView.addFocus(mGlobalFocus);
-        mPlayListView.setItemFocusListener(mGlobalFocus);
-        mPlayListView.setItemTouchListener(mOnItemTouchListener);
-
-        // 播放列表适配器
-        mAdapter = new TextViewListAdapter(this);
-
-        mPlayModeIcon = (ImageView) findViewById(R.id.playmode_icon);
-        mPlayModeText = (TextView) findViewById(R.id.main_playmode_text);
-
-        // zkf61715
-        showPlayMode(AudioPlayStateInfo.getPlayMode());
-
-        mMusicAlreadyPlayedDuration = (TextView) findViewById(R.id.music_already_played_duration);
-        mMusicTotalDuration = (TextView) findViewById(R.id.music_total_duration);
-
-        // 左边歌词
-        mLeftLyric = (TextView) findViewById(R.id.left_lyric);
-        // 右边歌词
-        mRightLyric = (TextView) findViewById(R.id.right_lyric);
-
-        loadDefaultMusicBitmap();
-
-        mAlbumInfoView.setRes(mDefaultMusicBitmap, null, null);
-
-        loadPlayModeSettingLayout();
-
-        // 注册同步播放列表完成监听器
-        mAudioPlayStateInfo.registerOnPlayListSyncCompletedListener(mOnPlayListSyncCompletedListener);
-        
-        // 设置远程播放回调
-        setRemoteControlCallback(mRemoteControlListener);
-
-        // mPriInterface = new MediaplayerPriInterface();
-
-        // 初始化杜比的弹出视窗
-        doblyPopWin = new DoblyPopWin(this);
-
-        // 进度条
-        mProgressBar = (ProgressBar) findViewById(R.id.circleProgressBar);
-        if (mProgressBar != null)
-        {
-            mProgressBar.setVisibility(View.GONE);
-        }
-        mIMPRL = (RelativeLayout) findViewById(R.id.fullRelative);
-        mDisplayException = (LinearLayout) findViewById(R.id.image_exception);
-        mNoLyricText = (TextView) findViewById(R.id.center_no_lyric);
-        // zkf61715 暂时不显示“暂无歌词
-        mNoLyricText.setVisibility(View.GONE);
-        if (mIMPRL != null)
-        {
-            mIMPRL.setVisibility(View.GONE);
-        }
-        mBackgroundAudioPreviewWidget = new BackgroundAudioPreviewWidget(this);
-
-        mGlobalFocus.setBackgroud(mIMPRL);
-        
-        ToastUtil.build(getApplicationContext());
     }
 
     // 获取背景图片标志
@@ -4100,4 +3987,120 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     private void destoryMediaRetrieve()
     { 
     }
+
+	@Override
+	public void onServiceConnected() {
+		
+	}
+
+	@Override
+	public int getLayoutRes() {
+		return R.layout.activity_audio_player;
+	}
+
+	@Override
+	public void init() {
+		mLocalDeviceManager = LocalDeviceManager.getInstance(getBaseContext());
+
+		// xWX184171 DTS2014021910705 需要断电保存 add by 2014.2.20
+		getBackgroundPicFlag();
+
+		// mAudioManager = (AudioManager)
+		// getSystemService(Context.AUDIO_SERVICE);
+
+		// CacheManager.getInstance().setCacheDir(getBaseContext().getCacheDir().toString()
+		// + "/");
+
+		synchronized (mHandlerLock) {
+			// 创建过程执行线程
+			mLogicalThread = new HandlerThread(this.getClass().toString());
+			mLogicalThread.start();
+			mLogicalHandler = new Handler(mLogicalThread.getLooper(), mLogicalHandlerCallback);
+
+		}
+
+		mParentLinear = (LinearLayout) findViewById(R.id.parent_linear);
+
+		// 音乐专辑组件
+		mAlbumInfoView = (PreviewWidget) findViewById(R.id.music_info);
+
+		// 进度条
+		mSeekBar = (SeekBar) findViewById(R.id.music_seekbar);
+		mSeekBar.setFocusable(false);
+		mSeekBar.setOnSeekBarChangeListener(mOnSeekBarChangeListener);
+
+		mMusicPlayer = new MusicPlayer();
+
+		// 创建焦点框
+		mGlobalFocus = new GlobalFocus(this);
+		mGlobalFocus.setFocusRes(R.drawable.music_list_focus_background);
+		mGlobalFocus.setVisibility(View.INVISIBLE);
+
+		LayoutParams params = new LayoutParams(DeviceInfoUtils.getScreenWidth(this) / 2 - SizeUtils.dp2px(this, 20), 50);
+
+		params.topMargin = -SizeUtils.dp2px(this, 620);
+		params.leftMargin = DeviceInfoUtils.getScreenWidth(this) / 2;
+		mGlobalFocus.setFocusInitParams(params);
+		mParentLinear.addView(mGlobalFocus);
+
+		// 播放列表组件
+		mPlayListView = (PlayListView) findViewById(R.id.music_playlist);
+		mPlayListView.setOnMenuListener(mOnMenuListener);
+		mPlayListView.addFocus(mGlobalFocus);
+		mPlayListView.setItemFocusListener(mGlobalFocus);
+		mPlayListView.setItemTouchListener(mOnItemTouchListener);
+
+		// 播放列表适配器
+		mAdapter = new TextViewListAdapter(this);
+
+		mPlayModeIcon = (ImageView) findViewById(R.id.playmode_icon);
+		mPlayModeText = (TextView) findViewById(R.id.main_playmode_text);
+
+		// zkf61715
+		showPlayMode(AudioPlayStateInfo.getPlayMode());
+
+		mMusicAlreadyPlayedDuration = (TextView) findViewById(R.id.music_already_played_duration);
+		mMusicTotalDuration = (TextView) findViewById(R.id.music_total_duration);
+
+		// 左边歌词
+		mLeftLyric = (TextView) findViewById(R.id.left_lyric);
+		// 右边歌词
+		mRightLyric = (TextView) findViewById(R.id.right_lyric);
+
+		loadDefaultMusicBitmap();
+
+		mAlbumInfoView.setRes(mDefaultMusicBitmap, null, null);
+
+		loadPlayModeSettingLayout();
+
+		// 注册同步播放列表完成监听器
+		mAudioPlayStateInfo.registerOnPlayListSyncCompletedListener(mOnPlayListSyncCompletedListener);
+
+		// 设置远程播放回调
+		setRemoteControlCallback(mRemoteControlListener);
+
+		// mPriInterface = new MediaplayerPriInterface();
+
+		// 初始化杜比的弹出视窗
+		doblyPopWin = new DoblyPopWin(this);
+
+		// 进度条
+		mProgressBar = (ProgressBar) findViewById(R.id.circleProgressBar);
+		if (mProgressBar != null) {
+			mProgressBar.setVisibility(View.GONE);
+		}
+		mIMPRL = (RelativeLayout) findViewById(R.id.fullRelative);
+		mDisplayException = (LinearLayout) findViewById(R.id.image_exception);
+		mNoLyricText = (TextView) findViewById(R.id.center_no_lyric);
+		// zkf61715 暂时不显示“暂无歌词
+		mNoLyricText.setVisibility(View.GONE);
+		if (mIMPRL != null) {
+			mIMPRL.setVisibility(View.GONE);
+		}
+		mBackgroundAudioPreviewWidget = new BackgroundAudioPreviewWidget(this);
+
+		mGlobalFocus.setBackgroud(mIMPRL);
+
+		ToastUtil.build(getApplicationContext());
+	}
 }

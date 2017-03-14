@@ -1,32 +1,31 @@
 
 package com.rockchips.mediacenter.view;
-
 import java.io.File;
-import java.util.List;
 
+import org.json.JSONObject;
 import org.xutils.view.annotation.ViewInject;
 
-import momo.cn.edu.fjnu.androidutils.utils.DeviceInfoUtils;
+import momo.cn.edu.fjnu.androidutils.utils.JsonUtils;
 import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
+import momo.cn.edu.fjnu.androidutils.utils.StorageUtils;
 import android.content.Context;
-import android.os.Bundle;
-import android.view.KeyboardShortcutGroup;
-import android.view.Menu;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import com.rockchips.mediacenter.R;
-import com.rockchips.mediacenter.bean.AllFileInfo;
 import com.rockchips.mediacenter.bean.FileInfo;
-import com.rockchips.mediacenter.utils.FileOpUtils;
+import com.rockchips.mediacenter.data.ConstData;
 /**
  * @author GaoFei
  * 文件操作对话框
  */
 public class FileOpDialog extends AppBaseDialog implements OnItemClickListener{
-	
+	private static final String TAG = "FileOpDialog";
 	private View mainView;
 	private Context mContext;
 	/**
@@ -73,6 +72,26 @@ public class FileOpDialog extends AppBaseDialog implements OnItemClickListener{
 
 	@Override
 	public void initData() {
+		String copyPath = StorageUtils.getDataFromSharedPreference(ConstData.SharedKey.COPY_FILE_PATH);
+		String movePath = StorageUtils.getDataFromSharedPreference(ConstData.SharedKey.MOVE_FILE_PATH);
+		if(TextUtils.isEmpty(copyPath) && TextUtils.isEmpty(movePath)){
+			//屏蔽paste选项
+			mListFileOp.setAdapter(new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1, android.R.id.text1, mContext.getResources().getStringArray(R.array.file_oprations_no_paste)));
+			return;
+		}
+		try{
+			FileInfo copyOrMoveFileInfo = (FileInfo) (TextUtils.isEmpty(copyPath) ? JsonUtils.jsonToObject(FileInfo.class, new JSONObject(movePath)) :
+				JsonUtils.jsonToObject(FileInfo.class, new JSONObject(copyPath)));
+			Log.i(TAG, "copyOrMoveFileInfo:" + copyOrMoveFileInfo);
+			Log.i(TAG, "mFileInfo:" + mFileInfo);
+			if(copyOrMoveFileInfo.getParentPath().equals(mFileInfo.getParentPath()) && mFileInfo.getType() != ConstData.MediaType.FOLDER || 
+					mFileInfo.getPath().startsWith(copyOrMoveFileInfo.getPath()))
+				mListFileOp.setAdapter(new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1, android.R.id.text1, mContext.getResources().getStringArray(R.array.file_oprations_no_paste)));
+		}catch (Exception e){
+			Log.i(TAG, "copyOrMoveFileInfo:->exception:" + e);
+		}
+		
+		
 	}
 
 
@@ -99,11 +118,11 @@ public class FileOpDialog extends AppBaseDialog implements OnItemClickListener{
 			dismiss();
 			break;
 		case 3:
-			mCallback.onPaste(mFileInfo);
+			mCallback.onRename(mFileInfo);
 			dismiss();
 			break;
 		case 4:
-			mCallback.onRename(mFileInfo);
+			mCallback.onPaste(mFileInfo);
 			dismiss();
 			break;
 		default:

@@ -559,8 +559,8 @@ public class DeviceMonitorService extends Service {
 		mUpnpDevice = device;
 		Log.i(TAG, "loadUpnpFile->mRemoteDevices:" + mRemoteDevices);
 		Log.i(TAG, "loadUpnpFile->remoteDevice:" + mRemoteDevices.get(device.getLocalMountPath()));
-		//mCurrFileBrowser = new FileBrowser(mRemoteDevices.get(device.getLocalMountPath()).findService(new UDAServiceType("ContentDirectory")), mCurrContainer.getId(), BrowseFlag.DIRECT_CHILDREN, "*", 0, 100000L, mSortCriterions);
-		//mUpnpService.getControlPoint().execute(mCurrFileBrowser);
+		mCurrFileBrowser = new FileBrowser(mRemoteDevices.get(device.getLocalMountPath()).findService(new UDAServiceType("ContentDirectory")), container.getId(), BrowseFlag.DIRECT_CHILDREN, "*", 0, 100000L, mSortCriterions);
+		mUpnpService.getControlPoint().execute(mCurrFileBrowser);
 	}
 	
 	/**
@@ -663,6 +663,8 @@ public class DeviceMonitorService extends Service {
 					//启动扫描器
 					mFileScanService.execute(new UpnpFileScanThread(device, DeviceMonitorService.this, mUpnpService));
 				}*/
+				Log.i(TAG, "remoteDeviceAdded->device->descriptionURL:" + device.getIdentity().getDescriptorURL().toString());
+				Log.i(TAG, "remoteDeviceAdded->device->Udn:" + device.getIdentity().getUdn().getIdentifierString());
 				Bundle mountBundle = new Bundle();
 				mountBundle.putBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK, false);
 				mountBundle.putString(ConstData.DeviceMountMsg.MOUNT_PATH, device.getIdentity().getDescriptorURL().toString());
@@ -678,6 +680,8 @@ public class DeviceMonitorService extends Service {
 		@Override
 		public void remoteDeviceRemoved(Registry registry, RemoteDevice device) {
 			if(device.getType().getType().equals("MediaServer")){
+				Log.i(TAG, "remoteDeviceRemoved->device->descriptionURL:" + device.getIdentity().getDescriptorURL().toString());
+				Log.i(TAG, "remoteDeviceRemoved->device->Udn:" + device.getIdentity().getUdn().getIdentifierString());
 				Bundle downBundle = new Bundle();
 				downBundle.putBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK, false);
 				downBundle.putString(ConstData.DeviceMountMsg.MOUNT_PATH, device.getIdentity().getDescriptorURL().toString());

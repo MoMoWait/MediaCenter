@@ -51,6 +51,7 @@ public class DeviceMountThread extends Thread{
 		PreviewPhotoInfoService previewPhotoInfoService = new PreviewPhotoInfoService();
 		//删除相关数据
 		List<Device> devices = deviceService.getDeviceByMountPath(mountPath);
+		Log.i(TAG, "DeviceMountThread->devices:" + devices);
 		if(devices != null && devices.size() > 0){
 			for(Device device : devices){
 				deviceService.delete(device);

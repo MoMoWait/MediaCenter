@@ -38,7 +38,7 @@
             android:id="@+id/text_progress_num"
             android:layout_width="40dp"
             android:layout_height="match_parent"
-            android:text="@string/num_one"
+            android:text="@string/num_zero"
             android:textColor="@android:color/white"
             android:layout_marginLeft="10dp"
             android:textSize="20sp"
