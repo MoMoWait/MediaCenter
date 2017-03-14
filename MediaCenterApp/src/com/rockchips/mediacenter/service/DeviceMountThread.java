@@ -96,7 +96,7 @@ public class DeviceMountThread extends Thread{
 			//标记设备已经上线
 			DeviceScanInfo scanInfo = new DeviceScanInfo();
 			scanInfo.setMountState(ConstData.DeviceMountState.DEVICE_UP);
-			scanInfo.setNeedRescan(false);
+			//scanInfo.setNeedRescan(false);
 			scanInfo.setDeviceType(mountDevice.getDeviceType());
 			scanInfo.setMountPath(mountDevice.getLocalMountPath());
 		    mService.setDeviceScanInfo(mountDevice.getDeviceID(), scanInfo);
@@ -108,7 +108,7 @@ public class DeviceMountThread extends Thread{
 			//标记设备已下线
 			DeviceScanInfo scanInfo = new DeviceScanInfo();
 			scanInfo.setMountState(ConstData.DeviceMountState.DEVICE_DOWN);
-			scanInfo.setNeedRescan(false);
+			//scanInfo.setNeedRescan(false);
 			if(devices != null && devices.size() > 0)
 				mService.setDeviceScanInfo(devices.get(0).getDeviceID(), scanInfo);
 		}

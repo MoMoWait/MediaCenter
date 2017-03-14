@@ -71,12 +71,16 @@ public class FileScanThread extends Thread{
 	public void run() {
 		long startTime = System.currentTimeMillis();
 		Log.i(TAG, "FileScanThread start time:" + startTime);
+		//设置当前扫描状态为正在扫描
+		mService.getDeviceScanInfo(mDevice.getDeviceID()).setScanStatus(ConstData.DeviceScanStatus.SCANNING);
 		while(!mScanDirectories.isEmpty()){
 		    //获取设备扫描信息
 			int mountState = mService.getDeviceScanInfo(mDevice.getDeviceID()).getMountState();
-			if(mountState == ConstData.DeviceMountState.DEVICE_DOWN){
+			//获取设备扫描状态
+			int scanStatus = mService.getDeviceScanInfo(mDevice.getDeviceID()).getScanStatus();
+			if(mountState == ConstData.DeviceMountState.DEVICE_DOWN || scanStatus != ConstData.DeviceScanStatus.SCANNING){
 				//设备已经下线，不扫描直接返回
-				Log.i(TAG, mDevice.getDeviceName() + "is offline");
+				Log.i(TAG, mDevice.getDeviceName() + "is offline or stop scanner");
 				return;
 			}
 			//存在视频播放，并且设备已经上线
@@ -84,12 +88,13 @@ public class FileScanThread extends Thread{
 			//Log.i(TAG, "FileScanThread->haveVideoPlay:" + haveVideoPlay);
 			try {
 				//存在视频播放，并且设备已经挂载
-				while (haveVideoPlay && mountState == ConstData.DeviceMountState.DEVICE_UP) {
+				while (haveVideoPlay && mountState == ConstData.DeviceMountState.DEVICE_UP && scanStatus == ConstData.DeviceScanStatus.SCANNING) {
 					// 睡眠1s
 					Thread.sleep(1000);
 					Log.i(TAG, "FileScanThread->haveVideoPlay:" + haveVideoPlay);
 					haveVideoPlay = MediaUtils.hasMediaClient();
 					mountState = mService.getDeviceScanInfo(mDevice.getDeviceID()).getMountState();
+					scanStatus = mService.getDeviceScanInfo(mDevice.getDeviceID()).getScanStatus();
 				}
 			}catch(Exception e){
 				Log.e(TAG, "FileScanThread->sleep->exception:" + e);
@@ -193,6 +198,7 @@ public class FileScanThread extends Thread{
 		//文件入库
 		mFileInfoService.saveAll(mTmpFileInfos);
 		mTmpFileInfos.clear();
+		mService.getDeviceScanInfo(mDevice.getDeviceID()).setScanStatus(ConstData.DeviceScanStatus.FINISHED);
 		long endTime = System.currentTimeMillis();
 		Log.i(TAG, "FileScanThread end time:" + endTime);
 		Log.i(TAG, "FileScanThread total time:" + (endTime - startTime) / 1000 + "s");

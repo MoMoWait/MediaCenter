@@ -993,8 +993,8 @@ public class ConstData {
     	int INITIAL = 0;
     	//正在扫描
     	int SCANNING = 1;
-    	//暂停扫描
-    	int PAUSE = 2;
+    	//停止扫描
+    	int STOPPED = 2;
     	//完成扫描
     	int FINISHED = 3;
     }
@@ -1477,4 +1477,6 @@ public class ConstData {
 		String PARENT_ID = "parent_id";
 		String DATE = "date";
 	}
+	
+	
 }

@@ -803,6 +803,7 @@ public class DeviceMonitorService extends Service {
 				//重新扫描设备
 				String deviceID = intent.getStringExtra(ConstData.IntentKey.EXTRA_DEVICE_ID);
 				DeviceScanInfo scanInfo = mDeviceScanInfos.get(deviceID);
+				scanInfo.setScanStatus(ConstData.DeviceScanStatus.STOPPED);
 				//只有设备在线，才重新扫描
 				if(scanInfo != null && scanInfo.getMountState() == ConstData.DeviceMountState.DEVICE_UP){
 					Bundle mountBundle = new Bundle();
