@@ -1,6 +1,10 @@
 
 package com.rockchips.mediacenter.data;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -17,9 +21,11 @@ public class ConstData {
 	/**
 	 * 最大加载文件时间
 	 */
-	public static long MAX_LOAD_FILES_TIME = 20 * 1000L;
+	public static final long MAX_LOAD_FILES_TIME = 20 * 1000L;
 	/**全局线程优先级*/
 	public static volatile int THREAD_PRIORITY = Integer.MAX_VALUE;
+	/**设备路径，ID匹配表*/
+	public static Map<String, String> devicePathIDs = Collections.synchronizedMap(new HashMap<String, String>());
 	/**
 	 * PIP播放视频时，是否显示字幕
 	 */

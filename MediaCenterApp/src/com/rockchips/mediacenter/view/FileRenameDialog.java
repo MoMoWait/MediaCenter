@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.List;
 import java.util.TreeMap;
 
+import momo.cn.edu.fjnu.androidutils.data.CommonValues;
 import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
 
 import org.xutils.view.annotation.ViewInject;
@@ -121,12 +122,16 @@ public class FileRenameDialog extends AppBaseDialog implements View.OnClickListe
 							MediaScannerConnection.scanFile(mContext, allBeforePaths.toArray(new String[0]), null, null);
 							MediaScannerConnection.scanFile(mContext, afterPaths.toArray(new String[0]), null, null);
 							//更新本地数据库文件
-							FileInfoService fileInfoService = new FileInfoService();
-							fileInfoService.deleteFileInfos(mFileInfo.getDeviceID(), currentFile.getPath());
+							//FileInfoService fileInfoService = new FileInfoService();
+							//fileInfoService.deleteFileInfos(mFileInfo.getDeviceID(), currentFile.getPath());
 							//发送重新触发扫描广播
-							Intent broadIntent = new Intent(ConstData.BroadCastMsg.RESCAN_DEVICE);
-							broadIntent.putExtra(ConstData.IntentKey.EXTRA_DEVICE_ID, mDevice.getDeviceID());
-							LocalBroadcastManager.getInstance(mContext).sendBroadcast(broadIntent);
+							String deviceID = ConstData.devicePathIDs.get(mDevice.getLocalMountPath());
+							if(deviceID != null){
+								//更新本地数据库
+								Intent broadIntent = new Intent(ConstData.BroadCastMsg.RESCAN_DEVICE);
+								broadIntent.putExtra(ConstData.IntentKey.EXTRA_DEVICE_ID, deviceID);
+								LocalBroadcastManager.getInstance(CommonValues.application).sendBroadcast(broadIntent);
+							}
 							return ConstData.FileOpErrorCode.NO_ERR;
 						}
 							

@@ -95,6 +95,8 @@ public class DeviceMountThread extends Thread{
 				return;
 			//将设备存储至数据库中
 			deviceService.save(mountDevice);
+			//存储映射表(路径-ID)
+			ConstData.devicePathIDs.put(mountPath, mountDevice.getDeviceID());
 			broadIntent.putExtra(ConstData.DeviceMountMsg.DEVICE_ID, mountDevice.getDeviceID());
 			//标记设备已经上线
 			DeviceScanInfo scanInfo = new DeviceScanInfo();

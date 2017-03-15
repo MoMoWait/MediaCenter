@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.data.ConstData.MCSMessage;
@@ -39,7 +40,7 @@ public class FileOpUtils {
 	 * @param targetFile
 	 * @return
 	 */
-	public static int deleteFile(FileInfo targetFileInfo){
+	public static int deleteFile(FileInfo targetFileInfo, Device device){
 		Log.i(TAG, "deleteFile->targetFileInfo:" + targetFileInfo);
 		File targetFile = new File(targetFileInfo.getPath());
 		//目录文件列表
@@ -97,9 +98,13 @@ public class FileOpUtils {
 		fileInfoService.deleteFileInfos(targetFileInfo.getDeviceID(), targetFileInfo.getPath());
 		targetFile = new File(targetFileInfo.getPath());*/
 		Log.i(TAG, "deleteFile->send rescan broad cast");
-		Intent broadIntent = new Intent(ConstData.BroadCastMsg.RESCAN_DEVICE);
-		broadIntent.putExtra(ConstData.IntentKey.EXTRA_DEVICE_ID, targetFileInfo.getDeviceID());
-		LocalBroadcastManager.getInstance(CommonValues.application).sendBroadcast(broadIntent);
+		String deviceID = ConstData.devicePathIDs.get(device.getLocalMountPath());
+		if(deviceID != null){
+			//更新本地数据库
+			Intent broadIntent = new Intent(ConstData.BroadCastMsg.RESCAN_DEVICE);
+			broadIntent.putExtra(ConstData.IntentKey.EXTRA_DEVICE_ID, deviceID);
+			LocalBroadcastManager.getInstance(CommonValues.application).sendBroadcast(broadIntent);
+		}
 		//不存在，表示文件已经成功删除
 		if(!targetFile.exists())
 			return ConstData.FileOpErrorCode.NO_ERR;

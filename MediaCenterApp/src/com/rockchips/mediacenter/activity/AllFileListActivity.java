@@ -905,9 +905,13 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	    	if(intent.getAction().equals(ConstData.BroadCastMsg.DEVICE_UP)){
 	    		Log.i(TAG, "RefreshPreviewReceiver->device up action");
 	    		//重设ID
-	    		String deviceID = intent.getStringExtra(ConstData.DeviceMountMsg.DEVICE_ID);
-	    		if(deviceID != null)
-	    			mCurrDevice.setDeviceID(deviceID);
+	    		//String deviceID = intent.getStringExtra(ConstData.DeviceMountMsg.DEVICE_ID);
+	    		String mountPath = intent.getStringExtra(ConstData.DeviceMountMsg.MOUNT_PATH);
+	    		if(mCurrDevice.getLocalMountPath().equals(mountPath)){
+	    			mCurrDevice.setDeviceID(ConstData.devicePathIDs.get(mountPath));
+	    		}
+	    		//if(deviceID != null)
+	    		//	mCurrDevice.setDeviceID(deviceID);
 	    	}else{
 	    		//更新预览图
 	            FileInfo fileInfo = (FileInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_FILE_INFO);

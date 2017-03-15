@@ -71,11 +71,11 @@ public class FileOpTask extends AsyncTask<FileInfo, Integer, Integer> {
 						//没有写权限
 						result = ConstData.FileOpErrorCode.WRITE_ERR;
 					else{
-						result = FileOpUtils.deleteFile(mFileInfo);
+						result = FileOpUtils.deleteFile(mFileInfo, mDevice);
 					}
 						
 				}else{
-					result = FileOpUtils.deleteFile(mFileInfo);
+					result = FileOpUtils.deleteFile(mFileInfo, mDevice);
 				}
 				
 				break;
@@ -138,10 +138,14 @@ public class FileOpTask extends AsyncTask<FileInfo, Integer, Integer> {
 					if(targePaths != null && targePaths.size() > 0){
 						MediaScannerConnection.scanFile(CommonValues.application, targePaths.toArray(new String[0]), null, null);
 					}
-					//更新本地数据库
-					Intent broadIntent = new Intent(ConstData.BroadCastMsg.RESCAN_DEVICE);
-					broadIntent.putExtra(ConstData.IntentKey.EXTRA_DEVICE_ID, mDevice.getDeviceID());
-					LocalBroadcastManager.getInstance(CommonValues.application).sendBroadcast(broadIntent);
+					String deviceID = ConstData.devicePathIDs.get(mDevice.getLocalMountPath());
+					if(deviceID != null){
+						//更新本地数据库
+						Intent broadIntent = new Intent(ConstData.BroadCastMsg.RESCAN_DEVICE);
+						broadIntent.putExtra(ConstData.IntentKey.EXTRA_DEVICE_ID, deviceID);
+						LocalBroadcastManager.getInstance(CommonValues.application).sendBroadcast(broadIntent);
+					}
+					
 				}else if(!TextUtils.isEmpty(strSrcMove)){
 					try{
 						srcFileInfo = (FileInfo)JsonUtils.jsonToObject(FileInfo.class, new JSONObject(strSrcMove));
@@ -204,10 +208,13 @@ public class FileOpTask extends AsyncTask<FileInfo, Integer, Integer> {
 					Intent srcIntent = new Intent(ConstData.BroadCastMsg.RESCAN_DEVICE);
 					srcIntent.putExtra(ConstData.IntentKey.EXTRA_DEVICE_ID, srcFileInfo.getDeviceID());
 					LocalBroadcastManager.getInstance(CommonValues.application).sendBroadcast(srcIntent);
-					//更新本地数据库
-					Intent targetIntent = new Intent(ConstData.BroadCastMsg.RESCAN_DEVICE);
-					targetIntent.putExtra(ConstData.IntentKey.EXTRA_DEVICE_ID, mDevice.getDeviceID());
-					LocalBroadcastManager.getInstance(CommonValues.application).sendBroadcast(targetIntent);
+					String deviceID = ConstData.devicePathIDs.get(mDevice.getLocalMountPath());
+					if(deviceID != null){
+						//更新本地数据库
+						Intent targetIntent = new Intent(ConstData.BroadCastMsg.RESCAN_DEVICE);
+						targetIntent.putExtra(ConstData.IntentKey.EXTRA_DEVICE_ID, deviceID);
+						LocalBroadcastManager.getInstance(CommonValues.application).sendBroadcast(targetIntent);
+					}
 				}
 				clearCopyOrMove();
 				break;
