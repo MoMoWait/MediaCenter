@@ -55,6 +55,7 @@ public class DeviceMountThread extends Thread{
 		if(devices != null && devices.size() > 0){
 			for(Device device : devices){
 				deviceService.delete(device);
+				mService.removeScanDeviceInfo(device.getDeviceID());
 				List<FileInfo> fileInfos = fileInfoService.getFileInfosByDeviceID(device.getDeviceID());
 				if(fileInfos != null && fileInfos.size() > 0){
 					for(FileInfo itemFileInfo : fileInfos){
@@ -106,13 +107,12 @@ public class DeviceMountThread extends Thread{
 		}else{
 			broadIntent.setAction(ConstData.BroadCastMsg.DEVICE_DOWN);
 			//标记设备已下线
-			DeviceScanInfo scanInfo = new DeviceScanInfo();
-			scanInfo.setMountState(ConstData.DeviceMountState.DEVICE_DOWN);
+			//DeviceScanInfo scanInfo = new DeviceScanInfo();
+			//scanInfo.setMountState(ConstData.DeviceMountState.DEVICE_DOWN);
 			//scanInfo.setNeedRescan(false);
-			if(devices != null && devices.size() > 0)
-				mService.setDeviceScanInfo(devices.get(0).getDeviceID(), scanInfo);
+			//if(devices != null && devices.size() > 0)
+			//	mService.setDeviceScanInfo(devices.get(0).getDeviceID(), scanInfo);
 		}
-		
 		//发送设备上下线广播
 		LocalBroadcastManager.getInstance(mService).sendBroadcast(broadIntent);
 		Log.i(TAG, "DeviceMountThread->endTime:" + System.currentTimeMillis());
