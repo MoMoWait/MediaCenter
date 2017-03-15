@@ -381,4 +381,5 @@
     <string name="paste_error">Paste error</string>
     <string name="exist_same_file">Exist same file(folder)</string>
     <string name="delete_part_file_error">Can not delete some files</string>
+    <string name="rename_failed">Rename failed</string>
 </resources>

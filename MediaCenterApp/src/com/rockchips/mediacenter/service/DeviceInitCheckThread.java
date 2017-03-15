@@ -3,10 +3,10 @@ package com.rockchips.mediacenter.service;
 import java.util.List;
 import android.os.Bundle;
 import android.util.Log;
-
-import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.modle.db.DeviceService;
+import com.rockchips.mediacenter.modle.db.FileInfoService;
+import com.rockchips.mediacenter.modle.db.PreviewPhotoInfoService;
 import com.rockchips.mediacenter.utils.StorageUtils;
 
 /**
@@ -27,8 +27,11 @@ public class DeviceInitCheckThread extends Thread{
 	public void run() {
 		Log.i(TAG, "DeviceInitCheckThread->startTime:" + System.currentTimeMillis());
 		DeviceService deviceService = new DeviceService();
-		List<Device> allDevices = deviceService.getAll(Device.class);
-		deviceService.deleteAll(allDevices);
+		deviceService.deleteAll();
+		FileInfoService fileInfoService = new FileInfoService();
+		fileInfoService.deleteAll();
+		PreviewPhotoInfoService previewPhotoInfoService = new PreviewPhotoInfoService();
+		previewPhotoInfoService.deleteAll();
 		//内部存储路径
 		String internelStoragePath = StorageUtils.getFlashStoragePath();
 		List<String> allUsbPaths = StorageUtils.getUSBPaths(mService);
@@ -46,6 +49,7 @@ public class DeviceInitCheckThread extends Thread{
 				mountBundle.putInt(ConstData.DeviceMountMsg.MOUNT_TYPE, ConstData.DeviceType.DEVICE_TYPE_U);
 				mountBundle.putBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK, false);
 				mountBundle.putString(ConstData.DeviceMountMsg.NETWORK_PATH, "");
+				mountBundle.putString(ConstData.DeviceMountMsg.DEVICE_NAME, usbPath.substring(usbPath.lastIndexOf("/") + 1, usbPath.length()));
 				mService.getDeviceMountService().execute(new DeviceMountThread(mService, mountBundle));
 			}
 		}
@@ -58,6 +62,7 @@ public class DeviceInitCheckThread extends Thread{
 				mountBundle.putInt(ConstData.DeviceMountMsg.MOUNT_TYPE, ConstData.DeviceType.DEVICE_TYPE_SD);
 				mountBundle.putBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK, false);
 				mountBundle.putString(ConstData.DeviceMountMsg.NETWORK_PATH, "");
+				mountBundle.putString(ConstData.DeviceMountMsg.DEVICE_NAME, sdCardPath.substring(sdCardPath.lastIndexOf("/") + 1, sdCardPath.length()));
 				mService.getDeviceMountService().execute(new DeviceMountThread(mService, mountBundle));
 			}
 		}
@@ -67,6 +72,7 @@ public class DeviceInitCheckThread extends Thread{
 		mountBundle.putInt(ConstData.DeviceMountMsg.MOUNT_TYPE, ConstData.DeviceType.DEVICE_TYPE_INTERNEL_STORAGE);
 		mountBundle.putBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK, false);
 		mountBundle.putString(ConstData.DeviceMountMsg.NETWORK_PATH, "");
+		mountBundle.putString(ConstData.DeviceMountMsg.DEVICE_NAME, internelStoragePath.substring(internelStoragePath.lastIndexOf("/") + 1, internelStoragePath.length()));
 		//添加内部存储
 		mService.getDeviceMountService().execute(new DeviceMountThread(mService, mountBundle));
 		//启动网络监测线程

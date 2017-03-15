@@ -1416,6 +1416,7 @@ public class ConstData {
 		String IS_FROM_NETWORK = "com.rockchips.mediacenter.is_from_network";
 		String NETWORK_PATH = "com.rockchips.mediacenter.network_path";
 		String DEVICE_NAME = "com.rockchips.mediacenter.device_name";
+		String DEVICE_ID = "com.rockchips.mediacenter.device_name";
 	}
 	
 	/**

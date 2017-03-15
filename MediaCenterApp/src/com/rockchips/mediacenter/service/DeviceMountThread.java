@@ -43,7 +43,7 @@ public class DeviceMountThread extends Thread{
 		Log.i(TAG, "DeviceMountThread->deviceType:" + deviceType);
 		Log.i(TAG, "DeviceMountThread->mountPath:" + mountPath);
 		Log.i(TAG, "DeviceMountThread->mountState:" + mountState);
-		Log.i(TAG, "DeviceMountThread->isFromNetWork:" + mountState);
+		Log.i(TAG, "DeviceMountThread->isFromNetWork:" + isFromNetWork);
 		Log.i(TAG, "DeviceMountThread->netWorkPath:" + netWrokPath);
 		Log.i(TAG, "DeviceMountThread->deviceName:" + deviceName);
 		DeviceService deviceService = new DeviceService();
@@ -66,6 +66,7 @@ public class DeviceMountThread extends Thread{
 						}
 					}
 				}
+				//删除对应的缓存文件
 				List<PreviewPhotoInfo> previewPhotoInfos = previewPhotoInfoService.getPreviewPhotoInfosByDeviceID(device.getDeviceID());
 				if(previewPhotoInfos != null && previewPhotoInfos.size() > 0){
 					for(PreviewPhotoInfo itemPreviewPhotoInfo : previewPhotoInfos){
@@ -94,12 +95,15 @@ public class DeviceMountThread extends Thread{
 				return;
 			//将设备存储至数据库中
 			deviceService.save(mountDevice);
+			broadIntent.putExtra(ConstData.DeviceMountMsg.DEVICE_ID, mountDevice.getDeviceID());
 			//标记设备已经上线
 			DeviceScanInfo scanInfo = new DeviceScanInfo();
 			scanInfo.setMountState(ConstData.DeviceMountState.DEVICE_UP);
 			//scanInfo.setNeedRescan(false);
 			scanInfo.setDeviceType(mountDevice.getDeviceType());
 			scanInfo.setMountPath(mountDevice.getLocalMountPath());
+			scanInfo.setNetWrokPath(netWrokPath);
+			scanInfo.setDeviceName(deviceName);
 		    mService.setDeviceScanInfo(mountDevice.getDeviceID(), scanInfo);
 			//启动文件扫描线程
 		    if(deviceType != ConstData.DeviceType.DEVICE_TYPE_DMS)

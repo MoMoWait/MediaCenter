@@ -4,12 +4,8 @@
 package com.rockchips.mediacenter.modle.db;
 
 import java.util.List;
-
 import org.xutils.db.sqlite.WhereBuilder;
-import org.xutils.ex.DbException;
-
 import android.util.Log;
-
 import com.rockchips.mediacenter.application.MediaCenterApplication;
 import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.data.ConstData;
@@ -36,7 +32,7 @@ public class DeviceService extends AppBeanService<Device>{
 		List<Device> devices = null;
 		try {
 			devices = MediaCenterApplication.mDBManager.selector(Device.class).where("localMountPath", "=", mountPath).findAll();
-		} catch (DbException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return devices;
@@ -53,7 +49,7 @@ public class DeviceService extends AppBeanService<Device>{
 					where(WhereBuilder.b("deviceType", "=", ConstData.DeviceType.DEVICE_TYPE_DMS).
 							or("deviceType", "=", ConstData.DeviceType.DEVICE_TYPE_NFS).
 							or("deviceType", "=", ConstData.DeviceType.DEVICE_TYPE_SMB)).findAll();
-		} catch (DbException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return devices;
@@ -71,7 +67,7 @@ public class DeviceService extends AppBeanService<Device>{
 					where(WhereBuilder.b("deviceType", "=", ConstData.DeviceType.DEVICE_TYPE_INTERNEL_STORAGE).
 							or("deviceType", "=", ConstData.DeviceType.DEVICE_TYPE_U).
 							or("deviceType", "=", ConstData.DeviceType.DEVICE_TYPE_SD)).findAll();
-		} catch (DbException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return devices;
@@ -85,10 +81,17 @@ public class DeviceService extends AppBeanService<Device>{
 	public void deleteAll(List<Device> devices){
 		try {
 			MediaCenterApplication.mDBManager.delete(devices);
-		} catch (DbException e) {
+		} catch (Exception e) {
 			Log.e(TAG, "deleteAll->devices:" + devices);
 			e.printStackTrace();
 		}
 	}
 	
+	public void deleteAll(){
+		try {
+			MediaCenterApplication.mDBManager.delete(Device.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

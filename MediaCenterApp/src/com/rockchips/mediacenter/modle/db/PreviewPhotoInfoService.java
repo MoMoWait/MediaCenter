@@ -6,8 +6,6 @@ package com.rockchips.mediacenter.modle.db;
 import java.util.List;
 
 import org.xutils.db.sqlite.WhereBuilder;
-import org.xutils.ex.DbException;
-
 import com.rockchips.mediacenter.application.MediaCenterApplication;
 import com.rockchips.mediacenter.bean.PreviewPhotoInfo;
 
@@ -28,7 +26,7 @@ public class PreviewPhotoInfoService extends AppBeanService<PreviewPhotoInfo>{
 			photoInfo = MediaCenterApplication.mDBManager.selector(PreviewPhotoInfo.class).
 			where(WhereBuilder.b("deviceID", "=", deviceID).and("originPath", "=", originPath))
 			.findFirst();
-		} catch (DbException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return photoInfo;
@@ -43,7 +41,7 @@ public class PreviewPhotoInfoService extends AppBeanService<PreviewPhotoInfo>{
 		List<PreviewPhotoInfo> previewPhotoInfos = null;
 		try {
 			previewPhotoInfos = MediaCenterApplication.mDBManager.selector(PreviewPhotoInfo.class).where(WhereBuilder.b("deviceID", "=", deviceID)).findAll();
-		} catch (DbException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return previewPhotoInfos;
@@ -52,7 +50,18 @@ public class PreviewPhotoInfoService extends AppBeanService<PreviewPhotoInfo>{
 	public void deletePreviewPhotoByDeviceID(String deviceID){
 		try {
 			MediaCenterApplication.mDBManager.delete(PreviewPhotoInfo.class, WhereBuilder.b("deviceID", "=", deviceID));
-		} catch (DbException e) {
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 删除所有数据
+	 */
+	public void deleteAll(){
+		try {
+			MediaCenterApplication.mDBManager.delete(PreviewPhotoInfo.class);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

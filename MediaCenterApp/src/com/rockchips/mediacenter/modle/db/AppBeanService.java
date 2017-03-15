@@ -2,8 +2,6 @@ package com.rockchips.mediacenter.modle.db;
 
 import android.util.Log;
 
-import org.xutils.ex.DbException;
-
 import com.rockchips.mediacenter.application.MediaCenterApplication;
 
 import java.util.ArrayList;
@@ -21,7 +19,7 @@ public abstract class AppBeanService<T> implements BaseBeanService<T>{
     public void save(T object) {
         try {
             MediaCenterApplication.mDBManager.save(object);
-        } catch (DbException e) {
+        } catch (Exception e) {
             Log.i(TAG, "存储对象发生异常：" + e);
             e.printStackTrace();
         }
@@ -31,7 +29,7 @@ public abstract class AppBeanService<T> implements BaseBeanService<T>{
     public void delete(T object) {
         try {
             MediaCenterApplication.mDBManager.delete(object);
-        } catch (DbException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -40,7 +38,7 @@ public abstract class AppBeanService<T> implements BaseBeanService<T>{
     public void update(T object) {
         try {
             MediaCenterApplication.mDBManager.update(object);
-        } catch (DbException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -50,7 +48,7 @@ public abstract class AppBeanService<T> implements BaseBeanService<T>{
        List<T> lists = new ArrayList<T>();
         try {
             lists = MediaCenterApplication.mDBManager.findAll(tClass);
-        } catch (DbException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return lists;
@@ -61,7 +59,7 @@ public abstract class AppBeanService<T> implements BaseBeanService<T>{
         T object = null;
         try {
             object = MediaCenterApplication.mDBManager.findById(tClass, id);
-        } catch (DbException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return object;
@@ -75,7 +73,7 @@ public abstract class AppBeanService<T> implements BaseBeanService<T>{
         try {
         		MediaCenterApplication.mDBManager.save(objects);
 			
-        } catch (DbException e) {
+        } catch (Exception e) {
         	Log.i(TAG, "saveAll->exception:" + e);
             e.printStackTrace();
         }
@@ -86,7 +84,7 @@ public abstract class AppBeanService<T> implements BaseBeanService<T>{
     public void updateAll(List<T> objects) {
         try {
             MediaCenterApplication.mDBManager.update(objects);
-        } catch (DbException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -95,7 +93,7 @@ public abstract class AppBeanService<T> implements BaseBeanService<T>{
     public void saveOrUpdateAll(List<T> objects) {
         try {
             MediaCenterApplication.mDBManager.saveOrUpdate(objects);
-        } catch (DbException e) {
+        } catch (Exception e) {
         	Log.i(TAG, "saveOrUpdateAll->exception:" + e);
             e.printStackTrace();
         }
@@ -104,7 +102,7 @@ public abstract class AppBeanService<T> implements BaseBeanService<T>{
     public void saveOrUpdate(T object){
     	  try {
               MediaCenterApplication.mDBManager.saveOrUpdate(object);
-          } catch (DbException e) {
+          } catch (Exception e) {
               e.printStackTrace();
           }
     }

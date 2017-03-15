@@ -1,7 +1,6 @@
 package com.rockchips.mediacenter.modle.db;
 import java.util.List;
 import org.xutils.db.sqlite.WhereBuilder;
-import org.xutils.ex.DbException;
 import com.rockchips.mediacenter.application.MediaCenterApplication;
 import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.bean.FileInfo;
@@ -26,7 +25,7 @@ public class FileInfoService extends AppBeanService<FileInfo> {
 	public void deleteFileInfosByDeviceID(String deviceID){
 		try {
 			MediaCenterApplication.mDBManager.delete(Device.class, WhereBuilder.b("deviceID", "=", deviceID));
-		} catch (DbException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -39,7 +38,7 @@ public class FileInfoService extends AppBeanService<FileInfo> {
 		List<FileInfo> fileInfos = null;
 		try {
 			fileInfos = MediaCenterApplication.mDBManager.selector(FileInfo.class).where("deviceID", "=", deviceID).findAll();
-		} catch (DbException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return fileInfos;
@@ -55,7 +54,7 @@ public class FileInfoService extends AppBeanService<FileInfo> {
 		try {
 			fileInfo = MediaCenterApplication.mDBManager.selector(FileInfo.class).
 					where(WhereBuilder.b("deviceID", "=", deviceID).and("path", "=", path)).findFirst();
-		} catch (DbException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return fileInfo;
@@ -74,21 +73,21 @@ public class FileInfoService extends AppBeanService<FileInfo> {
 			try {
 				fileInfos = MediaCenterApplication.mDBManager.selector(FileInfo.class).where("musicCount", ">", 0).
 				and("deviceID", "=", deviceID).orderBy("name", false).findAll();
-			} catch (DbException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}else if(mediaType == ConstData.MediaType.VIDEOFOLDER){
 			try {
 				fileInfos = MediaCenterApplication.mDBManager.selector(FileInfo.class).where("videoCount", ">", 0).
 				and("deviceID", "=", deviceID).orderBy("name", false).findAll();
-			} catch (DbException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}else if(mediaType == ConstData.MediaType.IMAGEFOLDER){
 			try {
 				fileInfos = MediaCenterApplication.mDBManager.selector(FileInfo.class).where("imageCount", ">", 0).
 				and("deviceID", "=", deviceID).orderBy("name", false).findAll();
-			} catch (DbException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -121,7 +120,7 @@ public class FileInfoService extends AppBeanService<FileInfo> {
 		try {
 			fileInfos = MediaCenterApplication.mDBManager.selector(FileInfo.class).where("type", "=", mediaType).
 			and("deviceID", "=", deviceID).and("parentPath", "=", parentPath).orderBy("name", false).findAll();
-		} catch (DbException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return fileInfos;
@@ -137,11 +136,20 @@ public class FileInfoService extends AppBeanService<FileInfo> {
 		try {
 			MediaCenterApplication.mDBManager.delete(FileInfo.class, WhereBuilder.b("deviceID", "=", deviceID)
 					.and("path", "like", includePath + "%"));
-		} catch (DbException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	
+	/**
+	 * 删除所有数据
+	 */
+	public void deleteAll(){
+		try {
+			MediaCenterApplication.mDBManager.delete(FileInfo.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 }

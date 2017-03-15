@@ -4,16 +4,24 @@
 package com.rockchips.mediacenter.modle.task;
 
 import java.io.File;
+import java.util.List;
 
 import org.json.JSONObject;
 
+import momo.cn.edu.fjnu.androidutils.data.CommonValues;
 import momo.cn.edu.fjnu.androidutils.utils.JsonUtils;
 import momo.cn.edu.fjnu.androidutils.utils.StorageUtils;
+
+import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.service.ProgressUpdateListener;
 import com.rockchips.mediacenter.utils.FileOpUtils;
+
+import android.content.Intent;
+import android.media.MediaScannerConnection;
 import android.os.AsyncTask;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -36,8 +44,10 @@ public class FileOpTask extends AsyncTask<FileInfo, Integer, Integer> {
 	private int mOpMode;
 	private CallBack mCallBack;
 	private FileInfo mFileInfo;
-	public FileOpTask(CallBack callBack){
+	private Device mDevice;
+	public FileOpTask(Device device, CallBack callBack){
 		mCallBack = callBack;
+		mDevice = device;
 	}
 	/**
 	 * 设置操作模式
@@ -123,6 +133,15 @@ public class FileOpTask extends AsyncTask<FileInfo, Integer, Integer> {
 							publishProgress(value);
 						}
 					});
+					List<String> targePaths = FileOpUtils.getAllFilePaths(targetFile);
+					//需要更新媒体库
+					if(targePaths != null && targePaths.size() > 0){
+						MediaScannerConnection.scanFile(CommonValues.application, targePaths.toArray(new String[0]), null, null);
+					}
+					//更新本地数据库
+					Intent broadIntent = new Intent(ConstData.BroadCastMsg.RESCAN_DEVICE);
+					broadIntent.putExtra(ConstData.IntentKey.EXTRA_DEVICE_ID, mDevice.getDeviceID());
+					LocalBroadcastManager.getInstance(CommonValues.application).sendBroadcast(broadIntent);
 				}else if(!TextUtils.isEmpty(strSrcMove)){
 					try{
 						srcFileInfo = (FileInfo)JsonUtils.jsonToObject(FileInfo.class, new JSONObject(strSrcMove));
@@ -172,6 +191,23 @@ public class FileOpTask extends AsyncTask<FileInfo, Integer, Integer> {
 					});
 					//删除源文件
 					FileOpUtils.deleteFile(srcFileInfo);
+					List<String> targePaths = FileOpUtils.getAllFilePaths(targetFile);
+					List<String> delPaths = FileOpUtils.getAllFilePaths(new File(srcFileInfo.getPath()));
+					//需要更新媒体库
+					if(targePaths != null && targePaths.size() > 0){
+						MediaScannerConnection.scanFile(CommonValues.application, targePaths.toArray(new String[0]), null, null);
+					}
+					if(delPaths != null && delPaths.size() > 0){
+						MediaScannerConnection.scanFile(CommonValues.application, delPaths.toArray(new String[0]), null, null);
+					}
+					//更新本地数据库
+					Intent srcIntent = new Intent(ConstData.BroadCastMsg.RESCAN_DEVICE);
+					srcIntent.putExtra(ConstData.IntentKey.EXTRA_DEVICE_ID, srcFileInfo.getDeviceID());
+					LocalBroadcastManager.getInstance(CommonValues.application).sendBroadcast(srcIntent);
+					//更新本地数据库
+					Intent targetIntent = new Intent(ConstData.BroadCastMsg.RESCAN_DEVICE);
+					targetIntent.putExtra(ConstData.IntentKey.EXTRA_DEVICE_ID, mDevice.getDeviceID());
+					LocalBroadcastManager.getInstance(CommonValues.application).sendBroadcast(targetIntent);
 				}
 				clearCopyOrMove();
 				break;

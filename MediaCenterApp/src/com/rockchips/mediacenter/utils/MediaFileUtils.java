@@ -432,6 +432,9 @@ public class MediaFileUtils {
     	File mountFile = new File(mountPath);
     	if(!mountFile.exists() && deviceType != ConstData.DeviceType.DEVICE_TYPE_DMS)
     		return null;
+    	device.setLocalMountPath(mountPath);
+		device.setDeviceName(deviceName);
+		device.setNetWorkPath(netWorkPath);
     	//本地设备有3种模式
     	if(deviceType == ConstData.DeviceType.DEVICE_TYPE_LOCAL){
     		if(StorageUtils.isMountUsb(CommonValues.application, mountPath)){
@@ -441,17 +444,8 @@ public class MediaFileUtils {
     		}else{
     			device.setDeviceType(ConstData.DeviceType.DEVICE_TYPE_INTERNEL_STORAGE);
     		}
-    		device.setLocalMountPath(mountPath);
-    		device.setDeviceName(getDeviceIdFromMountFile(mountFile));
-    		device.setNetWorkPath(netWorkPath);
     	}else{
-    		if(deviceType != ConstData.DeviceType.DEVICE_TYPE_DMS)
-    			device.setDeviceName(getDeviceIdFromMountFile(mountFile));
-    		else
-    			device.setDeviceName(deviceName);
     		device.setDeviceType(deviceType);
-    		device.setLocalMountPath(mountPath);
-    		device.setNetWorkPath(netWorkPath);
     	}
     	return device;
     }

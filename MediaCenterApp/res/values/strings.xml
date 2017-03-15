@@ -382,4 +382,5 @@
     <string name="paste_error">黏贴错误</string>
     <string name="exist_same_file">存在同名文件(夹)</string>
     <string name="delete_part_file_error">部分文件无法删除</string>
+    <string name="rename_failed">重命名失败</string>
 </resources>

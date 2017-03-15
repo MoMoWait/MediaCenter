@@ -176,7 +176,7 @@ public class StreamClientImpl extends AbstractStreamClient<StreamClientConfigura
 
         @Override
         protected void onConnectionFailed(Throwable t) {
-            log.log(Level.WARNING, "HTTP connection failed: " + requestMessage, Exceptions.unwrap(t));
+            //log.log(Level.WARNING, "HTTP connection failed: " + requestMessage, Exceptions.unwrap(t));
         }
 
         @Override

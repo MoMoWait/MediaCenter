@@ -493,13 +493,13 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
         {
             Device info = mDevInfoList.get(i);
             if(info.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_SMB && NetUtils.isConnectNetWork()){
-            	String deviceID = info.getDeviceID();
             	name = DeviceTypeStr.getDevTypeStr(this, info.getDeviceType()) + info.getNetWorkPath() +
-            			"(" + deviceID.substring(deviceID.length() - 8, deviceID.length()) + ")" ;
+            			"(" + info.getDeviceName() + ")" ;
             }else if(info.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_NFS && NetUtils.isConnectNetWork()){
-            	String deviceID = info.getDeviceID();
             	name = DeviceTypeStr.getDevTypeStr(this, info.getDeviceType()) + info.getNetWorkPath() +
-            			"(" + deviceID.substring(deviceID.length() - 8, deviceID.length())  + ")" ;
+            			"(" + info.getDeviceName()  + ")" ;
+            }else if(info.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_DMS && NetUtils.isConnectNetWork()){
+            	name = DeviceTypeStr.getDevTypeStr(this, info.getDeviceType()) + info.getDeviceName();
             }else{
             	 name = DeviceTypeStr.getDevTypeStr(this, info.getDeviceType()) + info.getDeviceName();
             }

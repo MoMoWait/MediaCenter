@@ -778,21 +778,27 @@ public class DeviceMonitorService extends Service {
 				NFSInfo nfsInfo = (NFSInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_NFS_INFO);
 				boolean isAddNetWork = intent.getBooleanExtra(ConstData.IntentKey.EXTRA_IS_ADD_NETWORK_DEVICE, false);
 				Bundle nfsBundle = new Bundle();
-				nfsBundle.putString(ConstData.DeviceMountMsg.MOUNT_PATH, nfsInfo.getLocalMountPath());
+				String localMountPath = nfsInfo.getLocalMountPath();
+				String name = localMountPath.substring(localMountPath.lastIndexOf("/") + 1, localMountPath.length());
+				nfsBundle.putString(ConstData.DeviceMountMsg.MOUNT_PATH, localMountPath);
 				nfsBundle.putInt(ConstData.DeviceMountMsg.MOUNT_STATE, ConstData.DeviceMountState.DEVICE_UP);
 				nfsBundle.putInt(ConstData.DeviceMountMsg.MOUNT_TYPE, ConstData.DeviceType.DEVICE_TYPE_NFS);
 				nfsBundle.putBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK, isAddNetWork);
 				nfsBundle.putString(ConstData.DeviceMountMsg.NETWORK_PATH, nfsInfo.getNetWorkPath());
+				nfsBundle.putString(ConstData.DeviceMountMsg.DEVICE_NAME, name);
 				mDeviceMountService.execute(new DeviceMountThread(DeviceMonitorService.this, nfsBundle));
 			}else if(action.equals(ConstData.BroadCastMsg.SAMBA_MOUNT)){
 				SmbInfo smbInfo = (SmbInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_SAMBA_INFO);
 				boolean isAddNetWork = intent.getBooleanExtra(ConstData.IntentKey.EXTRA_IS_ADD_NETWORK_DEVICE, false);
 				Bundle sambaBundle = new Bundle();
-				sambaBundle.putString(ConstData.DeviceMountMsg.MOUNT_PATH, smbInfo.getLocalMountPath());
+				String localMountPath = smbInfo.getLocalMountPath();
+				String name = localMountPath.substring(localMountPath.lastIndexOf("/") + 1, localMountPath.length());
+				sambaBundle.putString(ConstData.DeviceMountMsg.MOUNT_PATH, localMountPath);
 				sambaBundle.putInt(ConstData.DeviceMountMsg.MOUNT_STATE, ConstData.DeviceMountState.DEVICE_UP);
 				sambaBundle.putInt(ConstData.DeviceMountMsg.MOUNT_TYPE, ConstData.DeviceType.DEVICE_TYPE_SMB);
 				sambaBundle.putBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK, isAddNetWork);
 				sambaBundle.putString(ConstData.DeviceMountMsg.NETWORK_PATH, smbInfo.getNetWorkPath());
+				sambaBundle.putString(ConstData.DeviceMountMsg.DEVICE_NAME, name);
 				mDeviceMountService.execute(new DeviceMountThread(DeviceMonitorService.this, sambaBundle));
 			}else if(action.equals(ConstData.BroadCastMsg.REFRESH_NETWORK_DEVICE)){
 				//刷新网络设备
@@ -808,6 +814,7 @@ public class DeviceMonitorService extends Service {
 					searchUpnpDevice();
 				}
 			}else if(action.equals(ConstData.BroadCastMsg.RESCAN_DEVICE)){
+				Log.i(TAG, "receive broad cast rescan device");
 				//重新扫描设备
 				String deviceID = intent.getStringExtra(ConstData.IntentKey.EXTRA_DEVICE_ID);
 				DeviceScanInfo scanInfo = mDeviceScanInfos.get(deviceID);
@@ -818,6 +825,8 @@ public class DeviceMonitorService extends Service {
 					mountBundle.putString(ConstData.DeviceMountMsg.MOUNT_PATH, scanInfo.getMountPath());
 					mountBundle.putInt(ConstData.DeviceMountMsg.MOUNT_STATE, ConstData.DeviceMountState.DEVICE_UP);
 					mountBundle.putInt(ConstData.DeviceMountMsg.MOUNT_TYPE, scanInfo.getDeviceType());
+					mountBundle.putString(ConstData.DeviceMountMsg.NETWORK_PATH, scanInfo.getNetWrokPath());
+					mountBundle.putString(ConstData.DeviceMountMsg.DEVICE_NAME, scanInfo.getDeviceName());
 					mDeviceMountService.execute(new DeviceMountThread(DeviceMonitorService.this, mountBundle));
 				}
 			}
@@ -842,7 +851,7 @@ public class DeviceMonitorService extends Service {
 		         mOtherPreviewLoadService.execute(new AVPreviewLoadThread(fileInfo, DeviceMonitorService.this));
 	        }
 	        else if(action.equals(ConstData.BroadCastMsg.LOAD_PHOTO_PREVIEW)){
-		         //将线程推入队列
+		         //将线程推入队列                                            
 		         mOtherPreviewLoadService.execute(new PhotoPreviewLoadThread(fileInfo, DeviceMonitorService.this));
 	        }else if(action.equals(ConstData.BroadCastMsg.LOAD_APK_PREVIEW)){
 	        	//将线程推入队列

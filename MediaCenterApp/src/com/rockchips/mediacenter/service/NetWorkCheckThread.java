@@ -14,11 +14,6 @@ import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.modle.db.DeviceService;
 import com.rockchips.mediacenter.utils.MountUtils;
 import com.rockchips.mediacenter.utils.NetUtils;
-
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -69,6 +64,9 @@ public class NetWorkCheckThread extends Thread{
 				for(Device itemDevice : allNetWorkDevices){
 					//尝试卸载设备
 					deviceBundle = new Bundle();
+					String localMountPath = itemDevice.getLocalMountPath();
+					String name = localMountPath.substring(localMountPath.lastIndexOf("/") + 1, localMountPath.length());
+					deviceBundle.putString(ConstData.DeviceMountMsg.DEVICE_NAME, name);
 					deviceBundle.putString(ConstData.DeviceMountMsg.MOUNT_PATH, itemDevice.getLocalMountPath());
 					deviceBundle.putInt(ConstData.DeviceMountMsg.MOUNT_STATE, ConstData.DeviceMountState.DEVICE_DOWN);
 					deviceBundle.putBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK, false);
@@ -93,6 +91,9 @@ public class NetWorkCheckThread extends Thread{
 				while(smbIterator.hasNext()){
 					SmbInfo itemSmbInfo = smbIterator.next();
 					deviceBundle = new Bundle();
+					String localMountPath = itemSmbInfo.getLocalMountPath();
+					String name = localMountPath.substring(localMountPath.lastIndexOf("/") + 1, localMountPath.length());
+					deviceBundle.putString(ConstData.DeviceMountMsg.DEVICE_NAME, name);
 					deviceBundle.putString(ConstData.DeviceMountMsg.MOUNT_PATH, itemSmbInfo.getLocalMountPath());
 					deviceBundle.putBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK, false);
 					deviceBundle.putInt(ConstData.DeviceMountMsg.MOUNT_TYPE, ConstData.DeviceType.DEVICE_TYPE_SMB);
@@ -132,6 +133,9 @@ public class NetWorkCheckThread extends Thread{
 				while(nfsIterator.hasNext()){
 					NFSInfo itemNfsInfo = nfsIterator.next();
 					deviceBundle = new Bundle();
+					String localMountPath = itemNfsInfo.getLocalMountPath();
+					String name = localMountPath.substring(localMountPath.lastIndexOf("/") + 1, localMountPath.length());
+					deviceBundle.putString(ConstData.DeviceMountMsg.DEVICE_NAME, name);
 					deviceBundle.putString(ConstData.DeviceMountMsg.MOUNT_PATH, itemNfsInfo.getLocalMountPath());
 					deviceBundle.putBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK, false);
 					deviceBundle.putInt(ConstData.DeviceMountMsg.MOUNT_TYPE, ConstData.DeviceType.DEVICE_TYPE_NFS);

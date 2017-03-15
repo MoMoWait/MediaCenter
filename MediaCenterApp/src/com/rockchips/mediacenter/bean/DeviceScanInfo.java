@@ -12,6 +12,14 @@ public class DeviceScanInfo {
 	private String mountPath;
 	/**当前扫描状态*/
 	private int scanStatus = ConstData.DeviceScanStatus.INITIAL;
+	/**
+	 * 网络路径
+	 */
+	private String netWrokPath;
+	/**
+	 * 设备名称
+	 */
+	private String deviceName;
 	public DeviceScanInfo(){
 		
 	}
@@ -44,4 +52,17 @@ public class DeviceScanInfo {
 	public void setScanStatus(int scanStatus) {
 		this.scanStatus = scanStatus;
 	}
+	public String getNetWrokPath() {
+		return netWrokPath;
+	}
+	public void setNetWrokPath(String netWrokPath) {
+		this.netWrokPath = netWrokPath;
+	}
+	public String getDeviceName() {
+		return deviceName;
+	}
+	public void setDeviceName(String deviceName) {
+		this.deviceName = deviceName;
+	}
+	
 }

@@ -228,6 +228,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	    refershFilter.addAction(ConstData.BroadCastMsg.REFRESH_AUDIO_PREVIEW);
 	    refershFilter.addAction(ConstData.BroadCastMsg.REFRESH_PHOTO_PREVIEW);
 	    refershFilter.addAction(ConstData.BroadCastMsg.REFRESH_APK_PREVIEW);
+	    refershFilter.addAction(ConstData.BroadCastMsg.DEVICE_UP);
 	    LocalBroadcastManager.getInstance(this).registerReceiver(mRefreshPreviewReceiver, refershFilter);
 	}
 	
@@ -290,7 +291,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 		FileDeleteTipDialog deleteTipDialog = new FileDeleteTipDialog(this, new FileDeleteTipDialog.CallBack() {
 			@Override
 			public void onOK() {
-				mFileOpTask = new FileOpTask(new FileOpTask.CallBack() {
+				mFileOpTask = new FileOpTask(mCurrDevice, new FileOpTask.CallBack() {
 					@Override
 					public void onFinish(int errorCode) {
 						DialogUtils.closeLoadingDialog();
@@ -339,7 +340,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 		opProgressDialog.setCancelable(false);
 		opProgressDialog.show();
 		//黏贴文件
-		mFileOpTask = new FileOpTask(new FileOpTask.CallBack() {
+		mFileOpTask = new FileOpTask(mCurrDevice, new FileOpTask.CallBack() {
 			
 			@Override
 			public void onFinish(int errorCode) {
@@ -369,10 +370,15 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	@Override
 	public void onRename(FileInfo fileInfo) {
 		if(mRenameDialog == null){
-			mRenameDialog = new FileRenameDialog(this, fileInfo, new FileRenameDialog.Callback() {
+			mRenameDialog = new FileRenameDialog(this, mCurrDevice, fileInfo, new FileRenameDialog.Callback() {
 				@Override
 				public void onFinish(int errorCode) {
-					loadFiles();
+					if(errorCode == ConstData.FileOpErrorCode.RENAME_ERR){
+						ToastUtils.showToast(getString(R.string.rename_failed));
+					}else{
+						loadFiles();
+					}
+					
 				}
 			});
 		}else{
@@ -896,10 +902,19 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	class RefreshPreviewReceiver extends BroadcastReceiver{
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
-	    	//更新预览图
-            FileInfo fileInfo = (FileInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_FILE_INFO);
-            if(mCurrentFileInfo != null && fileInfo != null && fileInfo.getPath().equals(mCurrentFileInfo.getPath()))
-                refreshPreview(fileInfo);
+	    	if(intent.getAction().equals(ConstData.BroadCastMsg.DEVICE_UP)){
+	    		Log.i(TAG, "RefreshPreviewReceiver->device up action");
+	    		//重设ID
+	    		String deviceID = intent.getStringExtra(ConstData.DeviceMountMsg.DEVICE_ID);
+	    		if(deviceID != null)
+	    			mCurrDevice.setDeviceID(deviceID);
+	    	}else{
+	    		//更新预览图
+	            FileInfo fileInfo = (FileInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_FILE_INFO);
+	            if(mCurrentFileInfo != null && fileInfo != null && fileInfo.getPath().equals(mCurrentFileInfo.getPath()))
+	                refreshPreview(fileInfo);
+	    	}
+	    	
 	    }
 	}
 	
