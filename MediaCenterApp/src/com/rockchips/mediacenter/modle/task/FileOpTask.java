@@ -194,7 +194,7 @@ public class FileOpTask extends AsyncTask<FileInfo, Integer, Integer> {
 						}
 					});
 					//删除源文件
-					FileOpUtils.deleteFile(srcFileInfo);
+					FileOpUtils.deleteFile(srcFileInfo, mDevice);
 					List<String> targePaths = FileOpUtils.getAllFilePaths(targetFile);
 					List<String> delPaths = FileOpUtils.getAllFilePaths(new File(srcFileInfo.getPath()));
 					//需要更新媒体库
