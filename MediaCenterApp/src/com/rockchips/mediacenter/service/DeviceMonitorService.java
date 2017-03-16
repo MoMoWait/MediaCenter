@@ -594,6 +594,7 @@ public class DeviceMonitorService extends Service {
 				bundle.putInt(ConstData.DeviceMountMsg.MOUNT_STATE, newState.equals(Environment.MEDIA_MOUNTED) ? ConstData.DeviceMountState.DEVICE_UP :
 					ConstData.DeviceMountState.DEVICE_DOWN);
 				bundle.putBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK, false);
+				bundle.putString(ConstData.DeviceMountMsg.DEVICE_NAME, path.substring(path.lastIndexOf("/") + 1, path.length()));
 				//启动一个线程进行挂载，卸载处理
 				mDeviceMountService.execute(new DeviceMountThread(DeviceMonitorService.this, bundle));
 			}

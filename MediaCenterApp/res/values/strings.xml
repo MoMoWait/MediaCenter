@@ -359,7 +359,7 @@
     <string name="no_svq">没有SVQ版权</string>  
     
     <string name="search_inputhint">搜索家庭设备内容</string>
-    <string name="more_operation_pre">请按菜单键进行进行更多操作\n请按上下键切换设备</string>
+    <string name="more_operation_pre">请按菜单键进行进行更多操作\n请按上下键切换设备\n文件浏览页面下按菜单键或长按确定键进行更多操作</string>
     <string name="more_operation_back">键进行更多操作</string>
     <string name="view_video">视频</string>
     <string name="file">文件</string>

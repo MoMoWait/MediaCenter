@@ -228,6 +228,7 @@ public class FileOpUtils {
 	 * @return
 	 */
 	public static List<String> getAllFilePaths(File targetFile){
+		Log.i(TAG, "getAllFilePaths->targetFile:" + targetFile);
 		List<String> paths = new ArrayList<String>();
 		if(targetFile.isFile())
 			paths.add(targetFile.getPath());
@@ -237,11 +238,13 @@ public class FileOpUtils {
 			while(!dirFiles.isEmpty()){
 				File dirFile = dirFiles.removeFirst();
 				File[] childFiles = dirFile.listFiles();
-				for(File childFile : childFiles){
-					if(childFile.isFile())
-						paths.add(childFile.getPath());
-					else
-						dirFiles.add(childFile);
+				if(childFiles != null && childFiles.length > 0){
+					for(File childFile : childFiles){
+						if(childFile.isFile())
+							paths.add(childFile.getPath());
+						else
+							dirFiles.add(childFile);
+					}
 				}
 			}
 		}

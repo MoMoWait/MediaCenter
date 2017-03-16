@@ -124,7 +124,7 @@ public class FileOpTask extends AsyncTask<FileInfo, Integer, Integer> {
 							result = ConstData.FileOpErrorCode.WRITE_ERR;
 							break;
 						}
-						targetFile = new File(new File(mFileInfo.getParentPath()) + File.separator + srcFileInfo.getName());
+						targetFile = new File(parentFile + File.separator + srcFileInfo.getName());
 					}
 					//拷贝文件
 					FileOpUtils.copyFile(new File(srcFileInfo.getPath()), targetFile, new ProgressUpdateListener() {
@@ -184,7 +184,7 @@ public class FileOpTask extends AsyncTask<FileInfo, Integer, Integer> {
 							result = ConstData.FileOpErrorCode.WRITE_ERR;
 							break;
 						}
-						targetFile = new File(srcFile + File.separator + srcFileInfo.getName());
+						targetFile = new File(parentFile + File.separator + srcFileInfo.getName());
 					}
 					//拷贝文件
 					FileOpUtils.copyFile(srcFile, targetFile, new ProgressUpdateListener() {
@@ -194,9 +194,9 @@ public class FileOpTask extends AsyncTask<FileInfo, Integer, Integer> {
 						}
 					});
 					//删除源文件
+					List<String> delPaths = FileOpUtils.getAllFilePaths(new File(srcFileInfo.getPath()));
 					FileOpUtils.deleteFile(srcFileInfo, mDevice);
 					List<String> targePaths = FileOpUtils.getAllFilePaths(targetFile);
-					List<String> delPaths = FileOpUtils.getAllFilePaths(new File(srcFileInfo.getPath()));
 					//需要更新媒体库
 					if(targePaths != null && targePaths.size() > 0){
 						MediaScannerConnection.scanFile(CommonValues.application, targePaths.toArray(new String[0]), null, null);

@@ -213,9 +213,11 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 				return true;
 			}
 		}else if(keyCode == KeyEvent.KEYCODE_MENU){
-			//唤醒文件操作对话框
-			new FileOpDialog(this, mCurrentFileInfo, this).show();
-			return true;
+			//唤醒文件操作对话框,暂时屏蔽空文件夹下文件操作
+			if(mLoadFileInfos != null && mLoadFileInfos.size() > 0){
+				new FileOpDialog(this, mCurrentFileInfo, this).show();
+				return true;
+			}
 		}
 		return super.onKeyDown(keyCode, event);
 	}

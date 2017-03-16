@@ -358,7 +358,7 @@
     
     <string name="search_inputhint">Search Home Devices</string>
     <string name="more_operation_pre">Please press MENU key to more opration\nPlease press UP or DOWN
-         key to change devices</string>
+         key to change devices\nPlease press OK or long press MENU key to more opration in file browser</string>
     <string name="more_operation_back">Key to more Operation</string>
     <string name="view_video">Video</string>
     <string name="file">File</string>
