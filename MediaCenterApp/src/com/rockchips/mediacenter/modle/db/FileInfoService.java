@@ -1,4 +1,6 @@
 package com.rockchips.mediacenter.modle.db;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import org.xutils.db.sqlite.WhereBuilder;
 import com.rockchips.mediacenter.application.MediaCenterApplication;
@@ -68,7 +70,7 @@ public class FileInfoService extends AppBeanService<FileInfo> {
 	 * @return
 	 */
 	public List<FileInfo> getAllFolders(String deviceID, int mediaType, String rootPath){
-		List<FileInfo> fileInfos = null;
+		List<FileInfo> fileInfos = new ArrayList<FileInfo>();
 		if(mediaType == ConstData.MediaType.AUDIOFOLDER){
 			try {
 				fileInfos = MediaCenterApplication.mDBManager.selector(FileInfo.class).where("musicCount", ">", 0).
@@ -100,16 +102,16 @@ public class FileInfoService extends AppBeanService<FileInfo> {
 						break;
 					}
 				}
+				
+				if(rootFileInfo != null){
+					fileInfos.remove(rootFileInfo);
+					List<FileInfo> rootFileInfos = getFileInfos(deviceID, rootPath, MediaFileUtils.getFileTypeFromFolderType(mediaType));
+					if(rootFileInfos != null && rootFileInfos.size() > 0)
+						fileInfos.addAll(rootFileInfos);
+				}
+					
 			}
 			
-			fileInfos.remove(rootFileInfo);
-			
-			if(rootFileInfo != null){
-				//获取子文件数目
-				List<FileInfo> rootFileInfos = getFileInfos(deviceID, rootPath, MediaFileUtils.getFileTypeFromFolderType(mediaType));
-				if(rootFileInfos != null && rootFileInfos.size() > 0)
-					fileInfos.addAll(rootFileInfos);
-			}
 		}
 		
 		return fileInfos;

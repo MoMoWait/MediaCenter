@@ -87,6 +87,7 @@ public class FileOpDialog extends AppBaseDialog implements OnItemClickListener{
 			if(copyOrMoveFileInfo.getParentPath().equals(mFileInfo.getParentPath()) && mFileInfo.getType() != ConstData.MediaType.FOLDER || 
 					mFileInfo.getPath().startsWith(copyOrMoveFileInfo.getPath()))
 				mListFileOp.setAdapter(new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1, android.R.id.text1, mContext.getResources().getStringArray(R.array.file_oprations_no_paste)));
+			
 		}catch (Exception e){
 			Log.i(TAG, "copyOrMoveFileInfo:->exception:" + e);
 		}
