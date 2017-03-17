@@ -7,6 +7,8 @@
     <string name="nfs_device">NFS Device:</string>
     <string name="nfs">NFS</string>
     <string name="samba">Samba</string>
+    <string name="add_nfs">Add NFS device</string>
+    <string name="add_smb">Add SMB device</string>
     <string name="refresh_network_device">Refresh network device</string>
     <string name="refresh_all_devices">Refresh all devices</string>
     <string name="smb_device">SMB Device:</string>
@@ -317,6 +319,7 @@
     <string name="mount_fail">Mount failed</string>
     <string name="mount_success">Mount success</string>
     <string name="add_network_device">Add network devices</string>
+    <string name="device_opration">Device opration</string>
     <string name="add_nfs_device">Add NFS device</string>
     <string name="add_samba_device">Add Samba device</string>
     <string name="ex_nfs_address">example:172.16.21.123:/home/szc/nfsTest</string>

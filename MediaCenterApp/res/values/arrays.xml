@@ -19,8 +19,8 @@
     
     <!-- 网络设备 -->
     <string-array name="net_devices">
-        <item>@string/nfs</item>
-        <item>@string/samba</item>
+        <item>@string/add_nfs</item>
+        <item>@string/add_smb</item>
         <item>@string/refresh_network_device</item>
         <item>@string/refresh_all_devices</item>
     </string-array>

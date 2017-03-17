@@ -41,6 +41,7 @@ import com.rockchips.mediacenter.bean.NFSInfo;
 import com.rockchips.mediacenter.bean.SmbInfo;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.data.ConstData.ESearchType;
+import com.rockchips.mediacenter.modle.db.DeviceService;
 import com.rockchips.mediacenter.modle.db.LocalDeviceService;
 import com.rockchips.mediacenter.modle.db.LocalMediaFileService;
 import com.rockchips.mediacenter.modle.db.LocalMediaFolderService;
@@ -97,10 +98,6 @@ public class DeviceMonitorService extends Service {
 	 */
 	private ThreadPoolExecutor mFileScanService;
 	/**
-	 * 单线程池服务，用于挂载Samba设备，NFS设备
-	 */
-	private ExecutorService mMountNetWorkDeviceService;
-	/**
 	 * 本地设备上下线处理线程池
 	 */
 	private ExecutorService mLocalDeviceUpDownProcessService;
@@ -120,8 +117,10 @@ public class DeviceMonitorService extends Service {
 	 * 单线程池服务，设备挂载，卸载线程
 	 */
 	private ExecutorService mDeviceMountService;
-	private List<NFSInfo> mNFSList;
-	private List<SmbInfo> mSmbList;
+	/**
+	 * 但线程池服务，设备初始化检测服务
+	 */
+	private ExecutorService mDeviceInitCheckService;
 	/**
 	 * 网络设备挂载监听器
 	 */
@@ -146,20 +145,10 @@ public class DeviceMonitorService extends Service {
 	 * 设备上下线处理
 	 */
 	private MountDeviceHandler mDeviceHandler;
-	
-	/**
-	 * 异步执行刷新所有设备
-	 */
-	private AsyncTask<String, Integer, Integer> mRefreshAllTask;
 	/**
 	 * 远程设备Map表 
 	 */
 	private Map<String, RemoteDevice> mRemoteDevices = Collections.synchronizedMap(new HashMap<String, RemoteDevice>());
-	
-	/**
-	 * Upnp设备搜索器
-	 */
-	private AsyncTask<String, Integer, Integer> mUpnpSearchTask;
 	/**
 	 * 设备扫描信息匹配表
 	 */
@@ -196,7 +185,7 @@ public class DeviceMonitorService extends Service {
 	public void onCreate() {
 		initData();
 		attachService();
-		initLocalDevices();
+		initDevices();
 		initEvent();
 	}
 
@@ -228,9 +217,8 @@ public class DeviceMonitorService extends Service {
 	    mVideoPreviewLoadService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
 	    mOtherPreviewLoadService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
 	    mNetWorkCheckService = Executors.newSingleThreadExecutor();
-	    mLocalDeviceUpDownProcessService = Executors.newSingleThreadExecutor();
-	    mMountNetWorkDeviceService = Executors.newSingleThreadExecutor();
 	    mDeviceMountService = Executors.newSingleThreadExecutor();
+	    mDeviceInitCheckService = Executors.newSingleThreadExecutor();
 		mPreviewLoadReceiver = new PreviewLoadReceiver();
 		mNetWorkDeviceMountReceiver = new NetWorkDeviceMountReceiver();
 		mDeviceHandler = new MountDeviceHandler();
@@ -251,35 +239,6 @@ public class DeviceMonitorService extends Service {
 				mUpnpService = (AndroidUpnpService) service;
 				mUpnpService.getRegistry().addListener(mRegistryListener);
 				mUpnpService.getControlPoint().search();
-/*				if(mUpnpSearchTask != null && mUpnpSearchTask.getStatus() == Status.RUNNING)
-					mUpnpSearchTask.cancel(true);
-				mUpnpSearchTask = new AsyncTask<String, Integer, Integer>(){
-					protected  Integer doInBackground(String[] params) {
-						//删除相关数据
-						LocalDeviceService localDeviceService = new LocalDeviceService();
-						List<LocalDevice> allUpnpDevices = localDeviceService.getAllUpnpDevices();
-						UpnpFolderService upnpFolderService = new UpnpFolderService();
-						UpnpFileService upnpFileService = new UpnpFileService();
-						if(allUpnpDevices != null && allUpnpDevices.size() > 0){
-							for(LocalDevice upnpDevice : allUpnpDevices){
-								synchronized (mCurrProcessMountMsgs) {
-									mCurrProcessMountMsgs.put(upnpDevice.getMountPath(), false);
-								}
-								localDeviceService.delete(upnpDevice);
-								upnpFolderService.deleteFoldersByDeviceId(upnpDevice.getDeviceID());
-								upnpFileService.deleteFilesByDeviceId(upnpDevice.getDeviceID());
-							}
-						}
-						return ConstData.TaskExecuteResult.SUCCESS;
-					};
-					
-					protected void onPostExecute(Integer result) {
-						mUpnpService.getRegistry().addListener(mRegistryListener);
-						mUpnpService.getControlPoint().search();
-					};
-				};
-				mUpnpSearchTask.execute();*/
-				
 			}
 		};
 	}
@@ -307,11 +266,11 @@ public class DeviceMonitorService extends Service {
 		LocalBroadcastManager.getInstance(this).registerReceiver(mPreviewLoadReceiver, previewLoadFilter);
 	}
 	
-	private void initLocalDevices(){
-		//重新挂载SD卡，U盘
+	private void initDevices(){
+		//初始化设备
 		//挂载这些设备是耗时操作，需要开启线程
 		DeviceInitCheckThread deviceInitCheckThread = new DeviceInitCheckThread(this);
-		mFileScanService.execute(deviceInitCheckThread);
+		mDeviceInitCheckService.execute(deviceInitCheckThread);
 	}
 	
 	
@@ -335,38 +294,6 @@ public class DeviceMonitorService extends Service {
 		return mNetWorkCheckService;
 	}
 	
-	/**
-	 * 处理本地设备（U盘，SD卡，移动硬盘的挂载/卸载事件）
-	 */
-	public void processLocalDeviceMountMsg(String path, String state, int deviceType, boolean isAddNetWork){
-		LocalDeviceService localDeviceService = new LocalDeviceService();
-		LocalDevice device = localDeviceService.getDeviceByPath(path);
-		if(device != null){
-			localDeviceService.delete(device);
-			//需要开启线程处理
-			mLocalDeviceUpDownProcessService.execute(new LocalDeviceUpDownProcessThread(device));
-		}
-		
-		if(state.equals(Environment.MEDIA_MOUNTED)){
-			device = MediaFileUtils.getLocalDeviceFromFile(new File(path));
-			localDeviceService.save(device);
-		}
-		
-		synchronized (mountMsgs) {
-			mountMsgs.put(path, state.equals(Environment.MEDIA_MOUNTED));
-		}
-		Message message = new Message();
-		if (state.equals(Environment.MEDIA_MOUNTED)) {
-			message.what = ConstData.DeviceMountState.DEVICE_UP;
-			
-		}else{
-			message.what = ConstData.DeviceMountState.DEVICE_DOWN;
-		}
-		message.arg1 = deviceType;
-		message.arg2 = (isAddNetWork ? 1 : 0);
-		message.obj = path;
-		mDeviceHandler.sendMessage(message);
-	}
 	
 	public boolean isMounted(String path) {
 		synchronized (mCurrProcessMountMsgs) {
@@ -397,96 +324,32 @@ public class DeviceMonitorService extends Service {
 	 * 搜索UPNP设备
 	 */
 	public void searchUpnpDevice(){
-		//Log.i(TAG, "searchUpnpService");
-		//数据库操作，这里需要启动线程进行处理
-		new AsyncTask<Void, Integer, Integer>() {
+		new AsyncTask<Void, Void, Void>() {
 			@Override
-			protected Integer doInBackground(Void... params) {
-				//Log.i(TAG, "searchUpnpService->doInBackground");
-				LocalDeviceService localDeviceService = new LocalDeviceService();
-				List<LocalDevice> allUpnpDevices = localDeviceService.getAllUpnpDevices();
-				UpnpFolderService upnpFolderService = new UpnpFolderService();
-				UpnpFileService upnpFileService = new UpnpFileService();
-				if(allUpnpDevices != null && allUpnpDevices.size() > 0){
-					for(LocalDevice upnpDevice : allUpnpDevices){
-						synchronized (mCurrProcessMountMsgs) {
-							mCurrProcessMountMsgs.put(upnpDevice.getMountPath(), false);
-						}
-						localDeviceService.delete(upnpDevice);
-						upnpFolderService.deleteFoldersByDeviceId(upnpDevice.getDeviceID());
-						upnpFileService.deleteFilesByDeviceId(upnpDevice.getDeviceID());
-					}
-				}
-				Message message = new Message();
-				message.what = ConstData.DeviceMountState.DEVICE_DOWN;
-				message.arg1 = ConstData.DeviceType.DEVICE_TYPE_DMS;
-				mDeviceHandler.sendMessageDelayed(message, DELAY_MESSAGE_TIME);
+			protected Void doInBackground(Void... params) {
+				//删除所有UPNP设备
+				DeviceService deviceService = new DeviceService();
+				deviceService.deleteAll(ConstData.DeviceType.DEVICE_TYPE_DMS);
 				return null;
 			}
-			
-			@Override
-			protected void onPostExecute(Integer result) {
-				//Log.i(TAG, "searchUpnpService->onPostExecute");
-				unBindServices();
-				try{
-					mUpnpService.getConfiguration().shutdown();
-					mUpnpService.get().shutdown();
-					mUpnpService.getRegistry().shutdown();
-				}catch (Exception e){
-					
+			protected void onPostExecute(Void result) {
+				if(mUpnpService != null){
+					mUpnpService.getRegistry().removeAllRemoteDevices();
+					mUpnpService.getControlPoint().search();
 				}
-				
-				attachService();
-			}
+					
+			};
 		}.execute();
-		
 	}
 	
 	/**
 	 * 刷新所有设备
 	 */
 	public void refreshAllDevices(){
-		//Log.i(TAG, "refreshAllDevices");
-		//先停止正在扫描的线程,这里使用AsyncTask
-		synchronized (mCurrProcessMountMsgs) {
-			Set<String> processPaths = mCurrProcessMountMsgs.keySet();
-			if(processPaths != null && processPaths.size() > 0){
-				Iterator<String> processIterator = processPaths.iterator();
-				while(processIterator.hasNext()){
-					mCurrProcessMountMsgs.put(processIterator.next(), false);
-				}
-			}
-		}
-		if(mRefreshAllTask != null && mRefreshAllTask.getStatus() == Status.RUNNING)
-			mRefreshAllTask.cancel(true);
-		mRefreshAllTask = new AsyncTask<String, Integer, Integer>(){
-			protected  Integer doInBackground(String[] params) {
-				try{
-					//等待2秒
-					TimeUnit.SECONDS.sleep(2);
-					while(mFileScanService.getActiveCount() != 0)
-						TimeUnit.SECONDS.sleep(2);
-					return ConstData.TaskExecuteResult.SUCCESS;
-				}catch(Exception e){
-					//no handle
-					//Log.i(TAG, "refreshAllDevices->doInBackground:" + e);
-				}
-				
-				return ConstData.TaskExecuteResult.FAILED;
-			};
-			
-			@Override
-			protected void onPostExecute(Integer result) {
-				if(result == ConstData.TaskExecuteResult.SUCCESS){
-					//Log.i(TAG, "refreshAllDevices->onPostExecute->success");
-					initLocalDevices();
-					searchUpnpDevice();
-				}
-				
-			}
-		};
-		
-		mRefreshAllTask.execute();
+		//这里需要启动线程调度
+		mDeviceInitCheckService.execute(new DeviceInitCheckThread(DeviceMonitorService.this));
+		//搜索UPNP设备
+		searchUpnpDevice();
 	}
 	
 	/**
@@ -651,27 +514,9 @@ public class DeviceMonitorService extends Service {
 	 * @author GaoFei
 	 */
 	class UpnpRegistryListener extends DefaultRegistryListener {
-		//LocalDeviceService localDeviceService = new LocalDeviceService();
-
 		@Override
 		public void remoteDeviceAdded(Registry registry, RemoteDevice device) {
 			if(device.getType().getType().equals("MediaServer")){
-				//deleteUpnpDatas(device);
-				// 添加至数据库或更新数据库数据
-/*				LocalDevice upnpDevice = MediaFileUtils.getLocalDeviceFromRemoteDevice(device);
-				String friendName = device.getDetails().getFriendlyName();
-				localDeviceService.saveOrUpdate(upnpDevice);
-				mRemoteDevices.put(upnpDevice.getMountPath(), device);
-				synchronized (mCurrProcessMountMsgs) {
-					mCurrProcessMountMsgs.put(upnpDevice.getMountPath(), true);
-					Message message = new Message();
-					message.what = ConstData.DeviceMountState.DEVICE_UP;
-					message.arg1 = ConstData.DeviceType.DEVICE_TYPE_DMS;
-					message.obj = upnpDevice.getMountPath();
-					mDeviceHandler.sendMessageDelayed(message, DELAY_MESSAGE_TIME);
-					//启动扫描器
-					mFileScanService.execute(new UpnpFileScanThread(device, DeviceMonitorService.this, mUpnpService));
-				}*/
 				Log.i(TAG, "remoteDeviceAdded->device->descriptionURL:" + device.getIdentity().getDescriptorURL().toString());
 				Log.i(TAG, "remoteDeviceAdded->device->Udn:" + device.getIdentity().getUdn().getIdentifierString());
 				Bundle mountBundle = new Bundle();
@@ -699,16 +544,7 @@ public class DeviceMonitorService extends Service {
 				downBundle.putString(ConstData.DeviceMountMsg.NETWORK_PATH, device.getIdentity().getDescriptorURL().toString());
 				downBundle.putString(ConstData.DeviceMountMsg.DEVICE_NAME, device.getDetails().getFriendlyName());
 				mRemoteDevices.remove(device.getIdentity().getDescriptorURL().toString());
-				//mRemoteDevices.remove(device.getIdentity().getDescriptorURL().toString(), device);
 				mDeviceMountService.execute(new DeviceMountThread(DeviceMonitorService.this, downBundle));
-				/*deleteUpnpDatas(device);
-				//移除远程设备
-				mRemoteDevices.remove(device.getIdentity().getDescriptorURL().toString());
-				Message message = new Message();
-				message.what = ConstData.DeviceMountState.DEVICE_DOWN;
-				message.arg1 = ConstData.DeviceType.DEVICE_TYPE_DMS;
-				message.obj = device.getIdentity().getDescriptorURL().toString();
-				mDeviceHandler.sendMessageDelayed(message, DELAY_MESSAGE_TIME);*/
 			}
 			
 		}

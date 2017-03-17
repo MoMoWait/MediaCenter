@@ -93,9 +93,6 @@ public class FileRenameDialog extends AppBaseDialog implements View.OnClickListe
 			}
 			if(fileName.equals(mFileInfo.getName())){
 				ToastUtils.showToast(mContext.getString(R.string.enter_diff_name));
-			}else if(!new File(mFileInfo.getParentPath()).canWrite()){
-				//没有写权限
-				ToastUtils.showToast(mContext.getString(R.string.no_write_permission));
 			}else{
 				dismiss();
 				DialogUtils.showLoadingDialog(mContext, false);
@@ -119,8 +116,10 @@ public class FileRenameDialog extends AppBaseDialog implements View.OnClickListe
 							return ConstData.FileOpErrorCode.RENAME_ERR;
 						else{
 							//更新媒体库文件
-							MediaScannerConnection.scanFile(mContext, allBeforePaths.toArray(new String[0]), null, null);
-							MediaScannerConnection.scanFile(mContext, afterPaths.toArray(new String[0]), null, null);
+							if(allBeforePaths != null && allBeforePaths.size() > 0)
+								MediaScannerConnection.scanFile(mContext, allBeforePaths.toArray(new String[0]), null, null);
+							if(afterPaths != null && afterPaths.size() > 0)
+								MediaScannerConnection.scanFile(mContext, afterPaths.toArray(new String[0]), null, null);
 							//更新本地数据库文件
 							//FileInfoService fileInfoService = new FileInfoService();
 							//fileInfoService.deleteFileInfos(mFileInfo.getDeviceID(), currentFile.getPath());

@@ -5,6 +5,8 @@ package com.rockchips.mediacenter.modle.db;
 
 import java.util.List;
 import org.xutils.db.sqlite.WhereBuilder;
+import org.xutils.ex.DbException;
+
 import android.util.Log;
 import com.rockchips.mediacenter.application.MediaCenterApplication;
 import com.rockchips.mediacenter.bean.Device;
@@ -90,6 +92,14 @@ public class DeviceService extends AppBeanService<Device>{
 	public void deleteAll(){
 		try {
 			MediaCenterApplication.mDBManager.delete(Device.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void deleteAll(int deviceType){
+		try {
+			MediaCenterApplication.mDBManager.delete(Device.class, WhereBuilder.b("deviceType", "=", deviceType));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

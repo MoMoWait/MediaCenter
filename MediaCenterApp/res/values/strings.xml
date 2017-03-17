@@ -7,6 +7,8 @@
     <string name="nfs_device">NFS设备:</string>
     <string name="nfs">NFS</string>
     <string name="samba">Samba</string>
+    <string name="add_nfs">添加NFS设备</string>
+    <string name="add_smb">添加Samba设备</string>
     <string name="smb_device">SMB设备:</string>
     <string name="refresh_network_device">刷新网络设备</string>
     <string name="refresh_all_devices">刷新所有设备</string>
@@ -318,6 +320,7 @@
     <string name="mount_fail">挂载失败</string>
     <string name="mount_success">挂载成功</string>
     <string name="add_network_device">添加网络设备</string>
+    <string name="device_opration">设备操作</string>
     <string name="add_nfs_device">添加NFS设备</string>
     <string name="add_samba_device">添加Samba设备</string>
     <string name="ex_nfs_address">如:172.16.21.123:/home/szc/nfsTest</string>
