@@ -247,11 +247,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		/*if(requestCode == ConstData.ActivityRequestCode.REQUEST_VIDEO_PLAYER){
-			//启动继续扫描
-			Intent scanIntent = new Intent(ConstData.BroadCastMsg.CONTINUE_DEVICE_FILE_SCAN);
-			LocalBroadcastManager.getInstance(this).sendBroadcast(scanIntent);
-		}*/
+		
 	}
 	
 	@Override
@@ -260,8 +256,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 				mCurrMediaType == ConstData.MediaType.FOLDER){
 			mCurrentContainer = createRootContainer();
 			Log.i(TAG, "onServiceConnect ed->mCurrDevice:" + mCurrDevice);
-			//暂时屏蔽
-			//mDeviceMonitorService.loadUpnpFile(mCurrentContainer, mCurrDevice, mUpnpFileLoad);
+			mDeviceMonitorService.loadUpnpFile(mCurrentContainer, mCurrDevice, mUpnpFileLoad);
 		}
 	
 	}
@@ -404,7 +399,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
     	mCurrFolder = mCurrDevice.getLocalMountPath();
     	if(mCurrDevice.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_DMS &&
     			mCurrMediaType == ConstData.MediaType.FOLDER){
-    		//mCurrContainer = createRootContainer();
+    		mCurrentContainer = createRootContainer();
     	}else{
     		loadFiles();
     	}
@@ -871,7 +866,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 			DialogUtils.closeLoadingDialog();
 			if(isOverTimer())
 			    return;
-			mTextPathTitle.setText("222");
+			mTextPathTitle.setText(mCurrentContainer.getTitle());
 			if(fileInfos != null && fileInfos.size() > 0){
 				mLayoutContentPage.setVisibility(View.VISIBLE);
 				mLayoutNoFiles.setVisibility(View.GONE);
