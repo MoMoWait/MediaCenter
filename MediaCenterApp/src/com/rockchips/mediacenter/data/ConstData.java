@@ -1483,6 +1483,11 @@ public class ConstData {
 		String ID = "id";
 		String PARENT_ID = "parent_id";
 		String DATE = "date";
+		String ARTIST = "artist";
+		String DURATION = "duration";
+		String ALBUM = "album";
+		String ALBUM_URI = "albumArtURI";
+		
 	}
 	
 	

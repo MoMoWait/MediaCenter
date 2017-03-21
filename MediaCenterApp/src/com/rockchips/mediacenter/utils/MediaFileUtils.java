@@ -2,10 +2,14 @@ package com.rockchips.mediacenter.utils;
 
 import java.io.File;
 import java.text.Collator;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+
 import org.fourthline.cling.model.meta.RemoteDevice;
 import org.fourthline.cling.support.model.DIDLContent;
 import org.fourthline.cling.support.model.Res;
@@ -838,23 +842,15 @@ public class MediaFileUtils {
 	 * @return
 	 */
 	public static List<FileInfo> getFileInfos(DIDLContent content, Device device){
-		Log.i(TAG, "getFileInfos->content:" + content);
+		//Log.i(TAG, "getFileInfos->content:" + content);
 		DialogUtils.closeLoadingDialog();
 		List<Container> containers = content.getContainers();
 		List<Item> items = content.getItems();
 		List<FileInfo> fileInfos = new ArrayList<FileInfo>();
-		Log.i(TAG, "fillUpnpFileAdapter->containers:" + containers);
+		//Log.i(TAG, "fillUpnpFileAdapter->containers:" + containers);
 		if(containers != null && containers.size() > 0){
 			try{
 				for(Container itemContainer : containers){
-					List<Property> properties = itemContainer.getProperties();
-					if(properties != null && properties.size() > 0){
-						for(Property property : properties){
-							Log.i(TAG, "Container->property->name:" + property.getDescriptorName() + " "
-									+ "Container->property->value:" + property.getValue().toString());
-							
-						}
-					}
 					FileInfo fileInfo = new FileInfo();
 					fileInfo.setChildCount(itemContainer.getChildCount());
 					fileInfo.setDeviceID(device.getDeviceID());
@@ -865,39 +861,55 @@ public class MediaFileUtils {
 					jsonInfo.put(ConstData.UpnpFileOhterInfo.PARENT_ID, itemContainer.getParentID());
 					jsonInfo.put(ConstData.UpnpFileOhterInfo.DATE, "2017-3-13");
 					fileInfo.setOtherInfo(jsonInfo.toString());
-					fileInfos.add(fileInfo);
+ 					fileInfos.add(fileInfo);
 				}
 			}catch (Exception e){
-				
+				Log.i(TAG, "getFileInfos->exception 1:" + e);
 			}
 
 			
 		}
-		Log.i(TAG, "fillUpnpFileAdapter->items:" + items);
+		//Log.i(TAG, "fillUpnpFileAdapter->items:" + items);
 		if(items != null && items.size() > 0){
 			try{
 				for(Item item : items){
+					JSONObject jsonInfo = new JSONObject();
+					FileInfo fileInfo = new FileInfo();
 					List<Property> properties = item.getProperties();
 					if(properties != null && properties.size() > 0){
 						for(Property property : properties){
 							Log.i(TAG, "Item->property->name:" + property.getDescriptorName() + " "
 									+ "Item->property->value:" + property.getValue().toString());
+							if(property.getDescriptorName().equals(ConstData.UpnpFileOhterInfo.DATE)){
+								jsonInfo.put(ConstData.UpnpFileOhterInfo.DATE, property.getValue().toString());
+								SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+								fileInfo.setModifyTime(dateFormat.parse(property.getValue().toString()).getTime());
+							}else if(property.getDescriptorName().equals(ConstData.UpnpFileOhterInfo.ARTIST) && !jsonInfo.has(ConstData.UpnpFileOhterInfo.ARTIST))
+								jsonInfo.put(ConstData.UpnpFileOhterInfo.ARTIST, property.getValue().toString());
+							else if(property.getDescriptorName().equals(ConstData.UpnpFileOhterInfo.ALBUM) && !jsonInfo.has(ConstData.UpnpFileOhterInfo.ALBUM))
+								jsonInfo.put(ConstData.UpnpFileOhterInfo.ALBUM, property.getValue().toString());
+							else if(property.getDescriptorName().equals(ConstData.UpnpFileOhterInfo.ALBUM_URI) && !jsonInfo.has(ConstData.UpnpFileOhterInfo.ALBUM_URI))
+								jsonInfo.put(ConstData.UpnpFileOhterInfo.ALBUM_URI, property.getValue().toString());
 							
 						}
 					}
-					FileInfo fileInfo = new FileInfo();
 					fileInfo.setDeviceID(device.getDeviceID());
 					fileInfo.setName(item.getTitle());
-					JSONObject jsonInfo = new JSONObject();
 					jsonInfo.put(ConstData.UpnpFileOhterInfo.ID, item.getId());
 					jsonInfo.put(ConstData.UpnpFileOhterInfo.PARENT_ID, item.getParentID());
-					jsonInfo.put(ConstData.UpnpFileOhterInfo.DATE, "2017-3-13");
 					fileInfo.setOtherInfo(jsonInfo.toString());
 					List<Res> resources = item.getResources();
 					if(resources != null &&  resources.size() > 0 && resources.get(0) != null && resources.get(0).getProtocolInfo() != null
 							&& resources.get(0).getProtocolInfo().getContentFormat() != null){
 						String contentFormat = resources.get(0).getProtocolInfo().getContentFormat();
 						fileInfo.setPath(resources.get(0).getValue());
+						fileInfo.setSize(resources.get(0).getSize());
+						String strDuration = resources.get(0).getDuration();
+						if(strDuration != null){
+							strDuration = strDuration.substring(0, strDuration.lastIndexOf("."));
+							fileInfo.setDuration(strDuration);
+						}
+						Log.i(TAG, "getFileInfos->strDuration:" + strDuration);
 						if(contentFormat.contains("audio")){
 							fileInfo.setType(ConstData.MediaType.AUDIO);
 						}else if(contentFormat.contains("video")){
@@ -913,7 +925,7 @@ public class MediaFileUtils {
 					fileInfos.add(fileInfo);
 				}
 			}catch (Exception e){
-				
+				Log.i(TAG, "getFileInfos->exception 2:" + e);
 			}
 
 		}

@@ -3,8 +3,15 @@
  */
 package com.rockchips.mediacenter.service;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.UUID;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,6 +25,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Bitmap.CompressFormat;
 import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
+import android.net.Uri;
 import android.provider.MediaStore.Video.Thumbnails;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
@@ -64,6 +72,46 @@ public class AVPreviewLoadThread extends AbstractPreviewLoadThread{
 		}
     	long startTime = System.currentTimeMillis();
 		Log.i(TAG, "AVPreviewLoadThread->startTime:" + startTime);
+		//网络设备
+		if(mFileInfo.getPath().startsWith("http")){
+			String otherInfo = mFileInfo.getOtherInfo();
+			try{
+				JSONObject otherInfoObject = new JSONObject(otherInfo);
+				String albumPhotoURI = otherInfoObject.getString(ConstData.UpnpFileOhterInfo.ALBUM_URI);
+				if(!TextUtils.isEmpty(albumPhotoURI)){
+					URL url = new URL(albumPhotoURI);
+					HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+					InputStream inputStream = connection.getInputStream();
+					String tmpPath = ConstData.CACHE_IMAGE_DIRECTORY + File.separator + UUID.randomUUID().toString();
+					BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(tmpPath));
+					byte[] buffer = new byte[2048];
+					int readLength = 0;
+					//存储临时文件
+					while((readLength = inputStream.read(buffer)) > 0){
+						bufferedOutputStream.write(buffer, 0, readLength);
+					}
+					bufferedOutputStream.flush();
+					bufferedOutputStream.close();
+					inputStream.close();
+					String savePath = tmpPath + ".png";
+					boolean isSuccess = BitmapUtils.saveScaledBitmap(tmpPath, SizeUtils.dp2px(mService, 280), SizeUtils.dp2px(mService, 280), savePath, CompressFormat.PNG, 80);
+					//预览文件存储成功
+					if(isSuccess){
+						//删除临时文件
+						File tmpFile = new File(tmpPath);
+						tmpFile.delete();
+						//获取成功
+						mFileInfo.setPreviewPath(savePath);
+						updateToDB();
+						savePreviewPhotoInfo(mFileInfo.getDuration(), savePath);
+						sendRefreshBroadCast();
+					}
+				}
+			}catch (Exception e){
+				Log.i(TAG, "get net work preview photo exception:" + e);
+			}
+			return;
+		}
         /**
          * 媒体信息元数据获取器
          * */
@@ -167,13 +215,7 @@ public class AVPreviewLoadThread extends AbstractPreviewLoadThread{
         		mFileInfo.setPreviewPath(ConstData.UNKNOW);
         	}
         	updateToDB();
-        	PreviewPhotoInfo saveInfo = new PreviewPhotoInfo();
-        	saveInfo.setDeviceID(mFileInfo.getDeviceID());
-        	saveInfo.setOriginPath(mFileInfo.getPath());
-        	saveInfo.setDuration(timeDuration);
-        	saveInfo.setPreviewPath(savePath);
-        	saveInfo.setOhterInfo(mFileInfo.getOtherInfo());
-        	previewPhotoInfoService.save(saveInfo);
+        	savePreviewPhotoInfo(timeDuration, savePath);
             //发送广播
             sendRefreshBroadCast();
         }
@@ -190,6 +232,17 @@ public class AVPreviewLoadThread extends AbstractPreviewLoadThread{
         long second = secondes % 60;
         duration = String.format("%02d:%02d:%02d", hour, minute, second);
         return duration;
+    }
+    
+    private void savePreviewPhotoInfo(String duration, String savePath){
+    	PreviewPhotoInfoService previewPhotoInfoService = new PreviewPhotoInfoService();
+    	PreviewPhotoInfo saveInfo = new PreviewPhotoInfo();
+    	saveInfo.setDeviceID(mFileInfo.getDeviceID());
+    	saveInfo.setOriginPath(mFileInfo.getPath());
+    	saveInfo.setDuration(duration);
+    	saveInfo.setPreviewPath(savePath);
+    	saveInfo.setOhterInfo(mFileInfo.getOtherInfo());
+    	previewPhotoInfoService.save(saveInfo);
     }
     
 	/**

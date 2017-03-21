@@ -560,6 +560,7 @@ public class DeviceMonitorService extends Service {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case ConstData.UpnpFileBrowserState.RECEIVED_FAILED:
+				mUpnpFileLoadCallback.onFailed();
 				break;
 
 			case ConstData.UpnpFileBrowserState.RECEIVED_SUCCESS:

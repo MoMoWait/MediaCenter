@@ -3,8 +3,16 @@
  */
 package com.rockchips.mediacenter.service;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.UUID;
+
+import org.json.JSONObject;
+
 import momo.cn.edu.fjnu.androidutils.utils.BitmapUtils;
 import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
 import android.content.Intent;
@@ -51,6 +59,45 @@ public class PhotoPreviewLoadThread extends AbstractPreviewLoadThread{
 			sendRefreshBroadCast();
 			return;
 		}
+		if(mFileInfo.getPath().startsWith("http")){
+			String otherInfo = mFileInfo.getOtherInfo();
+			try{
+				JSONObject otherInfoObject = new JSONObject(otherInfo);
+				String albumPhotoURI = otherInfoObject.getString(ConstData.UpnpFileOhterInfo.ALBUM_URI);
+				if(!TextUtils.isEmpty(albumPhotoURI)){
+					URL url = new URL(albumPhotoURI);
+					HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+					InputStream inputStream = connection.getInputStream();
+					String tmpPath = ConstData.CACHE_IMAGE_DIRECTORY + File.separator + UUID.randomUUID().toString();
+					BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(tmpPath));
+					byte[] buffer = new byte[2048];
+					int readLength = 0;
+					//存储临时文件
+					while((readLength = inputStream.read(buffer)) > 0){
+						bufferedOutputStream.write(buffer, 0, readLength);
+					}
+					bufferedOutputStream.flush();
+					bufferedOutputStream.close();
+					inputStream.close();
+					String savePath = tmpPath + ".png";
+					boolean isSuccess = BitmapUtils.saveScaledBitmap(tmpPath, SizeUtils.dp2px(mService, 280), SizeUtils.dp2px(mService, 280), savePath, CompressFormat.PNG, 80);
+					//预览文件存储成功
+					if(isSuccess){
+						//删除临时文件
+						File tmpFile = new File(tmpPath);
+						tmpFile.delete();
+						//获取成功
+						mFileInfo.setPreviewPath(savePath);
+						updateToDB();
+						savePreviewPhotoInfo(savePath);
+						sendRefreshBroadCast();
+					}
+				}
+			}catch (Exception e){
+				Log.i(TAG, "get net work preview photo exception:" + e);
+			}
+			return;
+		}
         File cacheImageDirFile = new File(ConstData.CACHE_IMAGE_DIRECTORY);
         if(!cacheImageDirFile.exists())
             cacheImageDirFile.mkdirs();
@@ -61,11 +108,7 @@ public class PhotoPreviewLoadThread extends AbstractPreviewLoadThread{
         	//更新至数据库
         	updateToDB();
         	//缓存信息存储至数据库
-    		PreviewPhotoInfo saveInfo = new PreviewPhotoInfo();
-    		saveInfo.setDeviceID(mFileInfo.getDeviceID());
-    		saveInfo.setOriginPath(mFileInfo.getPath());
-    		saveInfo.setPreviewPath(savePath);
-    		previewPhotoInfoService.save(saveInfo);
+    		savePreviewPhotoInfo(savePath);
             //发送广播
             sendRefreshBroadCast();
         }
@@ -89,5 +132,18 @@ public class PhotoPreviewLoadThread extends AbstractPreviewLoadThread{
 		Intent previewIntent = new Intent(ConstData.BroadCastMsg.REFRESH_PHOTO_PREVIEW);
         previewIntent.putExtra(ConstData.IntentKey.EXTRA_FILE_INFO, mFileInfo);
         LocalBroadcastManager.getInstance(mService).sendBroadcast(previewIntent);
+	}
+	
+	/**
+	 * 
+	 * @param savePath
+	 */
+	private void savePreviewPhotoInfo(String savePath){
+		PreviewPhotoInfoService previewPhotoInfoService = new PreviewPhotoInfoService();
+		PreviewPhotoInfo saveInfo = new PreviewPhotoInfo();
+		saveInfo.setDeviceID(mFileInfo.getDeviceID());
+		saveInfo.setOriginPath(mFileInfo.getPath());
+		saveInfo.setPreviewPath(savePath);
+		previewPhotoInfoService.save(saveInfo);
 	}
 }

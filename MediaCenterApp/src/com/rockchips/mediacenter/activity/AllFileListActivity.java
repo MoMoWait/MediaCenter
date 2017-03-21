@@ -1,6 +1,7 @@
 package com.rockchips.mediacenter.activity;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import momo.cn.edu.fjnu.androidutils.utils.BitmapUtils;
 import momo.cn.edu.fjnu.androidutils.utils.JsonUtils;
@@ -10,6 +11,7 @@ import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
 
 import org.fourthline.cling.support.model.SortCriterion;
 import org.fourthline.cling.support.model.container.Container;
+import org.json.JSONObject;
 import org.xutils.x;
 import org.xutils.view.annotation.ViewInject;
 
@@ -152,7 +154,14 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	 * 当前Upnp文件目录
 	 */
 	private Container mCurrentContainer;
-	
+	/**
+	 * 上级Upnp文件目录
+	 */
+	private Container mLastContainer;
+	/**
+	 * Upnp目录访问列表
+	 */
+	private LinkedList<Container> mContainers = new LinkedList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -165,8 +174,16 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 			long id) {
 		FileInfo fileInfo = (FileInfo)parent.getAdapter().getItem(position);
 		if(fileInfo.getType() == ConstData.MediaType.FOLDER){
-			mCurrFolder = fileInfo.getPath();
-			loadFiles();
+			if(mCurrDevice.getDeviceType() != ConstData.DeviceType.DEVICE_TYPE_DMS){
+				mCurrFolder = fileInfo.getPath();
+				loadFiles();
+			}else{
+				mCurrentContainer = createContainerFromFileInfo(fileInfo);
+				mContainers.add(mCurrentContainer);
+				DialogUtils.showLoadingDialog(this, false);
+				startTimer(ConstData.MAX_LOAD_FILES_TIME);
+				mDeviceMonitorService.loadUpnpFile(mCurrentContainer, mCurrDevice, mUpnpFileLoad);
+			}
 		}else{
 			loadActivity(fileInfo);
 		}
@@ -200,7 +217,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if(keyCode == KeyEvent.KEYCODE_BACK){
-			if(!mCurrFolder.equals(mCurrDevice.getLocalMountPath())){
+			if(mCurrDevice.getDeviceType() != ConstData.DeviceType.DEVICE_TYPE_DMS && !mCurrFolder.equals(mCurrDevice.getLocalMountPath())){
 				mLastSelectPath = mCurrFolder;
 				if(mCurrMediaType == ConstData.MediaType.FOLDER){
 					mCurrFolder = new File(mCurrFolder).getParentFile().getPath();
@@ -211,6 +228,13 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 					loadFiles();
 				}
 				return true;
+			}
+			if(mCurrDevice.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_DMS && mCurrentContainer != null && !mCurrentContainer.getId().equals("0")){
+				mLastContainer = mContainers.removeLast();
+				mCurrentContainer = mContainers.getLast();
+				DialogUtils.showLoadingDialog(this, false);
+				startTimer(ConstData.MAX_LOAD_FILES_TIME);
+				mDeviceMonitorService.loadUpnpFile(mCurrentContainer, mCurrDevice, mUpnpFileLoad);
 			}
 		}else if(keyCode == KeyEvent.KEYCODE_MENU){
 			//唤醒文件操作对话框,暂时屏蔽空文件夹下文件操作
@@ -255,7 +279,11 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 		if(mCurrDevice.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_DMS && 
 				mCurrMediaType == ConstData.MediaType.FOLDER){
 			mCurrentContainer = createRootContainer();
-			Log.i(TAG, "onServiceConnect ed->mCurrDevice:" + mCurrDevice);
+			mContainers.add(mCurrentContainer);
+			mLastContainer = mCurrentContainer;
+			Log.i(TAG, "onServiceConnected->mCurrDevice:" + mCurrDevice);
+			DialogUtils.showLoadingDialog(this, false);
+			startTimer(ConstData.MAX_LOAD_FILES_TIME);
 			mDeviceMonitorService.loadUpnpFile(mCurrentContainer, mCurrDevice, mUpnpFileLoad);
 		}
 	
@@ -653,7 +681,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
             case ConstData.MediaType.VIDEO:
             	strInfo = String.format(getString(R.string.audio_preview_info), 
                 		getFileSize(fileInfo.getSize()), 
-                		getFileType(fileInfo.getName(),getString(R.string.music), mCurrDevice.getDeviceType()), 
+                		getFileType(fileInfo.getName(),getString(R.string.video), mCurrDevice.getDeviceType()), 
                 		getRunningTime(fileInfo),
                 		formatCreateDate(fileInfo),getDescription(""));
               break;
@@ -835,9 +863,23 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 		int position = 0;
 		if(allFileInfos != null && allFileInfos.size() > 0){
 			for(int i = 0; i < allFileInfos.size(); ++i){
-				if(allFileInfos.get(i).getPath().equals(path)){
+				if(mCurrDevice.getDeviceType() != ConstData.DeviceType.DEVICE_TYPE_DMS && allFileInfos.get(i).getPath().equals(path)){
 					position = i;
 					break;
+				}else if(mCurrDevice.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_DMS){
+					try{
+						JSONObject otherInfoObject = new JSONObject(allFileInfos.get(i).getOtherInfo());
+						Log.i(TAG, "getFilePosition->LastContainerID:" + mLastContainer.getId());
+						Log.i(TAG, "getFilePosition->fileInfoContainerID:" + otherInfoObject.getString(ConstData.UpnpFileOhterInfo.ID));
+						if(mLastContainer != null && mLastContainer.getId().equals(otherInfoObject.getString(ConstData.UpnpFileOhterInfo.ID))){
+							position = i;
+							break;
+						}
+						//otherInfoObject.getString(ConstData.UpnpFileOhterInfo.ID).equals(mLastContainer.get)
+					}catch(Exception e){
+						Log.i(TAG, "getFilePosition->exception:" + e);
+					}
+					
 				}
 			}
 		}
@@ -856,6 +898,36 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 		return rootContainer;
 	}
 	
+	/**
+	 * 从文件信息中获取Container信息
+	 * @return
+	 */
+	private Container createContainerFromFileInfo(FileInfo fileInfo){
+		Container container = new Container();
+		String otherInfo = fileInfo.getOtherInfo();
+		try{
+			JSONObject otherJsonObject = new JSONObject(otherInfo);
+			container.setId(otherJsonObject.getString(ConstData.UpnpFileOhterInfo.ID));
+			container.setParentID(otherJsonObject.getString(ConstData.UpnpFileOhterInfo.PARENT_ID));
+			container.setChildCount(fileInfo.getChildCount());
+			container.setTitle(fileInfo.getName());
+		}catch (Exception e){
+			Log.e(TAG, "createFromFileInfo->createFromFileInfo->exception:" + e);
+		}
+		
+		return container;
+	}
+	
+	/**
+	 * 从文件信息中获取ParentContainer
+	 * @param container
+	 * @return
+	 */
+	private Container createParentContainer(Container container){
+		Container parentContainer = new Container();
+		parentContainer.setId(container.getParentID());
+		return parentContainer;
+	}
 	
 	class UpnpFileLoad implements UpnpFileLoadCallback{
 
@@ -873,20 +945,24 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 				mListFile.requestFocus();
 				mAllFileListAdapter = new AllFileListAdapter(AllFileListActivity.this, R.layout.adapter_file_list_item, fileInfos);
 				mListFile.setAdapter(mAllFileListAdapter);
-				if(!TextUtils.isEmpty(mLastSelectPath)){
-					int position = getFilePosition(mLastSelectPath, fileInfos);
-					mListFile.setSelection(position);
-				}
+				int position = getFilePosition(mLastSelectPath, fileInfos);
+				mListFile.setSelection(position);
 			}else{
 				mLayoutContentPage.setVisibility(View.GONE);
 				mLayoutNoFiles.setVisibility(View.VISIBLE);
+				mTextFileName.setText("");
 			}
 		
 		}
 
 		@Override
 		public void onFailed() {
-			
+			endTimer();
+			DialogUtils.closeLoadingDialog();
+			mTextFileName.setText("");
+			mTextPathTitle.setText(mCurrentContainer.getTitle());
+			mLayoutContentPage.setVisibility(View.GONE);
+			mLayoutNoFiles.setVisibility(View.VISIBLE);
 		}
 		
 	}
