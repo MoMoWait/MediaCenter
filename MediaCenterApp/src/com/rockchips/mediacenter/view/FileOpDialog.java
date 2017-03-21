@@ -35,7 +35,7 @@ public class FileOpDialog extends AppBaseDialog implements OnItemClickListener{
 	/**文件操作栏*/
 	@ViewInject(R.id.list_file_op)
 	private ListView mListFileOp;
-	
+	private boolean mIsEmptyFolder;
 	public interface Callback{
 		void onCopy(FileInfo fileInfo);
 		void onDelete(FileInfo fileInfo);
@@ -46,11 +46,12 @@ public class FileOpDialog extends AppBaseDialog implements OnItemClickListener{
 	
 	private Callback mCallback;
 	
-	public FileOpDialog(Context context, FileInfo fileInfo, Callback callback) {
+	public FileOpDialog(Context context, FileInfo fileInfo, boolean isEmptyFolder, Callback callback) {
 		super(context);
 		mContext = context;
 		mFileInfo = fileInfo;
 		mCallback = callback;
+		mIsEmptyFolder = isEmptyFolder;
 	}
 
 	

@@ -8,13 +8,11 @@ import momo.cn.edu.fjnu.androidutils.utils.JsonUtils;
 import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
 import momo.cn.edu.fjnu.androidutils.utils.StorageUtils;
 import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
-
 import org.fourthline.cling.support.model.SortCriterion;
 import org.fourthline.cling.support.model.container.Container;
 import org.json.JSONObject;
 import org.xutils.x;
 import org.xutils.view.annotation.ViewInject;
-
 import com.rockchips.mediacenter.activity.AllUpnpFileListActivity.FileBrowser;
 import com.rockchips.mediacenter.adapter.AllFileListAdapter;
 import com.rockchips.mediacenter.adapter.FolderListAdapter;
@@ -198,7 +196,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	public boolean onItemLongClick(AdapterView<?> parent, View view,
 			int position, long id) {
 		if(mCurrMediaType == ConstData.MediaType.FOLDER && mCurrDevice.getDeviceType() != ConstData.DeviceType.DEVICE_TYPE_DMS){
-			new FileOpDialog(this, (FileInfo)parent.getItemAtPosition(position), this).show();
+			new FileOpDialog(this, (FileInfo)parent.getItemAtPosition(position), mLoadFileInfos == null || mLoadFileInfos.size() == 0, this).show();
 			return true;
 		}
 		return false;
@@ -251,10 +249,8 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 			}
 		}else if(keyCode == KeyEvent.KEYCODE_MENU){
 			//唤醒文件操作对话框,暂时屏蔽空文件夹下文件操作
-			if(mLoadFileInfos != null && mLoadFileInfos.size() > 0){
-				new FileOpDialog(this, mCurrentFileInfo, this).show();
-				return true;
-			}
+			new FileOpDialog(this, mCurrentFileInfo, mLoadFileInfos == null || mLoadFileInfos.size() == 0, this).show();
+			return true;
 		}
 		return super.onKeyDown(keyCode, event);
 	}

@@ -99,33 +99,21 @@ public class FileOpTask extends AsyncTask<FileInfo, Integer, Integer> {
 						break;
 					}
 					File targetFile = null;
-					if(mFileInfo.getType() == ConstData.MediaType.FOLDER){
-						File selectFile = new File(mFileInfo.getPath());
-						//选中目录存在相同文件名
-						if(isExistName(srcFileInfo.getName(), selectFile)){
-							result = ConstData.FileOpErrorCode.PASTE_SAME_FILE;
-							break;
-						}
-						//当前目录不可写
-						if(!selectFile.canWrite()){
-							result = ConstData.FileOpErrorCode.WRITE_ERR;
-							break;
-						}
-						targetFile = new File(selectFile, srcFileInfo.getName());
-					}else{
-						//父目录不可写
-						File parentFile = new File(mFileInfo.getParentPath());
-						//选中目录存在相同文件名
-						if(isExistName(srcFileInfo.getName(), parentFile)){
-							result = ConstData.FileOpErrorCode.PASTE_SAME_FILE;
-							break;
-						}
-						if(!parentFile.canWrite()){
-							result = ConstData.FileOpErrorCode.WRITE_ERR;
-							break;
-						}
-						targetFile = new File(parentFile + File.separator + srcFileInfo.getName());
+					//父目录不可写
+					File parentFile = new File(mFileInfo.getParentPath());
+					//选中目录存在相同文件名
+					if(isExistName(srcFileInfo.getName(), parentFile)){
+						result = ConstData.FileOpErrorCode.PASTE_SAME_FILE;
+						break;
 					}
+					/*if(!parentFile.canWrite()){
+						boolean isSuccess = parentFile.setWritable(true);
+						if(!isSuccess){
+							result = ConstData.FileOpErrorCode.WRITE_ERR;
+							break;
+						}
+					}*/
+					targetFile = new File(parentFile + File.separator + srcFileInfo.getName());
 					//拷贝文件
 					FileOpUtils.copyFile(new File(srcFileInfo.getPath()), targetFile, new ProgressUpdateListener() {
 						@Override
@@ -160,32 +148,18 @@ public class FileOpTask extends AsyncTask<FileInfo, Integer, Integer> {
 					}
 					File srcFile = new File(srcFileInfo.getPath());
 					File targetFile = null;
-					//判断当前文件夹是否具有写权限
-					if(mFileInfo.getType() == ConstData.MediaType.FOLDER){
-						File selectFile = new File(mFileInfo.getPath());
-						if(isExistName(srcFileInfo.getName(), selectFile)){
-							result = ConstData.FileOpErrorCode.PASTE_SAME_FILE;
-							break;
-						}
-						//当前目录不可写
-						if(!selectFile.canWrite() || !srcFile.canWrite()){
-							result = ConstData.FileOpErrorCode.WRITE_ERR;
-							break;
-						}
-						targetFile = new File(selectFile, srcFileInfo.getName());
-					}else{
-						//父目录不可写
-						File parentFile = new File(mFileInfo.getParentPath());
-						if(isExistName(srcFileInfo.getName(), parentFile)){
-							result = ConstData.FileOpErrorCode.PASTE_SAME_FILE;
-							break;
-						}
-						if(!parentFile.canWrite() || !srcFile.canWrite()){
-							result = ConstData.FileOpErrorCode.WRITE_ERR;
-							break;
-						}
-						targetFile = new File(parentFile + File.separator + srcFileInfo.getName());
+					//父目录不可写
+					File parentFile = new File(mFileInfo.getParentPath());
+					if(isExistName(srcFileInfo.getName(), parentFile)){
+						result = ConstData.FileOpErrorCode.PASTE_SAME_FILE;
+						break;
 					}
+					/*if(!parentFile.canWrite() || !srcFile.canWrite()){
+						
+						result = ConstData.FileOpErrorCode.WRITE_ERR;
+						break;
+					}*/
+					targetFile = new File(parentFile + File.separator + srcFileInfo.getName());
 					//拷贝文件
 					FileOpUtils.copyFile(srcFile, targetFile, new ProgressUpdateListener() {
 						@Override
