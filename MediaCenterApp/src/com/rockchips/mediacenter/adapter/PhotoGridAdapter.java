@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.rockchips.mediacenter.bean.FileInfo;
+import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.R;
 
 /**
@@ -59,8 +60,8 @@ public class PhotoGridAdapter extends ArrayAdapter<FileInfo> {
 		holder.textFileName.setText(fileInfo.getName());
 		holder.textFileCount.setText("" + fileInfo.getImageCount());
 		holder.textFileCount.setVisibility(View.GONE);
-		if(new File(fileInfo.getPath()).isFile())
-			x.image().bind(holder.imgPhoto, fileInfo.getParentPath() + "/" + fileInfo.getName(), mImageOptions, null);
+		if(fileInfo.getType() == ConstData.MediaType.IMAGE)
+			x.image().bind(holder.imgPhoto, fileInfo.getPath(), mImageOptions, null);
 		else
 			holder.textFileCount.setVisibility(View.VISIBLE);
 		return convertView;

@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import org.fourthline.cling.android.AndroidUpnpService;
 import org.fourthline.cling.model.action.ActionInvocation;
 import org.fourthline.cling.model.message.UpnpResponse;
@@ -20,14 +21,10 @@ import org.fourthline.cling.support.model.SortCriterion;
 import org.fourthline.cling.support.model.container.Container;
 import org.json.JSONObject;
 import com.rockchips.mediacenter.bean.Device;
+import com.rockchips.mediacenter.bean.DeviceScanInfo;
 import com.rockchips.mediacenter.bean.FileInfo;
-import com.rockchips.mediacenter.bean.UpnpFile;
-import com.rockchips.mediacenter.bean.UpnpFolder;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.modle.db.FileInfoService;
-import com.rockchips.mediacenter.modle.db.LocalDeviceService;
-import com.rockchips.mediacenter.modle.db.UpnpFileService;
-import com.rockchips.mediacenter.modle.db.UpnpFolderService;
 import com.rockchips.mediacenter.utils.MediaFileUtils;
 import android.util.Log;
 /**
@@ -44,19 +41,10 @@ public class UpnpFileScanThread extends Thread {
 	 */
 	
 	private LinkedList<FileInfo> mDirFileInfos = new LinkedList<FileInfo>();
-
-	/**
-	 * Upnp封装目录列表
-	 */
-	private List<UpnpFolder> mUpnpFolders = new ArrayList<UpnpFolder>();
 	/**
 	 * Upnp扫描时，暂存目录表
 	 */
 	public Map<String, FileInfo> mTmpDirFileInfos = new HashMap<>();
-	/**
-	 * Upnp封装文件列表
-	 */
-	private List<UpnpFile> mUpnpFiles = new ArrayList<UpnpFile>();
 	/**
 	 * 排序依据
 	 */
@@ -66,45 +54,10 @@ public class UpnpFileScanThread extends Thread {
 	 */
 	private Service mContentDirectoryService;
 	/**
-	 * 服务是否正在运行
-	 */
-	private boolean isServiceRunning = true;
-	/**
-	 * 是否已经等待10s
-	 */
-	private boolean isWaitTenSecond = false;
-	/**
-	 * Upnp文件服务
-	 */
-	private UpnpFileService mUpnpFileService;
-	/**
-	 * Upnp目录服务
-	 */
-	private UpnpFolderService mUpnpFolderService;
-	/**
-	 * 本地设备服务
-	 */
-	private LocalDeviceService mLocalDeviceService;
-	/**
-	 * id与文件数的关系
-	 */
-	private Map<String, Integer[]> mUpnpFolderMap = new HashMap<String, Integer[]>();
-	/**
 	 * 是否正则打开目录
 	 */
-	private boolean mIsOpenDirectory;
-	/**
-	 * 记录打开Container的时间
-	 */
-	private Map<Container, Long> mStartTimeContainers = new HashMap<Container, Long>();
-	/**
-	 * 当前打开的Container
-	 */
-	private Container mCurrentOpenContainer;
-	/**
-	 * 当前目录浏览
-	 */
-	private FileBrowser mCurrentBrowser;
+	private volatile boolean mIsOpenDirectory;
+	
 	private FileInfoService mFileInfoService;
 	private Device mDevice;
 	public UpnpFileScanThread(DeviceMonitorService service, Device device){
@@ -121,16 +74,37 @@ public class UpnpFileScanThread extends Thread {
 	
 	@Override
 	public void run() {
+		long startScanTime = System.currentTimeMillis();
+		Log.i(TAG, "start Time " + startScanTime);
+		DeviceScanInfo deviceScanInfo = mService.getDeviceScanInfo(mDevice.getDeviceID());
+		if(deviceScanInfo == null)
+			return;
 		while(!mDirFileInfos.isEmpty()){
+			deviceScanInfo = mService.getDeviceScanInfo(mDevice.getDeviceID());
+		    //获取设备扫描信息
+			if(deviceScanInfo == null){
+				//设备已经下线，不扫描直接返回
+				Log.i(TAG, mDevice.getDeviceName() + "is offline or stop scanner");
+				return;
+			}
+			if(mIsOpenDirectory)
+				continue;
 			FileInfo dirFileInfo = mDirFileInfos.remove(0);
+			Container container = createContainerFromFileInfo(dirFileInfo);
+			mIsOpenDirectory = true;
+			mUpnpService.getControlPoint().execute(new FileBrowser(mContentDirectoryService, container.getId(), BrowseFlag.DIRECT_CHILDREN, "*", 0, 100000L, mSortCriterions));
+			if(mDirFileInfos.isEmpty()){
+				try {
+					//尝试等待5s
+					TimeUnit.SECONDS.sleep(5L);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 		}
-	}
-	
-	private Container createRootContainer() {
-		Container rootContainer = new Container();
-		rootContainer.setId("0");
-		rootContainer.setTitle(mRemoteDevice.getDetails().getFriendlyName());
-		return rootContainer;
+		long endScanTime = System.currentTimeMillis();
+		Log.i(TAG, "end Time " + endScanTime);
+		Log.i(TAG, "end Time " + (endScanTime - startScanTime) / 1000 + "s");
 	}
 	
 	
@@ -141,11 +115,6 @@ public class UpnpFileScanThread extends Thread {
 	 */
 	
 	class FileBrowser extends Browse{
-		
-		/**
-		 * 是否结束
-		 */
-		boolean isEnd = false;
 		public FileBrowser(Service service, String objectID, BrowseFlag flag,
 				String filter, long firstResult, Long maxResults,
 				SortCriterion[] orderBy) {
@@ -161,22 +130,23 @@ public class UpnpFileScanThread extends Thread {
 				for(FileInfo itemFileInfo : allFileInfos){
 					try{
 						JSONObject otherInfoObject = new JSONObject(itemFileInfo.getOtherInfo());
-						if(itemFileInfo.getType() == ConstData.MediaType.FOLDER){
-							if(itemFileInfo.getChildCount() > 0)
-								mTmpDirFileInfos.put(otherInfoObject.getString(ConstData.UpnpFileOhterInfo.ID), itemFileInfo);
+						if(itemFileInfo.getType() == ConstData.MediaType.FOLDER && itemFileInfo.getChildCount() > 0){
+							mTmpDirFileInfos.put(otherInfoObject.getString(ConstData.UpnpFileOhterInfo.ID), itemFileInfo);
+							mDirFileInfos.add(itemFileInfo);
 						}else{
-							mTempFileInfos.add(itemFileInfo);
 						    String parentID = otherInfoObject.getString(ConstData.UpnpFileOhterInfo.PARENT_ID);
 						    parentIDs.add(parentID);
+						    itemFileInfo.setParentPath(mTmpDirFileInfos.get(parentID).getPath());
+						    mTempFileInfos.add(itemFileInfo);
 						    if(itemFileInfo.getType() == ConstData.MediaType.VIDEO){
 						    	int videoCount = mTmpDirFileInfos.get(parentID).getVideoCount();
 						    	mTmpDirFileInfos.get(parentID).setVideoCount(videoCount + 1);
 						    }else if(itemFileInfo.getType() == ConstData.MediaType.AUDIO){
-						    	int audioCount = mTmpDirFileInfos.get(parentID).getVideoCount();
-						    	mTmpDirFileInfos.get(parentID).setVideoCount(audioCount + 1);
+						    	int audioCount = mTmpDirFileInfos.get(parentID).getMusicCount();
+						    	mTmpDirFileInfos.get(parentID).setMusicCount(audioCount + 1);
 						    }else if(itemFileInfo.getType() == ConstData.MediaType.IMAGE){
-						    	int imageCount = mTmpDirFileInfos.get(parentID).getVideoCount();
-						    	mTmpDirFileInfos.get(parentID).setVideoCount(imageCount + 1);
+						    	int imageCount = mTmpDirFileInfos.get(parentID).getImageCount();
+						    	mTmpDirFileInfos.get(parentID).setImageCount(imageCount + 1);
 						    }
 						    	
 						}
@@ -190,10 +160,11 @@ public class UpnpFileScanThread extends Thread {
 					mTempFileInfos.add(mTmpDirFileInfos.get(itemID));
 					mTmpDirFileInfos.remove(itemID);
 				}
-				mFileInfoService.saveAll(mTempFileInfos);
+				Log.i(TAG, "FileBrowser->received->mTempFileInfos:" + mTempFileInfos);
+				if(mTempFileInfos != null && mTempFileInfos.size() > 0)
+					mFileInfoService.saveAll(mTempFileInfos);
 			}
-			
-			
+			mIsOpenDirectory = false;
 		}
 
 		@Override
@@ -205,7 +176,7 @@ public class UpnpFileScanThread extends Thread {
 		@Override
 		public void failure(ActionInvocation invocation,
 				UpnpResponse operation, String defaultMsg) {
-			
+			mIsOpenDirectory = false;
 		}
 		
 	}
@@ -219,9 +190,12 @@ public class UpnpFileScanThread extends Thread {
 		String otherInfo = fileInfo.getOtherInfo();
 		try{
 			JSONObject otherJsonObject = new JSONObject(otherInfo);
-			container.setId(otherJsonObject.getString(ConstData.UpnpFileOhterInfo.ID));
-			container.setParentID(otherJsonObject.getString(ConstData.UpnpFileOhterInfo.PARENT_ID));
-			container.setChildCount(fileInfo.getChildCount());
+			String containerID = otherJsonObject.getString(ConstData.UpnpFileOhterInfo.ID);
+			container.setId(containerID);
+			if(!"0".equals(otherJsonObject)){
+				container.setParentID(otherJsonObject.getString(ConstData.UpnpFileOhterInfo.PARENT_ID));
+				container.setChildCount(fileInfo.getChildCount());
+			}
 			container.setTitle(fileInfo.getName());
 		}catch (Exception e){
 			Log.e(TAG, "createFromFileInfo->createFromFileInfo->exception:" + e);

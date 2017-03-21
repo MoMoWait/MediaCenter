@@ -12,6 +12,7 @@ import com.rockchips.mediacenter.modle.db.FileInfoService;
 import com.rockchips.mediacenter.utils.MediaFileUtils;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 /**
  * @author GaoFei
@@ -36,6 +37,9 @@ public class ImageFileLoadTask extends AsyncTask<Object, Integer, Integer>{
 		int mediaType = (Integer)params[1];
 		String currFolder = (String)params[2];
 		boolean isLoadRoot = (Boolean)params[3];
+		Log.i(TAG, "ImageFileLoadTask->doInBackgournd: " + mediaType);
+		Log.i(TAG, "ImageFileLoadTask->currFolder: " + currFolder);
+		Log.i(TAG, "ImageFileLoadTask->isLoadRoot: " + isLoadRoot);
 		FileInfoService fileInfoService= new FileInfoService();
 		if(currFolder.equals(device.getLocalMountPath()) && isLoadRoot){
 			mFileInfos = fileInfoService.getAllFolders(device.getDeviceID(), mediaType, device.getLocalMountPath());

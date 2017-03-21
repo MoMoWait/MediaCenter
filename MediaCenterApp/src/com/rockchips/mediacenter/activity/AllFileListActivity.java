@@ -174,15 +174,19 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 			long id) {
 		FileInfo fileInfo = (FileInfo)parent.getAdapter().getItem(position);
 		if(fileInfo.getType() == ConstData.MediaType.FOLDER){
+			mCurrFolder = fileInfo.getPath();
 			if(mCurrDevice.getDeviceType() != ConstData.DeviceType.DEVICE_TYPE_DMS){
-				mCurrFolder = fileInfo.getPath();
 				loadFiles();
 			}else{
-				mCurrentContainer = createContainerFromFileInfo(fileInfo);
-				mContainers.add(mCurrentContainer);
-				DialogUtils.showLoadingDialog(this, false);
-				startTimer(ConstData.MAX_LOAD_FILES_TIME);
-				mDeviceMonitorService.loadUpnpFile(mCurrentContainer, mCurrDevice, mUpnpFileLoad);
+				if(mCurrMediaType == ConstData.MediaType.FOLDER){
+					mCurrentContainer = createContainerFromFileInfo(fileInfo);
+					mContainers.add(mCurrentContainer);
+					DialogUtils.showLoadingDialog(this, false);
+					startTimer(ConstData.MAX_LOAD_FILES_TIME);
+					mDeviceMonitorService.loadUpnpFile(mCurrentContainer, mCurrDevice, mUpnpFileLoad);
+				}else{
+					loadFiles();
+				}
 			}
 		}else{
 			loadActivity(fileInfo);
@@ -229,12 +233,21 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 				}
 				return true;
 			}
-			if(mCurrDevice.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_DMS && mCurrentContainer != null && !mCurrentContainer.getId().equals("0")){
+			if(mCurrDevice.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_DMS && mCurrentContainer != null 
+					&& !mCurrentContainer.getId().equals("0") && mCurrMediaType == ConstData.MediaType.FOLDER){
 				mLastContainer = mContainers.removeLast();
 				mCurrentContainer = mContainers.getLast();
 				DialogUtils.showLoadingDialog(this, false);
 				startTimer(ConstData.MAX_LOAD_FILES_TIME);
 				mDeviceMonitorService.loadUpnpFile(mCurrentContainer, mCurrDevice, mUpnpFileLoad);
+				return true;
+			}
+			if(mCurrDevice.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_DMS && !mCurrDevice.getLocalMountPath().equals(mCurrFolder)
+					&& mCurrMediaType != ConstData.MediaType.FOLDER){
+				mLastSelectPath = mCurrFolder;
+				mCurrFolder = mCurrDevice.getLocalMountPath();
+				loadFiles();
+				return true;
 			}
 		}else if(keyCode == KeyEvent.KEYCODE_MENU){
 			//唤醒文件操作对话框,暂时屏蔽空文件夹下文件操作
@@ -867,19 +880,26 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 					position = i;
 					break;
 				}else if(mCurrDevice.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_DMS){
-					try{
-						JSONObject otherInfoObject = new JSONObject(allFileInfos.get(i).getOtherInfo());
-						Log.i(TAG, "getFilePosition->LastContainerID:" + mLastContainer.getId());
-						Log.i(TAG, "getFilePosition->fileInfoContainerID:" + otherInfoObject.getString(ConstData.UpnpFileOhterInfo.ID));
-						if(mLastContainer != null && mLastContainer.getId().equals(otherInfoObject.getString(ConstData.UpnpFileOhterInfo.ID))){
+					if(mCurrMediaType == ConstData.MediaType.FOLDER){
+						try{
+							JSONObject otherInfoObject = new JSONObject(allFileInfos.get(i).getOtherInfo());
+							Log.i(TAG, "getFilePosition->LastContainerID:" + mLastContainer.getId());
+							Log.i(TAG, "getFilePosition->fileInfoContainerID:" + otherInfoObject.getString(ConstData.UpnpFileOhterInfo.ID));
+							if(mLastContainer != null && mLastContainer.getId().equals(otherInfoObject.getString(ConstData.UpnpFileOhterInfo.ID))){
+								position = i;
+								break;
+							}
+							//otherInfoObject.getString(ConstData.UpnpFileOhterInfo.ID).equals(mLastContainer.get)
+						}catch(Exception e){
+							Log.i(TAG, "getFilePosition->exception:" + e);
+						}
+					}else{
+						if(allFileInfos.get(i).getPath().equals(path)){
 							position = i;
 							break;
 						}
-						//otherInfoObject.getString(ConstData.UpnpFileOhterInfo.ID).equals(mLastContainer.get)
-					}catch(Exception e){
-						Log.i(TAG, "getFilePosition->exception:" + e);
+							
 					}
-					
 				}
 			}
 		}

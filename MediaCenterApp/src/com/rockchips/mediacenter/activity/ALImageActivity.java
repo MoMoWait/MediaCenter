@@ -191,6 +191,7 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 		mFileLoadTask = new ImageFileLoadTask(new ImageFileLoadTask.CallBack() {
 			@Override
 			public void onGetFiles(List<FileInfo> fileInfos) {
+				Log.i(TAG, "loadFiles->onGetFiles->fileInfos:" + fileInfos);
 			    endTimer();
 				DialogUtils.closeLoadingDialog();
 				if(isOverTimer())

@@ -110,6 +110,8 @@ public class DeviceMountThread extends Thread{
 			//启动文件扫描线程
 		    if(deviceType != ConstData.DeviceType.DEVICE_TYPE_DMS)
 		    	mService.getFileScanService().execute(new FileScanThread(mService, mountDevice));
+		    else
+		    	mService.getFileScanService().execute(new UpnpFileScanThread(mService, mountDevice));
 		}else{
 			broadIntent.setAction(ConstData.BroadCastMsg.DEVICE_DOWN);
 			//标记设备已下线

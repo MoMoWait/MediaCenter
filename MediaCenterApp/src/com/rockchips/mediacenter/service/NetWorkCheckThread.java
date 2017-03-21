@@ -14,7 +14,10 @@ import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.modle.db.DeviceService;
 import com.rockchips.mediacenter.utils.MountUtils;
 import com.rockchips.mediacenter.utils.NetUtils;
+
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -31,6 +34,8 @@ public class NetWorkCheckThread extends Thread{
 	
 	@Override
 	public void run() {
+		//发送网络设备刷新广播
+		LocalBroadcastManager.getInstance(mService).sendBroadcast(new Intent(ConstData.BroadCastMsg.REFRESH_NETWORK_DEVICE));
 		/*ConnectivityManager cm = (ConnectivityManager)mService.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();*/
 		boolean isConnected = NetUtils.isConnectNetWork();

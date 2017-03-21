@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.UUID;
 
 import org.fourthline.cling.model.meta.RemoteDevice;
 import org.fourthline.cling.support.model.DIDLContent;
@@ -843,7 +844,7 @@ public class MediaFileUtils {
 	 */
 	public static List<FileInfo> getFileInfos(DIDLContent content, Device device){
 		//Log.i(TAG, "getFileInfos->content:" + content);
-		DialogUtils.closeLoadingDialog();
+		//DialogUtils.closeLoadingDialog();
 		List<Container> containers = content.getContainers();
 		List<Item> items = content.getItems();
 		List<FileInfo> fileInfos = new ArrayList<FileInfo>();
@@ -856,6 +857,7 @@ public class MediaFileUtils {
 					fileInfo.setDeviceID(device.getDeviceID());
 					fileInfo.setName(itemContainer.getTitle());
 					fileInfo.setType(ConstData.MediaType.FOLDER);
+					fileInfo.setPath(UUID.randomUUID().toString());
 					JSONObject jsonInfo = new JSONObject();
 					jsonInfo.put(ConstData.UpnpFileOhterInfo.ID, itemContainer.getId());
 					jsonInfo.put(ConstData.UpnpFileOhterInfo.PARENT_ID, itemContainer.getParentID());
