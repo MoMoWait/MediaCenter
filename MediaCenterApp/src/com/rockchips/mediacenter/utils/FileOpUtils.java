@@ -8,17 +8,14 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
 import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.data.ConstData;
-import com.rockchips.mediacenter.data.ConstData.MCSMessage;
-import com.rockchips.mediacenter.modle.db.FileInfoService;
 import com.rockchips.mediacenter.service.ProgressUpdateListener;
-
 import momo.cn.edu.fjnu.androidutils.data.CommonValues;
 import android.content.Intent;
 import android.media.MediaScannerConnection;
@@ -31,7 +28,7 @@ import android.util.Log;
  */
 public class FileOpUtils {
 	private static final String TAG = "FileOpUtils";
-	
+	private static boolean isStopCopy;
 	private FileOpUtils(){
 		
 	}
@@ -116,49 +113,56 @@ public class FileOpUtils {
 	 * 文件复制操作
 	 * @param srcFile
 	 * @param targetFile
-	 * @return
+	 * @return 拷贝结果
 	 */
-	public static boolean copyFile(File srcFile, File targetFile, ProgressUpdateListener updateListener){
-		//父文件夹相同，无法复制
-		//不能将父文件夹复制到子文件夹
+	public static int copyFile(File srcFile, File targetFile, ProgressUpdateListener updateListener){
 		long allTotalSize = getAllFilesSize(srcFile);
 		Log.i(TAG, "copyFile->allTotalSize:" + allTotalSize);
 		long currentProgressSize = 0;
 		if(srcFile.isFile()){
-			try{
-				copyRealFile(srcFile, targetFile, updateListener, allTotalSize, currentProgressSize);
-			}catch (Exception e){
-				Log.i(TAG, "copyFile->exception1:" + e);
-			}
-			
+			return copyRealFile(srcFile, targetFile, updateListener, allTotalSize, currentProgressSize);
 		}else{
+			int totalFileCount = getFilesCount(srcFile);
+			Log.i(TAG, "copyFile->totalFileCount:" + totalFileCount);
+			int copyFileCount = 0;
 			LinkedList<File> srcDirFiles = new LinkedList<File>();
 			srcDirFiles.add(srcFile);
-			if(!targetFile.exists())
-				targetFile.mkdir();
-			File lastDirFile = targetFile.getParentFile();
+			String srcParentPath = srcFile.getParentFile().getPath();
+			File targetParentFile = targetFile.getParentFile();
+			File lastDirFile;
 			while(!srcDirFiles.isEmpty()){
 				File srcDirFile = srcDirFiles.removeFirst();
-				lastDirFile = new File(lastDirFile, srcDirFile.getName());
+				String srcDirPath = srcDirFile.getPath();
+				lastDirFile = new File(targetParentFile, srcDirPath.substring(srcParentPath.length() + 1));
+				if(lastDirFile.mkdirs())
+					++copyFileCount;
 				File[] childFiles = srcDirFile.listFiles();
-				for(File childFile : childFiles){
-					if(childFile.isFile()){
-						try{
-							copyRealFile(childFile, new File(lastDirFile, childFile.getName()), updateListener, allTotalSize, currentProgressSize);
+				if(childFiles != null && childFiles.length > 0){
+					for(File childFile : childFiles){
+						if(isStopCopy)
+							return ConstData.FileOpErrorCode.STOP_PASTE;
+						if(childFile.isFile()){
+							int copyResult = copyRealFile(childFile, new File(lastDirFile, childFile.getName()), updateListener, allTotalSize, currentProgressSize);
+							Log.i(TAG, "copyFile->copyResult:" + copyResult);
+							if(copyResult == ConstData.FileOpErrorCode.NO_ERR)
+								++copyFileCount;
 							currentProgressSize += childFile.length();
 							Log.i(TAG, "copyFile->currentProgressSize:" + allTotalSize);
-						}catch (Exception e){
-							Log.i(TAG, "copyFile->exception2:" + e);
+						}else{
+							srcDirFiles.add(childFile);
+							/*if(new File(lastDirFile, childFile.getName()).mkdir())
+								++copyFileCount;*/
 						}
-					}else{
-						srcDirFiles.add(childFile);
-						new File(lastDirFile, childFile.getName()).mkdir();
 					}
 				}
 			}
-			
+			Log.i(TAG, "copyFile->copyFileCount:" + copyFileCount);
+			if(copyFileCount == 0)
+				return ConstData.FileOpErrorCode.PASTE_ERR;
+			if(totalFileCount == copyFileCount)
+				return ConstData.FileOpErrorCode.NO_ERR;
+			return ConstData.FileOpErrorCode.PASTE_PART_FILE_ERR;
 		}
-		return true;
 	}
 	
 	/**
@@ -167,31 +171,74 @@ public class FileOpUtils {
 	 * @param targetFile
 	 * @throws Exception
 	 */
-	public static void copyRealFile(File srcFile, File targetFile, ProgressUpdateListener updateListener, long totalSize, long currentProgressSize){
+	public static int copyRealFile(File srcFile, File targetFile, ProgressUpdateListener updateListener, long totalSize, long currentProgressSize){
+		Log.i(TAG, "copyRealFile->srcFile:: " + srcFile.getPath());
+		Log.i(TAG, "copyRealFile->targetFile: " + targetFile.getPath());
+		BufferedInputStream srcInputStream = null;
+		BufferedOutputStream targetOutputStream = null;
 		try{
 			boolean isCreateSuccess = targetFile.createNewFile();
 			Log.i(TAG, "copyRealFile->isCreateSuccess:" + isCreateSuccess);
-			if(isCreateSuccess && !targetFile.canWrite()){
-				boolean isWriteable = targetFile.setWritable(true);
-				Log.i(TAG, "copyRealFile->isWriteable:" + isWriteable);
+			if(isCreateSuccess){
+				if(!targetFile.canWrite()){
+					boolean isWriteable = targetFile.setWritable(true);
+					//目标文件不可写
+					if(!isWriteable)
+						return ConstData.FileOpErrorCode.WRITE_ERR;
+				}
+			}else{
+				//创建文件失败
+				return ConstData.FileOpErrorCode.FILE_CREATE_FAILED;
+			}
+			
+			if(!srcFile.canRead()){
+				//设置可读
+				boolean isReadable = srcFile.setReadable(true);
+				if(!isReadable)
+					return ConstData.FileOpErrorCode.READ_ERR;
 			}
 			long curretnSize = currentProgressSize;
-			BufferedInputStream srcInputStream = new BufferedInputStream(new FileInputStream(srcFile));
-			BufferedOutputStream targetOutputStream = new BufferedOutputStream(new FileOutputStream(targetFile));
+			srcInputStream = new BufferedInputStream(new FileInputStream(srcFile));
+			targetOutputStream = new BufferedOutputStream(new FileOutputStream(targetFile));
 			byte[] buffer = new byte[2048];
 			int readLength = 0;
 			while((readLength = srcInputStream.read(buffer)) > 0){
+				if(isStopCopy){
+					srcInputStream.close();
+					targetOutputStream.close();
+					//删除已经复制的文件
+					targetFile.delete();
+					throw new Exception("Stop copy this File");
+				}
 				curretnSize += readLength;
 				targetOutputStream.write(buffer, 0, readLength);
 				updateListener.onUpdateProgress((int)(curretnSize * 1.0f / totalSize * 100));
 				
 			}
 			targetOutputStream.flush();
-			targetOutputStream.close();
-			srcInputStream.close();
-		}catch (Exception e){
+		}catch (IOException e){
 			Log.i(TAG, "copyRealFile->exception:" + e);
+		}catch (Exception e) {
+			return ConstData.FileOpErrorCode.STOP_PASTE;
+		}finally{
+			if(srcInputStream != null){
+				try {
+					srcInputStream.close();
+				} catch (Exception e) {
+					//no handle
+				}
+			}
+			
+			if(targetOutputStream != null){
+				try {
+					targetOutputStream.close();
+				} catch (Exception e) {
+					//no handle
+				}
+			}
 		}
+		
+		return ConstData.FileOpErrorCode.NO_ERR;
 	}
 	
 	/**
@@ -251,5 +298,36 @@ public class FileOpUtils {
 		return paths;
 	}
 	
+	/**
+	 * 获取某个文件夹下所有的文件格式（包含文件夹）
+	 * @param file
+	 * @return
+	 */
+	public static int getFilesCount(File targetDirFile){
+		int fileCount = 0;
+		LinkedList<File> dirFiles = new LinkedList<File>();
+		dirFiles.add(targetDirFile);
+		while(!dirFiles.isEmpty()){
+			File dirFile = dirFiles.removeFirst();
+			++fileCount;
+			File[] childFiles = dirFile.listFiles();
+			if(childFiles != null && childFiles.length > 0){
+				for(File childFile : childFiles){
+					if(childFile.isFile())
+						++fileCount;
+					else
+						dirFiles.add(childFile);
+				}
+			}
+		}
+	    return fileCount;
+	}
 	
+	public static void setStopCopy(boolean stopCopy){
+		isStopCopy = stopCopy;
+	}
+	
+	public static boolean isStopCopy() {
+		return isStopCopy;
+	}
 }

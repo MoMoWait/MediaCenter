@@ -8,5 +8,6 @@ package com.rockchips.mediacenter.service;
  * 进度更新监听器
  */
 public interface ProgressUpdateListener {
-	public void onUpdateProgress(int value);
+	void onUpdateProgress(int value);
+	void onError(int errorCode);
 }

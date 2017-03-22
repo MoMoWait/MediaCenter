@@ -5,19 +5,16 @@ package com.rockchips.mediacenter.modle.task;
 
 import java.io.File;
 import java.util.List;
-
 import org.json.JSONObject;
-
 import momo.cn.edu.fjnu.androidutils.data.CommonValues;
 import momo.cn.edu.fjnu.androidutils.utils.JsonUtils;
 import momo.cn.edu.fjnu.androidutils.utils.StorageUtils;
-
 import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.service.ProgressUpdateListener;
+import com.rockchips.mediacenter.utils.DiskUtil;
 import com.rockchips.mediacenter.utils.FileOpUtils;
-
 import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.os.AsyncTask;
@@ -29,7 +26,7 @@ import android.util.Log;
  * @author GaoFei
  * 文件操作任务
  */
-public class FileOpTask extends AsyncTask<FileInfo, Integer, Integer> {
+public class FileOpTask extends AsyncTask<Object, Integer, Integer> {
 	
 	private static final String TAG = "FileOpTask";
 	
@@ -45,6 +42,8 @@ public class FileOpTask extends AsyncTask<FileInfo, Integer, Integer> {
 	private CallBack mCallBack;
 	private FileInfo mFileInfo;
 	private Device mDevice;
+	/**是否停止黏贴*/
+	private boolean isStopPaste;
 	public FileOpTask(Device device, CallBack callBack){
 		mCallBack = callBack;
 		mDevice = device;
@@ -56,9 +55,23 @@ public class FileOpTask extends AsyncTask<FileInfo, Integer, Integer> {
 	public void setOpMode(int mode){
 		mOpMode = mode;
 	}
+	/**
+	 * 获取操作模式
+	 * @return
+	 */
+	public int getmOpMode() {
+		return mOpMode;
+	}
+	public void setStopPaste(boolean isStopPaste) {
+		this.isStopPaste = isStopPaste;
+		FileOpUtils.setStopCopy(isStopPaste);
+	}
+	public boolean isStopPaste() {
+		return isStopPaste;
+	}
 	@Override
-	protected Integer doInBackground(FileInfo... params) {
-		mFileInfo = params[0];
+	protected Integer doInBackground(Object... params) {
+		mFileInfo = (FileInfo)params[0];
 		int result = ConstData.FileOpErrorCode.NO_ERR;
 		switch(mOpMode){
 			case ConstData.FileOpMode.COPY:
@@ -86,6 +99,7 @@ public class FileOpTask extends AsyncTask<FileInfo, Integer, Integer> {
 				String strSrcMove = StorageUtils.getDataFromSharedPreference(ConstData.SharedKey.MOVE_FILE_PATH);
 				Log.i(TAG, "paste srcPath:" + strSrcCopy);
 				FileInfo srcFileInfo = null;
+				boolean isEmptyFolder = (Boolean)params[1];
 				if(!TextUtils.isEmpty(strSrcCopy)){
 					try{
 						srcFileInfo = (FileInfo)JsonUtils.jsonToObject(FileInfo.class, new JSONObject(strSrcCopy));
@@ -101,24 +115,43 @@ public class FileOpTask extends AsyncTask<FileInfo, Integer, Integer> {
 					File targetFile = null;
 					//父目录不可写
 					File parentFile = new File(mFileInfo.getParentPath());
+					//当前目录
+					File currDirFile = new File(mFileInfo.getPath());
 					//选中目录存在相同文件名
-					if(isExistName(srcFileInfo.getName(), parentFile)){
-						result = ConstData.FileOpErrorCode.PASTE_SAME_FILE;
-						break;
-					}
-					/*if(!parentFile.canWrite()){
-						boolean isSuccess = parentFile.setWritable(true);
-						if(!isSuccess){
-							result = ConstData.FileOpErrorCode.WRITE_ERR;
+					if(!isEmptyFolder){
+						if(isExistName(srcFileInfo.getName(), parentFile)){
+							result = ConstData.FileOpErrorCode.PASTE_SAME_FILE;
 							break;
 						}
-					}*/
-					targetFile = new File(parentFile + File.separator + srcFileInfo.getName());
+						targetFile = new File(parentFile + File.separator + srcFileInfo.getName());
+					}
+					else
+						targetFile = new File(currDirFile + File.separator + srcFileInfo.getName());
+					//计算拷贝的文件大小
+					long totalFileSize = DiskUtil.getFileSizes(new File(srcFileInfo.getPath()));
+					long leftDeviceSpace = DiskUtil.getFreeSize(new File(mDevice.getLocalMountPath()));
+					Log.i(TAG, "totalFileSize:" + totalFileSize);
+					Log.i(TAG, "leftDeviceSpace:" + leftDeviceSpace);
+					if(totalFileSize > leftDeviceSpace){
+						//没有足够空间
+						result = ConstData.FileOpErrorCode.NO_ENOUGH_SPACE;
+						break;
+					}
+					//停止黏贴
+					if(isStopPaste){
+						result = ConstData.FileOpErrorCode.STOP_PASTE;
+						break;
+					}
 					//拷贝文件
-					FileOpUtils.copyFile(new File(srcFileInfo.getPath()), targetFile, new ProgressUpdateListener() {
+					result = FileOpUtils.copyFile(new File(srcFileInfo.getPath()), targetFile, new ProgressUpdateListener() {
 						@Override
 						public void onUpdateProgress(int value) {
 							publishProgress(value);
+						}
+						
+						@Override
+						public void onError(int errorCode) {
+							
 						}
 					});
 					List<String> targePaths = FileOpUtils.getAllFilePaths(targetFile);
@@ -150,21 +183,35 @@ public class FileOpTask extends AsyncTask<FileInfo, Integer, Integer> {
 					File targetFile = null;
 					//父目录不可写
 					File parentFile = new File(mFileInfo.getParentPath());
-					if(isExistName(srcFileInfo.getName(), parentFile)){
-						result = ConstData.FileOpErrorCode.PASTE_SAME_FILE;
+					//当前目录
+					File currDirFile = new File(mFileInfo.getPath());
+					if(!isEmptyFolder){
+						if(isExistName(srcFileInfo.getName(), parentFile)){
+							result = ConstData.FileOpErrorCode.PASTE_SAME_FILE;
+							break;
+						}
+						targetFile = new File(parentFile + File.separator + srcFileInfo.getName());
+					}
+					else
+						targetFile = new File(currDirFile + File.separator + srcFileInfo.getName());
+					//计算拷贝的文件大小
+					long totalFileSize = DiskUtil.getFileSizes(new File(srcFileInfo.getPath()));
+					long leftDeviceSpace = DiskUtil.getFreeSize(new File(mDevice.getLocalMountPath()));
+					if(totalFileSize > leftDeviceSpace){
+						//没有足够空间
+						result = ConstData.FileOpErrorCode.NO_ENOUGH_SPACE;
 						break;
 					}
-					/*if(!parentFile.canWrite() || !srcFile.canWrite()){
-						
-						result = ConstData.FileOpErrorCode.WRITE_ERR;
-						break;
-					}*/
-					targetFile = new File(parentFile + File.separator + srcFileInfo.getName());
 					//拷贝文件
-					FileOpUtils.copyFile(srcFile, targetFile, new ProgressUpdateListener() {
+					result = FileOpUtils.copyFile(srcFile, targetFile, new ProgressUpdateListener() {
 						@Override
 						public void onUpdateProgress(int value) {
 							publishProgress(value);
+						}
+						
+						@Override
+						public void onError(int errorCode) {
+							
 						}
 					});
 					//删除源文件

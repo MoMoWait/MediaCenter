@@ -385,4 +385,9 @@
     <string name="exist_same_file">Exist same file(folder)</string>
     <string name="delete_part_file_error">Can not delete some files</string>
     <string name="rename_failed">Rename failed</string>
+    <string name="no_left_space">Target device have not enough free space</string>
+    <string name="read_err">No read permission</string>
+    <string name="file_create_failed">Create file failed</string>
+    <string name="part_file_paste_err">Part file can not paste</string>
+    <string name="stop_paste">Stopped</string>
 </resources>

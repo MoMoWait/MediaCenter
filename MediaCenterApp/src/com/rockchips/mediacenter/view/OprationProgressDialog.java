@@ -14,16 +14,20 @@ import com.rockchips.mediacenter.R;
  *
  */
 public class OprationProgressDialog extends AppBaseDialog{
-	
+	public interface Callback{
+		//停止操作
+		void onStop();
+	}
 	@ViewInject(R.id.progress_loading)
 	private ProgressBar mProgressLoading;
 	@ViewInject(R.id.text_progress_num)
 	private TextView mTextProgressNum;
 	@ViewInject(R.id.btn_stop)
 	private Button mBtnStop;
-	
-	public OprationProgressDialog(Context context) {
+	private Callback mCallback;
+	public OprationProgressDialog(Context context, Callback callback) {
 		super(context);
+		mCallback = callback;
 	}
 
 	@Override
@@ -41,7 +45,7 @@ public class OprationProgressDialog extends AppBaseDialog{
 			
 			@Override
 			public void onClick(View v) {
-				
+				mCallback.onStop();
 			}
 		});
 	}

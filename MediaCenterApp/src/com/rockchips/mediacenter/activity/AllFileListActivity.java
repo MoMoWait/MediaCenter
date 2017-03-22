@@ -195,11 +195,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	@Override
 	public boolean onItemLongClick(AdapterView<?> parent, View view,
 			int position, long id) {
-		if(mCurrMediaType == ConstData.MediaType.FOLDER && mCurrDevice.getDeviceType() != ConstData.DeviceType.DEVICE_TYPE_DMS){
-			new FileOpDialog(this, (FileInfo)parent.getItemAtPosition(position), mLoadFileInfos == null || mLoadFileInfos.size() == 0, this).show();
-			return true;
-		}
-		return false;
+		return true;
 	}
 	
 	@Override
@@ -247,10 +243,37 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 				loadFiles();
 				return true;
 			}
-		}else if(keyCode == KeyEvent.KEYCODE_MENU){
-			//唤醒文件操作对话框,暂时屏蔽空文件夹下文件操作
-			new FileOpDialog(this, mCurrentFileInfo, mLoadFileInfos == null || mLoadFileInfos.size() == 0, this).show();
-			return true;
+		}else{
+			if(mCurrDevice.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_DMS || 
+					mCurrMediaType != ConstData.MediaType.FOLDER)
+				return super.onKeyDown(keyCode, event);
+			boolean isEmptyFolder = (mLoadFileInfos == null || mLoadFileInfos.size() == 0);
+			String strCopyFileInfo = StorageUtils.getDataFromSharedPreference(ConstData.SharedKey.COPY_FILE_PATH);
+			String strMoveFileInfo = StorageUtils.getDataFromSharedPreference(ConstData.SharedKey.MOVE_FILE_PATH);
+			boolean isEmptyPaste = TextUtils.isEmpty(strCopyFileInfo) && TextUtils.isEmpty(strMoveFileInfo);
+			if(isEmptyFolder && isEmptyPaste)
+				return super.onKeyDown(keyCode, event);
+			if(isEmptyFolder){
+				try{
+					FileInfo copyOrMoveFileInfo = (FileInfo) (TextUtils.isEmpty(strCopyFileInfo) ? JsonUtils.jsonToObject(FileInfo.class, new JSONObject(strMoveFileInfo)) :JsonUtils.jsonToObject(FileInfo.class, new JSONObject(strCopyFileInfo)));
+					if(mCurrentFileInfo.getPath().startsWith(copyOrMoveFileInfo.getPath()) || !new File(copyOrMoveFileInfo.getPath()).exists())
+						return super.onKeyDown(keyCode, event);
+				}catch (Exception e){
+					//no handle
+					return super.onKeyDown(keyCode, event);
+				}
+			}
+			if(keyCode == KeyEvent.KEYCODE_MENU){
+				//唤醒文件操作对话框,暂时屏蔽空文件夹下文件操作
+				new FileOpDialog(this, mCurrentFileInfo, isEmptyFolder, this).show();
+				return true;
+			}else if(keyCode == KeyEvent.KEYCODE_DPAD_CENTER){
+				if(event.isLongPress()){
+					//长按打开操作对话框
+					new FileOpDialog(this, mCurrentFileInfo, isEmptyFolder, this).show();
+					return true;
+				}
+			}
 		}
 		return super.onKeyDown(keyCode, event);
 	}
@@ -370,7 +393,14 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 
 	@Override
 	public void onPaste(FileInfo fileInfo) {
-		final OprationProgressDialog opProgressDialog = new OprationProgressDialog(this);
+		final OprationProgressDialog opProgressDialog = new OprationProgressDialog(this, new OprationProgressDialog.Callback() {
+			
+			@Override
+			public void onStop() {
+				Log.i(TAG, "onPaste->onStop");
+				mFileOpTask.setStopPaste(true);
+			}
+		});
 		opProgressDialog.setCancelable(false);
 		opProgressDialog.show();
 		//黏贴文件
@@ -386,6 +416,19 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 					ToastUtils.showToast(getString(R.string.paste_error));
 				else if(errorCode == ConstData.FileOpErrorCode.PASTE_SAME_FILE)
 					ToastUtils.showToast(getString(R.string.exist_same_file));
+				else if(errorCode == ConstData.FileOpErrorCode.NO_ENOUGH_SPACE)
+					ToastUtils.showToast(getString(R.string.no_left_space));
+				else if(errorCode == ConstData.FileOpErrorCode.READ_ERR)
+					ToastUtils.showToast(getString(R.string.read_err));
+				else if(errorCode == ConstData.FileOpErrorCode.FILE_CREATE_FAILED)
+					ToastUtils.showToast(getString(R.string.file_create_failed));
+				else if(errorCode == ConstData.FileOpErrorCode.PASTE_PART_FILE_ERR){
+					ToastUtils.showToast(getString(R.string.part_file_paste_err));
+					loadFiles();
+				}else if(errorCode == ConstData.FileOpErrorCode.STOP_PASTE){
+					ToastUtils.showToast(getString(R.string.stop_paste));
+					loadFiles();
+				}
 				else
 					loadFiles();
 			}
@@ -397,7 +440,9 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 			}
 		});
 		mFileOpTask.setOpMode(ConstData.FileOpMode.PASTE);
-		mFileOpTask.execute(fileInfo);
+		mFileOpTask.setStopPaste(false);
+		boolean isEmptyFolder = (mLoadFileInfos == null || mLoadFileInfos.size() == 0);
+		mFileOpTask.execute(fileInfo, isEmptyFolder);
 	}
 
 
@@ -407,6 +452,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 			mRenameDialog = new FileRenameDialog(this, mCurrDevice, fileInfo, new FileRenameDialog.Callback() {
 				@Override
 				public void onFinish(int errorCode) {
+					DialogUtils.closeLoadingDialog();
 					if(errorCode == ConstData.FileOpErrorCode.RENAME_ERR){
 						ToastUtils.showToast(getString(R.string.rename_failed));
 					}else{

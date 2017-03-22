@@ -386,4 +386,9 @@
     <string name="exist_same_file">存在同名文件(夹)</string>
     <string name="delete_part_file_error">部分文件无法删除</string>
     <string name="rename_failed">重命名失败</string>
+    <string name="no_left_space">目标磁盘剩余空间不足</string>
+    <string name="read_err">没有读权限</string>
+    <string name="file_create_failed">文件创建失败</string>
+    <string name="part_file_paste_err">部分文件无法黏贴</string>
+    <string name="stop_paste">已停止</string>
 </resources>

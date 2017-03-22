@@ -24,11 +24,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.view.KeyboardShortcutGroup;
 import android.view.Menu;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -62,6 +64,12 @@ public class FileRenameDialog extends AppBaseDialog implements View.OnClickListe
 	}
 	
 	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+	}
+	
+	@Override
 	public int getLayoutRes() {
 		return R.layout.dialog_file_rename;
 	}
@@ -69,7 +77,9 @@ public class FileRenameDialog extends AppBaseDialog implements View.OnClickListe
 	
 	@Override
 	public void initData() {
-		mEditFileNmae.setText(mFileInfo.getName());
+		String fileName = mFileInfo.getName();
+		mEditFileNmae.setText(fileName);
+		mEditFileNmae.setSelection(fileName.length());
 	}
 
 
@@ -155,7 +165,9 @@ public class FileRenameDialog extends AppBaseDialog implements View.OnClickListe
 	
 	public void setAllFileInfo(FileInfo fileInfo){
 		mFileInfo = fileInfo;
-		mEditFileNmae.setText(mFileInfo.getName());
+		String fileName = mFileInfo.getName();
+		mEditFileNmae.setText(fileName);
+		mEditFileNmae.setSelection(fileName.length());
 	}
 	
 }

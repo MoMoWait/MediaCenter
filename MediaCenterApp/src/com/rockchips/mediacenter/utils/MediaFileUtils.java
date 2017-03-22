@@ -720,6 +720,14 @@ public class MediaFileUtils {
     			localMediaInfo.setmFileSize(itemFileInfo.getSize());
     			localMediaInfo.setmFiles(0);
     			localMediaInfo.setmFileType(itemFileInfo.getType());
+    			localMediaInfo.setmResUri(itemFileInfo.getPath());
+    			/*if(device.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_DMS){
+    				try{
+    					JSONObject otherInfoObject = new JSONObject(itemFileInfo.getOtherInfo());
+    				}catch (Exception e){
+    					
+    				}
+    			}*/
     			mediaInfos.add(localMediaInfo);
     		}
     	}

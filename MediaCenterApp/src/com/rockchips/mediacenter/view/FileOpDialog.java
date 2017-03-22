@@ -1,10 +1,8 @@
 
 package com.rockchips.mediacenter.view;
 import java.io.File;
-
 import org.json.JSONObject;
 import org.xutils.view.annotation.ViewInject;
-
 import momo.cn.edu.fjnu.androidutils.utils.JsonUtils;
 import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
 import momo.cn.edu.fjnu.androidutils.utils.StorageUtils;
@@ -85,9 +83,11 @@ public class FileOpDialog extends AppBaseDialog implements OnItemClickListener{
 				JsonUtils.jsonToObject(FileInfo.class, new JSONObject(copyPath)));
 			Log.i(TAG, "copyOrMoveFileInfo:" + copyOrMoveFileInfo);
 			Log.i(TAG, "mFileInfo:" + mFileInfo);
-			if(copyOrMoveFileInfo.getParentPath().equals(mFileInfo.getParentPath()) && mFileInfo.getType() != ConstData.MediaType.FOLDER || 
-					mFileInfo.getPath().startsWith(copyOrMoveFileInfo.getPath()))
+			if(mIsEmptyFolder){
+				mListFileOp.setAdapter(new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1, android.R.id.text1, mContext.getResources().getStringArray(R.array.file_oprations_only_paste)));
+			}else if(copyOrMoveFileInfo.getParentPath().equals(mFileInfo.getParentPath()) || mFileInfo.getPath().startsWith(copyOrMoveFileInfo.getPath()) || !new File(copyOrMoveFileInfo.getPath()).exists()){
 				mListFileOp.setAdapter(new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1, android.R.id.text1, mContext.getResources().getStringArray(R.array.file_oprations_no_paste)));
+			}
 			
 		}catch (Exception e){
 			Log.i(TAG, "copyOrMoveFileInfo:->exception:" + e);
@@ -108,7 +108,10 @@ public class FileOpDialog extends AppBaseDialog implements OnItemClickListener{
 			long id) {
 		switch (position) {
 		case 0:
-			mCallback.onCopy(mFileInfo);
+			if(!mIsEmptyFolder)
+				mCallback.onCopy(mFileInfo);
+			else
+				mCallback.onPaste(mFileInfo);
 			dismiss();
 			break;
 		case 1:

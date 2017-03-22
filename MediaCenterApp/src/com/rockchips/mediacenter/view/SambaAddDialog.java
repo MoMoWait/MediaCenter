@@ -8,10 +8,14 @@ import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
 import org.xutils.view.annotation.ViewInject;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -56,6 +60,12 @@ public class SambaAddDialog extends AppBaseDialog{
 		mCallback = callback;
 	}
 
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		//弹出输入法
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+	}
 
 	@Override
 	public int getLayoutRes() {
@@ -122,6 +132,16 @@ public class SambaAddDialog extends AppBaseDialog{
 			@Override
 			public void onClick(View v) {
 				dismiss();
+			}
+		});
+		mCboxUnknowName.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if(isChecked){
+					mEditUserName.setEnabled(false);
+					mEditPassword.setEnabled(false);
+				}
 			}
 		});
 	}

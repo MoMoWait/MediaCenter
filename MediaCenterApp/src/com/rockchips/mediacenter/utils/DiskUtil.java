@@ -1,6 +1,8 @@
 package com.rockchips.mediacenter.utils;
 
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 
 import com.rockchips.mediacenter.data.DeviceDataConst;
 
@@ -344,4 +346,36 @@ public class DiskUtil
     	return freeSpace;
     	
     }
+    
+    public static long getFreeSize(File diskFile){
+    	StatFs statFs = new StatFs(diskFile.getPath());
+    	return statFs.getAvailableBlocksLong() * statFs.getBlockSizeLong();
+    }
+    
+    public static long getAllSize(File diskFile){
+    	return diskFile.getTotalSpace();
+    }
+    
+    public static long getFileSizes(File targetFile){
+    	List<File> dirFiles = new LinkedList<>();
+    	if(targetFile.isFile())
+    		return targetFile.length();
+    	else{
+    		long totalSize = 0;
+    		dirFiles.add(targetFile);
+    		while(!dirFiles.isEmpty()){
+    			File dirFile = dirFiles.remove(0);
+    			File[] childFiles = dirFile.listFiles();
+    			if(childFiles != null && childFiles.length > 0){
+    				for(File itemFile : childFiles){
+    					totalSize += itemFile.length();
+    					if(itemFile.isDirectory())
+    						dirFiles.add(itemFile);
+    				}
+    			}
+    		}
+    		return totalSize;
+    	}
+    }
+    
 }

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.R.integer;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -1449,6 +1450,16 @@ public class ConstData {
 		int PASTE_SAME_FILE = 7;
 		/**部分文件无法删除*/
 		int DELETE_PART_FILE_ERR = 8;
+		/**没有足够空间*/
+		int NO_ENOUGH_SPACE = 9;
+		/**停止黏贴文件*/
+		int STOP_PASTE = 10;
+		/**文件创建失败*/
+		int FILE_CREATE_FAILED = 11;;
+		/**读权限限制*/
+		int READ_ERR = 12;
+		/**部分文件黏贴失败*/
+		int PASTE_PART_FILE_ERR = 13;
 	}
 	
 	/**
