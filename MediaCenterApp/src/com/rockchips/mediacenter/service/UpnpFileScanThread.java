@@ -160,7 +160,7 @@ public class UpnpFileScanThread extends Thread {
 					mTempFileInfos.add(mTmpDirFileInfos.get(itemID));
 					mTmpDirFileInfos.remove(itemID);
 				}
-				Log.i(TAG, "FileBrowser->received->mTempFileInfos:" + mTempFileInfos);
+				//Log.i(TAG, "FileBrowser->received->mTempFileInfos:" + mTempFileInfos);
 				if(mTempFileInfos != null && mTempFileInfos.size() > 0)
 					mFileInfoService.saveAll(mTempFileInfos);
 			}

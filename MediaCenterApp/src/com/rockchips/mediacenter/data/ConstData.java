@@ -435,14 +435,14 @@ public class ConstData {
     	 * NFS设备
     	 * GaoFei Add
     	 */
-    	public static final int DEVICE_TYPE_NFS = 2001;
+    	public static final int DEVICE_TYPE_NFS = -9;
     	
     	
     	/**
     	 * SMB设备
     	 * GaoFei Add
     	 */
-    	public static final int DEVICE_TYPE_SMB = 2002;
+    	public static final int DEVICE_TYPE_SMB = -10;
     	
     	/**
     	 * 本地存储
@@ -480,7 +480,7 @@ public class ConstData {
         /**
          * normal DMS设备类型
          */
-        public static final int DEVICE_TYPE_DMS = 20;
+        public static final int DEVICE_TYPE_DMS = -8;
 
         // add by zwx143228 加上收藏夹展示
         /**
@@ -492,7 +492,7 @@ public class ConstData {
          * /** 云设备
          */
         // modified by c00226539 云相册要放到固定设备之后，网络设备之前
-        public static final int DEVICE_TYPE_CLOUD = -10;
+        public static final int DEVICE_TYPE_CLOUD = -20;
 
         /**
          * 云设备

@@ -101,6 +101,10 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	 */
 	private String mCurrFolder;
 	/**
+	 * 当前目录信息
+	 */
+	private FileInfo mCurrDirFileInfo;
+	/**
 	 * 当前媒体文件类型
 	 */
 	private int mCurrMediaType;
@@ -172,6 +176,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 			long id) {
 		FileInfo fileInfo = (FileInfo)parent.getAdapter().getItem(position);
 		if(fileInfo.getType() == ConstData.MediaType.FOLDER){
+			mCurrDirFileInfo = fileInfo;
 			mCurrFolder = fileInfo.getPath();
 			if(mCurrDevice.getDeviceType() != ConstData.DeviceType.DEVICE_TYPE_DMS){
 				loadFiles();
@@ -585,7 +590,15 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 				DialogUtils.closeLoadingDialog();
 				if(isOverTimer())
 				    return;
-				mTextPathTitle.setText(mCurrFolder.substring(mCurrFolder.lastIndexOf("/") + 1, mCurrFolder.length()));
+				if(mCurrDevice.getDeviceType() != ConstData.DeviceType.DEVICE_TYPE_DMS)
+					mTextPathTitle.setText(mCurrFolder.substring(mCurrFolder.lastIndexOf("/") + 1, mCurrFolder.length()));
+				else{
+					if(mCurrDirFileInfo == null)
+						mTextPathTitle.setText(mCurrDevice.getDeviceName());
+					else
+						mTextPathTitle.setText(mCurrDirFileInfo.getName());
+				}
+					
 				if(fileInfos != null && fileInfos.size() > 0){
 					mLayoutContentPage.setVisibility(View.VISIBLE);
 					mLayoutNoFiles.setVisibility(View.GONE);
@@ -597,6 +610,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 						mListFile.setSelection(position);
 					}
 				}else{
+					mTextFileName.setText("");
 					mLayoutContentPage.setVisibility(View.GONE);
 					mLayoutNoFiles.setVisibility(View.VISIBLE);
 				}

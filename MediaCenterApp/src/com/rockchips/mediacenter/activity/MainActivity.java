@@ -88,9 +88,9 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
      */
     private JSONArray mSmbInfoArray;
     /**
-     * 本地设备(U盘，SD卡，移动硬盘)监听绑定器
+     * 焦点路径
      */
-    
+    private String mFocusPath;
     @ViewInject(R.id.deviceList)
     private DevicesListView mDevicesListView;
     @ViewInject(R.id.layout_no_device)
@@ -451,7 +451,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
         List<Device> tmpList;
         mDevInfoList.clear();
         DeviceService deviceService = new DeviceService();
-        tmpList = deviceService.getAll(Device.class);
+        tmpList = deviceService.getAllorderDevices();
 		
         if (tmpList != null && tmpList.size() > 0)
         {
@@ -501,12 +501,20 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
             mDeviceItemList.add(device);
         }
 
-        mDevicesListView.setDevicesList(mDeviceItemList, isAddNetWork);
+        mDevicesListView.setDevicesList(mDeviceItemList);
         mDevicesListView.notifyDataChanged();
         if(isAddNetWork){
-        	onKeyDown(KeyEvent.KEYCODE_DPAD_UP, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_UP));
-        	onKeyDown(KeyEvent.KEYCODE_DPAD_DOWN, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_DOWN));
+        	//搜索焦点
+        	for(int i = 0; i < mDevInfoList.size(); ++i){
+        		if(mDevInfoList.get(i).getLocalMountPath().equals(mFocusPath)){
+        			mDevicesListView.setCurrentFocus(i);
+        			onKeyDown(KeyEvent.KEYCODE_DPAD_UP, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_UP));
+        		    onKeyDown(KeyEvent.KEYCODE_DPAD_DOWN, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_DOWN));
+        			break;
+        		}
+        	}
         }
+       
     }
     
     
@@ -531,6 +539,8 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     	public void onReceive(Context context, Intent intent) {
     		Log.i(TAG, "DeviceUpDownReceiver->onReceive->currentTime:" + System.currentTimeMillis());
     		boolean isFromNetwork = intent.getBooleanExtra(ConstData.DeviceMountMsg.IS_FROM_NETWORK, false);
+    		if(isFromNetwork)
+    			mFocusPath = intent.getStringExtra(ConstData.DeviceMountMsg.MOUNT_PATH);
     		loadDeviceInfoList(isFromNetwork);
 /*    		String devicePath = intent.getStringExtra(ConstData.IntentKey.EXTRA_DEVICE_PATH);
     		boolean isAddNetWork = intent.getBooleanExtra(ConstData.IntentKey.EXTRA_IS_ADD_NETWORK_DEVICE, false);

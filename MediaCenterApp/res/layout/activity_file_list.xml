@@ -3,7 +3,7 @@
     android:id="@+id/rl_local_file_list_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_02"
+    android:background="@drawable/bg_01"
     tools:context=".FolderActivity" >
 
     <LinearLayout

@@ -1523,7 +1523,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 
         Log.d(TAG, "mCurrentMediaInfo is " + mCurrentMediaInfo);
         Log.d(TAG, "LocalMediaInfo is " + LocalMediaInfo);
-        Log.d(TAG, "LocalMediaInfo url is : " + LocalMediaInfo.getUrl());
+        //Log.d(TAG, "LocalMediaInfo url is : " + LocalMediaInfo.getUrl());
         if (LocalMediaInfo != null && LocalMediaInfo != mCurrentMediaInfo)
         {
             // Log.d("1111", "1111");

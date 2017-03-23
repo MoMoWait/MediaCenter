@@ -111,7 +111,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
      * @param devicelist 璁惧鍒楄〃
      * @see [绫汇�佺被#鏂规硶銆佺被#鎴愬憳]
      */
-    public void setDevicesList(List<DeviceItem> devicelist, boolean isAddNetWork)
+    public void setDevicesList(List<DeviceItem> devicelist)
     {
         if (devicelist == null)
         {
@@ -126,11 +126,11 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         // 娣诲姞
         if (mBInitFocus)
         {
-            adjustFocus(isAddNetWork);
+            adjustFocus();
         }
         else
         {
-            initFocus(isAddNetWork);
+            initFocus();
             mBInitFocus = true;
         }
         
@@ -239,7 +239,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
     {
         mDevicesList = new ArrayList<DeviceItem>();
 
-        adjustFocus(false);
+        adjustFocus();
 
         refreshDevicesName();
 
@@ -262,7 +262,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         mTextViews[TEXTVIEW_THIRD].setBackgroundResource(R.drawable.current_select_device_background);
     }
 
-    private void initFocus(boolean isAddNetWork)
+    private void initFocus()
     {
         if (mDevicesList == null || mDeviceNum <= 1)
         {
@@ -270,10 +270,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         }
         else
         {
-        	if(isAddNetWork)
-        		setCurrentFocus(mDeviceNum - 1);
-        	else
-        		setCurrentFocus(1);
+        	setCurrentFocus(1);
         }
         Log.i(TAG, "initFocus->mFocusIndex:" + mFocusIndex);
     }
@@ -288,7 +285,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
      * <涓�鍙ヨ瘽鍔熻兘绠�杩�>璋冩暣鐒︾偣 <鍔熻兘璇︾粏鎻忚堪>
      * @see [绫汇�佺被#鏂规硶銆佺被#鎴愬憳]
      */
-    private void adjustFocus(boolean isAddNetWork)
+    private void adjustFocus()
     {
         if (mDevicesList == null || mDeviceNum <= 1)
         {
@@ -296,15 +293,11 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         }
         else
         {
-            if(isAddNetWork)
-            	mFocusIndex = mDevicesList.size() - 1;
-            else{
-            	refreshFocusIdByFocusDeviceId();
-            	 if (mFocusIndex >= mDevicesList.size())
-                 {
-                     mFocusIndex = mDevicesList.size() - 1;
-                 }
-            }
+        	refreshFocusIdByFocusDeviceId();
+        	 if (mFocusIndex >= mDevicesList.size())
+             {
+                 mFocusIndex = mDevicesList.size() - 1;
+             }
         }
         Log.i(TAG, "adjustFocus->mFocusIndex:" + mFocusIndex);
         refreshFocusDeviceId();

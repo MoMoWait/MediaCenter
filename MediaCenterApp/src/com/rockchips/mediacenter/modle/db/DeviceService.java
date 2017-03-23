@@ -104,4 +104,15 @@ public class DeviceService extends AppBeanService<Device>{
 			e.printStackTrace();
 		}
 	}
+	
+	//获取已经排序的设备
+	public List<Device> getAllorderDevices(){
+		List<Device> devices = null;
+		try {
+			devices = MediaCenterApplication.mDBManager.selector(Device.class).orderBy("deviceType").findAll();
+		} catch (DbException e) {
+			e.printStackTrace();
+		}
+		return devices;
+	}
 }

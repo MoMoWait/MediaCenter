@@ -6,8 +6,10 @@
     <!-- 亮灰色 -->
     <color name="lightgray">#ccd3d3d3</color>
    <!--  <color name="file_num_bg">#7bbbe8</color> -->
-    <color name="list_selected_bg">#1776A2</color>
-    <color name="list_selected_pressed_bg">#8F1776A2</color>
+   <!--  <color name="list_selected_bg">#1776A2</color> -->
+    <color name="list_selected_bg">#13227a</color>
+    <!-- <color name="list_selected_pressed_bg">#8F1776A2</color> -->
+    <color name="list_selected_pressed_bg">#8F13227a</color>
     <color name="seek_bar_progress_color">#49F3FE</color>
 </resources>
 <!-- END: Modified by c00224451 for  DTS2014031902115  2014/3/19  -->

@@ -612,7 +612,12 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             //当前是画中画模式,设置关闭字幕(使用属性控制)
             String strIsPipSubtitleDisplay = SystemProperties.get(ConstData.PROPERTY_PIP_SUBTITLE, "false");
             boolean isShowPIPSubtitle = "true".equals(strIsPipSubtitleDisplay);
-            originMediaPlayer.setSubtitleVisible(isShowPIPSubtitle && !mIsCloseSubtitle);
+            try{
+            	 originMediaPlayer.setSubtitleVisible(isShowPIPSubtitle && !mIsCloseSubtitle);
+            }catch (Exception e){
+            	Log.i(TAG, "setSubtitleVisible->exception:" + e);
+            }
+           
         }else{
             savePositionNow();
             //开启字幕
@@ -620,7 +625,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                 try{
                     originMediaPlayer.setSubtitleVisible(!mIsCloseSubtitle && true);
                 }catch (Exception e) {
-                    Log.i(TAG, "setSubtitleVisible->exception:");
+                    Log.i(TAG, "setSubtitleVisible->exception:" + e);
                 }
                 
         }
@@ -1566,9 +1571,19 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         if(isSupportPIPMode() && isInPictureInPictureMode()){
             String strIsPipSubtitleDisplay = SystemProperties.get(ConstData.PROPERTY_PIP_SUBTITLE, "false");
             boolean isPIPShowSubtitle = "true".equals(strIsPipSubtitleDisplay);
-            originMediaPlayer.setSubtitleVisible(isPIPShowSubtitle && !mIsCloseSubtitle);
+            try{
+            	originMediaPlayer.setSubtitleVisible(isPIPShowSubtitle && !mIsCloseSubtitle);
+            }catch (Exception e){
+            	Log.i(TAG, "resetSubtitleVisible->resetSubtitleVisible->exception1:" + e);
+            }
+            
         }else{
-            originMediaPlayer.setSubtitleVisible(!mIsCloseSubtitle && true);
+        	try{
+        		originMediaPlayer.setSubtitleVisible(!mIsCloseSubtitle && true);
+        	}catch (Exception e){
+        		Log.i(TAG, "resetSubtitleVisible->resetSubtitleVisible->exception2:" + e);
+        	}
+            
         }
         //originMediaPlayer.setSubtitleVisible(!mIsCloseSubtitle);
             
