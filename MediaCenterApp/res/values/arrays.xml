@@ -21,6 +21,7 @@
     <string-array name="net_devices">
         <item>@string/add_nfs</item>
         <item>@string/add_smb</item>
+        <item>@string/delete_smb_nfs</item>
         <item>@string/refresh_network_device</item>
         <item>@string/refresh_all_devices</item>
     </string-array>

@@ -85,5 +85,10 @@ public class SmbInfo implements Serializable{
 				+ isUnknowName + "]";
 	}
 	
-	
+	@Override
+	public boolean equals(Object obj) {
+		if(localMountPath.equals(obj))
+			return true;
+		return super.equals(obj);
+	}
 }

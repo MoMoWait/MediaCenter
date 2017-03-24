@@ -30,9 +30,11 @@ import com.rockchips.mediacenter.utils.DialogUtils;
 import com.rockchips.mediacenter.utils.MountUtils;
 import com.rockchips.mediacenter.utils.DeviceTypeStr;
 import com.rockchips.mediacenter.utils.NetUtils;
+import com.rockchips.mediacenter.utils.Utils;
 import com.rockchips.mediacenter.view.NFSAddDialog;
 import com.rockchips.mediacenter.view.NetDeviceAddSelectDialog;
 import com.rockchips.mediacenter.view.SambaAddDialog;
+import com.rockchips.mediacenter.view.SmbOrNfsDeleteDialog;
 import com.rockchips.mediacenter.bean.DeviceItem;
 import com.rockchips.mediacenter.view.DevicesListView;
 import com.rockchips.mediacenter.service.OnDeviceSelectedListener;
@@ -78,15 +80,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
      * 每一张海报的宽度
      */
     private static int BITMAP_WIDTH = 280;
-    
-    /**
-     * NFS信息数组
-     */
-    private JSONArray mNFSInfoArray;
-    /**
-     * Smb信息数组
-     */
-    private JSONArray mSmbInfoArray;
     /**
      * 焦点路径
      */
@@ -118,8 +111,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
      */
     private void initData(){
     	mDeviceUpDownReceiver = new DeviceUpDownReceiver();
-		//mNFSList = readNFSInfos();
-    	//mSmbList = readSmbInfos();
     }
     
     /**
@@ -136,50 +127,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     	
     }
     
-    /**
-     * 读取已经记录的NFS信息
-     */
-    public List<NFSInfo> readNFSInfos(){
-    	List<NFSInfo> nfsList = new ArrayList<NFSInfo>();
-    	String nfsInfos = StorageUtils.getDataFromSharedPreference(ConstData.SharedKey.NFS_INFOS);
-    	//Log.i(TAG, "readNFSInfos->nfsInfos:" + nfsInfos);
-    	if(!TextUtils.isEmpty(nfsInfos)){
-    		try{
-    			mNFSInfoArray = new JSONArray(nfsInfos);
-    			nfsList = (List<NFSInfo>)JsonUtils.arrayToList(NFSInfo.class, mNFSInfoArray);
-    		}catch (Exception e){
-    			//Log.i(TAG, "readNFSInfos->" + e);
-    			//此处发生异常，直接清空数据
-    			StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.NFS_INFOS, "");
-    			ToastUtils.showToast(getString(R.string.read_nfs_error));
-    		}
-    		
-    	}
-    	
-    	return nfsList;
-    }
-    
-    /**
-     * 读取已经记录的Smb信息
-     */
-	public List<SmbInfo> readSmbInfos() {
-		List<SmbInfo> smbList = new ArrayList<SmbInfo>();
-		String smbInfos = StorageUtils.getDataFromSharedPreference(ConstData.SharedKey.SMB_INFOS);
-		//Log.i(TAG, "readSmbInfos->smbinfos:" + smbInfos);
-		if(!TextUtils.isEmpty(smbInfos)){
-			try {
-				mSmbInfoArray = new JSONArray(smbInfos);
-				smbList = (List<SmbInfo>)JsonUtils.arrayToList(SmbInfo.class, mSmbInfoArray);
-			} catch (Exception e) {
-				//Log.i(TAG, "" + e);
-				//此处发生异常，直接清空数据
-				StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.SMB_INFOS, "");
-				ToastUtils.showToast(getString(R.string.read_samba_error));
-			}
-		}
-		
-		return smbList;
-	}
     
 	/**
 	 * 刷新所有设备
@@ -214,6 +161,10 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
 			public void onRefreshAllDevices() {
 				refreshAllDevices();
 			}
+			@Override
+			public void onDeleteSMBOrNFSDevices() {
+				showSmbOrNFSDeleteDialog();
+			}
 		});
     	selectDialog.show();
     	
@@ -226,7 +177,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     	NFSAddDialog nfsAddDialog = new NFSAddDialog(this, new NFSAddDialog.Callback() {
 			@Override
 			public void onGetNFSInfo(NFSInfo nfsInfo) {
-				mNFSList = readNFSInfos();
+				mNFSList = Utils.readNFSInfos();
 				mNFSList.add(nfsInfo);
 				final NFSInfo newNfsInfo = nfsInfo;
 				DialogUtils.showLoadingDialog(MainActivity.this, false);
@@ -275,7 +226,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     public void showSambaAddDialog(){
     	SambaAddDialog sambaAddDialog = new SambaAddDialog(this, new SambaAddDialog.Callback() {
 			public void onGetSambaInfo(SmbInfo smbInfo) {
-				mSmbList = readSmbInfos();
+				mSmbList = Utils.readSmbInfos();
 				mSmbList.add(smbInfo);
 				final SmbInfo  newSambaInfo = smbInfo;
 				DialogUtils.showLoadingDialog(MainActivity.this, false);
@@ -319,6 +270,10 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     	sambaAddDialog.show();
     }
     
+    public void showSmbOrNFSDeleteDialog(){
+    	SmbOrNfsDeleteDialog smbOrNfsDeleteDialog = new SmbOrNfsDeleteDialog(this);
+    	smbOrNfsDeleteDialog.show();
+    }
     
     @Override
     protected void onStart() {
@@ -542,14 +497,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     		if(isFromNetwork)
     			mFocusPath = intent.getStringExtra(ConstData.DeviceMountMsg.MOUNT_PATH);
     		loadDeviceInfoList(isFromNetwork);
-/*    		String devicePath = intent.getStringExtra(ConstData.IntentKey.EXTRA_DEVICE_PATH);
-    		boolean isAddNetWork = intent.getBooleanExtra(ConstData.IntentKey.EXTRA_IS_ADD_NETWORK_DEVICE, false);
-    		int deviceType = intent.getIntExtra(ConstData.IntentKey.EXTRA_DEVICE_TYPE, -1);
-    		Log.i(TAG, "DeviceUpDownReceiver->devicePath:" + devicePath);
-    		Log.i(TAG, "DeviceUpDownReceiver->isAddNetWork:" + isAddNetWork);
-    		if(deviceType != ConstData.DeviceType.DEVICE_TYPE_SD && deviceType != ConstData.DeviceType.DEVICE_TYPE_U){
-    			loadDeviceInfoList(isAddNetWork);
-    		}*/
     	}
     }
     

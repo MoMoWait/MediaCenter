@@ -645,6 +645,7 @@ public class ConstData {
     	String PAUSE_DEVICE_FILE_SCAN = "com.rockchip.mediacenter.pause_device_file_scan";
     	String CONTINUE_DEVICE_FILE_SCAN = "com.rockchip.mediacenter.continue_device_file_scan";
     	String RESCAN_DEVICE = "com.rockchips.mediacenter.rescan_device";
+    	String DELETE_DEVICE = "com.rockchips.mediacenter.delete_device";
     	/**
     	 * 加载视频缩列图
     	 */

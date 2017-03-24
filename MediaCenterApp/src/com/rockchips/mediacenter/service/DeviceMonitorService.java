@@ -256,6 +256,7 @@ public class DeviceMonitorService extends Service {
 		netWorkDeviceMountFilter.addAction(ConstData.BroadCastMsg.REFRESH_ALL_DEVICES);
 		netWorkDeviceMountFilter.addAction(ConstData.BroadCastMsg.CHECK_NETWORK);
 		netWorkDeviceMountFilter.addAction(ConstData.BroadCastMsg.RESCAN_DEVICE);
+		netWorkDeviceMountFilter.addAction(ConstData.BroadCastMsg.DELETE_DEVICE);
 		LocalBroadcastManager.getInstance(this).registerReceiver(mNetWorkDeviceMountReceiver, netWorkDeviceMountFilter);
 		//注册预览图加载请求
 		IntentFilter previewLoadFilter = new IntentFilter();
@@ -667,6 +668,18 @@ public class DeviceMonitorService extends Service {
 					mountBundle.putString(ConstData.DeviceMountMsg.DEVICE_NAME, scanInfo.getDeviceName());
 					mDeviceMountService.execute(new DeviceMountThread(DeviceMonitorService.this, mountBundle));
 				}
+			}else if(action.equals(ConstData.BroadCastMsg.DELETE_DEVICE)){
+				Log.i(TAG, "receive broad cast delete device");
+				//删除设备，需要启动卸载线程
+				Device delDevice = (Device)intent.getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
+				Bundle mountBundle = new Bundle();
+				mountBundle.putBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK, false);
+				mountBundle.putString(ConstData.DeviceMountMsg.MOUNT_PATH, delDevice.getLocalMountPath());
+				mountBundle.putInt(ConstData.DeviceMountMsg.MOUNT_STATE, ConstData.DeviceMountState.DEVICE_DOWN);
+				mountBundle.putInt(ConstData.DeviceMountMsg.MOUNT_TYPE, delDevice.getDeviceType());
+				mountBundle.putString(ConstData.DeviceMountMsg.NETWORK_PATH, delDevice.getNetWorkPath());
+				mountBundle.putString(ConstData.DeviceMountMsg.DEVICE_NAME, delDevice.getDeviceName());
+				mDeviceMountService.execute(new DeviceMountThread(DeviceMonitorService.this, mountBundle));
 			}
 		}
 		

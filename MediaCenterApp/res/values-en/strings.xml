@@ -390,4 +390,7 @@
     <string name="file_create_failed">Create file failed</string>
     <string name="part_file_paste_err">Part file can not paste</string>
     <string name="stop_paste">Stopped</string>
+    <string name="delete_smb_nfs">Delete SMB or NFS devices</string>
+    <string name="no_add_smb_nfs">You have not added SMB or NFS devices</string>
+    <string name="tip_select_delete">Please select the device you want to delete</string>
 </resources>

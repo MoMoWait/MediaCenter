@@ -19,15 +19,14 @@ import com.rockchips.mediacenter.data.ConstData;
 public class NetDeviceAddSelectDialog extends AppBaseDialog {
 	
 	public interface CallBack{
+		//选择添加NFS或Samba设备
 		void onSelect(int type);
-		/**
-		 * 刷新网络设备
-		 */
+		//刷新网络设备
 		void onRefreshNetWorkDevice();
-		/**
-		 * 刷新所有设备
-		 */
+		//刷新所有设备
 		void onRefreshAllDevices();
+		//删除Smb或NFS设备
+		void onDeleteSMBOrNFSDevices();
 	}
 	
 	@ViewInject(R.id.list_device_select)
@@ -68,8 +67,11 @@ public class NetDeviceAddSelectDialog extends AppBaseDialog {
 				}else if(position == 1){
 					mCallBack.onSelect(ConstData.NetWorkDeviceType.DEVICE_SMB);
 				}else if(position == 2){
+					mCallBack.onDeleteSMBOrNFSDevices();
+				}
+				else if(position == 3){
 					mCallBack.onRefreshNetWorkDevice();
-				}else if(position == 3){
+				}else if(position == 4){
 					mCallBack.onRefreshAllDevices();
 				}
 				dismiss();

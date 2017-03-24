@@ -110,7 +110,22 @@ public class DeviceService extends AppBeanService<Device>{
 		List<Device> devices = null;
 		try {
 			devices = MediaCenterApplication.mDBManager.selector(Device.class).orderBy("deviceType").findAll();
-		} catch (DbException e) {
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return devices;
+	}
+	/**
+	 * 获取所有的已经添加Smb或NFS设备
+	 * @return
+	 */
+	public List<Device> getAllSmbOrNFSDevices(){
+		List<Device> devices = null;
+		try {
+			devices = MediaCenterApplication.mDBManager.selector(Device.class).
+					where(WhereBuilder.b("deviceType", "=", ConstData.DeviceType.DEVICE_TYPE_SMB).or("deviceType", "=", ConstData.DeviceType.DEVICE_TYPE_NFS))
+					.findAll();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return devices;

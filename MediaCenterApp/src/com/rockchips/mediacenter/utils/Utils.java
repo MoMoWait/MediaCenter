@@ -25,9 +25,22 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import com.rockchips.mediacenter.R;
+import momo.cn.edu.fjnu.androidutils.utils.JsonUtils;
+import momo.cn.edu.fjnu.androidutils.utils.StorageUtils;
+import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
+
+import org.json.JSONArray;
+
+import com.rockchips.mediacenter.bean.NFSInfo;
+import com.rockchips.mediacenter.bean.SmbInfo;
+import com.rockchips.mediacenter.data.ConstData;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.text.TextUtils;
 
 public class Utils
 {
@@ -270,4 +283,49 @@ public class Utils
         }
     }
 
+    /**
+     * 读取已经记录的NFS信息
+     */
+    public static List<NFSInfo> readNFSInfos(){
+    	List<NFSInfo> nfsList = new ArrayList<NFSInfo>();
+    	String nfsInfos = StorageUtils.getDataFromSharedPreference(ConstData.SharedKey.NFS_INFOS);
+    	//Log.i(TAG, "readNFSInfos->nfsInfos:" + nfsInfos);
+    	if(!TextUtils.isEmpty(nfsInfos)){
+    		try{
+    			JSONArray infoArray = new JSONArray(nfsInfos);
+    			nfsList = (List<NFSInfo>)JsonUtils.arrayToList(NFSInfo.class, infoArray);
+    		}catch (Exception e){
+    			//Log.i(TAG, "readNFSInfos->" + e);
+    			//此处发生异常，直接清空数据
+    			StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.NFS_INFOS, "");
+    			ToastUtils.showToast(getString(R.string.read_nfs_error));
+    		}
+    		
+    	}
+    	
+    	return nfsList;
+    }
+    
+    /**
+     * 读取已经记录的Smb信息
+     */
+	public static List<SmbInfo> readSmbInfos() {
+		List<SmbInfo> smbList = new ArrayList<SmbInfo>();
+		String smbInfos = StorageUtils.getDataFromSharedPreference(ConstData.SharedKey.SMB_INFOS);
+		//Log.i(TAG, "readSmbInfos->smbinfos:" + smbInfos);
+		if(!TextUtils.isEmpty(smbInfos)){
+			try {
+				JSONArray infoArray = new JSONArray(smbInfos);
+				smbList = (List<SmbInfo>)JsonUtils.arrayToList(SmbInfo.class, infoArray);
+			} catch (Exception e) {
+				//Log.i(TAG, "" + e);
+				//此处发生异常，直接清空数据
+				StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.SMB_INFOS, "");
+				ToastUtils.showToast(getString(R.string.read_samba_error));
+			}
+		}
+		
+		return smbList;
+	}
+    
 }
