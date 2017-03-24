@@ -1,7 +1,7 @@
 $(info >>>>>>>>>>=================================build prebuild mediacenterapp's libs===================================<<<<<<<<<<)
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
-LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES := universal-image-loader-1.8.4.jar libxutil:xutils.jar libandroidutil:androidutils.jar libsupportv4:supportv4.jar
+LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES := universal-image-loader-1.8.4.jar libxutil:xutils.jar libandroidutil:androidutils.jar
 #LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += libcling:cling-core-2.1.0.jar
 #LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += libcling-support:cling-support-2.1.0.jar
 LOCAL_PREBUILT_STATIC_JAVA_LIBRARIES += cdi-api.jar

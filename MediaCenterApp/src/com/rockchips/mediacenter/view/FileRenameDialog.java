@@ -166,6 +166,7 @@ public class FileRenameDialog extends AppBaseDialog implements View.OnClickListe
 	public void setAllFileInfo(FileInfo fileInfo){
 		mFileInfo = fileInfo;
 		String fileName = mFileInfo.getName();
+		mEditFileNmae.requestFocus();
 		mEditFileNmae.setText(fileName);
 		mEditFileNmae.setSelection(fileName.length());
 	}

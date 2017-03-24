@@ -27,10 +27,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import com.rockchips.mediacenter.R;
 import momo.cn.edu.fjnu.androidutils.utils.JsonUtils;
 import momo.cn.edu.fjnu.androidutils.utils.StorageUtils;
-import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
 
 import org.json.JSONArray;
 
@@ -298,7 +296,7 @@ public class Utils
     			//Log.i(TAG, "readNFSInfos->" + e);
     			//此处发生异常，直接清空数据
     			StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.NFS_INFOS, "");
-    			ToastUtils.showToast(getString(R.string.read_nfs_error));
+    			//ToastUtils.showToast(CommonValues.application.getString(R.string.read_nfs_error));
     		}
     		
     	}
@@ -321,7 +319,7 @@ public class Utils
 				//Log.i(TAG, "" + e);
 				//此处发生异常，直接清空数据
 				StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.SMB_INFOS, "");
-				ToastUtils.showToast(getString(R.string.read_samba_error));
+				//ToastUtils.showToast(CommonValues.application.getString(R.string.read_samba_error));
 			}
 		}
 		

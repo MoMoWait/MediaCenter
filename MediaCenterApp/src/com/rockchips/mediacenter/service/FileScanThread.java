@@ -83,7 +83,7 @@ public class FileScanThread extends Thread{
 			//int scanStatus = mService.getDeviceScanInfo(mDevice.getDeviceID()).getScanStatus();
 			if(deviceScanInfo == null){
 				//设备已经下线，不扫描直接返回
-				Log.i(TAG, mDevice.getDeviceName() + "is offline or stop scanner");
+				Log.i(TAG, mDevice.getDeviceName() + " is offline or stop scanner");
 				return;
 			}
 			//存在视频播放，并且设备已经上线

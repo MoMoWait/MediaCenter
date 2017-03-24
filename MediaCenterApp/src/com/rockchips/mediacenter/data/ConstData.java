@@ -1461,6 +1461,8 @@ public class ConstData {
 		int READ_ERR = 12;
 		/**部分文件黏贴失败*/
 		int PASTE_PART_FILE_ERR = 13;
+		/**源文件不存在*/
+		int FILE_NOT_EXIST = 14;
 	}
 	
 	/**

@@ -47,8 +47,12 @@ public class NFSInfo implements Serializable{
 	
 	@Override
 	public boolean equals(Object obj) {
-		if(localMountPath.equals(obj))
-			return true;
-		return super.equals(obj);
+		if(obj == null || !(obj instanceof NFSInfo))
+			return false;
+		NFSInfo other = (NFSInfo)obj;
+		if(other.getLocalMountPath() == null)
+			return false;
+		return other.getLocalMountPath().equals(localMountPath);
+	
 	}
 }

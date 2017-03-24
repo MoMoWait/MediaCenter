@@ -87,8 +87,11 @@ public class SmbInfo implements Serializable{
 	
 	@Override
 	public boolean equals(Object obj) {
-		if(localMountPath.equals(obj))
-			return true;
-		return super.equals(obj);
+		if(obj == null || !(obj instanceof SmbInfo))
+			return false;
+		SmbInfo other = (SmbInfo)obj;
+		if(other.getLocalMountPath() == null)
+			return false;
+		return other.getLocalMountPath().equals(localMountPath);
 	}
 }

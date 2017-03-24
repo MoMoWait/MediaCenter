@@ -433,6 +433,9 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 				}else if(errorCode == ConstData.FileOpErrorCode.STOP_PASTE){
 					ToastUtils.showToast(getString(R.string.stop_paste));
 					loadFiles();
+				}else if(errorCode == ConstData.FileOpErrorCode.FILE_NOT_EXIST){
+					//源文件不存在
+					ToastUtils.showToast(getString(R.string.file_not_exist));
 				}
 				else
 					loadFiles();

@@ -94,9 +94,9 @@ public class NFSAddDialog extends AppBaseDialog{
 				String mountPath = ConstData.NETWORK_DEVICE_MOUNT_DIR +  "/" + uuidPathName;
 				int randomNum = new Random().nextInt(10000);
 				//mountPath += randomNum;
-				while(FileUtils.isExist(Environment.getExternalStorageDirectory(), mountPath + randomNum))
+				/*while(FileUtils.isExist(Environment.getExternalStorageDirectory(), mountPath + randomNum))
 					randomNum = new Random().nextInt(10000);
-				mountPath += randomNum;
+				mountPath += randomNum;*/
 				nfsInfo.setNetWorkPath(serverAddress);
 				nfsInfo.setLocalMountPath(mountPath);
 				mCallback.onGetNFSInfo(nfsInfo);

@@ -112,6 +112,11 @@ public class FileOpTask extends AsyncTask<Object, Integer, Integer> {
 						clearCopyOrMove();
 						break;
 					}
+					if(!new File(srcFileInfo.getPath()).exists()){
+						result = ConstData.FileOpErrorCode.FILE_NOT_EXIST;
+						clearCopyOrMove();
+						break;
+					}
 					File targetFile = null;
 					//父目录不可写
 					File parentFile = new File(mFileInfo.getParentPath());
@@ -176,6 +181,11 @@ public class FileOpTask extends AsyncTask<Object, Integer, Integer> {
 					}
 					if(srcFileInfo == null){
 						result = ConstData.FileOpErrorCode.PASTE_ERR;
+						clearCopyOrMove();
+						break;
+					}
+					if(!new File(srcFileInfo.getPath()).exists()){
+						result = ConstData.FileOpErrorCode.FILE_NOT_EXIST;
 						clearCopyOrMove();
 						break;
 					}
