@@ -82,6 +82,7 @@ import org.xutils.view.annotation.ViewInject;
 import momo.cn.edu.fjnu.androidutils.data.CommonValues;
 import momo.cn.edu.fjnu.androidutils.utils.DeviceInfoUtils;
 import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
+import momo.cn.edu.fjnu.androidutils.utils.StorageUtils;
 import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
 import com.rockchips.mediacenter.service.HiMediaPlayer;
 import com.rockchips.mediacenter.R;
@@ -89,13 +90,16 @@ import com.rockchips.mediacenter.service.LocalDeviceManager;
 import com.rockchips.mediacenter.bean.LocalMediaInfo;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.data.ConstData.PlayMode;
+import com.rockchips.mediacenter.utils.DateUtil;
 import com.rockchips.mediacenter.utils.MathUtil;
+import com.rockchips.mediacenter.utils.MediaUtils;
 import com.rockchips.mediacenter.utils.PlatformUtil;
 import com.rockchips.mediacenter.utils.StringUtils;
 import com.rockchips.mediacenter.service.IMediaPlayerAdapter;
 import com.rockchips.mediacenter.service.IVideoViewAdapter;
 import com.rockchips.mediacenter.bean.AudioInfoOfVideo;
 import com.rockchips.mediacenter.bean.Device;
+import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.bean.SubInfo;
 import com.rockchips.mediacenter.service.OnBufferingUpdateListener;
 import com.rockchips.mediacenter.service.OnCompleteListener;
@@ -114,11 +118,9 @@ import com.rockchips.mediacenter.videoplayer.data.HistoryListRecord;
 import com.rockchips.mediacenter.videoplayer.data.PlayerStateRecorder;
 import com.rockchips.mediacenter.videoplayer.data.VideoInfo;
 import com.rockchips.mediacenter.videoplayer.data.HistoryListRecord.SubObject;
-import com.rockchips.mediacenter.videoplayer.widget.PlayListShowLayout;
 import com.rockchips.mediacenter.videoplayer.widget.PlayListShowLayoutBase;
 import com.rockchips.mediacenter.videoplayer.widget.SeekBarLayout;
 import com.rockchips.mediacenter.videoplayer.widget.SubtitleSelectPopup;
-import com.rockchips.mediacenter.videoplayer.widget.SeekBarLayout.SeekBarListener;
 import com.rockchips.mediacenter.videoplayer.widget.SubtitleSelectPopup.OnSubtileSelectListener;
 import com.rockchips.mediacenter.view.VideoSettingDialog;
 import com.rockchips.mediacenter.view.BottomPopMenu;
@@ -145,135 +147,72 @@ import android.os.SystemProperties;
 public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectTypeListener
 {
     private static final String TAG = "VideoPlayerActivity";
-    //
-    // /**修改者：l00174030；修改原因：把2.2的移植到应用层来做 **/
-    // private DLNAVideoView mVV = null;
-    // 增加4.2兼容
-    private IVideoViewAdapter mVVAdapter = null;
-    // MIN MSG CODE ; for remove all messages
     protected static final int DELAY_TIME = 5000;
+    /**改变当前播放位置的时长*/
+    private static final int CHANGE_PLAY_TIME_STEP = 10000;
     /**
      * 是否播放下一首
      */
     public static String KEY_NEXT_PLAY = "is_next_play";
-    
     protected boolean bContinue = false;
-
     // 之前是否被用户暂停播放器（遥控器暂停、推送端暂停、甩屏端暂停）
     private boolean bIsPausedByUser = false;
-
-    // 提示
-    private Toast mToast = null;
-
     private UIHandler mUIHandler = new UIHandler();
-
     // zkf61715 seek为假异步，为避免响应超时，需要在子线程中执行seek操作
     private final String SEEK_THREAD_TAG = "SeekThread";
-
     private HandlerThread mSeekHandlerThread = null;
-
     private SeekHandler mSeekHandler = null;
-
     // 循环播放时，遇到连续的6次无法播放时，退出播放器
     private static final int PLAYER_ERROR_TIMES_MAX = 6;
-
     // zkf61715 播放网络视频，遇到网络断连或者超时超过45时，退出播放器
     private static final long PLAYER_TIMEOUT_MAX = 30 * 1000;
-
     // zkf61715 超时开始时间
     private long timeOutBegin = 0;
-
     // zkf61715 超时时间
     private long timeOutTime = 0;
-
     // 当前播放器无法播放的次数
     private int playerErrorTimes = 0;
-
-    // Menu item ID
-    public static final int MENU_ID_PLAYMODE = Menu.FIRST + 1;
-
-    public static final int MENU_ID_SUBTITLE = Menu.FIRST + 2;
-
-    public static final int MENU_ID_SOUND = Menu.FIRST + 3;
-
-    /*
-     * l00174030；添加视屏的屏幕比例切换（自动切换、全屏拉伸、等比拉伸
-     */
-    public static final int MENU_ID_SCREEN = Menu.FIRST + 4;
-
     private static final int PLAY = 0;
-
     private static final int PAUSE = 1;
-
-    private TranslateAnimation mSlideIn = null;
-
-    private TranslateAnimation mSlideOut = null;
-
     private SurfaceHolder mSubHolder;
-
     private IMediaPlayerAdapter mMediaPlayer;
-
     private SubObject sub;
     // the num. of subtitle
     private int subNum = 0;
-
     // the id of the current suntitle
     private int subId = 0;
-
     // 保存外挂字幕路径
     private String subtitlePath = "";
-
     private int soundNum = 0;
-
     // the id of the current sound
     private int soundId = 0;
-
     // 判断是第一个播放的
     private boolean isFirstPlayVideo = true;
-
     /** liyang DTS2013051702993 **/
     // 本地播放视频文件，设置视频循环播放，影片播放完，在将要播放下一影片时，切换全屏播放模式或音轨或字幕时，停止运行。
     private boolean isMenuNeedShow = false;
-
     // 菜单是否已被创建
     private boolean isMenuHasCreated = false;
-
-    // playlist列表显示的控件
-    private PlayListShowLayoutBase mPlayListLayout;
-
     // 若片源是杜比音效，则必须弹出杜比标识
     private DoblyPopWin doblyPopWin = null;
-
     // zkf61715 是否支持快进快退
     private boolean canAccelerate = false;
-
     // 底部弹出菜单
     private BottomPopMenu mBottomPopMenu;
-
     private TimeSeekDialog mTimeSeekDialog;
-
     private SubtitleSelectPopup mSubtitleSelectPopup = null;
-
     private List<LocalMediaInfo> mGetAllFlatFolders;
     // zkf61715
     private boolean timeSeekToPlay = false;
-
     // Add by c00229449 for player state control
-    private boolean isSharingStop = false;
-
     private boolean isFromNetwork = false;
-
     // zkf61715 低级别的线程用来循环检测seek操作，当网络视频断网时进行seek操作超时45秒退出
     private Timer timer;
-
     // 保存进行seek操作时的时间，用来判断超时
     private long timeWhenSeek = 0;
-
     private Object mCurrSelectType;
     //begin add by caochao for DTS2014111006777 媒体中心视频时概率性出现“该视频无法播放”
     private int mBufferUpdatePercent = 0;
-    //end add by caochao for DTS2014111006777 媒体中心视频时概率性出现“该视频无法播放”
-    private Device mCurrentDevice;
     /**
      * 是否关闭字幕
      */
@@ -282,14 +221,16 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
      * 错误提示对话框
      */
     private AlertDialog mErrorTipDialog;
+    /**视频seek位置*/
+    private int mSeekPosition;
     @ViewInject(R.id.vv)
-    private View mVV = null;
+    private OrigVideoView mVV;
     @ViewInject(R.id.video_layout)
     private RelativeLayout myvideo;
     @ViewInject(R.id.subtitle)
     private SurfaceView mSubSurface;
     @ViewInject(R.id.seekbarlayout)
-    private SeekBarLayout mSbpw;
+    private SeekBarLayout mSeekBarLayout;
     @ViewInject(R.id.timeLayout)
     private TimeLayout tiemLayout;
     @ViewInject(R.id.circleProgressBar)
@@ -301,56 +242,27 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     {
         Log.d(TAG, "VideoPlayerActivity --> onCreate()--");
         super.onCreate(savedInstanceState);
-        //initExtSubTitleInBackground();
     }
 
     private void initViews()
     {
         Log.d(TAG, "onCreate ---> initViews--");
-        // creat VideoView
-        if (mVV == null || mVVAdapter == null)
-        {
-        	//默认不支持加速
-            canAccelerate = false;
-            mVVAdapter = (IVideoViewAdapter) mVV;
-            mVVAdapter.setOnErrorListener(onErrorListener);
-            mVVAdapter.setOnPreparedListener(onPreparedListener);
-            mVVAdapter.setOnInfoListener(onInfoListener);
-            mVVAdapter.setOnSeekCompleteListener(onSeekCompleteListener);
-            mVVAdapter.setOnBackForwardCompleteListener(onFastBackwordCompleteListener);
-            mVVAdapter.setOnFastForwardCompleteListener(onFastForwardCompleteListener);
-            mVVAdapter.setOnBufferingUpdateListener(onBufferingUpdateListener);
-        }
+    	//默认不支持加速
+        canAccelerate = false;
+        mVV.setOnErrorListener(onErrorListener);
+        mVV.setOnPreparedListener(onPreparedListener);
+        mVV.setOnInfoListener(onInfoListener);
+        mVV.setOnSeekCompleteListener(onSeekCompleteListener);
+        mVV.setOnBufferingUpdateListener(onBufferingUpdateListener);
         if (mSubHolder == null)
         {
             mSubHolder = mSubSurface.getHolder();
         }
-        //mSubHolder.setType(SurfaceHolder.SURFACE_TYPE_NORMAL);
-        //mSubHolder.setFormat(PixelFormat.RGBA_8888);
-       // mSubHolder.setFixedSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-        mVVAdapter.setSubSurfaceHolder(mSubHolder);
-        mPlayListLayout = new PlayListShowLayout(this, mPlayStateInfo);
-        mPlayListLayout.setOnItemClickListener(mPlaylistItemclickListener);
-        mSbpw.startMouseStateChangedReceiver(this);
-        mSbpw.setListener(onSeekBarPopWindowListener);
-        mSbpw.setVisibility(View.GONE);
-        mSbpw.setVideoView(mVVAdapter);
-        mSbpw.canAccelerate(canAccelerate);
-
-        VideoInfo mbi = new VideoInfo();
-
-        mbi = getCurrentMediaInfo();
-
-        mSbpw.setMmbi(mbi);
-        // 初始时不显示
-        tiemLayout.setVisibility(View.INVISIBLE);
-        mSlideOut = new TranslateAnimation(-0, 0, 0, -75);
-        mSlideOut.setDuration(500);
-
-        mSlideIn = new TranslateAnimation(-0, 0, -75, 0);
-        mSlideIn.setDuration(500);
-        mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
-        
+        mVV.setSubSurfaceHolder(mSubHolder);
+        //控制栏初始不显示
+        mSeekBarLayout.setVisibility(View.INVISIBLE);
+        //时间显示初始时不显示
+        tiemLayout.setVisibility(View.INVISIBLE);        
     }
 
     
@@ -374,7 +286,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 			        mTextSubtitle.setText(Html.fromHtml(subTitle));
 			    else
 			        mTextSubtitle.setText(Html.fromHtml(subTitle,  Html.FROM_HTML_MODE_COMPACT));
-			    //mTextSubtitle.setVisibility(View.VISIBLE);
 			}
 		});
     }
@@ -391,8 +302,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     protected void onStart()
     {
         Log.d(TAG, "VideoPlayerActivity --> onStart()--");
-
         String url = getCurMediaUrl();
+        //获取字幕信息
         sub = HistoryListRecord.getInstance().getSubInfo(url);
 
         if (sub != null)
@@ -415,31 +326,18 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     protected void onResume()
     {
         Log.d(TAG, "VideoPlayerActivity --> onResume()--");
-
+        //遮罩层
         mSubSurface.setVisibility(View.VISIBLE);
 
-        if (mVVAdapter != null)
+        if (mVV != null)
         {
-            mVVAdapter.isSeeking(false);
-            // 重新设置
-            //mSubHolder.setFormat(PixelFormat.RGBA_8888);
-            //mSubHolder.setFixedSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-            //mVVAdapter.setSubSurfaceHolder(mSubHolder);
+            mVV.isSeeking(false);
         }
         /** Mender:l00174030;Reason:DTS2013041400627播放视频的过程中长按菜单键，调出近期任务，再次点击媒体中心，视频黑屏停止播放 **/
         /** 把设置URL从oncreate地方下移到此处 **/
         // 设置视频源以及seek位置
         setMediaData();
         isFromNetwork = isNetWorkVideo(getCurMediaUrl());
-        mSbpw.getmSeekBar().setFromNetwork(isFromNetwork);
-
-        // zkf61715 网络视频setSpeed会有问题，快进快退时改用连续seek
-        if (canAccelerate && isFromNetwork)
-        {
-            canAccelerate = false;
-            mSbpw.canAccelerate(canAccelerate);
-        }
-
         // 恢复进度同步
         syncSeekPos();
 
@@ -452,20 +350,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         // 视频电话返回后，如果之前播放器处于暂停状态，恢复为暂停状态
         if (bIsPausedByUser)
         {
-            // DTS2012072604665:播放搜索的视频，暂停时推送媒体文件到机顶盒播放，返回后，视频仍处于暂停状态，但黑屏
-            if (!bMCSMode)
-            {
-                Log.d(TAG, "Resume to play status ---------changge pause to play state !");
-
-                play();
-
-            }
-            else
-            {
-                Log.d(TAG, "Resume to pause status  11");
-                pause();
-                showPop();
-            }
+            Log.d(TAG, "Resume to pause status  11");
+            pause();
+            showPop();
         }
         else
         {
@@ -498,17 +385,11 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         stopSyncSeekPos();
 
         cancelHidPopMessage();
-        mPlayListLayout.hidePopupWindow();
-
-        hidePop();
 
         /** Mender:l00174030;Reaseon:When push another player, there must be another stop command **/
         if (mMediaPlayer == null)
         {
             Log.e(TAG, "there must be another stop command");
-            // 此时也需要释放资源
-            if (bMCSMode)
-                stop();
             super.onPause();
             return;
         }
@@ -533,13 +414,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             Log.e(TAG, "There is something wrong with the Mediaplayer, maybe more than one stop.");
         }
     }
-
-//    @Override
-//    protected void onStop()
-//    {
-//        Log.d(TAG, "VideoPlayerActivity --> onStop()--");
-//        super.onStop();
-//    }
 
     @Override
     protected void onStop() {
@@ -567,24 +441,15 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             mSeekHandler.removeMessages(0);
         }
 
-        mSbpw.stopMouseStateChangedReceiver(this);
+        mVV.isSeeking(false);
 
-        mSbpw.getmSeekBar().mHandler = null;
 
-        mVVAdapter.isSeeking(false);
-
-        if (mPlayListLayout != null)
-        {
-            mPlayListLayout.hidePopupWindow();
-        }
         mUIHandler = null;
 
         mSeekHandlerThread.getLooper().quit();
         mSeekHandlerThread = null;
         mSeekHandler = null;
 
-        VideoInfo mbi = new VideoInfo();
-        mbi = getCurrentMediaInfo();
         if (null != mMediaPlayer)
         {
             mMediaPlayer.release();
@@ -643,135 +508,55 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         switch (keyCode)
         {
             case KeyEvent.KEYCODE_MENU:
-                // menuOpened();
-                int x = mSbpw.getmSeekBar().getXacceleration();
-                Log.d("VideoKey", "VideoPlayerActivity->onKeyDown->acceleration:" + x);
-                if (x != 0 && x != 1)
-                {
-                    play();
-                    mSbpw.Xacceleration = 0;
-                    mSbpw.getmSeekBar().setXacceleration(0);
-                    mSbpw.getmSeekBar().setOnkey(false);
-                    try
-                    {
-                        // 休眠是为了保证play()发送的消息已经被执行，在播放状态下控制条才能被掩藏
-                        Thread.sleep(100);
-                    }
-                    catch (InterruptedException e)
-                    {
-                        Log.e("VideoKey", "onKeyDown, open menu ::: error");
-                    }
-                }
                 openBottomMenu();
                 return true;
-
-            case KeyEvent.KEYCODE_VOLUME_UP:
-            case KeyEvent.KEYCODE_VOLUME_DOWN:
-                Log.d(TAG, "KeyEvent.KEYCODE_VOLUME_UP || KeyEvent.KEYCODE_VOLUME_DOWN");
-                if (audioManager == null)
-                {
-                    Log.d(TAG, "audioManager == null, create a AudioManager object");
-                    audioManager = (AudioManager) this.getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-                }
-
-                int currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-                int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-                float volumePercent = Float.valueOf(currentVolume) / Float.valueOf(maxVolume);
-                Log.d(TAG, "currentVolume:" + currentVolume + " maxVolume: " + maxVolume + " volumePercent:" + volumePercent);
-                // Log.d(TAG, "maxVolume:" + maxVolume);
-                // Log.d(TAG, "volumePercent:" + volumePercent);
-
-                if (mMediaCenterPlayerClient != null)
-                {
-                    Log.d(TAG, "Send the volume percent to Sender client");
-                    mMediaCenterPlayerClient.adjustVolume(ConstData.VolumeAdjustType.ADJUST_SET, volumePercent);
-                }
-
-                return super.onKeyDown(keyCode, event);
-
-            default:
-                break;
-        }
-
-        switch (keyCode)
-        {
             case KeyEvent.KEYCODE_DPAD_LEFT:
             case KeyEvent.KEYCODE_MEDIA_REWIND:
+            	if(mSeekBarLayout.getVisibility() != View.VISIBLE){
+            		showPop();
+            		if(null != mUIHandler)
+                		mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_HIDE_CONTROLER);
+            	}else{
+            		if(null != mUIHandler)
+            			mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_PROGRESS_CHANGED);
+            		changePlayPosition(-1);
+            	}
+            	break;
             case KeyEvent.KEYCODE_DPAD_RIGHT:
             case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
-                mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_PROGRESS_CHANGED);
-                showPop();
+            	if(mSeekBarLayout.getVisibility() != View.VISIBLE){
+            		showPop();
+            		if(null != mUIHandler)
+                		mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_HIDE_CONTROLER);
+            	}else{
+            		if(null != mUIHandler)
+            			mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_PROGRESS_CHANGED);
+            		changePlayPosition(1);
+            	}
                 break;
-
             case KeyEvent.KEYCODE_DPAD_CENTER:
             case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                 Log.d(TAG, "onKeyDown - KEYCODE_DPAD_CENTER or KEYCODE_MEDIA_PLAY_PAUSE --");
+                //显示控制条
                 showPop();
-                if (mSbpw.getmSeekBar().isOnkey())
-                {
-                    mSbpw.getmSeekBar().onKeyDown(keyCode, event);
-                    break;
-                }
                 mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_REVERSE_STATE);
-                mSbpw.iskeyDown = false;
-
                 break;
 
             case KeyEvent.KEYCODE_DPAD_UP:
                 Log.d(TAG, "onKeyDown - KEYCODE_DPAD_UP --");
                 // preProgram();
-                if (bMCSMode)
-                {
-                    preProgram();
-                }
-                else
-                {
-                    //showPlayListLayout();
-                }
-
+                //showPlayListLayout();
                 break;
 
             case KeyEvent.KEYCODE_DPAD_DOWN:
                 Log.d(TAG, "onKeyDown - KEYCODE_DPAD_DOWN --");
-                if (bMCSMode)
-                {
-                    nextProgram();
-                }
-                else
-                {
-                	//去除右边侧边栏			
-                    //showPlayListLayout();
-                }
-                //
-
+                //去除右边侧边栏			
+                //showPlayListLayout();
                 break;
 
             case KeyEvent.KEYCODE_BACK:
             case KeyEvent.KEYCODE_MEDIA_STOP:
                 Log.d("vvvv", "onKeyDown - KEYCODE_BACK --" + this);
-
-                // 播放器关闭，Activity销毁时，先回发stop状态，再立即解除绑定，其后不再向Sender端回发播放器的任何状态
-                if (bMCSMode)
-                {
-                    Log.d(TAG, "KEYCODE_BACK -- bMCSMode");
-                    onNotifyStop();
-                    unbind();
-
-                    /** 推送的场合，直接弄死自己，防止状态异常 **/
-                    // 如果是推送场景，直接结束自己。
-                    Log.e(TAG, "onpause activity kill itself.");
-                    // finish();
-                    // android.os.Process.killProcess(android.os.Process.myPid());
-                }
-
-                /** Mender:l00174030;Reason:push and come back, sometimes can't malloc buffer for the vdec **/
-                // stop();
-
-                if (mSbpw.isShown())
-                {
-                    hidePop();
-                }
-
                 // 在关闭当前activity前，得先把显示字幕的surfaceview隐藏，解决4.2系统 退出时有个黑块的bug
                 mSubSurface.setVisibility(View.INVISIBLE);
                 // Log.e(TAG, "finish");
@@ -787,11 +572,33 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event)
     {
-    	Log.i("VideoKey", "VideoPlayerActivity->onKeyUp->keyCode:" + keyCode);
-        boolean retkeyup = mSbpw.onKeyUp(keyCode, event);
-        mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_PROGRESS_CHANGED);
-        mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_PROGRESS_CHANGED);
-        return retkeyup;
+		switch (keyCode) {
+			case KeyEvent.KEYCODE_DPAD_LEFT:
+			case KeyEvent.KEYCODE_MEDIA_REWIND:
+				if(mSeekPosition >= 0){
+					Log.i(TAG, "mSeekPosition:" + DateUtil.getMediaTime(mSeekPosition));
+					sendSeekMsg(mSeekPosition);
+					mSeekBarLayout.setPosition(mSeekPosition, 0, mVV.getDuration());
+					showPop();
+					play();
+				}
+				mSeekBarLayout.setSeekTimeVisibility(View.INVISIBLE);
+				mSeekPosition = 0;
+				break;
+			case KeyEvent.KEYCODE_DPAD_RIGHT:
+			case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+				if(mSeekPosition > 0){
+					Log.i(TAG, "mSeekPosition:" + DateUtil.getMediaTime(mSeekPosition));
+					sendSeekMsg(mSeekPosition);
+					mSeekBarLayout.setPosition(mSeekPosition, 0, mVV.getDuration());
+					showPop();
+					play();
+				}
+				mSeekBarLayout.setSeekTimeVisibility(View.INVISIBLE);
+				mSeekPosition = 0;
+				break;
+		}
+        return true;
     }
 
     
@@ -801,105 +608,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         setIntent(intent);
     }
     
-    private void preProgram()
-    {
-        Log.d(TAG, "preProgram() --IN--");
-
-        if (!isMyMediaType())
-        {
-            // 如果不是点击播放的给出提示就返回
-            setToast(getString(R.string.video_cannot_pre));
-            return;
-        }
-
-        // 测试要求切换到下一首的时候，隐藏进度条
-        delayHidePop(1);
-        mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_HIDE_ACCELERATION);
-        VideoInfo mbi = new VideoInfo();
-        mbi = getPreMediaInfo();
-        // 播放列表中是否存在上一个视频
-        if (mbi != null)
-        {
-            // 先停止进度同步
-            stopAllSyncSeek();
-            // 存在，则直接播放
-            mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_STOP);
-            // 视频上下切换，显示缓冲图标
-            mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_SHOW_PROGRESS);
-
-            mSbpw.setMmbi(mbi);
-            setDuration(0);
-
-            String strUrl = mbi.getUrl();
-            Log.d(TAG, "preProgram :" + strUrl);
-            Message msgSetVideo = Message.obtain();
-            msgSetVideo.arg1 = HistoryListRecord.getInstance().get(strUrl);
-            msgSetVideo.what = ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_SETDATA;
-            msgSetVideo.obj = strUrl;
-            mUIHandler.sendMessage(msgSetVideo);
-            play();
-        }
-        else
-        {
-            if (isSenderMyMedia())
-            {
-                setToast(getString(R.string.video_cannot_pre));
-            }
-        }
-    }
-
-    private void nextProgram()
-    {
-        Log.d(TAG, "nextProgram() --IN--");
-        delayHidePop(1);
-        mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_HIDE_ACCELERATION);
-        if (!isMyMediaType())
-        {
-            setToast(getString(R.string.video_cannot_next));
-            return;
-        }
-
-        VideoInfo mbi = new VideoInfo();
-
-        mbi = getNextMediaInfo();
-
-        if (mbi != null)
-        {
-            stopAllSyncSeek();
-            Log.d(TAG, "nextProgram :" + mbi.getUrl());
-            mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_STOP);
-            mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_SHOW_PROGRESS);
-            mSbpw.setMmbi(mbi);
-            setDuration(0);
-
-            String strUrl = mbi.getUrl();
-            if (StringUtils.isNotEmpty(strUrl))
-            {
-                Message msgSetVideo = Message.obtain();
-                msgSetVideo.arg1 = HistoryListRecord.getInstance().get(strUrl);
-                msgSetVideo.what = ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_SETDATA;
-                msgSetVideo.obj = strUrl;
-                mUIHandler.sendMessage(msgSetVideo);
-            }
-
-            play();
-        }
-        else
-        {
-            if (isSenderMyMedia())
-            {
-                setToast(getString(R.string.video_cannot_next));
-            }
-        }
-    }
-
-    // 设置提示信息
-    private void setToast(String string)
-    {
-        Log.d(TAG, "setToast(): " + string);
-        mToast.setText(string);
-        mToast.show();
-    }
 
     /**
      * 显示无法播放提示框
@@ -936,7 +644,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     private void setDuration(int duration)
     {
         Log.d(TAG, "setDuration(): " + duration);
-        mSbpw.setDuration(duration);
     }
 
     @Override
@@ -944,268 +651,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     {
         return super.onKeyLongPress(keyCode, event);
     }
-
-    private SeekBarListener onSeekBarPopWindowListener = new SeekBarListener()
-    {
-        public void seekto(int seekTo)
-        {
-            Log.d(TAG, "seekbar is syn to MVV");
-            cancelHidPopMessage();
-
-            // modified by keke 2013.4.9 修改在seek的时候进度条回退
-            if (mSbpw.getVisibility() != View.VISIBLE)
-            {
-                if (mUIHandler == null)
-                {
-                    return;
-                }
-                else
-                {
-                    mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_SHOW_CONTROLER);
-                }
-            }
-
-            if (seekTo >= 0 && seekTo <= mDuration)
-            {
-                firstSeek = false;
-
-                Log.d(TAG, "onSeekBarPopWindowListener --> seekTo:" + seekTo);
-
-                VideoPlayerActivity.this.seekTo(seekTo);
-
-                timeWhenSeek = 0;
-                if (mSbpw.getmSeekBar().isFromNetwork())
-                {
-                    TimerTask task = new TimerTask()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            if (mVVAdapter.isSeeking())
-                            {
-                                timeWhenSeek += 1000;
-                                if (timeWhenSeek >= PLAYER_TIMEOUT_MAX)
-                                {
-                                    this.cancel();
-                                    finish();
-                                }
-                                return;
-                            }
-                            this.cancel();
-                        }
-                    };
-                    timer.schedule(task, 1000, 1000);
-                }
-            }
-
-            if (!bIsPausedByUser)
-            {
-                delayHidePop(DELAY_TIME);
-            }
-
-            Log.d(TAG, "onSeekBarPopWindowListenersseekTo:  " + seekTo);
-        }
-
-        public void reverseState()
-        {
-            Log.d(TAG, "reverseState");
-            mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_REVERSE_STATE);
-
-        }
-
-        public void hide(boolean bShowM)
-        {
-            Log.d(TAG, "hide - :bShowM : " + bShowM);
-            if (bShowM)
-            {
-                // 显示Menu
-                immediatelyHide();
-            }
-            else
-            {
-                cancelHidPopMessage();
-                delayHidePop(DELAY_TIME);
-            }
-        }
-
-        public void immediatelyHide()
-        {
-            mUIHandler.setbAlwaysShowPopSeekbar(false);
-            cancelHidPopMessage();
-            delayHidePop(1);
-            mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_HIDE_ACCELERATION);
-        }
-
-        public void nextProgram()
-        {
-            // TODO　keke
-            if (bMCSMode)
-            {
-                VideoPlayerActivity.this.nextProgram();
-            }
-            else
-            {
-                //showPlayListLayout();
-            }
-        }
-
-        public void preProgram()
-        {
-            if (bMCSMode)
-            {
-                VideoPlayerActivity.this.preProgram();
-            }
-            else
-            {
-                //showPlayListLayout();
-            }
-        }
-
-        public int getPlayState()
-        {
-            if (mVVAdapter.isPlaying())
-            {
-                return PLAY;
-            }
-            else
-            {
-                return PAUSE;
-            }
-        }
-
-        public void showMenu()
-        {
-            openOptionsMenu();
-        }
-
-        public void onXChange(int X)
-        {
-        	Log.i("VideoKey", "onXChange->X:" + X);
-            mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_HIDE_ACCELERATION);
-
-            mUIHandler.setbAlwaysShowPopSeekbar(false);
-
-            if (!isFromNetwork)
-            {
-                if (canAccelerate)
-                {
-                    // zkf61715 DTS2014010909031 设置倍速时先判断状态
-                    if (mVVAdapter.isPlaying() && mVVAdapter.setSpeed(X) == 0)
-                    {
-                        mSbpw.getmSeekBar().setXacceleration(X);
-                    }
-                }
-                else
-                {
-                    mSbpw.getmSeekBar().setXacceleration(X);
-                }
-                X = mSbpw.getmSeekBar().getXacceleration();
-            }
-            Log.d(TAG, "~~~~~~~~~~~~~~~~~~~X =" + X);
-
-            if (X == 0 || X == 1)
-            {
-                Log.d(TAG, "firstSeek==" + firstSeek);
-                mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_MCS_PLAY);
-                // 协议上获取状态是有时间间隔的，如果发的太快，会被覆盖
-                if (isNetWorkVideo(getCurMediaUrl()))
-                {
-                    mUIHandler.sendEmptyMessageDelayed(ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_PLAY, 1000);
-                }
-                else
-                {
-                    mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_PLAY);
-                }
-
-                if (isFromNetwork)
-                {
-                    mUIHandler.sendEmptyMessageDelayed(ConstData.VideoPlayUIMsg.MSG_HIDE_ACCELERATION, 3000);
-                }
-                else
-                {
-                    mSbpw.getmSeekBar().setOnkey(false);
-                    cancelHidPopMessage();
-                    delayHidePop(DELAY_TIME);
-                }
-            }
-            else
-            {
-                /* BEGIN: Modified by s00211113 for DTS2014031902280 2014/03/19 */
-                int imgId = 0;
-                switch (X)
-                {
-//                    case 2:
-//                        imgId = R.drawable.play_status_acc2x;
-//                        break;
-//                    case 4:
-//                        imgId = R.drawable.play_status_acc4x;
-//                        break;
-//                    case 8:
-//                        imgId = R.drawable.play_status_acc8x;
-//                        break;
-//                    case 16:
-//                        imgId = R.drawable.play_status_acc16x;
-//                        break;
-//                    case 32:
-//                        imgId = R.drawable.play_status_acc32x;
-//                        break;
-//                    case -2:
-//                        imgId = R.drawable.play_status_backacc2x;
-//                        break;
-//                    case -4:
-//                        imgId = R.drawable.play_status_backacc4x;
-//                        break;
-//                    case -8:
-//                        imgId = R.drawable.play_status_backacc8x;
-//                        break;
-//                    case -16:
-//                        imgId = R.drawable.play_status_backacc16x;
-//                        break;
-//                    case -32:
-//                        imgId = R.drawable.play_status_backacc32x;
-                    case 2:
-                        imgId = R.drawable.play_status_acc;                        
-                        break;
-                    case -2:
-                        imgId = R.drawable.play_status_backacc;
-                        break;
-                    default:
-                        break;
-                }
-                mSbpw.ShowPlayStatusImg(imgId);
-            }
-
-        }
-
-        public void onTrackingTouchChange(boolean isTrackingTouch)
-        {
-            Log.e(TAG, "chumoping");
-            if (isTrackingTouch)
-            {
-            	mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_HIDE_CONTROLER);
-                mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_SHOW_CONTROLER);
-            }
-            else
-            {
-            	mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_SHOW_CONTROLER);
-                mUIHandler.sendEmptyMessageDelayed(ConstData.VideoPlayUIMsg.MSG_HIDE_CONTROLER, 3000);
-            }
-        }
-
-        public float onNan()
-        {
-            int position = mMediaPlayer.getCurrentPosition();
-            int maxposition = mMediaPlayer.getDuration();
-
-            return Float.valueOf(position) / Float.valueOf(maxposition);
-        }
-
-        public void onBack(int keyCode, KeyEvent event)
-        {
-            onKeyDown(keyCode, event);
-        }
-
-    };
 
     private void showPop()
     {
@@ -1219,22 +664,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         delayHidePop(DELAY_TIME);
     }
 
-    private void hidePop()
-    {
-        Log.d(TAG, "hidePop() --IN--");
-        try
-        {
-            mSbpw.setVisibility(View.GONE);
-            mSbpw.setFocusable(false);
-
-            /** 修改者：l00174030；修改原因：时间控件和控制条一起显示 **/
-            // 进度条消失时时间不显示
-            tiemLayout.setVisibility(View.INVISIBLE);
-        }
-        catch (Exception e)
-        {
-        }
-    }
 
     private void cancelHidPopMessage()
     {
@@ -1250,7 +679,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         Log.d(TAG, "delayHidePop()--");
         if (null != mUIHandler)
         {
-            mUIHandler.sendEmptyMessageDelayed(ConstData.VideoPlayUIMsg.MSG_HIDE_CONTROLER, time);
+        	mUIHandler.sendEmptyMessageDelayed(ConstData.VideoPlayUIMsg.MSG_HIDE_CONTROLER, time);
         }
     }
 
@@ -1271,7 +700,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         public void onCompletion(IMediaPlayerAdapter mp)
         {
             Log.d(TAG, "OnCompletionListener -- onCompletion() --");
-            mVVAdapter.setOnCompletionListener(null);
+            //mVV.setOnCompletionListener(null);
             onCompleteOperate(mp);
         }
 
@@ -1327,7 +756,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
             stopSyncSeekPos();
             progressGone();
-            mPlayListLayout.hidePopupWindow();
 
             // 隐藏杜比弹出框
             sendDoblyWinMsg(false);
@@ -1345,10 +773,10 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             String url = getCurMediaUrl();
             if (url != null)
             {
-                if (isMyMediaType())
+              /*  if (isMyMediaType())
                 {
                     HistoryListRecord.getInstance().put(url, 0);
-                }
+                }*/
             }
 
             playerErrorTimes++;
@@ -1358,7 +786,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             {
                 playerErrorTimes = 0;
                 // 不能播放的提示
-                //setToast(getString(R.string.video_error));
                 showCannotPlayDialog(getString(messageId), false);
                 return true;
             }
@@ -1366,7 +793,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             // 播放模式为全体循环播放
             Log.d(TAG, "mCurrentIndex:" + mPlayStateInfo.getCurrentIndex());
 
-            VideoInfo mbi = getNextMediaInfo();
+            FileInfo mbi = getNextMediaInfo();
 
             if (mbi == null)
             {
@@ -1389,11 +816,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
      */
     private void finishPlay()
     {
-        if (bMCSMode)
-        {
-            onNotifyStop();
-            unbind();
-        }
+       
         stop();
 
         mSubSurface.setVisibility(View.INVISIBLE);
@@ -1419,63 +842,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     {
         public void onSeekComplete(IMediaPlayerAdapter mp)
         {
-            Log.d(TAG, "mp.getCurrentPosition() = " + mp.getCurrentPosition());
-
-            if (isFromNetwork)
-            {
-                mVVAdapter.isSeeking(false);
-                Log.d(TAG, "OnSeekCompleteListener --- " + firstSeek);
-                // 判断是否是第一次开始播放时的seek，如果不是则代表是最后播放完后的seek
-                mSbpw.mSeekBarPopWindowListener.onTrackingTouchChange(false);
-                mSbpw.Xacceleration = 0;
-                mSbpw.getmSeekBar().setXacceleration(0);
-                onSeekBarPopWindowListener.onXChange(0);
-                firstSeek = false;
-                return;
-            }
-            float Kscale = mSbpw.getmSeekBar().getKscale();  
-            if (mp.getCurrentPosition() >= mp.getDuration())
-            {
-                mSbpw.setAcceleToEnd(true);
-            }
-            else
-            {
-                mSbpw.setAcceleToEnd(false);
-            }
-
-            mVVAdapter.isSeeking(false);                
-            if (Kscale == 0 || Kscale == 1)
-            {
-                // 快进快退到头时正常播放
-                mSbpw.Xacceleration = 0;
-                mSbpw.getmSeekBar().setXacceleration(0);
-                mSbpw.mSeekBarPopWindowListener.onXChange(0);
-                //mSbpw.setAcceleCompl(true);
-            }
-                            
-            Log.d(TAG, "OnSeekCompleteListener --- " + firstSeek);
-            // 判断是否是第一次开始播放时的seek，如果不是则代表是最后播放完后的seek
-
-            mSbpw.mSeekBarPopWindowListener.onTrackingTouchChange(false);
-
-            if (mSbpw.getmSeekBar().isEnSure())
-            {
-                mSbpw.Xacceleration = 0;
-                mSbpw.getmSeekBar().setXacceleration(0);
-                onSeekBarPopWindowListener.onXChange(0);
-            }
-            firstSeek = false;
-        
-            if (timeSeekToPlay)
-            {
-                timeSeekToPlay = false;
-                chgVideoStatusWhenPopMenu();
-            }  
-            
-            if (Kscale == 1)
-            {                  
-                onCompleteOperate(mp);                 
-            }
+        	Log.i(TAG, "onSeekComplete");
+        	play();
         }
     };
 
@@ -1491,41 +859,22 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             updateMenuScreen();
             mDuration = mp.getDuration();
             int position = mp.getCurrentPosition();
-
-            // z00184367 add 2011年12月15日:将当前媒体文件的播放总长度返回给客户端
-            if (bMCSMode)
-            {
-                if (mMediaCenterPlayerClient != null)
-                {
-                    mMediaCenterPlayerClient.reportDuration(position, mDuration);
-                }
-            }
-
             Log.d(TAG, "onPreparedListener this is first :" + isFirstPlayVideo + " get duration = " + mDuration);
             // 处理来自界面点击/甩屏的请求，甩、推的时候带有seek，其他不会带有
             int seek = 0;
             String strUrl = null;
-            VideoInfo mbi = getCurrentMediaInfo();
+            FileInfo mbi = getCurrentMediaInfo();
             if (mbi != null)
             {
-                strUrl = mbi.getUrl();
+                strUrl = mbi.getPath();
             }
             if (!StringUtils.isEmpty(strUrl))
             {
                 if (isFirstPlayVideo)
                 {
                     isFirstPlayVideo = false;
-                    if (isMyMediaType())
-                    {
-                        seek = HistoryListRecord.getInstance().get(strUrl);
-                    }
                 }
-                seek = seek == 0 ? MathUtil.ConvertPercentageToValue(mbi.getmSeekTo(), mDuration) : seek;
-
-                if (isMyMediaType())
-                {
-                    HistoryListRecord.getInstance().put(strUrl, seek);
-                }
+                //seek = seek == 0 ? MathUtil.ConvertPercentageToValue(mbi.getmSeekTo(), mDuration) : seek;
             }
 
             if (0 < seek)
@@ -1542,7 +891,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
             // 重置无法播放次数为0
             playerErrorTimes = 0;
-            mSbpw.setbPrepared(true);
 
             // 当结束的时候把当前播放索引返回到broeser界面
             passIntentForBrowser();
@@ -1604,30 +952,12 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
      */
     private void showDoblyWin()
     {
-        if (PlatformUtil.isHisiPlatform()){
-//    		List<AudioInfoOfVideo> aiovs = mVVAdapter.getAudioinfos();
-//
-//            if (aiovs != null)
-//            {
-//                for (int i = 0; i < aiovs.size(); i++)
-//                {
-//                    doblyPopWin.checkHasDobly(aiovs.get(i).getaudioformat());
-//                }
-//            }
-        	AudioInfoOfVideo maudioInfoOfVideo = mVVAdapter.getCurrentAudioinfos();
-        	if(maudioInfoOfVideo != null)
-        	{
-            	doblyPopWin.checkHasDobly(maudioInfoOfVideo.getaudioformat());
-            	Log.i(TAG, "maudioInfoOfVideo" + maudioInfoOfVideo);
-            	Log.i(TAG, "maudioInfoOfVideo.getaudioformat()" + maudioInfoOfVideo.getaudioformat());
-        	}
-    	}else{
-    		boolean isDolbyEnabled = mVVAdapter.isDolbyEnabled();
-    		Log.d(TAG, " showDoblyWin() isDolbyEnabled======= "+isDolbyEnabled);
-    		if(isDolbyEnabled){
-    			doblyPopWin.checkHasDobly(-100);
-    		}
-    	}
+
+		boolean isDolbyEnabled = mVV.isDolbyEnabled();
+		Log.d(TAG, " showDoblyWin() isDolbyEnabled======= "+isDolbyEnabled);
+		if(isDolbyEnabled){
+			doblyPopWin.checkHasDobly(-100);
+		}
     	sendDoblyWinMsg(true);
     }
 
@@ -1701,47 +1031,13 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             return false;
         }
     };
-
-    OnFastBackwordCompleteListener onFastBackwordCompleteListener = new OnFastBackwordCompleteListener()
-    {
-        public void onFastBackwordComplete(IMediaPlayerAdapter mp)
-        {
-            Log.i(TAG, "------------------->>>>BackwordComplete");
-
-            mSbpw.Xacceleration = 1;
-
-            mSbpw.getmSeekBar().setXacceleration(1);
-
-            onSeekBarPopWindowListener.onXChange(1);
-        }
-    };
-
-    OnFastForwardCompleteListener onFastForwardCompleteListener = new OnFastForwardCompleteListener()
-    {
-
-        @Override
-        public void onFastForwardComplete(IMediaPlayerAdapter mp)
-        {
-            Log.i(TAG, "-------------------->>>>Forward");
-        }
-    };
-
+    
     OnBufferingUpdateListener onBufferingUpdateListener = new OnBufferingUpdateListener()
     {
 
         @Override
         public boolean onBufferingUpdate(IMediaPlayerAdapter mp, int percent)
-        {
-            // TODO Auto-generated method stub
-        	//begin add by caochao for DTS2014111006777 媒体中心视频时概率性出现“该视频无法播放”
-        	//buffer处于更新状态或者加载已经完成，超时计数清零
-        	Log.i(TAG, "onBufferingUpdate percent = " + percent);
-        	if (mBufferUpdatePercent != percent || percent == 100)
-        	{
-        		mBufferUpdatePercent = percent;
-        		timeOutBegin = 0;
-        	}
-        	//end add by caochao for DTS2014111006777 媒体中心视频时概率性出现“该视频无法播放”
+        {        	
             return false;
         }
     };
@@ -1808,36 +1104,21 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
      */
     protected boolean setMediaData()
     {
-    	mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_HIDE_ACCELERATION);
-        VideoInfo mbi = new VideoInfo();
+        FileInfo mbi = new VideoInfo();
         mbi = getCurrentMediaInfo();
-
         if (mbi == null)
         {
-
-            // 播放器关闭，Activity销毁时，先回发stop状态，再立即解除绑定，其后不再向Sender端回发播放器的任何状态
-            if (bMCSMode)
-            {
-                onNotifyStop();
-                unbind();
-            }
-
+            //播放器关闭，Activity销毁时，先回发stop状态，再立即解除绑定，其后不再向Sender端回发播放器的任何状态
             stop();
-
-            // Log.e(TAG, "---------before finish");
             mSubSurface.setVisibility(View.INVISIBLE);
             finish();
-
             return false;
         }
-        mSbpw.setMmbi(mbi);
-        mSbpw.resetSeekbar();
-        mVVAdapter.isSeeking(false);
-        String strUrl = mbi.getUrl();
+        mVV.isSeeking(false);
+        String strUrl = mbi.getPath();
         if (!StringUtils.isEmpty(strUrl))
         {
             stopSyncSeekPos();
-
             delayHidePop(1);
             mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_SHOW_PROGRESS);
             mBdMntPath = null;
@@ -1876,8 +1157,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
      */
     private void seekTo(int msec)
     {
-        mVVAdapter.isSeeking(true);
-        Log.d(TAG, "------seekTo() --" + mVVAdapter.isSeeking());
+        mVV.isSeeking(true);
+        Log.d(TAG, "------seekTo() --" + mVV.isSeeking());
         Message msgseek = Message.obtain();
         msgseek.what = ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_SEEK_TO;
         msgseek.arg1 = msec;
@@ -1893,10 +1174,10 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         // 媒体中心模式时保存进度 l00174030
         if (url != null)
         {
-            if (isMyMediaType())
+            /*if (isMyMediaType())
             {
                 HistoryListRecord.getInstance().put(url, msec);
-            }
+            }*/
         }
     }
 
@@ -1917,7 +1198,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     protected void pause()
     {
 
-        if (!mVVAdapter.isSeeking())
+        if (!mVV.isSeeking())
         {
             mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_PAUSE);
         }
@@ -1932,19 +1213,13 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
      */
     protected void stop()
     {
-        if (bMCSMode && isSharingStop)
-            return;
-
-        mSbpw.setbPrepared(false);
 
         Log.d(TAG, "stop is invoke  stopallsyncseek");
-
         /** liyang DTS2013051702993 **/
         // 本地播放视频文件，设置视频循环播放，影片播放完，在将要播放下一影片时，切换全屏播放模式或音轨或字幕时，停止运行。
         isMenuNeedShow = false;
         // 返回键时，菜单需要重新加载
         isMenuHasCreated = false;
-
         // 隐藏杜比弹出框
         sendDoblyWinMsg(false);
         stopAllSyncSeek();
@@ -2021,11 +1296,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     public boolean menuOpened()
     {
         Log.d(TAG, "videoPlayer onMenuOpened");
-        if (mSbpw == null || !mSbpw.isbPrepared())
-        {
-            return false;
-        }
-
+        
         delayHidePop(1);
 
         // 弹出菜单时，暂停视频的播放。
@@ -2041,15 +1312,15 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         if (isMenuNeedShow)
         {
             // Log.e("subinfolog", "onMenuOpened");
-           /* if (mVVAdapter.getSubtitleList().size() > 0)
+           /* if (mVV.getSubtitleList().size() > 0)
             {
-                subId = mVVAdapter.getCurrentSudId();
+                subId = mVV.getCurrentSudId();
             }*/
 
-            if (mVVAdapter.getAudioinfos() != null && mVVAdapter.getAudioinfos().size() > 0)
+            if (mVV.getAudioinfos() != null && mVV.getAudioinfos().size() > 0)
             {
-//            	Log.d(TAG, "soundId =" + mVVAdapter.getCurrentSoundId());
-//                soundId = mVVAdapter.getCurrentSoundId();
+//            	Log.d(TAG, "soundId =" + mVV.getCurrentSoundId());
+//                soundId = mVV.getCurrentSoundId();
             }
         }
 
@@ -2059,11 +1330,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         }
         else
         {
-           /* // 加载菜单的显示项
-            if (!isMenuHasCreated)
-            {
-              
-            }*/
         	loadMenu();
             isMenuHasCreated = true;
             mPopMenu.replayLastSelected();
@@ -2080,11 +1346,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     {
         Log.d(TAG, "videoPlayer openBottomMenu");
 
-        if (mSbpw == null || !mSbpw.isbPrepared())
-        {
-            return false;
-        }
-
+        //隐藏控制器
         delayHidePop(1);
 
         // 弹出菜单时，暂停视频的播放。
@@ -2095,14 +1357,14 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         if (isMenuNeedShow)
         {
             // Log.e("subinfolog", "onMenuOpened");
-            /*if (mVVAdapter.getSubtitleList().size() > 0)
+            /*if (mVV.getSubtitleList().size() > 0)
             {
-                subId = mVVAdapter.getCurrentSudId();
+                subId = mVV.getCurrentSudId();
             }*/
 
-            if (mVVAdapter.getAudioinfos() != null && mVVAdapter.getAudioinfos().size() > 0)
+            if (mVV.getAudioinfos() != null && mVV.getAudioinfos().size() > 0)
             {
-//                soundId = mVVAdapter.getCurrentSoundId();
+                soundId = mVV.getCurrentSoundId();
             }
         }
 
@@ -2126,14 +1388,11 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
     private void createBottomPopMenu()
     {
-        // isBottomPopupAutoDismiss = true;
         mCurrSelectType = null;
         if (mBottomPopMenu == null)
         {
             mBottomPopMenu = new BottomPopMenu(this);
         }
-        Log.e("", "sdfsdfsdfsdfsdfsdfsd");
-
         mBottomPopMenu.setOnSelectTypeListener(this);
         mBottomPopMenu.setOnDismissListener(mPopupWindowDismissListener);
 
@@ -2214,7 +1473,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     {
         // zkf61715 从定位对话框按确定播放时，如果此时还未seek完成，需要等到seekComplete时再执行play()方法
         // 否则会因为MSG_UI_VIDEOVIEW_PLAY消息未执行而概率性导致按确定键以后画面卡在当前的帧
-        if (mVVAdapter.isSeeking())
+        if (mVV.isSeeking())
         {
             timeSeekToPlay = true;
             return;
@@ -2332,9 +1591,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
         //int order = 0;
 
-        if (mVVAdapter != null)
+        if (mVV != null)
         {
-            List<SubInfo> list1 = mVVAdapter.getSubtitleList();
+            List<SubInfo> list1 = mVV.getSubtitleList();
             Log.i(TAG, "loadMenuSubTitle->list1:" + list1);
             if (list1 == null || list1.size() == 0)
             {
@@ -2443,7 +1702,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         }*/
         if (isMenuNeedShow && subNum > 0)
         {
-            if (mVVAdapter != null)
+            if (mVV != null)
             {
             	MediaPlayer mediaPlayer = mMediaPlayer.getOriginMediaPlayer();
             	if(menuIndex != subNum){
@@ -2457,8 +1716,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             	}
             	subId = menuIndex;
                /* Log.d(TAG, "subtitle 1 subNum:" + subNum);
-                mVVAdapter.setSubId(index);
-                subId = mVVAdapter.getCurrentSudId();*/
+                mVV.setSubId(index);
+                subId = mVV.getCurrentSudId();*/
             }
 
         }
@@ -2531,11 +1790,11 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         Log.d(TAG, "subtitle 1 isMenuNeedShow:" + isMenuNeedShow + " subtitle path:" + path);
         if (isMenuNeedShow)
         {
-            if (mVVAdapter != null)
+            if (mVV != null)
             {
                 Log.d(TAG, "subtitle 1 subNum:" + subNum);
 
-                int ret = mVVAdapter.setSubPath(path);
+                int ret = mVV.setSubPath(path);
                 if (0 == ret)
                 {
                     subtitlePath = path;
@@ -2583,7 +1842,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
         MenuItemImpl item = null;
 
-        List<AudioInfoOfVideo> list = mVVAdapter.getAudioinfos();
+        List<AudioInfoOfVideo> list = mVV.getAudioinfos();
         soundNum = list.size();
 
         Log.e(TAG, "soundNum:" + soundNum);
@@ -2686,9 +1945,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             {
                 Log.d(TAG, "MENU_ID_SOUND soundId" + soundId);
 
-                if (mVVAdapter != null)
+                if (mVV != null)
                 {
-                    mVVAdapter.setSoundId(index);
+                    mVV.setSoundId(index);
                     showDoblyWin();
                     soundId = index;
                 }
@@ -2805,13 +2064,13 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     private void setChannelMode(int index)
     {
         boolean ret = false;
-        if (null != mVVAdapter)
+        if (null != mVV)
         {
             if (index >= 0 && index < mChannelModeCodes.length)
             {
                 channelModeCodes = mChannelModeCodes[index];
             }
-            ret = mVVAdapter.setAudioChannelMode(channelModeCodes);
+            ret = mVV.setAudioChannelMode(channelModeCodes);
         }
         Log.d(TAG, "setChannelMode " + ret);
     }
@@ -2845,160 +2104,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     protected void loadResource(){
     	
     }
-
-    @Override
-    protected void mcsStop(Intent intent)
-    {
-        bIsPausedByUser = false;
-
-        if (bMCSMode)
-        {
-            onNotifyStop();
-            unbind();
-        }
-
-        /** 推送的场合，直接弄死自己，防止状态异常 **/
-        finish();
-
-    }
-
-    @Override
-    protected void mcsSeek(Intent intent)
-    {
-
-        firstSeek = false;
-
-        int seekTo = 0;
-
-        try
-        {
-            seekTo = intent.getIntExtra(ConstData.IntentKey.SEEK_POS, -1);
-        }
-        catch(Exception e)
-        {
-            seekTo = -1;
-        }
-        
-        if (-1 == seekTo)
-        {
-            seekTo = MathUtil.ConvertPercentageToValue(intent.getFloatExtra(ConstData.IntentKey.SEEK_POS, -1), mDuration);
     
-            if (seekTo < 0)
-            {
-                seekTo = 0;                
-            }
-        }
-
-        showPop();
-
-        if (seekTo > mDuration && mDuration != 0)
-        {
-            Log.e(TAG, "cc msg mcsSeek seekTo = " + seekTo + " mDuration = " + mDuration);
-            return;
-        }
-        if (seekTo <= mDuration)
-        {
-            VideoPlayerActivity.this.seekTo(seekTo);
-        }
-
-        String url = getCurMediaUrl();
-        if (url == null)
-        {
-            return;
-        }
-
-        if (isMyMediaType())
-        {
-            HistoryListRecord.getInstance().put(url, seekTo);
-        }
-        else
-        {
-            VideoInfo mbi = getCurrentMediaInfo();
-            if (mbi != null)
-            {
-                mbi.setmSeekTo(seekTo);
-            }
-        }
-
-    }
-
-    @Override
-    protected void mcsPause(Intent intent)
-    {
-        bIsPausedByUser = true;
-
-        showPop();
-
-        pause();
-
-        if (mSbpw.getmSeekBar().isOnkey())
-        {
-            mSbpw.doEnter();
-
-            // onSeekBarPopWindowListener.onXChange(0);
-
-        }
-
-    }
-
-    @Override
-    protected void mcsPlay(Intent intent)
-    {
-
-        bIsPausedByUser = false;
-
-        // 解决推送端在暂停和播放之间进行状态切换时，播控条不消失的现象
-        cancelHidPopMessage();
-        delayHidePop(DELAY_TIME);
-
-        if (mSbpw.getmSeekBar().isOnkey())
-        {
-            mSbpw.doEnter();
-
-            // onSeekBarPopWindowListener.onXChange(0);
-        }
-        else
-        {
-            mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_MCSPLAY);
-        }
-    }
-
-    protected void mcsSetMediaData(Intent intent)
-    {
-    	mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_HIDE_ACCELERATION);
-        bIsPausedByUser = false;
-        stopAllSyncSeek();
-        mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_STOP);
-        // 解析传递过来的数据
-        parseInputIntent(intent);
-
-        if (mPlayStateInfo != null)
-        {
-
-            // 如果是推送或甩屏过来的，恢复为初始播放模式，不复用上一次播放模式
-            if (mPlayStateInfo.getSenderClientUniq().trim().equals(ConstData.ClientTypeUniq.PUSH_UNIQ.trim())
-                    || mPlayStateInfo.getSenderClientUniq().trim().equals(ConstData.ClientTypeUniq.SYN_UINQ.trim()))
-            {
-                setPlayMode(ConstData.MediaPlayMode.MP_MODE_SINGLE);
-                mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_MCS_HIDEMODE);
-                PlayerStateRecorder.getInstance().put(PlayerStateRecorder.VIDEO_PLAY_MODE, ConstData.MediaPlayMode.MP_MODE_SINGLE);
-            }
-        }
-
-        // 设置VideoView数据
-        setMediaData();
-
-        // 利用callback的接收消息功能，给它发送play命令执行播放操作
-        Message msg = Message.obtain();
-        msg.what = ConstData.MCSMessage.MSG_PLAY;
-        sendMessage(msg);
-
-        VideoInfo mbi = new VideoInfo();
-
-        mbi = getCurrentMediaInfo();
-        mSbpw.setMmbi(mbi);
-
-    }
 
     /**
      * 保存seekPos点 saveSeekPosIntoMbi
@@ -3010,13 +2116,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     {
         savePositionNow();
     }
-
-    @Override
-    protected int getUUID()
-    {
-        return ConstData.MediaType.VIDEO;
-    }
-
+    
     /**
      * 
      * getMediaType 获取播放器媒体类型 void
@@ -3053,7 +2153,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         @Override
         public void handleMessage(Message msg)
         {
-            mVVAdapter.seekTo(msg.arg1);
+            mVV.seekTo(msg.arg1);
             super.handleMessage(msg);
         }
 
@@ -3073,7 +2173,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         {
             bSyncSeek = false;
             setbHide(true);
-            hidePop();
         }
         // remove all messages
         public void removeAllMsgs()
@@ -3087,11 +2186,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         @Override
         public void handleMessage(Message msg)
         {
-            if (bMCSMode && isSharingStop)
-            {
-                return;
-            }
-
             switch (msg.what)
             {
                 case ConstData.VideoPlayUIMsg.MSG_UI_PROCESSBAR:
@@ -3104,14 +2198,11 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                     break;
 
                 case ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_SETDATA:
-                    mSbpw.setAcceleToEnd(false);
-                    mSbpw.setSeekBarEnd(false);
                     Log.d(TAG, "MSG_UI_VIDEOVIEW_SETDATA");
 					//begin add by caochao for DTS2014111006777 媒体中心视频时概率性出现“该视频无法播放”
                     timeOutBegin = 0;
 					//end add by caochao for DTS2014111006777 媒体中心视频时概率性出现“该视频无法播放”
                     mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_HIDE_ACCELERATION);
-                    mSbpw.setbPrepared(false);
                     if (mVV == null)
                     {
                         return;
@@ -3122,18 +2213,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 //                    progressGone();
                     if (StringUtils.isNotEmpty(strurl))
                     {
-                        // 设置开始播放时，先回给Sender端播放位置0
-                        // 为了解决：UPNP连续推送，进度条保留1s上次的进度；
-                        if (bMCSMode)
-                        {
-                            // 场景：DLNA连续推送，其他场景目前没有；
-                            if (mMediaCenterPlayerClient != null && StringUtils.isNotEmpty(getSenderClientUniq())
-                                    && getSenderClientUniq().equalsIgnoreCase(ConstData.ClientTypeUniq.PUSH_UNIQ))
-                            {
-                                mMediaCenterPlayerClient.seek(0);
-                            }
-                        }
-
                         // 隐藏杜比的信息窗口
                         sendDoblyWinMsg(false);
 
@@ -3148,15 +2227,15 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 						}else{
 							uri = Uri.parse(Uri.encode(strurl));
 						}
-						if(mCurrentDevice.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_DMS || 
-								mCurrentDevice.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_OTHER)
+						if(mCurrDevice.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_DMS || 
+								mCurrDevice.getDeviceType() == ConstData.DeviceType.DEVICE_TYPE_OTHER)
 							uri = Uri.parse(strurl);
                         // mVV.setVideoPath(strurl);
                         Log.e(TAG, "要播放的视频URL为 ：" + String.valueOf(uri));
-                        mVVAdapter.setVideoURI(uri);
+                        mVV.setVideoURI(uri);
                         soundId = 0;
                         // zkf61715 seekTo为假异步，需要在子线程中调用避免ANR
-                        // mVVAdapter.seekTo(msg.arg1);
+                        // mVV.seekTo(msg.arg1);
                         sendSeekMsg(msg.arg1);
                         setbAlwaysShowPopSeekbar(false);
                     }
@@ -3189,111 +2268,67 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                     // 返回键时，菜单需要重新加载
                     isMenuHasCreated = false;
 
-                    if (mVVAdapter != null)
+                    if (mVV != null)
                     {
                         setbAlwaysShowPopSeekbar(false);
 
-                        mVVAdapter.stopPlayback();
+                        mVV.stopPlayback();
                     }
 
                     break;
 
                 case ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_PAUSE:
-
                     Log.e(TAG, "MSG_UI_VIDEOVIEW_PAUSE");
-
-                    // Log.e(TAG, "----getseek" + mVV.getIsSeeking() + "::" + isBuffereIng);
-
-                    if (mVVAdapter == null)
-                    {
-                        return;
-                    }
-
-                    if (bMCSMode)
-                    {
-                        Log.d(TAG, "mMediaCenterPlayerClient  pause");
-                        if (mMediaCenterPlayerClient != null)
-                        {
-                            mMediaCenterPlayerClient.pause();
-                        }
-                    }
-
                     Log.d(TAG, " play----> pause");
                     setbAlwaysShowPopSeekbar(true);
-
                     mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_PLAY);
-
-                    mVVAdapter.pause();
-                    Log.d(TAG, "pause problem --->" + "prepare==" + mSbpw.isbPrepared());
-                    if (mSbpw.isbPrepared())
-                    {
-                        removeMessages(ConstData.VideoPlayUIMsg.MSG_HIDE_ACCELERATION);
-                        mSbpw.ShowPlayStatusImg(R.drawable.play_status_pause);
-                    }
-
+                    mVV.pause();
                     removeMessages(ConstData.VideoPlayUIMsg.MSG_PROGRESS_CHANGED);
-
-                    int tempPos = mVVAdapter.getCurrentPosition();
-
+                    //调整状态图
+                    mSeekBarLayout.setPlayStatus(ConstData.VIDEO_PLAY_STATUS.PAUSED);
+                    int tempPos = mVV.getCurrentPosition();
                     Log.d(TAG, "MSG_UI_VIDEOVIEW_PAUSE ---" + tempPos);
-
-                    if (mSbpw.isFocusable() && !mVVAdapter.isSeeking())
+                    if (mSeekBarLayout.isFocusable() && !mVV.isSeeking())
                     {
                         Log.d("MSG_UI_VIDEOVIEW_PAUSE", "----seek");
 
-                        mSbpw.seekto(tempPos);
                     }
-                    mSbpw.pause();
                     break;
                 case ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_MCSPLAY:
                     Log.d(TAG, "MSG_UI_VIDEOVIEW_MCSPLAY");
                     if (mCircleProgressBar.getVisibility() == View.GONE)
                     {
-                        mSbpw.ShowPlayStatusImg(R.drawable.play_status_play);
                         mUIHandler.sendEmptyMessageDelayed(ConstData.VideoPlayUIMsg.MSG_HIDE_ACCELERATION, 3000);
                     }
                     mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_PLAY);
                     break;
                 case ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_PLAY:
-                    if (mVVAdapter != null)
+                    if (mVV != null)
                     {
-                        Log.d("dddd", "MSG_UI_VIDEOVIEW_PLAY" + mVVAdapter.isSeeking());
+                        Log.d("dddd", "MSG_UI_VIDEOVIEW_PLAY" + mVV.isSeeking());
                     }
-                    if (mVVAdapter == null || mVVAdapter.isSeeking())
+                    if (mVV == null || mVV.isSeeking())
                     {
                         return;
                     }
-
-                    if (bMCSMode)
-                    {
-
-                        if (mMediaCenterPlayerClient != null)
-                        {
-                            Log.d("dddd", "mMediaCenterPlayerClient--->play");
-                            mMediaCenterPlayerClient.play();
-                        }
-                    }
-                    Log.d(TAG, "---------mvv =" + isBuffereIng + "::" + mSbpw.isbPrepared());
-                    if (!mVVAdapter.isPlaying())
+                    if (!mVV.isPlaying())
                     {
                         mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_PAUSE);
                         setbAlwaysShowPopSeekbar(false);
-                        mVVAdapter.setOnCompletionListener(onCompletionListener);
+                        mVV.setOnCompletionListener(onCompletionListener);
                         //再次隐藏加载栏
                         //progressGone();
-                        Log.i("ProgressBar_Debug", "mVVAdapter.start()");
-                        mVVAdapter.start();
+                        Log.i("ProgressBar_Debug", "mVV.start()");
+                        mVV.start();
+                        mSeekBarLayout.setPlayStatus(ConstData.VIDEO_PLAY_STATUS.PLAYING);
                         //这里设置字幕是否显示
-                        
-                        //Log.i(TAG, "mVVAdapter.start()->stackTrace:" + android.util.Log.getStackTraceString(new Throwable()));
+                        //Log.i(TAG, "mVV.start()->stackTrace:" + android.util.Log.getStackTraceString(new Throwable()));
                         /**
                          * Mender:l00174030;Reason:when you pause & play, there is some wrong with the original model, set the video size to skip it.
                          **/
-                        pauseToPlay();
+                        //pauseToPlay();
                         removeMessages(ConstData.VideoPlayUIMsg.MSG_PROGRESS_CHANGED);
                         sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_PROGRESS_CHANGED);
-
-                        mSbpw.play();
 
                         /** Mender:l00174030;Reason:pause a long time,then play,the progress bar can't disappear. **/
                         if (null != mUIHandler)
@@ -3301,32 +2336,17 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                             mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_HIDE_CONTROLER);
                             mUIHandler.sendEmptyMessageDelayed(ConstData.VideoPlayUIMsg.MSG_HIDE_CONTROLER, 5000);
                         }
-                        Log.d(TAG, "video play" + mVVAdapter.getCurrentPosition() + "state==");
+                        Log.d(TAG, "video play" + mVV.getCurrentPosition() + "state==");
 
-                    }
-
-                    /** 修改者：l00174030；修改原因：UCD改变播控方式 **/
-                    if (mSbpw.getmSeekBar().getPlayMode() == PlayMode.PLAY_SEEK
-                            || (mSbpw.getmSeekBar().getXacceleration() == 0 || mSbpw.getmSeekBar().getXacceleration() == 1))
-                        mSbpw.ShowPlayStatusImg(R.drawable.play_status_play);
-                    Log.d(TAG, "mSbpw.getIskeyDown()==" + mSbpw.getIskeyDown() + " mSbpw.isTrackingTouch==" + mSbpw.isTrackingTouch);
-                    if (mSbpw.getIskeyDown() == false && mSbpw.isTrackingTouch == false)
-                    {
-                        Log.d(TAG, "play send MSG_PROGRESS_CHANGED");
-                        removeMessages(ConstData.VideoPlayUIMsg.MSG_PROGRESS_CHANGED);
-                        sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_PROGRESS_CHANGED);
+                    }else{
+                    	 mSeekBarLayout.setPlayStatus(ConstData.VIDEO_PLAY_STATUS.PLAYING);
                     }
                     break;
 
                 case ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_REVERSE_STATE:
 
                     Log.e(TAG, "MSG_UI_VIDEOVIEW_REVERSE_STATE" + "state---");
-                    // Log.e(TAG, "MSG_UI_VIDEOVIEW_REVERSE_STATE--" + mVV.getIsSeeking());
-                    if (mVVAdapter == null || mSbpw.getmSeekBar().isOnkey || !mSbpw.isbPrepared() || mVVAdapter.isSeeking())
-                    {
-                        return;
-                    }
-                    if (mVVAdapter.isPlaying())
+                    if (mVV.isPlaying())
                     {
                         sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_PAUSE);
 
@@ -3335,13 +2355,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                     else
                     {
                         Log.d(TAG, "pause ---->play  is start");
-                        removeMessages(ConstData.VideoPlayUIMsg.MSG_HIDE_ACCELERATION);
-                        mSbpw.ShowPlayStatusImg(R.drawable.play_status_play);
-                        /****/
-
                         sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_PLAY);
-                        bIsPausedByUser = false;
-                        sendEmptyMessageDelayed(ConstData.VideoPlayUIMsg.MSG_HIDE_ACCELERATION, 3000);
                     }
 
                     break;
@@ -3350,19 +2364,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                     setbAlwaysShowPopSeekbar(false);
                     removeMessages(ConstData.VideoPlayUIMsg.MSG_HIDE_CONTROLER);
                     mUIHandler.sendEmptyMessageDelayed(ConstData.VideoPlayUIMsg.MSG_HIDE_CONTROLER, 5000);
-                    if (mVVAdapter == null)
+                    if (mVV == null)
                     {
                         return;
-                    }
-
-                    if (bMCSMode)
-                    {
-                        Log.d(TAG, "MSG_UI_VIDEOVIEW_SEEK_TO  1111");
-                        if (mMediaCenterPlayerClient != null)
-                        {
-                            mMediaCenterPlayerClient.seek(msg.arg1);
-                            // Log.d(TAG, "MSG_UI_VIDEOVIEW_SEEK_TO  22222");
-                        }
                     }
                     sendSeekMsg(msg.arg1);
                     Log.d(TAG, "MSG_UI_VIDEOVIEW_SEEK_TO-------->play");
@@ -3374,19 +2378,19 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
                     Log.d(TAG, "---->MSG_UI_VIDEOVIEW_SAVE_POS  invoke");
 
-                    VideoInfo mbi = getCurrentMediaInfo();
+                    FileInfo mbi = getCurrentMediaInfo();
 
                     if (mbi != null)
                     {
                         int videoPhoneCurrentPos = 0;
 
-                        if (mVVAdapter != null)
+                        if (mVV != null)
                         {
-                            videoPhoneCurrentPos = mVVAdapter.getCurrentPosition();
+                            videoPhoneCurrentPos = mVV.getCurrentPosition();
                         }
-                        mbi.setmSeekTo(videoPhoneCurrentPos);
+                        //mbi.setmSeekTo(videoPhoneCurrentPos);
                         // 保存到历史列表 l00174030
-                        String strUrl = mbi.getUrl();
+                        String strUrl = mbi.getPath();
                         if (strUrl != null)
                         {
                             Log.i(TAG, "save to history URL = " + strUrl + " Pos = " + videoPhoneCurrentPos);
@@ -3401,75 +2405,29 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                     {
                         break;
                     }
-                    if (mSbpw.getmSeekBar().isOnkey)
-                    {
-                        removeMessages(ConstData.VideoPlayUIMsg.MSG_HIDE_CONTROLER);
-                        setbAlwaysShowPopSeekbar(true);
-                    }
-                    else
-                    {
-                    }
-
-                    int newPos = mVVAdapter.getCurrentPosition();
-                    Log.d(TAG, "---->ttttt " + mVVAdapter.isSeeking());
-                    if (mSbpw.isFocusable() && !(mVVAdapter.isSeeking()))
-                    {
-                        mSbpw.seekto(newPos);
-
-                        removeMessages(ConstData.VideoPlayUIMsg.MSG_PROGRESS_CHANGED);
-
-                    }
+                    updateCurrPlayPosition();
+                    Log.d(TAG, "---->ttttt " + mVV.isSeeking());
                     sendEmptyMessageDelayed(ConstData.VideoPlayUIMsg.MSG_PROGRESS_CHANGED, 500);
                     break;
 
                 case ConstData.VideoPlayUIMsg.MSG_HIDE_CONTROLER:
-                    if (!isbAlwaysShowPopSeekbar())
-                    {
-                        hidePop();
-                        removeMessages(ConstData.VideoPlayUIMsg.MSG_SHOW_CONTROLER);
-                        setbHide(true);
-                    }
+                	if(mVV.isPlaying()){
+                		mSeekBarLayout.setVisibility(View.INVISIBLE);
+                		tiemLayout.setVisibility(View.INVISIBLE);
+                		if(null != mUIHandler)
+                			mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_PROGRESS_CHANGED);
+                	}
                     break;
 
                 case ConstData.VideoPlayUIMsg.MSG_SHOW_CONTROLER:
-                    if (mSbpw == null)
-                    {
-                        break;
-                    }
-
-                    mSbpw.setVisibility(View.VISIBLE);
-                    mSbpw.setFocusable(true);
-                    mSbpw.requestFocus();
-
+                    mSeekBarLayout.setVisibility(View.VISIBLE);
                     /** 修改者：l00174030；修改原因：时间控件和控制条一起显示 **/
                     // 显示
                     tiemLayout.setVisibility(View.VISIBLE);
-                    /****/
-
-                    int newCurrPos = mVVAdapter.getCurrentPosition();
-                    Log.d("VideoKey", "MSG_SHOW_CONTROLER----" + mVVAdapter.isSeeking() + newCurrPos);
-
-                    if (!mSbpw.getmSeekBar().isOnkey && !mVVAdapter.isSeeking())
-                    {
-                        int duration = mVVAdapter.getDuration();
-                        Log.i("VideoKey", "MSG_SHOW_CONTROLER->duration:" + duration);
-                        if (duration != 0)
-                        {
-                        	//比例,当前视频播放位置/视频时长
-                            mSbpw.getmSeekBar().setKscale((float) newCurrPos / duration);
-                        }
-                    }
-                    if (!mVVAdapter.isSeeking())
-                    {
-                        Log.d("VideoKey", "MSG_SHOW_CONTROLER seek to " + newCurrPos);
-                        mSbpw.seekto(newCurrPos);
-
-                    }
+                    updateCurrPlayPosition();
                     setbHide(false);
-
                     removeMessages(ConstData.VideoPlayUIMsg.MSG_PROGRESS_CHANGED);
                     sendEmptyMessageDelayed(ConstData.VideoPlayUIMsg.MSG_PROGRESS_CHANGED, 200);
-
                     break;
 
                 case ConstData.VideoPlayUIMsg.MSG_SYNC_SEEK_POS:
@@ -3479,10 +2437,10 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                         break;
                     }
 
-                    if (mVVAdapter.isPlaying())
+                    if (mVV.isPlaying())
                     {
 
-                        int tmpPos = mVVAdapter.getCurrentPosition();
+                        int tmpPos = mVV.getCurrentPosition();
                         if (tmpPos != oldPos)
                         {
                             String url = getCurMediaUrl();
@@ -3490,18 +2448,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                             {
                                 return;
                             }
-                            if (bMCSMode)
-                            {
-                                if (mMediaCenterPlayerClient != null)
-                                {
-                                    mMediaCenterPlayerClient.seek(tmpPos);
-                                }
-                                if (isMyMediaType())
-                                {
-                                    HistoryListRecord.getInstance().put(url, tmpPos);
-                                }
-                            }
-
                             oldPos = tmpPos;
                         }
                     }
@@ -3526,16 +2472,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
                 case ConstData.VideoPlayUIMsg.MSG_HIDE_HINT:
                     break;
-                case ConstData.VideoPlayUIMsg.MSG_HIDE_ACCELERATION:
-                    Log.e(TAG, "MSG_HIDE_ACCELERATION");
-                    if (mVVAdapter.isPlaying())
-                    {
-                        mSbpw.ShowPlayStatusImg(R.drawable.play_status_play);
-                    }
-                    else
-                    {
-                        mSbpw.ShowPlayStatusImg(R.drawable.play_status_pause);
-                    }
+                case ConstData.VideoPlayUIMsg.MSG_HIDE_ACCELERATION:  
                     Log.d(TAG, "MSG_HIDE_ACCELERATION is finish ");
                     break;
                 case ConstData.VideoPlayUIMsg.MSG_SHOW_PROGRESS:
@@ -3548,7 +2485,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
                 case ConstData.VideoPlayUIMsg.MSG_MCS_PLAY:
                     Log.d(TAG, "MSG_MCS_PLAY");
-                    mSbpw.ShowPlayStatusImg(R.drawable.play_status_play);
                     firstSeek = true;
                     break;
                 case ConstData.VideoPlayUIMsg.MSG_MCS_HIDEMODE:
@@ -3566,7 +2502,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     						mErrorTipDialog.dismiss();
     					if(mExtraVideoUri != null)
     						finishPlay();
-    					 mPlayListLayout.setCurrentPlayIndex(mPlayStateInfo.getCurrentIndex());
     		             setMediaData();
     		             play();
     				}else{
@@ -3630,27 +2565,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event)
-    {
-
-        if (event.getAction() == MotionEvent.ACTION_UP)
-        {
-            if (mSbpw.getmSeekBar().isOnkey)
-            {
-                mSbpw.getmSeekBar().setEnSure(true);
-                mSbpw.getmSeekBar().mOnSeekBarChangeListener.onKeyTounch(mSbpw.getmSeekBar());
-            }
-            else
-            {
-                onSeekBarPopWindowListener.reverseState();
-            }
-            showPop();
-        }
-
-        return super.onTouchEvent(event);
-    }
-
     private void delayHideHintMsg()
     {
     	mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_HIDE_HINT);
@@ -3665,9 +2579,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
     private boolean hasAvailExtraSub()
     {
-        if (mVVAdapter != null)
+        if (mVV != null)
         {
-            subNum = mVVAdapter.getSubtitleList().size();
+            subNum = mVV.getSubtitleList().size();
         }
         else
         {
@@ -3678,9 +2592,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
     private boolean hasSound()
     {
-        if (mVVAdapter != null)
+        if (mVV != null)
         {
-            soundNum = mVVAdapter.getAudioinfos().size();
+            soundNum = mVV.getAudioinfos().size();
         }
         else
         {
@@ -3722,8 +2636,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             return;
         }
         
-        double widthScale = SCREEN_WIDTH * 1.0 / width;
-        double heightScale = SCREEN_HEIGHT * 1.0 / height;
+        double widthScale = mScreenWidth * 1.0 / width;
+        double heightScale = mScreenHeight * 1.0 / height;
         //等比长度
         int scaleWidth = width;
         //等比高度
@@ -3731,22 +2645,22 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         if (widthScale > heightScale)
         {
             scaleWidth = (int) (heightScale * width);
-            scaleHeight = SCREEN_HEIGHT;
+            scaleHeight = mScreenHeight;
         }
         else
         {
-            scaleWidth = SCREEN_WIDTH;
+            scaleWidth = mScreenWidth;
             scaleHeight = (int) (widthScale * height);
         }
         switch (getScreenMode())
         {
             case ConstData.ScreenMode.SCREEN_FULL:
-                width = SCREEN_WIDTH;
-                height = SCREEN_HEIGHT;
+                width = mScreenWidth;
+                height = mScreenHeight;
                 break;
             case ConstData.ScreenMode.SCREEN_ORIGINAL:
                 Log.i(TAG, "screenMode: SCREEN ORIGINAL");
-                if(width > SCREEN_WIDTH || height > SCREEN_HEIGHT){
+                if(width > mScreenWidth || height > mScreenHeight){
                     //此时等比拉伸视频
                     width = scaleWidth;
                     height = scaleHeight;
@@ -3762,10 +2676,10 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         
         
         
-        int l = (SCREEN_WIDTH - width) / 2;
-        int t = (SCREEN_HEIGHT - height) / 2;
+        int l = (mScreenWidth - width) / 2;
+        int t = (mScreenHeight - height) / 2;
         Log.d(TAG, "l,t,w,h:" + l + " " + t + " " + width + " " + height);
-        mVVAdapter.setOutRange(l, t, width, height);
+        mVV.setOutRange(l, t, width, height);
         videoWidth = width;
         videoHeight = height;
         /* END: Modified by c00224451 for DTS2014021706506 2014/2/21 */
@@ -3789,7 +2703,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         int width = mMediaPlayer.getVideoWidth();
 
         // 若高大于720或宽大于1280，则不需要显示该菜单
-        if (height >= SCREEN_HEIGHT || width >= SCREEN_WIDTH)
+        if (height >= mScreenHeight || width >= mScreenWidth)
         {
             Log.d(TAG, "video is larger then screen, width = " + width + " height = " + height);
             return false;
@@ -3799,9 +2713,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     }
 
     // 显示屏幕的分辨率,这里动态获取，用于兼容不同的设备
-    private final int SCREEN_WIDTH = DeviceInfoUtils.getScreenWidth(CommonValues.application);
+    private int mScreenWidth = DeviceInfoUtils.getScreenWidth(CommonValues.application);
 
-    private int SCREEN_HEIGHT;
+    private int mScreenHeight;
 
     private int videoWidth = 0;
 
@@ -3818,7 +2732,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
         if (getScreenMode() == ConstData.ScreenMode.SCREEN_ORIGINAL)
         {
-            mVVAdapter.setScreenScale(videoWidth, videoHeight);
+            mVV.setScreenScale(videoWidth, videoHeight);
         }
     }
 
@@ -3831,30 +2745,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     private void stopNow()
     {
         Log.d(TAG, "MSG_UI_VIDEOVIEW_STOP now");
-
-        if (bMCSMode)
-        {
-            onNotifyStop();
-        }
         mUIHandler.setbAlwaysShowPopSeekbar(false);
-        if (mVVAdapter != null)
-        {
-            if (!bMCSMode || !isSharingStop)
-            {
-                try
-                {
-                    isSharingStop = true;
-                    mVVAdapter.stopPlayback();
-                }
-                catch (IllegalStateException e)
-                {
-                    Log.e(TAG, "stopNow >>> release error: " + e);
-                }
-
-            }
-
-        }
-
         firstSeek = true;
     }
 
@@ -3867,20 +2758,20 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     {
         Log.d(TAG, "---->MSG_UI_VIDEOVIEW_SAVE_POS  invoke");
 
-        VideoInfo mbi = getCurrentMediaInfo();
+        FileInfo mbi = getCurrentMediaInfo();
 
         if (mbi != null)
         {
             int videoPhoneCurrentPos = 0;
 
-            Log.d(TAG, "---->MSG_UI_VIDEOVIEW_SAVE_POS  invoke mVV= " + mVVAdapter);
-            if (mVVAdapter != null)
+            Log.d(TAG, "---->MSG_UI_VIDEOVIEW_SAVE_POS  invoke mVV= " + mVV);
+            if (mVV != null)
             {
-                videoPhoneCurrentPos = mVVAdapter.getCurrentPosition();
+                videoPhoneCurrentPos = mVV.getCurrentPosition();
             }
-            mbi.setmSeekTo(videoPhoneCurrentPos);
+            //mbi.setmSeekTo(videoPhoneCurrentPos);
             // 保存到历史列表 l00174030
-            String strUrl = mbi.getUrl();
+            String strUrl = mbi.getPath();
             if (strUrl != null)
             {
                 Log.i(TAG, "save to history URL = " + strUrl + " Pos = " + videoPhoneCurrentPos);
@@ -3899,48 +2790,19 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     {
         Log.e(TAG, "pauseNow MSG_UI_VIDEOVIEW_PAUSE");
 
-        if (mVVAdapter == null)
+        if (mVV == null)
         {
             return;
-        }
-
-        if (bMCSMode)
-        {
-            Log.d(TAG, "mMediaCenterPlayerClient  pause");
-            if (mMediaCenterPlayerClient != null)
-            {
-                mMediaCenterPlayerClient.pause();
-            }
         }
 
         // always show the pop windows if it is pause
         Log.d(TAG, " play----> pause");
         mUIHandler.setbAlwaysShowPopSeekbar(true);
         mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_PLAY);
-        mVVAdapter.pause();
-        Log.d(TAG, "pause problem --->" + "prepare==" + mSbpw.isbPrepared());
-        if (mSbpw.isbPrepared())
-        {
-            mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_HIDE_ACCELERATION);
-            mSbpw.ShowPlayStatusImg(R.drawable.play_status_pause);
-            /****/
-
-        }
-
+        mVV.pause();
+        //更新播放状态
+        mSeekBarLayout.setPlayStatus(ConstData.VIDEO_PLAY_STATUS.PAUSED);
         mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_PROGRESS_CHANGED);
-        if (!bMCSMode || !isSharingStop)
-        {
-            int tempPos = mVVAdapter.getCurrentPosition();
-
-            Log.d(TAG, "MSG_UI_VIDEOVIEW_PAUSE ---" + tempPos);
-
-            if (mSbpw.isFocusable() && !mVVAdapter.isSeeking())
-            {
-                Log.d("MSG_UI_VIDEOVIEW_PAUSE", "----seek");
-                mSbpw.seekto(tempPos);
-            }
-        }
-        mSbpw.pause();
     }
 
     /**
@@ -3952,10 +2814,10 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
      */
     public void seekToNow(int msec)
     {
-        if (mVVAdapter != null)
+        if (mVV != null)
         {
-            mVVAdapter.isSeeking(true);
-            Log.d(TAG, "------seekToNow() --" + mVVAdapter.isSeeking());
+            mVV.isSeeking(true);
+            Log.d(TAG, "------seekToNow() --" + mVV.isSeeking());
         }
 
         // 同步seek
@@ -3964,18 +2826,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         // removeMessages(MSG_SHOW_CONTROLER);
         mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_HIDE_CONTROLER);
         mUIHandler.sendEmptyMessageDelayed(ConstData.VideoPlayUIMsg.MSG_HIDE_CONTROLER, 5000);
-        if (mVVAdapter == null)
+        if (mVV == null)
         {
             return;
-        }
-
-        if (bMCSMode)
-        {
-            Log.d(TAG, "MSG_UI_VIDEOVIEW_SEEK_TO seekToNow  1111");
-            if (mMediaCenterPlayerClient != null)
-            {
-                mMediaCenterPlayerClient.seek(msec);
-            }
         }
         sendSeekMsg(msec);
         Log.d(TAG, "seekToNow MSG_UI_VIDEOVIEW_SEEK_TO-------->play");
@@ -3991,134 +2844,26 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         // 媒体中心模式时保存进度 l00174030
         if (url != null)
         {
-            if (isMyMediaType())
-            {
-                HistoryListRecord.getInstance().put(url, msec);
-            }
-        }
-        mSbpw.ShowPlayStatusImg(R.drawable.play_status_play);
-        mSbpw.resetSeekbar();
-    }
-
-    private OnItemClickListener mPlaylistItemclickListener = new OnItemClickListener()
-    {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-        {
-            Log.i(TAG, "onItemClick:" + position);
-
-            if (position == mPlayListLayout.getCurrentPlayIndex())
-            {
-                mPlayListLayout.hidePopupWindow();
-
-                // 在播放列表界面时，要显示与停止显示控制条；l00174030
-                if (mVVAdapter != null)
-                {
-                    if (mVVAdapter.isPlaying())
-                    {
-                        Log.i(TAG, "playlist show the pop.");
-                        showPop();
-                    }
-                    else
-                    {
-                        Log.i(TAG, "playlist show the pop.");
-                        hidePop();
-                    }
-                }
-                mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_REVERSE_STATE);
-                return;
-            }
-
-            final int i = position;
-            resetPlaylistshow(position);
-            mUIHandler.post(new Runnable()
-            {
-
-                @Override
-                public void run()
-                {
-                    playOnItemClick(i);
-
-                }
-            });
-
-        }
-    };
-
-    private void showPlayListLayout()
-    {
-        PopupWindow listpop1 = mPlayListLayout.getPlaylistPop();
-        /* BEGIN: Added by s00211113 for DTS2014032605664 2014/3/27 */
-        mPlayListLayout.showPrepare();
-        /* END: Added by s00211113 for DTS2014032605664 2014/3/27 */
-        /* BEGIN: Modified by s00211113 for DTS2014031902437 2014/3/21 */
-        if (listpop1 != null)
-        {
-        	//Log.i(TAG, "showPlayListLayout->screenWidth:" + DeviceInfoUtils.getScreenWidth(CommonValues.application));
-            listpop1.showAtLocation(myvideo, Gravity.RIGHT,0, 0);
-        }
-        /* END: Modified by s00211113 for DTS2014031902437 2014/3/21 */
-    }
-
-    private void resetPlaylistshow(int index)
-    {
-        mPlayListLayout.hidePopupWindow();
-        mPlayListLayout.setCurrentPlayIndex(index);
-    }
-
-    private void playOnItemClick(int index)
-    {
-        VideoInfo mbi = new VideoInfo();
-
-        mbi = getItemMediaInfo(index);
-        if (mbi != null)
-        {
-            // 视频上下切换，显示缓冲图标
-        	mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_SHOW_PROGRESS);
-            // 先停止进度同步
-            stopAllSyncSeek();
-
-            // 存在，则直接播放
-            Log.d(TAG, "preProgram :" + mbi.getUrl());
-
-            mUIHandler.setbAlwaysShowPopSeekbar(false);
-            if (mVVAdapter != null)
-            {
-                mVVAdapter.stopPlayback();
-            }
-
-            mSbpw.setMmbi(mbi);
-            setDuration(0);
-
-            String strUrl = mbi.getUrl();
-            if (StringUtils.isNotEmpty(strUrl))
-            {
-                Message msgSetVideo = Message.obtain();
-                msgSetVideo.arg1 = HistoryListRecord.getInstance().get(strUrl);
-                msgSetVideo.what = ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_SETDATA;
-                msgSetVideo.obj = strUrl;
-
-                mUIHandler.sendMessage(msgSetVideo);
-            }
-            // Log.e(TAG, "player is invoke2222");
-            play();
+        	 HistoryListRecord.getInstance().put(url, msec);
         }
     }
 
-    private VideoInfo getItemMediaInfo(int index)
+
+
+    private FileInfo getItemMediaInfo(int index)
     {
         if (mPlayStateInfo == null)
         {
             return null;
         }
 
-        VideoInfo mbi = mPlayStateInfo.getIndexMediaInfo(index);
+        FileInfo mbi = mPlayStateInfo.getIndexMediaInfo(index);
         if (mbi == null)
         {
             return null;
         }
 
-        String strUrl = mbi.getUrl();
+        String strUrl = mbi.getPath();
 
         mStrCurrentUrl = new String(strUrl);
         return mbi;
@@ -4193,7 +2938,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             else
             {
                 Log.d(TAG, "mTimeSeekLayout dismiss--->show");
-                mTimeSeekDialog.show(myvideo, mVVAdapter.getCurrentPosition(), mVVAdapter.getDuration());
+                mTimeSeekDialog.show(myvideo, mVV.getCurrentPosition(), mVV.getDuration());
             }
         }
         else if (mCurrSelectType == BottomMenuSelectType.PLAY_SEETING)
@@ -4406,14 +3151,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
     private static final String VIDEO_PLAY_SET = "VIDEO_PLAY_SET";
 
-    private static final String CYCLE_PLAY_MODE = "CYCLE_PLAY_MODE";
-
-    private static final String SCREEN_DISPLAY_MODE = "SCREEN_DISPLAY_MODE";
-
-    private static final String CHANNEL_MODE = "CHANNEL_MODE";
-
-    private static final String FIRST_START_VIDEOPLAY = "FIRST_START_VIDEOPLAY";
-
     //默认列表循环播放
     private static final int DEFAULT_CYCLE_PLAY_MODE_INDEX = ConstData.MediaPlayMode.MP_MODE_ALL_CYC;
 
@@ -4421,19 +3158,18 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
     private static final int DEFAULT_CHANNEL_MODE_INDEX = 0; // 0 对应的是环绕立体声
 
-    private void initVideoPlayPreferences()
+    private void initData()
     {
         mPreferences = getSharedPreferences(VIDEO_PLAY_SET, Context.MODE_PRIVATE);
         mEditor = mPreferences.edit();
-
         //首次启动Activity，初始化配置
-        if (mPreferences.getBoolean(FIRST_START_VIDEOPLAY, true))
+        if (mPreferences.getBoolean(ConstData.SharedKey.FIRST_START_VIDEOPLAY, true))
         {
             Log.w(TAG, "================== init Video Play Preferences =======================");
-            mEditor.putInt(CYCLE_PLAY_MODE, DEFAULT_CYCLE_PLAY_MODE_INDEX);
-            mEditor.putInt(SCREEN_DISPLAY_MODE, DEFAULT_SCREEN_DISPLAYE_MODE_INDEX);
-            mEditor.putInt(CHANNEL_MODE, DEFAULT_CHANNEL_MODE_INDEX);
-            mEditor.putBoolean(FIRST_START_VIDEOPLAY, false);
+            mEditor.putInt(ConstData.SharedKey.VIDEO_CYCLE_PLAY_MODE, DEFAULT_CYCLE_PLAY_MODE_INDEX);
+            mEditor.putInt(ConstData.SharedKey.VIDEO_SCREEN_DISPLAY_MODE, DEFAULT_SCREEN_DISPLAYE_MODE_INDEX);
+            mEditor.putInt(ConstData.SharedKey.VIDEO_CHANNEL_MODE, DEFAULT_CHANNEL_MODE_INDEX);
+            mEditor.putBoolean(ConstData.SharedKey.FIRST_START_VIDEOPLAY, false);
             mEditor.commit();
         }
     }
@@ -4447,7 +3183,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         Log.d(TAG, "saveCycPlayMode E cycPlayModeIndex =" + getPlayMode());
         if (mEditor != null)
         {
-            mEditor.putInt(CYCLE_PLAY_MODE, getPlayMode());
+            mEditor.putInt(ConstData.SharedKey.VIDEO_CYCLE_PLAY_MODE, getPlayMode());
             mEditor.commit();
             Log.d(TAG, "saveCycPlayMode OK");
         }
@@ -4458,7 +3194,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         Log.d(TAG, "saveScreenDisplay E getScreenMode() =" + getScreenMode());
         if (mEditor != null)
         {
-            mEditor.putInt(SCREEN_DISPLAY_MODE, getScreenMode());
+            mEditor.putInt(ConstData.SharedKey.VIDEO_SCREEN_DISPLAY_MODE, getScreenMode());
             mEditor.commit();
             Log.d(TAG, "saveScreenDisplay OK");
         }
@@ -4469,7 +3205,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         Log.d(TAG, "saveChannelMode E  channelModeCodes =" + channelModeCodes);
         if (mEditor != null)
         {
-            mEditor.putInt(CHANNEL_MODE, channelModeCodes);
+            mEditor.putInt(ConstData.SharedKey.VIDEO_CHANNEL_MODE, channelModeCodes);
             mEditor.commit();
             Log.d(TAG, "saveChannelMode OK");
         }
@@ -4492,11 +3228,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
         // 播放完毕时，菜单需要重新加载
         isMenuHasCreated = false;
-        if (bMCSMode && mp != null && mMediaCenterPlayerClient != null)
-        {
-            int duration = mp.getDuration();
-            mMediaCenterPlayerClient.seek(duration);
-        }
 		
         if (mPopMenu != null && mPopMenu.isShowing())
         {
@@ -4507,7 +3238,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
         progressGone();
 
-        mPlayListLayout.hidePopupWindow();
 
         String url = getCurMediaUrl();
         if (url == null)
@@ -4515,26 +3245,19 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             Log.d(TAG, "OnCompletionListener -- onCompletion mbi == null --");
 
         }
-        else if (isMyMediaType())
+     /*   else if (isMyMediaType())
         {
             HistoryListRecord.getInstance().put(url, 0);
         }
-
+*/
         Log.d(TAG, "======playMode2:" + getPlayMode());
 
         firstSeek = true;
         // 单文件播放模式
         if (getPlayMode() == ConstData.MediaPlayMode.MP_MODE_SINGLE)
         {
-            setToast(getString(R.string.video_program_completion));
-
+            ToastUtils.showToast(getString(R.string.video_program_completion));
             // 播放器关闭，Activity销毁时，先回发stop状态，再立即解除绑定，其后不再向Sender端回发播放器的任何状态
-            if (bMCSMode)
-            {
-                Log.d(TAG, "onCompletion -- bMCSMode");
-                onNotifyStop();
-                unbind();
-            }
 
             stop();
 
@@ -4546,23 +3269,16 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         // 单文件循环，全体循环播放模式
         Log.d(TAG, "onCompletion() -- getNextMediaInfo() --");
 
-        VideoInfo mbi = getNextMediaInfo();
+        FileInfo mbi = getNextMediaInfo();
 
         if (mbi == null)
         {
             Log.d(TAG, "onCompletion() -- Can not Find the NextMediaInfo --");
-
-            setToast(getString(R.string.video_program_completion));
+            
+            ToastUtils.showToast(getString(R.string.video_program_completion));
 
             stopSyncSeekPos();
-
-            if (bMCSMode)
-            {
-                Log.d(TAG, "onCompletion -- bMCSMode");
-                onNotifyStop();
-                unbind();
-            }
-
+            
             stop();
 
             mSubSurface.setVisibility(View.INVISIBLE);
@@ -4572,7 +3288,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         {
             Log.d(TAG, "onCompletion() -- Find the NextMediaInfo --");
 
-            mPlayListLayout.setCurrentPlayIndex(mPlayStateInfo.getCurrentIndex());
 
             setMediaData();
 
@@ -4586,8 +3301,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
      * @return
      */
     public int getCurrentPosition(){
-    	if(mVVAdapter != null)
-    		return mVVAdapter.getCurrentPosition();
+    	if(mVV != null)
+    		return mVV.getCurrentPosition();
     	return -1;
     }
     
@@ -4597,8 +3312,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
      * @return
      */
     public int getDuration(){
-    	if(mVVAdapter != null)
-    		return mVVAdapter.getDuration();
+    	if(mVV != null)
+    		return mVV.getDuration();
     	return -1;
     }
 
@@ -4614,9 +3329,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
 	@Override
 	public void init() {
-		Log.i(TAG, "onCreate->screenWidth:" + SCREEN_WIDTH);
-		Log.i(TAG, "onCreate->screenHeight:" + SCREEN_HEIGHT);
-
+		Log.i(TAG, "onCreate->screenWidth:" + mScreenWidth);
+		Log.i(TAG, "onCreate->screenHeight:" + mScreenHeight);
 		Resources resources = getResources();
 		int navigationBarHeight = 0;
 		int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
@@ -4624,13 +3338,12 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 			navigationBarHeight = resources.getDimensionPixelSize(resourceId);
 			Log.i(TAG, "onCreate->navigationBarHeight:" + navigationBarHeight);
 		}
-		SCREEN_HEIGHT = DeviceInfoUtils.getScreenHeight(CommonValues.application) + navigationBarHeight;
-		mCurrentDevice = (Device) getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
+		mScreenHeight = DeviceInfoUtils.getScreenHeight(CommonValues.application) + navigationBarHeight;
 		if (mExtraVideoUri != null) {
-			mCurrentDevice = new Device();
-			mCurrentDevice.setDeviceType(ConstData.DeviceType.DEVICE_TYPE_OTHER);
+			mCurrDevice = new Device();
+			mCurrDevice.setDeviceType(ConstData.DeviceType.DEVICE_TYPE_OTHER);
 		}
-		initVideoPlayPreferences();
+		initData();
 		initViews();
 		// 初始化杜比的弹出视窗
 		doblyPopWin = new DoblyPopWin(this);
@@ -4638,13 +3351,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 		/* BEGIN: Added by r00178559 for AR-0000698413 2014/02/13 */
 		loadChannelModeResources();
 		/* END: Added by r00178559 for AR-0000698413 2014/02/13 */
-		if (isSenderMyMedia()) {
-			// 保存在内存当中，PlayMode
-			setPlayMode(mPreferences.getInt(CYCLE_PLAY_MODE, DEFAULT_CYCLE_PLAY_MODE_INDEX));
-		} else {
-			// 不是myMedia过来的请求,默认全体循环
-			setPlayMode(ConstData.MediaPlayMode.MP_MODE_ALL_CYC);
-		}
+		//默认全体循环
+		setPlayMode(ConstData.MediaPlayMode.MP_MODE_ALL_CYC);
 		if (mSeekHandlerThread == null) {
 			mSeekHandlerThread = new HandlerThread(SEEK_THREAD_TAG);
 			mSeekHandlerThread.start();
@@ -4657,5 +3365,45 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 		bIsPausedByUser = false;
 
 	}
-    
+    /**
+     * 更新当前播放位置
+     */
+	public void updateCurrPlayPosition(){
+		 int currPosition = mVV.getCurrentPosition();
+         int duration = mVV.getDuration();
+         mSeekBarLayout.setCurrPlayPosition(currPosition, duration);
+         mSeekBarLayout.setTotalDuration(duration);
+         //mSeekBarLayout.setPosition(currPosition, mSeekPosition, duration);
+	}
+	
+	/**
+	 * 调整播放位置
+	 */
+	public void changePlayPosition(int type){
+		int currPosition = mVV.getCurrentPosition();
+        int duration = mVV.getDuration();
+        if(mSeekPosition == 0)
+        	mSeekPosition = currPosition;
+		switch (type) {
+		case 1:
+			//快进
+			//mSeekBarLayout.setSeekTimeVisibility(View.VISIBLE);
+			mSeekBarLayout.setPlayStatus(ConstData.VIDEO_PLAY_STATUS.FAST_GO);
+			mSeekPosition += CHANGE_PLAY_TIME_STEP;
+			if(mSeekPosition > duration)
+				mSeekPosition = duration;
+			break;
+		case -1:
+			//快退
+			//mSeekBarLayout.setSeekTimeVisibility(View.VISIBLE);
+			mSeekBarLayout.setPlayStatus(ConstData.VIDEO_PLAY_STATUS.FAST_BACK);
+			mSeekPosition -= CHANGE_PLAY_TIME_STEP;
+			if(mSeekPosition < 0)
+				mSeekPosition = 0;
+			break;
+		default:
+			break;
+		}
+		mSeekBarLayout.setPosition(currPosition, mSeekPosition, duration);
+	}
 }

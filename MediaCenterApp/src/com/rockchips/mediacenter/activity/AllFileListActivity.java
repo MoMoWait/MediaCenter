@@ -13,7 +13,6 @@ import org.fourthline.cling.support.model.container.Container;
 import org.json.JSONObject;
 import org.xutils.x;
 import org.xutils.view.annotation.ViewInject;
-import com.rockchips.mediacenter.activity.AllUpnpFileListActivity.FileBrowser;
 import com.rockchips.mediacenter.adapter.AllFileListAdapter;
 import com.rockchips.mediacenter.adapter.FolderListAdapter;
 import com.rockchips.mediacenter.audioplayer.InternalAudioPlayer;
@@ -168,6 +167,9 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+       /* 
+        * String ex = null;
+        ex.toCharArray();*/
     }
     
     
@@ -779,14 +781,15 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
         intent.putExtra(ConstData.IntentKey.IS_INTERNAL_PLAYER, true);
         intent.putExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE, mCurrDevice);
         intent.putExtra(LocalDeviceInfo.DEVICE_EXTRA_NAME, MediaFileUtils.getDeviceInfoFromDevice(mCurrDevice).compress());
+        List<FileInfo> fileInfos = MediaFileUtils.filterFileInfos(mLoadFileInfos, fileType);
         List<LocalMediaInfo> mediaInfos = MediaFileUtils.getLocalMediaInfos(mLoadFileInfos, mCurrDevice, fileType);
         List<Bundle> mediaInfoList = new ArrayList<Bundle>();
         for(LocalMediaInfo itemInfo : mediaInfos){
         	mediaInfoList.add(itemInfo.compress());
         }
         int newPosition = 0;
-        for(int i = 0; i != mediaInfos.size(); ++i){
-        	if(fileInfo.getName().equals(mediaInfos.get(i).getmFileName())){
+        for(int i = 0; i != fileInfos.size(); ++i){
+        	if(fileInfo.getName().equals(fileInfos.get(i).getName())){
         		newPosition = i;
         		break;
         	}
@@ -803,8 +806,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
         	requestCode = ConstData.ActivityRequestCode.REQUEST_VIDEO_PLAYER;
             intent.setClass(this, InternalVideoPlayer.class);
             intent.putExtra(ConstData.IntentKey.CURRENT_INDEX, newPosition);
-            InternalVideoPlayer.setMediaList(mediaInfoList, newPosition);
-            //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            InternalVideoPlayer.setMediaList(fileInfos, newPosition);
             if(android.os.Build.VERSION.SDK_INT >= 24){
                 //关闭PIP页面
                 //ActivityManager activityManager = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
@@ -812,11 +814,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
                 if(videoPlayerTaskIds != null && videoPlayerTaskIds.size() > 0){
                     ActivityUtils.removeAllTask(videoPlayerTaskIds);
                 }
-            }            
-            //此时发送暂停扫描广播
-            //Intent pasueScanIntent = new Intent(ConstData.BroadCastMsg.PAUSE_DEVICE_FILE_SCAN);
-            //LocalBroadcastManager.getInstance(this).sendBroadcast(pasueScanIntent);
-            
+            }    
         }
         else if (fileInfo.getType() == ConstData.MediaType.IMAGE)
         {

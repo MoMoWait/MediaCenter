@@ -21,7 +21,7 @@ import com.rockchips.mediacenter.R;
 import com.rockchips.mediacenter.data.ConstData.PlayMode;
 import com.rockchips.mediacenter.videoplayer.VideoPlayerActivity;
 
-public class MyseekBar extends AbsSeekBar
+public class VideoseekBar extends AbsSeekBar
 {
     private static final String TAG = "MyseekBar";
     
@@ -353,29 +353,22 @@ public class MyseekBar extends AbsSeekBar
         postInvalidate();
     }
     
-    public MyseekBar(Context context, AttributeSet attrs)
+    public VideoseekBar(Context context, AttributeSet attrs)
     {
         
         super(context, attrs);
         setFocusable(true);
         this.context = context;
-        
         init();
-        // invalidate();
-        // mSCBitmap=Bitmap.createBitmap(2000, 480, Config.ARGB_8888);
-        /*
-         * mCanvas=new Canvas(); // mCanvas.save();
-         * mCanvas.setBitmap(mSCBitmap); paint=new Paint(); invalidate();
-         */
     }
     
-    public MyseekBar(Context context, AttributeSet attrs, int defStyle)
+    public VideoseekBar(Context context, AttributeSet attrs, int defStyle)
     {
         super(context, attrs, defStyle);
         this.context = context;
     }
     
-    public MyseekBar(Context context)
+    public VideoseekBar(Context context)
     {
         super(context);
         this.context = context;
@@ -389,146 +382,28 @@ public class MyseekBar extends AbsSeekBar
     protected synchronized void onDraw(Canvas canvas)
     {
     	Log.i("VideoKey", "onDraw");
-        // zkf61715 
-//        if(playMode == PlayMode.PLAY_TRICK){
-//            Kscale = scale;
-//        }
         Paint paint = new Paint();
         canvas.save();
-		/* BEGIN: Modified by s00211113 for DTS2014031902280  2014/03/19 */
         int available = this.getWidth();
         Log.i("VideoKey", "onDraw->available:" + available);
-		/* END: Modified by s00211113 for DTS2014031902280  2014/03/19 */
         int thumbWidth = bdPlaying.getIntrinsicWidth() - getThumboffSet();
         Log.i("VideoKey", "onDraw->thumbWidth:" + thumbWidth);
         int thumbHeight = bdPlaying.getIntrinsicHeight();
         Log.i("VideoKey", "onDraw->thumbHeight:" + thumbHeight);
-        // available -= thumbWidth;
         available += getThumbOffset() * 2;
         int thumbPos = (int)(scale * available);
         Log.i("VideoKey", "onDraw->thumbPos:" + thumbPos);
         int thumbPos1 = (int)(Kscale * available);
         Log.i("VideoKey", "onDraw->thumbPos1:" + thumbPos);
-        int posi = (int)(Kscale * getMax());
-        //Log.e("vvvv", "Kscale = " + Kscale + " time 1==" + timeFormat(posi));
-        //Log.e("vvvv", "------scale =" + scale + "Kscale =" + Kscale);
-        
+        int seekPosition = (int)(Kscale * available);  
         /** 修改者：l00174030；修改原因：先画背景，在画进度条**/
-        // 先画进度条的背景颜色
-        //canvas.drawBitmap(imgSeekbar_Played, 0, 38, paint);
-        // 把进度条背景拉伸到1280的长度
-		/* BEGIN: Modified by s00211113 for DTS2014031902280  2014/03/19 */
-//        imgSeekbar_background = imgSeekbar_background.createScaledBitmap(imgSeekbar_background, 1280, 40, true);
-//        canvas.drawBitmap(imgSeekbar_background, 0, seekbarLeftTop, paint);
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(0X7f233619);
         paint.setAntiAlias(true);
         RectF rectfbg = new RectF(0, 0 , getWidth(), getHeight());
-        //canvas.drawRoundRect(rectfbg, 10, 10, paint);
         canvas.drawRect(rectfbg, paint);
-        
-        int X = Math.abs(Xacceleration);
-        
-        /** 修改者：l00174030；修改原因：先画背景，在画进度条**/
-        //if (available - thumbPos > 0)
-        //{
-        //    imgSeekbar_background =
-        //        imgSeekbar_background.createScaledBitmap(imgSeekbar_background, available - thumbPos, 5, false);
-        //}
-        // 缩放播放进度条
-        if (imgSeekbar_Played.getWidth() > 0 && imgSeekbar_Played.getHeight() > 0)
-        {
-            if (thumbPos > 0)
-            {
-                imgSeekbar_Played = imgSeekbar_Played.createScaledBitmap(imgSeekbar_Played, thumbPos, getHeight(), true);
-                pos = thumbPos;
-            }
-            else
-            {
-                imgSeekbar_Played = imgSeekbar_Played.createScaledBitmap(imgSeekbar_Played, 1, getHeight(), true);
-                pos = 1;
-            }
-        }
-		/* END: Modified by s00211113 for DTS2014031902280  2014/03/19 */
-
-        int lendth = thumbPos1 - bdCurson_Up_Width;
-        
-        if (isPressed())
-        {
-            pressDraw(canvas, thumbPos1, available, lendth, thumbPos, posi);
-            // mThumb=bdThumb_Pressed;
-        }
-        if (isFromNetwork && isOnkey() && X != 0)
-        {
-            int part = partTime(getMax());
-            int accLength = refurbishTime(part) * X;
-            Log.d("vvvv", "------thumbPos =" + thumbPos + "thumbPos1 =" + thumbPos1);
-            
-            /** 修改者：l00174030；修改原因：先画背景，在画进度条**/
-            //canvas.drawBitmap(imgSeekbar_background, thumbPos, 38, paint);
-            
-			if (thumbPos1 > thumbPos)
-			{
-//				imgSeekbar_Speed = imgSeekbar_Speed.createScaledBitmap(imgSeekbar_Speed, thumbPos1, 40, false);
-//				canvas.drawBitmap(imgSeekbar_Speed, 0, seekbarLeftTop, paint);
-				
-			    Paint paint1 = new Paint();
-		        
-		        paint1.setStyle(Paint.Style.FILL);
-		        paint1.setColor(0X551fb1e7);
-		        paint1.setAntiAlias(true);
-		        
-		        Path path = new Path();
-		        
-//		        int posConv = pos*this.getWidth()/1280;
-
-		        Log.d(TAG, "pressDraw: pos=" + pos + "this.getWidth()=" + this.getWidth());
-		        
-		        if (pos < this.getWidth() - 5)
-		        {
-		            //float[] radii = {10f,10f,0f,0f,0f,0f,10f,10f};
-		            //path.addRoundRect(new RectF(0, seekbarLeftTop, thumbPos1, seekbarLeftTop+40), radii, Path.Direction.CW);
-		            path.addRect(new RectF(0, seekbarLeftTop, thumbPos1, seekbarLeftTop+SizeUtils.dp2px(context, 20)), Path.Direction.CW);
-		        }
-		        else
-		        {
-		            //float[] radii = {10f,10f,10f,10f,10f,10f,10f,10f};
-		            path.addRect(new RectF(0, seekbarLeftTop, thumbPos1, seekbarLeftTop+SizeUtils.dp2px(context, 20)), Path.Direction.CW);
-		            //path.addRoundRect(new RectF(0, seekbarLeftTop, thumbPos1, seekbarLeftTop+40), radii, Path.Direction.CW);
-		        }
-		        canvas.drawPath(path,paint1);
-			}
-            
-//            canvas.drawBitmap(imgSeekbar_Played, 0, seekbarLeftTop, paint);
-            
-            boolean isonkeyfirst = true;
-            
-            isonkeyfirst = hisTotalPos(posi, isonkeyfirst);
-            
-            //Log.e("vvvv", "posi =" + posi);
-            
-            if (lendth < 0)
-            {
-                // 当进度没有超过上游标的一半时绘画
-                lessDraw(canvas, isonkeyfirst, posi, accLength);
-            }
-            if (thumbPos1 + bdSeekbar_Cur_Up.getIntrinsicWidth() / 2 >= available)
-            {
-                // 当绘制的上游标有部分超过整个长度时绘制
-                maxDraw(canvas, available, posi, isonkeyfirst, accLength);
-            }
-            if (lendth >= 0 && thumbPos1 + bdCurson_Up_Width < available)
-            {
-                midDraw(canvas, thumbPos1, posi, isonkeyfirst, accLength);
-            }
-            // 绘制上游标和播放点
-            myDraw(canvas, thumbPos1, available);
-        }
-//        else
-//        {
-            playDraw(canvas, thumbPos, available);
-            // mThumb=bdPlaying;
-//        }
+        seekDraw(canvas, seekPosition);
+        playDraw(canvas, thumbPos);
         canvas.restore();
     }
     
@@ -538,22 +413,22 @@ public class MyseekBar extends AbsSeekBar
         /**
          * 此方法在seekBar拖动和进度改变时调用，可以知道拖动条的进度
          */
-        void onProgressChanged(MyseekBar seekBar, int progress, boolean fromUser, int kprogress);
+        void onProgressChanged(VideoseekBar seekBar, int progress, boolean fromUser, int kprogress);
         
         /**
          * 此方法在seekBar开始拖动时调用
          */
-        void onStartTrackingTouch(MyseekBar seekBar);
+        void onStartTrackingTouch(VideoseekBar seekBar);
         
         /**
          * 此方法在seekbar停止拖动时调用
          */
-        void onStopTrackingTouch(MyseekBar seekBar);
+        void onStopTrackingTouch(VideoseekBar seekBar);
         
         /**
          * 按左右键，快进或者快退调用的方法，在此方法中可以对快进的倍数进行操作
          */
-        void onKeyTounch(MyseekBar seekBar);
+        void onKeyTounch(VideoseekBar seekBar);
         
         /**
          * 获取当前播放进度返回NAN时调用
@@ -720,378 +595,8 @@ public class MyseekBar extends AbsSeekBar
         return true;
     }
     
-    /*
-     * public void invalidate(){ int available = getWidth() - getPaddingLeft() -
-     * getPaddingRight(); int thumbWidth =
-     * bdPlaying.getIntrinsicWidth()-getThumboffSet(); int thumbHeight =
-     * bdPlaying.getIntrinsicHeight(); available -= thumbWidth; available +=
-     * getThumbOffset() * 2; int thumbPos = (int) (scale * available); int
-     * thumbPos1=(int)(Kscale * available); mSCBitmap=Bitmap.createBitmap(2000,
-     * 480, Config.ARGB_8888); mCanvas=new Canvas(); //mCanvas.save();
-     * mCanvas.setBitmap(mSCBitmap); paint=new Paint();
-     * mCanvas.drawBitmap(imgSeekbar_Played, 30, 38, paint); if(isPressed()){
-     * mCanvas.drawBitmap(imgSeekbar_background, thumbPos1+thumbWidth-25, 38,
-     * paint); mCanvas.drawBitmap(imgThumb_Pressed, thumbPos1-2, -10, paint);
-     * mCanvas.drawText(timeFormat((int)
-     * (Kscale*getMax())),thumbPos1+bdThumb_Pressed.getIntrinsicWidth()/3-10 ,
-     * 15, paint); // mThumb=bdThumb_Pressed;
-     * 
-     * }else if(!isPlaying()){ mCanvas.drawBitmap(imgSeekbar_background,
-     * thumbPos+40, 38, paint);
-     * mCanvas.drawBitmap(imgThumb_Stop,bdPlaying.getIntrinsicWidth()/2+
-     * thumbPos-10, 22, paint); // mThumb=bdThumb_Stop; }else if(isOnkey()){
-     * mCanvas.drawBitmap(imgSeekbar_background, thumbPos+thumbWidth-5, 38,
-     * paint); mCanvas.drawBitmap(imgThumb_Pressed, thumbPos1-2, -10, paint);
-     * mCanvas.drawText(timeFormat((int)
-     * (Kscale*getMax())),thumbPos1+bdThumb_Pressed.getIntrinsicWidth()/3-10 ,
-     * 15, paint); } else{ if(isEnSure()){
-     * mCanvas.drawBitmap(imgSeekbar_background, thumbPos1+thumbWidth-5, 38,
-     * paint); mCanvas.drawBitmap(imgPlaying, thumbPos1-10, 22, paint); } else
-     * if(!isUp){ mCanvas.drawBitmap(imgSeekbar_background,
-     * thumbPos+thumbWidth-5, 38, paint); mCanvas.drawBitmap(imgPlaying,
-     * thumbPos-10, 22, paint); }else{ mCanvas.drawBitmap(imgSeekbar_background,
-     * thumbPos1+thumbWidth-5, 38, paint); mCanvas.drawBitmap(imgPlaying,
-     * thumbPos1-10, 22, paint); isUp=false; } //mThumb=bdPlaying; }
-     * invalidate(); }
-     */
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event)
-    {
-    	Log.i("VideoKey", "MySeekBar->onKeyDown->keyCode:" + keyCode);
-        float Progress = 0;
-        
-        // Log.e(TAG, "scale --->" + scale + "Kscale--->" + Kscale + "X-->" +
-        // Xacceleration);
-        if (Xacceleration == 0)
-        {
-            Kscale = 0;
-        }
-        if (Float.isNaN(scale))
-        {
-            scale = mOnSeekBarChangeListener.onNan();
-            
-        }
-        
-        if(isFromNetwork)
-        {
-            return onKeyDownNetwork(keyCode, event); 
-        }
-        
-        switch (keyCode)
-        {
-            case KeyEvent.KEYCODE_DPAD_CENTER:
-            case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-                switch (playMode)
-                {
-                    case PlayMode.PLAY_TRICK:
-                        isEnSure = true;
-                        onKeyTouch();
-                        mHandler = null;
-                        break;
-                    case PlayMode.PLAY_SEEK:
-                        break;
-                }
-                return super.onKeyDown(keyCode, event);
-            
-            default:
-                break;
-        }
-        
-        if (hasKeyUp)
-        {
-            firstDownTime = System.currentTimeMillis();
-            persistTime = 0;
-            hasKeyUp  = false;
-        }
-        else
-        {
-            persistTime = System.currentTimeMillis() - firstDownTime;
-        }
-        
-        if (persistTime >= 500)
-        {
-            if (playMode == PlayMode.PLAY_TRICK)
-            {
-                isTrickBefore = (Xacceleration != 1);
-            }
-            playMode = PlayMode.PLAY_SEEK;
-        }
-        Log.i("VideoKey", "MySeekBar->onKeyDown->playMode:" + playMode);
-        Log.i("VideoKey", "MySeekBar->onKeyDown->isTrickBefore:" + isTrickBefore);
-        
-//        if(!canAccelerate){
-//            Xupdate = true;
-//        }
-        
-        switch (keyCode)
-        {
-            case KeyEvent.KEYCODE_DPAD_LEFT:
-            case KeyEvent.KEYCODE_MEDIA_REWIND:
-                isLeft = true;
-                switch (playMode)
-                {
-                    case PlayMode.PLAY_TRICK:
-//                        if(Xacceleration == -64)
-//                        {
-//                            break;
-//                        }
-//                        onKeyTouch();
-//                        Kscale = scale;
-//                        if (mHandler == null)
-//                        {
-//                            mHandler = new Handler();
-//                        }
-//                        reMove();
-//                        if (mHandler != null)
-//                        {
-//                            rStart();
-//                        }
-                        return true;
-                    case PlayMode.PLAY_SEEK:
-                        if (mHandler == null)
-                        {
-                            mHandler = new Handler();
-                        }
-                        //Log.d("onkey", "Kscale ==" + Kscale + "ISONKEY" + isOnkey());
-                        if (Kscale == 0 && !isOnkey())
-                        {
-                            Kscale = scale;
-                        }
-                        if (isZero)
-                        {
-                            Kscale = scale;
-                            isZero = false;
-                        }
-                        // zkf61715 当长按事件大于10000毫秒时，需要用seek方法
-                        if (!needSeek)
-                        {
-                            if (persistTime >= 10000)
-                            {
-                                // 更新下进度条
-                                Kscale = scale;
-                                onProgressRefresh(scale, true);
-                                needSeek = true;
-                            }
-                            else
-                            {
-                                onKeyTouch();
-                            }
-                            //Log.d("onkey", "isBflush==" + isBflush());
-                            //                        if (!isBflush())
-                            //                        {
-                            //                            return true;
-                            //                        }
-                            reMove();
-                            if (mHandler != null)
-                            {
-                                //Log.d("onkey", "left sleep time==" + getSleepTime());
-                                rStart();
-                            }
-                        }
-                        /*
-                         * if(!thread.isAlive()){ thread.start(); }
-                         */
-                        return true;
-                    
-                    default:
-                        break;
-                }
-                break;
-            case KeyEvent.KEYCODE_DPAD_RIGHT:
-            case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
-                isLeft = false;
-                switch (playMode)
-                {
-                    case PlayMode.PLAY_TRICK:
-//                        if (Xacceleration == 64)
-//                        {
-//                            break;
-//                        }
-//                        onKeyTouch();
-//                        Kscale = scale;
-//                        if (mHandler == null)
-//                        {
-//                            mHandler = new Handler();
-//                        }
-//                        reMove();
-//                        if (mHandler != null)
-//                        {
-//                            rStart();
-//                        }
-                        return true;
-                    case PlayMode.PLAY_SEEK:
-                        
-                        if (!isLeft && isOnkey() && Math.abs(Xacceleration) == 64)
-                        {
-                            break;
-                        }
-                        
-                        if (mHandler == null)
-                        {
-                            mHandler = new Handler();
-                        }
-                        if (Kscale == 0 && !isOnkey())
-                        {
-                            Kscale = scale;
-                            
-                        }
-                        else if (Kscale >= 1)
-                        {
-                            Kscale = 1;
-                        }
-                        if (isZero)
-                        {
-                            Kscale = scale;
-                            isZero = false;
-                        }
-                        // zkf61715 当长按事件大于10000毫秒时，需要用seek方法
-                        if (!needSeek)
-                        {
-                            if (persistTime >= 10000)
-                            {
-                                Kscale = scale;
-                                onProgressRefresh(scale, true);
-                                needSeek = true;
-                            }
-                            else
-                            {
-                                onKeyTouch();
-                            }
-                            //Log.d("onkey", "isBflush==" + isBflush());
-                            //                        if (!isBflush())
-                            //                        {
-                            //                            return true;
-                            //                        }
-                            reMove();
-                            if (mHandler != null)
-                            {
-                                //Log.d("onkey", "left sleep time==" + getSleepTime());
-                                rStart();
-                            }
-                        }
-                        /*
-                         * if(!thread.isAlive()){ thread.start(); }
-                         */
-                        return true;
-                    default:
-                        break;
-                }
-                break;
-            
-            // thread.stop();
-            default:
-                break;
-        }
-        lastKeycode = keyCode;
-        return super.onKeyDown(keyCode, event);
-    }
-    
-    private boolean onKeyDownNetwork(int keyCode, KeyEvent event)
-    {
-        long nowTime = System.currentTimeMillis();
-        if(nowTime - lastKeyDownTime <= 200)
-        {
-            lastKeyDownTime = nowTime;
-            return true;
-        }
-        lastKeyDownTime = nowTime;
-        switch (keyCode)
-        {
-            case KeyEvent.KEYCODE_DPAD_LEFT:
-                
-//                //modified by keke 2013.4.23 在已经是三倍的快退的时候不在做处理
-//                if (isLeft&&isOnkey() && Math.abs(Xacceleration) == 3)
-//                {
-//                    break;
-//                }
-                if (mHandler == null)
-                {
-                    mHandler = new Handler();
-                }
-                isLeft = true;
-                if (Kscale == 0 && !isOnkey())
-                {
-                    Kscale = scale;
-                }
-                if (isZero)
-                {
-                    Kscale = scale;
-                    isZero = false;
-                }
-                onProgressRefresh(scale, true);
-                
-                onKeyTouch();
-                
-                if (!isBflush())
-                {
-                    return true;
-                }
-                reMove();
-                if (mHandler != null)
-                {
-                    //Log.d("onkey", "left sleep time==" + getSleepTime());
-                    rStart();
-                }
-                /*
-                 * if(!thread.isAlive()){ thread.start(); }
-                 */
-                return true;
-            case KeyEvent.KEYCODE_DPAD_RIGHT:
-                
-//                if (!isLeft&&isOnkey() && Math.abs(Xacceleration) == 3)
-//                {
-//                    break;
-//                }
-                isLeft = false;
-                
-                if (mHandler == null)
-                {
-                    mHandler = new Handler();
-                }
-                if (Kscale == 0 && !isOnkey())
-                {
-                    Kscale = scale;
-                    
-                }
-                else if (Kscale >= 1)
-                {
-                    Kscale = 1;
-                }
-                if (isZero)
-                {
-                    Kscale = scale;
-                    isZero = false;
-                }
-                onProgressRefresh(scale, true);
-                onKeyTouch();
-                //Log.d("onkey", "isBflush==" + isBflush());
-                if (!isBflush())
-                {
-                    return true;
-                }
-                reMove();
-                if (mHandler != null)
-                {
-                    //Log.d("onkey", "left sleep time==" + getSleepTime());
-                    rStart();
-                }
-                /*
-                 * if(!thread.isAlive()){ thread.start(); }
-                 */
-                return true;
-            case KeyEvent.KEYCODE_DPAD_CENTER:
-                isEnSure = true;
-                isZero = true;
-                onKeyTouch();
-                mHandler = null;
-                break;
-            // thread.stop();
-            default:
-                break;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-    
+
+
     public void setProgress1(float Progress)
     {
     	Log.i("VideoKey", "MySeekBar->setProgress1->progress:" + progress);
@@ -1279,24 +784,6 @@ public class MyseekBar extends AbsSeekBar
         setProgress1(Progress);
     }
     
-    /**
-     * 此线程用来，按左右键的时候，进度条的更新
-     */
-    /*
-     * Thread thread= new Thread(new Runnable() { public void run() { while
-     * (progress<= getMax()) {
-     * 
-     * try { Thread.sleep((long) sleepTime); } catch (InterruptedException e) {
-     * 
-     * mHandler.post(new Runnable() { public void run() { if(isZero){ return; }
-     * else if(!isEnSure){ float Progress = 0; fScale=(float)
-     * 1.0f/(getTotalTime()/sleepTime); if(isLeft){ Kscale-=fScale*getX();
-     * }else{ Kscale+=mscale+fScale*getY(); mscale=0; } if(Kscale<=0){ Kscale=0;
-     * }else if(Kscale>=1){ Kscale=1; } Progress += scale * getMax();
-     * setProgress1(Progress); } else{ if(!isTrack){ setPressed(false);
-     * isOnkey=false; invalidate(); }else{ setPressed(true); invalidate(); } } }
-     * }); } } });
-     */
     public Runnable runnable = new Runnable()
     {
         public void run()
@@ -1447,29 +934,6 @@ public class MyseekBar extends AbsSeekBar
         // myHandle = new MyHandle(handlerThread.getLooper());
     }
     
-    /** 获得快退快进倍数 */
-    public int getAcc(int hour)
-    {
-        int tx = 0;
-        hour++;
-        switch (Math.abs(Xacceleration))
-        {
-            case 1:
-                tx = 2 * hour;
-                break;
-            
-            case 2:
-                tx = 5 * hour;
-                
-                break;
-            case 3:
-                tx = 10 * hour;
-                
-                break;
-        }
-        
-        return tx;
-    }
     
     public void update()
     {
@@ -1786,26 +1250,6 @@ public class MyseekBar extends AbsSeekBar
         }
     }
     
-    /** 设置当前进度 */
-    public void setAccordPosition(int posi)
-    {
-        if (accordposition == 0)
-        {
-            accordposition = posi;
-        }
-        
-        if (posi == getMax())
-        {
-            accordposition = posi;
-        }
-        
-        if (isFirst)
-        {
-        	isFirst = false;
-        	accordposition = posi;
-        }
-    }
-    
     /**
      * @param thumbPos1 当前播放点的位置
      * @param isonkeyfirst 第一次按键显示时间游标
@@ -1826,33 +1270,13 @@ public class MyseekBar extends AbsSeekBar
                 thumbPos1 - bdSeekbar_Cur_Up.getIntrinsicWidth() / 2 + 3,
                 cursorTextTop,
                 setStyle());
-        }
-        else
-        {
-//            if (historyPosition / accLength > 0)
-//            {
-                //Log.e("vvvv", "0000311==" + posi);
+        }else{
                 historyPosition = 0;
                 accordposition = posi;
-                /** 修改者：l00174030；修改原因：修改游标的下半部分图像**/
-                //canvas.drawText(timeFormat(posi),
-                //    thumbPos1 - bdSeekbar_Cur_Up.getIntrinsicWidth() / 2 + 3,
-                //    18,
-                //    setStyle());
                 canvas.drawText(timeFormat(posi),
                     thumbPos1 - bdSeekbar_Cur_Up.getIntrinsicWidth() / 2 + 3,
                     cursorTextTop,
                     setStyle());
-//            }
-//            else
-//            {
-                //Log.e("vvvv", "00003==" + accordposition);
-//                setAccordPosition(posi);
-//                float tmp = thumbPos1 - bdSeekbar_Cur_Up.getIntrinsicWidth() / 2 + 3;
-//                /** 修改者：l00174030；修改原因：修改游标的下半部分图像**/
-//                //canvas.drawText(timeFormat(accordposition), tmp, 18, setStyle());
-//                canvas.drawText(timeFormat(accordposition), tmp, cursorTextTop, setStyle());
-//            }
         }
     }
     
@@ -1934,185 +1358,42 @@ public class MyseekBar extends AbsSeekBar
     }
     
     /** 开始绘制 */
-    public void playDraw(Canvas canvas, int thumbPos, int available)
+    public void playDraw(Canvas canvas, int thumbPos)
     {
     	Log.i("VideoKey", "playDraw->thumbPos:" + thumbPos);
-    	Log.i("VideoKey", "playDraw->available:" + available);
         /** 修改者：l00174030；修改原因：先画背景，在画进度条**/
-        //canvas.drawBitmap(imgSeekbar_background, thumbPos, 38, paint);
-//        canvas.drawBitmap(imgSeekbar_Played, 0, seekbarLeftTop, paint);
         Paint paint = new Paint();
-        
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(0Xcc1fb1e7);
         paint.setAntiAlias(true);
-        
-        Path path = new Path();
-        
-//        int posConv = pos*this.getWidth()/1280;
-
-        Log.d(TAG, "pressDraw: pos=" + pos + "this.getWidth()=" + this.getWidth());
-        
-        if (pos < this.getWidth() - 5)
-        {
-            float[] radii = {0f,0f,0f,0f,0f,0f,0f,0f};
-            path.addRoundRect(new RectF(0, seekbarLeftTop, pos, seekbarLeftTop+SizeUtils.dp2px(context, 20)), radii, Path.Direction.CW);
-        }
-        else
-        {
-            float[] radii = {10f,10f,10f,10f,10f,10f,10f,10f};
-            path.addRoundRect(new RectF(0, seekbarLeftTop, pos, seekbarLeftTop+SizeUtils.dp2px(context, 20)), radii, Path.Direction.CW);
-        }
-        canvas.drawPath(path,paint);
-        
-        float tem = thumbPos - playingWidth;
-        
-        if (thumbPos - playingWidth < 0)
-        {
-            /** 修改者：l00174030；修改原因：先画背景，在画进度条**/
-            //canvas.drawBitmap(imgPlaying, 0, 29, paint);
-//            canvas.drawBitmap(imgPlaying, 0, pauseLeftTop, paint);
-        }
-        else if (thumbPos + playingWidth >= available)
-        {
-            /** 修改者：l00174030；修改原因：先画背景，在画进度条**/
-            //canvas.drawBitmap(imgPlaying, available - bdPlaying.getIntrinsicWidth(), 29, paint);
-//            canvas.drawBitmap(imgPlaying, available - bdPlaying.getIntrinsicWidth(), pauseLeftTop, paint);
-        }
-        else
-        {
-            /** 修改者：l00174030；修改原因：先画背景，在画进度条**/
-            //canvas.drawBitmap(imgPlaying, tem, 29, paint);
-//            canvas.drawBitmap(imgPlaying, tem, pauseLeftTop, paint);
-        }
-        isUp = false;
-    }
-	/* END: Modified by s00211113 for DTS2014031902280  2014/03/19 */
-    
-    /** 时间累积 */
-    public boolean hisTotalPos(int posi, boolean isonkeyfirst)
-    {
-        if (historyPosition == -1)
-        {
-            // Log.e("vvvv", "historyPosition1--->" + historyPosition);
-            historyPosition = 0;
-            
-            pus = posi / 1000;
-        }
-        else
-        {
-            // Log.e("vvvv", "historyPosition3--->" + ((int)(Kscale * getMax())
-            // / 1000 - pus));
-            isonkeyfirst = false;
-            if (Xacceleration > 0)
-            {
-                historyPosition = historyPosition + posi / 1000 - pus;
-            }
-            else
-            {
-                historyPosition = historyPosition - posi / 1000 + pus;
-            }
-            // Log.e("vvvv", "historyPosition--->" + historyPosition);
-            pus = posi / 1000;
-        }
-        return isonkeyfirst;
+        RectF rectfbg = new RectF(0, 0 , thumbPos, getHeight());
+        canvas.drawRect(rectfbg, paint);
     }
     
-    /** 时间分割处理 */
-    public int partTime(int time)
-    {
-        if (time < 300000)
-        {
-            return 1;
-        }
-        else if (time < 1200000)
-        {
-            return 2;
-        }
-        else if (time < 3600000)
-        {
-            return 3;
-        }
-        else if (time < 7200000)
-        {
-            return 4;
-        }
-        else if (time < 10800000)
-        {
-            return 5;
-        }
-        else
-        {
-            return 6;
-        }
+    /**
+     * 绘制seek效果
+     * @param canvas
+     * @param seekPosition
+     */
+    public void seekDraw(Canvas canvas, int seekPosition){
+    	if(seekPosition == 0)
+    		return;
+        /** 修改者：l00174030；修改原因：先画背景，在画进度条**/
+        Paint paint = new Paint();
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(0X7c1fb1e7);
+        paint.setAntiAlias(true);
+        RectF rectfbg = new RectF(0, 0 , seekPosition, getHeight());
+        canvas.drawRect(rectfbg, paint);
+        mSeekBarLayout.updateSeekLayoutPosition(seekPosition);
     }
-    
-    /** 显示时间的刷新设置 */
-    public int refurbishTime(int part)
-    {
-        int at = 1;
-        switch (part)
-        {
-//            case 1:
-//                at = 1;
-//                break;
-//            case 2:
-//                at = 5;
-//                break;
-//            case 3:
-//                at = 10;
-//                break;
-//            case 4:
-//                at = 20;
-//                break;
-//            case 5:
-//                at = 30;
-//                break;
-//            case 6:
-//                at = 40;
-//                break;
-//            default:
-//                at = 1;
-//                break;
-        /**修改者：l00174030；修改原因：UCD改变播控方式，当快进/快退时，改变速率**/
-            // 5分钟以下的视频
-            case 1:
-                at = 1;
-                break;
-            // 5~20分钟的视频
-            case 2:
-                at = 5;
-                break;
-            // 20~60分钟的视频
-            case 3:
-                at = 15;
-                break;
-            // 60分钟以上的视频（采用UCD策略）
-            case 4:
-            case 5:
-            case 6:
-                at = 30;
-                break;
-            default:
-                at = 1;
-                break;
-        }
-        return at;
-    }
-    
-    /**修改者：l00174030；修改原因：快进后取消，再次快进时时间停留在前次的上面 **/
-    private boolean isFirst = true;
-    public void setReAccelerate()
-    {
-    	historyPosition = -1;
-    	isFirst = true;
-    }
-    /****/
-    
+        
     /**
      * 设置父布局
      */
     public void setSeekBarLayout(SeekBarLayout seekBarLayout){
     	mSeekBarLayout = seekBarLayout;
     }
+    
+    
 }

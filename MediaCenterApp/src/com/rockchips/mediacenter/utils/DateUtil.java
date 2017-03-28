@@ -64,4 +64,17 @@ public class DateUtil
 		}
         return String.valueOf(buf);
     }
+	
+	/**
+	 * 获取媒体文件的时间长度
+	 * @param time
+	 * @return
+	 */
+	public static String getMediaTime(int time){
+		int allSeconds = time / 1000;
+		int seconds = allSeconds % 60;
+		int middles = allSeconds / 60 % 60;
+		int hours = allSeconds / 60 / 60;
+		return String.format("%02d:%02d:%02d", hours, middles, seconds);
+	}
 }

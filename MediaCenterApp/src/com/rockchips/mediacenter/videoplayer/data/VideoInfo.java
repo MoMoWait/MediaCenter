@@ -9,10 +9,7 @@
  */
 
 package com.rockchips.mediacenter.videoplayer.data;
-
-import android.os.Bundle;
-
-import com.rockchips.mediacenter.bean.LocalMediaInfo;
+import com.rockchips.mediacenter.bean.FileInfo;
 
 /**
  * Description: TODO<br>
@@ -21,48 +18,39 @@ import com.rockchips.mediacenter.bean.LocalMediaInfo;
  * Date: 2014-7-22 下午7:19:43<br>
  */
 
-public class VideoInfo extends LocalMediaInfo 
-{             
-    private float mSeekTo;
-    private static final String SEEK_TO = "SEEK_TO";
-    
-    private String mResolution;    
-    public static final String RESOLUTION = "resolution";
-    
-    public float getmSeekTo()
-    {
-        return mSeekTo;
-    }
-    public void setmSeekTo(float mSeekTo)
-    {
-        this.mSeekTo = mSeekTo;
-    }
+public class VideoInfo extends FileInfo 
+{   
+	private static final long serialVersionUID = 1L;
 
-    public String getmResolution() 
-    {
-        return mResolution;
-    }
-    public void setmResolution(String mResolution) 
-    {
-        this.mResolution = mResolution;
-    }
-
-    public Bundle compress()
-    {
-        Bundle bundle = super.compress();
-        bundle.putFloat(SEEK_TO, mSeekTo); 
-        bundle.putString(RESOLUTION, mResolution);        
-        return bundle;
-    }
+	private float seekPosition;
     
-    public void decompress(Bundle bundle)
-    {
-        if (null == bundle)
-        {
-            return;
-        }
-        super.decompress(bundle);  
-        mSeekTo = bundle.getFloat(SEEK_TO); 
-        mResolution = bundle.getString(RESOLUTION);  
-    }
+    private int videoWidth;    
+    
+    private int videoHeight;
+
+	public float getSeekPosition() {
+		return seekPosition;
+	}
+
+	public void setSeekPosition(float seekPosition) {
+		this.seekPosition = seekPosition;
+	}
+
+	public int getVideoWidth() {
+		return videoWidth;
+	}
+
+	public void setVideoWidth(int videoWidth) {
+		this.videoWidth = videoWidth;
+	}
+
+	public int getVideoHeight() {
+		return videoHeight;
+	}
+
+	public void setVideoHeight(int videoHeight) {
+		this.videoHeight = videoHeight;
+	}
+    
+    
 }

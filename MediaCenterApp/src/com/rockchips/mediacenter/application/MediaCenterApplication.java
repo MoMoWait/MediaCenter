@@ -27,7 +27,8 @@ public class MediaCenterApplication extends BaseApplication
         super.onCreate();
         
         //Log.i(TAG, "currentMediaPostion:" + MediaUtils.getCurrentPostion());
-        
+        //设置默认的奔溃处理器
+        //Thread.setDefaultUncaughtExceptionHandler(AppCrashHandler.getInstace());
         try{
             PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             Log.i(TAG, "versionName:" + packageInfo.versionName);
@@ -39,6 +40,7 @@ public class MediaCenterApplication extends BaseApplication
         //x.Ext.setDebug(false);
         //初始化xutils3框架
         x.Ext.init(this);
+        x.Ext.setDebug(false);
         //初始化服务
         initService();
         //初始化数据库

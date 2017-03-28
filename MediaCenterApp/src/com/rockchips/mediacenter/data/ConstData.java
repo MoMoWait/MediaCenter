@@ -240,6 +240,14 @@ public class ConstData {
 		String COPY_FILE_PATH = "copy_file_path";
 		/**剪切文件路径*/
 		String MOVE_FILE_PATH = "move_file_path";
+		/**视频播放模式*/
+	    String VIDEO_CYCLE_PLAY_MODE = "video_cycle_play_mode";
+	    /**视频显示比例*/
+	    String VIDEO_SCREEN_DISPLAY_MODE = "video_screen_display_mode";
+	    /**声道设置*/
+	    String VIDEO_CHANNEL_MODE = "CHANNEL_MODE";
+	    /**是否第一次启动视频播放器*/
+	    String FIRST_START_VIDEOPLAY = "first_start_videoplay";
 	}
 	
 	public interface ViewTags{
@@ -1504,5 +1512,15 @@ public class ConstData {
 		
 	}
 	
-	
+	/**
+	 * 视频播放状态
+	 * @author GaoFei
+	 *
+	 */
+	public interface VIDEO_PLAY_STATUS{
+		int PLAYING = 0;
+		int PAUSED = 1;
+		int FAST_GO = 2;
+		int FAST_BACK = 3;
+	}
 }

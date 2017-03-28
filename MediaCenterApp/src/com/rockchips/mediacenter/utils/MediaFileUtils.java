@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -733,7 +734,23 @@ public class MediaFileUtils {
     	}
     	return mediaInfos;
     }
- 
+    /**
+     * 过滤指定类型的文件
+     * @param fileInfos
+     * @param type
+     * @return
+     */
+    public static List<FileInfo> filterFileInfos(List<FileInfo> fileInfos, int type){
+    	List<FileInfo> filterFileInfos = new ArrayList<>();
+    	Iterator<FileInfo> iterator =fileInfos.iterator();
+    	while(iterator.hasNext()){
+    		FileInfo fileInfo = iterator.next();
+    		if(fileInfo.getType() == type)
+    			filterFileInfos.add(fileInfo);
+    	}
+    	return fileInfos;
+    }
+    
     /**
      * 获取当前目录下与upnpFileInfo对应的同类型的媒体文件列表
      * @param upnpFileInfo

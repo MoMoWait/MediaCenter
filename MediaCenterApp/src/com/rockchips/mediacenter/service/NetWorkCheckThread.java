@@ -36,8 +36,6 @@ public class NetWorkCheckThread extends Thread{
 	public void run() {
 		//发送网络设备刷新广播
 		LocalBroadcastManager.getInstance(mService).sendBroadcast(new Intent(ConstData.BroadCastMsg.REFRESH_NETWORK_DEVICE));
-		/*ConnectivityManager cm = (ConnectivityManager)mService.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();*/
 		boolean isConnected = NetUtils.isConnectNetWork();
 		Log.i(TAG, "NetWorkCheckThread->isConnected:" + isConnected);
 		/*Network[] allNetworks = cm.getAllNetworks();
@@ -159,5 +157,7 @@ public class NetWorkCheckThread extends Thread{
 				}
 			}
 		}
+		//自动扫描出的Samba设备
+		
 	}
 }

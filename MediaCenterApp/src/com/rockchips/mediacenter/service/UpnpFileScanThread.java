@@ -66,7 +66,9 @@ public class UpnpFileScanThread extends Thread {
 		this.mUpnpService = mService.getUpnpService();
 		this.mDevice = device;
 		mFileInfoService = new FileInfoService();
-		mContentDirectoryService = mRemoteDevice.findService(new UDAServiceType("ContentDirectory"));
+		if(mRemoteDevice != null){
+			mContentDirectoryService = mRemoteDevice.findService(new UDAServiceType("ContentDirectory"));
+		}
 		FileInfo rootFileInfo = createRootFileInfo();
 		mDirFileInfos.add(rootFileInfo);
 		mTmpDirFileInfos.put("0", rootFileInfo);
@@ -74,6 +76,8 @@ public class UpnpFileScanThread extends Thread {
 	
 	@Override
 	public void run() {
+		if(mRemoteDevice == null)
+			return;
 		long startScanTime = System.currentTimeMillis();
 		Log.i(TAG, "start Time " + startScanTime);
 		DeviceScanInfo deviceScanInfo = mService.getDeviceScanInfo(mDevice.getDeviceID());

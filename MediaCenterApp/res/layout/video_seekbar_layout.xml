@@ -29,7 +29,7 @@
         android:layout_marginRight="40dp"
         android:layout_toRightOf="@+id/rl_play_status" >
 
-        <com.rockchips.mediacenter.videoplayer.widget.MyseekBar
+        <com.rockchips.mediacenter.videoplayer.widget.VideoseekBar
             android:id="@+id/seekbar"
             android:layout_width="match_parent"
             android:layout_height="20dp"
@@ -88,32 +88,28 @@
         </LinearLayout>
     </RelativeLayout>
 
-    <!--
-    <RelativeLayout
-        android:id="@+id/rl_play_cursor"
+    <LinearLayout
+        android:id="@+id/layout_seek_time"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-		android:layout_above="@+id/rl_play_bar"
-		android:layout_alignLeft="@+id/rl_play_bar"
-		android:layout_marginLeft="-63dp"
-        android:layout_marginBottom="8dp" >
-
-        <ImageView
-            android:id="@+id/iv_play_cursor"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:src="@drawable/play_cursor" />
-        
+        android:layout_height="49dp"
+        android:background="@drawable/layout_seek_background"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="50dp"
+        android:layout_marginLeft="170dp"
+        android:gravity="center_horizontal"
+        android:visibility="invisible"
+        android:orientation="vertical">
         <TextView
-            android:id="@+id/elapsedDuration"
+            android:id="@+id/text_seek_time"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="5dp"
-            android:textSize="26dp"
-            android:textColor="#f1f1f1" />
-    </RelativeLayout>
-    -->
+            android:layout_height="42dp"
+            android:text="@string/video_seekbar_duration_init"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+			android:paddingLeft="10dp"
+			android:paddingRight="10dp"
+			android:gravity="center"
+            android:textStyle="bold"/>
+    </LinearLayout>
 
 </RelativeLayout>

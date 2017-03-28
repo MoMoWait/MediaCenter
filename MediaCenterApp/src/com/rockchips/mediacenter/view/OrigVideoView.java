@@ -141,9 +141,6 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
     private Context mContext = null;
     private void init(Context context)
     {
-        //mTextPaint = new Paint();
-        //mTextPaint.setTextSize(100);
-        //mTextPaint.setColor(Color.RED);
     	setOnErrorListener(mOnErrorListener);
         mContext = context;
         
