@@ -248,6 +248,10 @@ public class ConstData {
 	    String VIDEO_CHANNEL_MODE = "CHANNEL_MODE";
 	    /**是否第一次启动视频播放器*/
 	    String FIRST_START_VIDEOPLAY = "first_start_videoplay";
+	    /**上次视频播放的路径*/
+	    String LAST_VIDEO_PLAY_PATH = "last_video_play_path";
+	    /**上次视频播放的位置*/
+	    String LAST_VIDEO_PLAY_POSITION = "last_video_play_positon";
 	}
 	
 	public interface ViewTags{

@@ -461,7 +461,7 @@ public abstract class PlayerBaseActivity extends DeviceActivity
     public boolean isFinishSelf()
     {
         Log.d(TAG, "isFinishSelf --In");
-        return true;
+        return false;
     }
     
     
