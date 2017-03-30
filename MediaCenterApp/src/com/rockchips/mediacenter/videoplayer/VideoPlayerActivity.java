@@ -182,6 +182,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     private int subNum = 0;
     // the id of the current suntitle
     private int subId = 0;
+    /**当前选中声道*/
+    private int mChannelModeIndex = 0;
     // 保存外挂字幕路径
     private String subtitlePath = "";
     private int soundNum = 0;
@@ -369,8 +371,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             doblyPopWin.hideDoblyWin();
         }
         mSubSurface.setVisibility(View.INVISIBLE);
-
-        cancelHidPopMessage();
         
         try
         {
@@ -381,7 +381,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             Log.e(TAG, "onpause is bMCSMode 22");
             /** Mender:l00174030;Reason:push and come back, sometimes can't malloc buffer for the vdec **/
             HistoryListRecord.getInstance().putSubInfo(getCurMediaUrl(), sub);
-            //stop();
+            stop();
         }
         catch (Exception e)
         {
@@ -409,15 +409,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             return;
         }
         Log.d(TAG, "VideoPlayerActivity --> onDestroy()--");
-        //passIntentForVideoBrowser();
-        mUIHandler.removeAllMsgs();
-        if (mSeekHandler != null)
-        {
-            mSeekHandler.removeMessages(0);
-        }
-
+        
         mVV.isSeeking(false);
-
 
         mUIHandler = null;
 
@@ -489,12 +482,10 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             case KeyEvent.KEYCODE_MEDIA_REWIND:
             	if(mSeekBarLayout.getVisibility() != View.VISIBLE){
             		showPop();
-            		if(null != mUIHandler)
-                		mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_HIDE_CONTROLER);
             	}else{
             		if(!mVV.isSeeking() && null != mUIHandler){
             			mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_PROGRESS_CHANGED);
-                		changePlayPosition(-1);
+            			changePlayPosition(-1);
             		}
             		
             	}
@@ -503,8 +494,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
             	if(mSeekBarLayout.getVisibility() != View.VISIBLE){
             		showPop();
-            		if(null != mUIHandler)
-                		mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_HIDE_CONTROLER);
             	}else{
             		if(!mVV.isSeeking() && null != mUIHandler){
             			mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_PROGRESS_CHANGED);
@@ -557,11 +546,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 					Log.i(TAG, "mSeekPosition:" + DateUtil.getMediaTime(mSeekPosition));
 					mVV.isSeeking(true);
 					sendSeekMsg(mSeekPosition);
-					mSeekBarLayout.setPosition(mSeekPosition, 0, mVV.getDuration());
 					showPop();
 				}
 				mIsFirstBackOrGo = true;
-				mSeekBarLayout.setSeekTimeVisibility(View.INVISIBLE);
 				mSeekPosition = 0;
 				break;
 			case KeyEvent.KEYCODE_DPAD_RIGHT:
@@ -570,11 +557,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 					Log.i(TAG, "mSeekPosition:" + DateUtil.getMediaTime(mSeekPosition));
 					mVV.isSeeking(true);
 					sendSeekMsg(mSeekPosition);
-					mSeekBarLayout.setPosition(mSeekPosition, 0, mVV.getDuration());
 					showPop();
 				}
 				mIsFirstBackOrGo = true;
-				mSeekBarLayout.setSeekTimeVisibility(View.INVISIBLE);
 				mSeekPosition = 0;
 				break;
 		}
@@ -733,7 +718,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             // 播放失败时，菜单需要重新加载
             isMenuHasCreated = false;
             isMenuNeedShow = false;
-
+            mSeekPosition = 0;
             progressGone();
 
             // 隐藏杜比弹出框
@@ -813,16 +798,16 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         startActivity(intent);
     }
 
-    /** 标记第一次seek到进度条为0 */
-    private boolean firstSeek = true;
-
     private OnSeekCompleteListener onSeekCompleteListener = new OnSeekCompleteListener()
     {
         public void onSeekComplete(IMediaPlayerAdapter mp)
         {
-        	mVV.isSeeking(false);
         	Log.i(TAG, "onSeekComplete");
-        	play();
+        	if(mVV.isSeeking()){
+        		mVV.isSeeking(false);
+            	play();
+        	}
+        	
         }
     };
 
@@ -856,6 +841,10 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             		sendSeekMsg(lastPlayPosition);
             	}
             }
+            if(!TextUtils.isEmpty(strUrl) && !strUrl.equals(lastPlayPath)){
+            	StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.LAST_VIDEO_PLAY_PATH, "");
+            	StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.LAST_VIDEO_PLAY_POSITION, "");
+            }
             progressGone();
             // 弹出杜比信息框
             // 之前要設置信息
@@ -864,11 +853,11 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             playerErrorTimes = 0;
 
             // 当结束的时候把当前播放索引返回到broeser界面
-            passIntentForBrowser();
+            //passIntentForBrowser();
 
             // 提前创建菜单，解决菜单显示慢问题
             createPopMenu();
-            loadMenu();
+            //loadMenu();
             isMenuHasCreated = true;
 
             /** liyang DTS2013051702993 **/
@@ -1019,6 +1008,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     {
     	//Log.i(TAG, "setPlayMode->stackTrace:" + android.util.Log.getStackTraceString(new Throwable()));
         mPlayStateInfo.setPlayMode(playMode);
+        //mEditor.putInt(ConstData.SharedKey.VIDEO_CYCLE_PLAY_MODE, getPlayMode()).commit();
     }
 
     public int getPlayMode()
@@ -1143,7 +1133,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
     /**
      * 
-     * stop：停止操作
+     * stop：停止UI更新相关操作
      * 
      * void
      * @exception
@@ -1158,15 +1148,13 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         // 返回键时，菜单需要重新加载
         isMenuHasCreated = false;
         // 隐藏杜比弹出框
-        sendDoblyWinMsg(false);
+        //sendDoblyWinMsg(false);
         mUIHandler.removeAllMsgs();
         Log.d(TAG, "mUIHandler removeAllMsgs for the IllegalStateException.");
         if (mSeekHandler != null)
         {
             mSeekHandler.removeMessages(0);
         }
-
-        stopNow();
     
     }
 
@@ -1231,8 +1219,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         	loadMenu();
             isMenuHasCreated = true;
             mPopMenu.replayLastSelected();
-            if(mPopMenu.isCreated())
+            if(mPopMenu.isCreated()){
             	mPopMenu.rebuildView();
+            }
             mPopMenu.show();
             // mPopMenu.getCurrentFocus().requestFocus();
         }
@@ -1260,10 +1249,10 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                 subId = mVV.getCurrentSudId();
             }*/
 
-            if (mVV.getAudioinfos() != null && mVV.getAudioinfos().size() > 0)
+            /*if (mVV.getAudioinfos() != null && mVV.getAudioinfos().size() > 0)
             {
                 soundId = mVV.getCurrentSoundId();
-            }
+            }*/
         }
 
         return true;
@@ -1953,8 +1942,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         }
 
         menuCgy.setMenuItems(itemImpls);
-        // TODO 此处需根据当前播放的实际情况确定
-        menuCgy.setSelectIndex(0);
+        menuCgy.setSelectIndex(mChannelModeIndex);
         mPopMenu.addMenuCategory(menuCgy);
     }
 
@@ -1969,6 +1957,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                 channelModeCodes = mChannelModeCodes[index];
             }
             ret = mVV.setAudioChannelMode(channelModeCodes);
+            mChannelModeIndex = index;
         }
         Log.d(TAG, "setChannelMode " + ret);
     }
@@ -2130,6 +2119,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                        
                         mVV.setVideoURI(uri);
                         soundId = 0;
+                        subId = 0;
+                        mChannelModeIndex = 0;
                         // zkf61715 seekTo为假异步，需要在子线程中调用避免ANR
                         // mVV.seekTo(msg.arg1);
                         //sendSeekMsg(msg.arg1);
@@ -2153,8 +2144,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                 case  ConstData.VideoPlayUIMsg.MSG_UI_VIDEOVIEW_STOP:
 
                     Log.d(TAG, "MSG_UI_VIDEOVIEW_STOP");
-
-                    firstSeek = true;
 
 
                     /** liyang DTS2013051702993 **/
@@ -2295,8 +2284,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                     {
                         break;
                     }
-                    updateCurrPlayPosition();
-                    Log.d(TAG, "---->ttttt " + mVV.isSeeking());
+                    mSeekBarLayout.setPosition(mVV.getCurrentPosition(), mSeekPosition, mDuration, false);
+                    //Log.d(TAG, "---->ttttt " + mVV.isSeeking());
                     sendEmptyMessageDelayed(ConstData.VideoPlayUIMsg.MSG_PROGRESS_CHANGED, 500);
                     break;
 
@@ -2312,7 +2301,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                     /** 修改者：l00174030；修改原因：时间控件和控制条一起显示 **/
                     // 显示
                     tiemLayout.setVisibility(View.VISIBLE);
-                    updateCurrPlayPosition();
+                    mSeekBarLayout.setPosition(mVV.getCurrentPosition(), mSeekPosition, mDuration, false);
                     setbHide(false);
                     removeMessages(ConstData.VideoPlayUIMsg.MSG_PROGRESS_CHANGED);
                     sendEmptyMessageDelayed(ConstData.VideoPlayUIMsg.MSG_PROGRESS_CHANGED, 200);
@@ -2373,7 +2362,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
                 case ConstData.VideoPlayUIMsg.MSG_MCS_PLAY:
                     Log.d(TAG, "MSG_MCS_PLAY");
-                    firstSeek = true;
                     break;
                 case ConstData.VideoPlayUIMsg.MSG_MCS_HIDEMODE:
                     /** 添加杜比信息的弹窗处理 **/
@@ -2410,7 +2398,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
          */
         public void setbHide(boolean bHide)
         {
-            Log.d(TAG, "--->setbHide==" + bHide);
+            //Log.d(TAG, "--->setbHide==" + bHide);
             this.bHide = bHide;
         }
 
@@ -2489,6 +2477,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     /** l00174030；添加视屏的屏幕比例切换（自动切换、全屏拉伸、等比拉伸） **/
     private void updateMenuScreen()
     {
+    	Log.i(TAG, "updateMenuScreen->screenMode:" + getScreenMode());
         // 获取视频的原始大小
         if (mMediaPlayer == null)
         {
@@ -2614,7 +2603,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     private void stopNow()
     {
         Log.d(TAG, "MSG_UI_VIDEOVIEW_STOP now");
-        firstSeek = true;
     }
 
     /**
@@ -2821,20 +2809,17 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             {
                 Log.d(TAG, "change to play loop.");
                 setPlayMode(ConstData.MediaPlayMode.MP_MODE_ALL_CYC);
-                PlayerStateRecorder.getInstance().put(PlayerStateRecorder.VIDEO_PLAY_MODE, ConstData.MediaPlayMode.MP_MODE_ALL_CYC);
                 saveCycPlayMode();
             }
             else if (mCurrSelectType == PopMenuSelectType.REPEAT_ONE)
             {
                 Log.d(TAG, "change to repeat one.");
                 setPlayMode(ConstData.MediaPlayMode.MP_MODE_SINGLE_CYC);
-                PlayerStateRecorder.getInstance().put(PlayerStateRecorder.VIDEO_PLAY_MODE, ConstData.MediaPlayMode.MP_MODE_SINGLE_CYC);
                 saveCycPlayMode();
             }
             else if(mCurrSelectType == PopMenuSelectType.SINGLE_PLAY){
             	 Log.d(TAG, "change to single play.");
                  setPlayMode(ConstData.MediaPlayMode.MP_MODE_SINGLE);
-                 PlayerStateRecorder.getInstance().put(PlayerStateRecorder.VIDEO_PLAY_MODE, ConstData.MediaPlayMode.MP_MODE_SINGLE);
                  saveCycPlayMode();
             }
             /** 设置字幕 **/
@@ -2867,16 +2852,19 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             {
                 Log.d(TAG, "set the screen full");
                 setScreenM(ConstData.ScreenMode.SCREEN_FULL);
+                saveScreenDisplay();
             }
             else if (mCurrSelectType == PopMenuSelectType.SCREEN_DISPLAY_ORIGINAL)
             {
                 Log.d(TAG, "set the screen original");
                 setScreenM(ConstData.ScreenMode.SCREEN_ORIGINAL);
+                saveScreenDisplay();
             }
             else if (mCurrSelectType == PopMenuSelectType.SCREEN_DISPLAY_SCALE)
             {
                 Log.d(TAG, "set the screen scale");
                 setScreenM(ConstData.ScreenMode.SCREEN_SCALE);
+                saveScreenDisplay();
             }
             else if (mCurrSelectType == PopMenuSelectType.CHANNEL_MODE_SET)
             {
@@ -2938,25 +2926,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     {
         //LocalDeviceManager manager = LocalDeviceManager.getInstance(this);
        // mGetAllFlatFolders = manager.getAllFlatAVIFolders(ConstData.MediaType.SUBTITLE, 0, 100);
-    }
-
-    /**
-     * 将当前播放索引传回音乐浏览界面
-     * @see [类、类#方法、类#成员]
-     */
-    public void passIntentForVideoBrowser()
-    {
-        Log.d(TAG, "passIntentForVideoBrowser() IN...");
-        Bundle bundle = new Bundle();
-        bundle.putInt("playIndex", getCurrentIndex());
-        bundle.putInt("mediaType", ConstData.MediaType.VIDEO);
-
-        Intent intent = new Intent();
-        intent.putExtras(bundle);
-
-        Log.d(TAG, "passIntentForVideoBrowser() IN..." + getCurrentIndex());
-
-        setResult(RESULT_OK, intent);
     }
 
     public enum BottomMenuSelectType
@@ -3094,6 +3063,23 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         // 播放完毕时，菜单需要重新加载
         isMenuHasCreated = false;
 		
+        //播放完成，重置当前Seek位置
+        mSeekPosition = 0;
+        
+        //隐藏控制栏
+        if(mSeekBarLayout.getVisibility() == View.VISIBLE){
+        	if(null != mUIHandler){
+        		mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_SHOW_CONTROLER);
+        		mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_HIDE_CONTROLER);
+        	}
+        	mSeekBarLayout.setVisibility(View.INVISIBLE);
+        }
+        
+        //重置视频播放记录
+        StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.LAST_VIDEO_PLAY_PATH, "");
+        StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.LAST_VIDEO_PLAY_POSITION, "");
+        
+        //隐藏控制栏
         if (mPopMenu != null && mPopMenu.isShowing())
         {
             mPopMenu.hide();
@@ -3105,14 +3091,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             Log.d(TAG, "OnCompletionListener -- onCompletion mbi == null --");
 
         }
-     /*   else if (isMyMediaType())
-        {
-            HistoryListRecord.getInstance().put(url, 0);
-        }
-*/
         Log.d(TAG, "======playMode2:" + getPlayMode());
 
-        firstSeek = true;
         // 单文件播放模式
         if (getPlayMode() == ConstData.MediaPlayMode.MP_MODE_SINGLE)
         {
@@ -3209,7 +3189,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 		loadChannelModeResources();
 		/* END: Added by r00178559 for AR-0000698413 2014/02/13 */
 		//默认全体循环
-		setPlayMode(ConstData.MediaPlayMode.MP_MODE_ALL_CYC);
+		setPlayMode(mPreferences.getInt(ConstData.SharedKey.VIDEO_CYCLE_PLAY_MODE, DEFAULT_CYCLE_PLAY_MODE_INDEX));
+		//默认等比缩放
+		setScreenMode(mPreferences.getInt(ConstData.SharedKey.VIDEO_SCREEN_DISPLAY_MODE, DEFAULT_SCREEN_DISPLAYE_MODE_INDEX));
 		if (mSeekHandlerThread == null) {
 			mSeekHandlerThread = new HandlerThread(SEEK_THREAD_TAG);
 			mSeekHandlerThread.start();
@@ -3222,15 +3204,13 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 		bIsPausedByUser = false;
 
 	}
-    /**
-     * 更新当前播放位置
-     */
+	
 	public void updateCurrPlayPosition(){
 		 int currPosition = mVV.getCurrentPosition();
-         int duration = mVV.getDuration();
-         mSeekBarLayout.setCurrPlayPosition(currPosition, duration);
-         mSeekBarLayout.setTotalDuration(duration);
-         //mSeekBarLayout.setPosition(currPosition, mSeekPosition, duration);
+        int duration = mVV.getDuration();
+        mSeekBarLayout.setCurrPlayPosition(currPosition, duration);
+        mSeekBarLayout.setTotalDuration(duration);
+        //mSeekBarLayout.setPosition(currPosition, mSeekPosition, duration);
 	}
 	
 	/**
@@ -3239,6 +3219,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 	public void changePlayPosition(int type){
 		int currPosition = mVV.getCurrentPosition();
         int duration = mVV.getDuration();
+        //Log.i(TAG, "changePlayPosition->seek layout position:" + mSeekBarLayout.getSeekTimeVisibility());
         if(mIsFirstBackOrGo){
         	mIsFirstBackOrGo = false;
         	mSeekPosition = currPosition;
@@ -3261,6 +3242,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 		default:
 			break;
 		}
-		mSeekBarLayout.setPosition(currPosition, mSeekPosition, duration);
+		mSeekBarLayout.setPosition(currPosition, mSeekPosition, duration, true);
 	}
 }

@@ -748,7 +748,7 @@ public class MediaFileUtils {
     		if(fileInfo.getType() == type)
     			filterFileInfos.add(fileInfo);
     	}
-    	return fileInfos;
+    	return filterFileInfos;
     }
     
     /**

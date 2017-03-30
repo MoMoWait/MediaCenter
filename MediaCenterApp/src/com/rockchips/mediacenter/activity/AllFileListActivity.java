@@ -782,6 +782,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
         intent.putExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE, mCurrDevice);
         intent.putExtra(LocalDeviceInfo.DEVICE_EXTRA_NAME, MediaFileUtils.getDeviceInfoFromDevice(mCurrDevice).compress());
         List<FileInfo> fileInfos = MediaFileUtils.filterFileInfos(mLoadFileInfos, fileType);
+        Log.i(TAG, "loadActivity->fileInfos->size:" + fileInfos.size());
         List<LocalMediaInfo> mediaInfos = MediaFileUtils.getLocalMediaInfos(mLoadFileInfos, mCurrDevice, fileType);
         List<Bundle> mediaInfoList = new ArrayList<Bundle>();
         for(LocalMediaInfo itemInfo : mediaInfos){

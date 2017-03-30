@@ -76,7 +76,7 @@ public class UpnpFileScanThread extends Thread {
 	
 	@Override
 	public void run() {
-		if(mRemoteDevice == null)
+		if(mRemoteDevice == null || mContentDirectoryService == null)
 			return;
 		long startScanTime = System.currentTimeMillis();
 		Log.i(TAG, "start Time " + startScanTime);
@@ -96,6 +96,8 @@ public class UpnpFileScanThread extends Thread {
 			FileInfo dirFileInfo = mDirFileInfos.remove(0);
 			Container container = createContainerFromFileInfo(dirFileInfo);
 			mIsOpenDirectory = true;
+			if(mContentDirectoryService == null)
+				 return;
 			mUpnpService.getControlPoint().execute(new FileBrowser(mContentDirectoryService, container.getId(), BrowseFlag.DIRECT_CHILDREN, "*", 0, 100000L, mSortCriterions));
 			if(mDirFileInfos.isEmpty()){
 				try {

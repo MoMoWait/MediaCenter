@@ -7,6 +7,7 @@ import org.xutils.view.annotation.ViewInject;
 
 import android.R.integer;
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -115,23 +116,26 @@ public class SeekBarLayout extends RelativeLayout
     	
     }
     
-    public void setPosition(int playPosition, int seekPosition, int duration){
+    public void setPosition(int playPosition, int seekPosition, int duration, boolean needShowSeekLayout){
     	mTextCurrPlayTime.setText(DateUtil.getMediaTime(playPosition));
+    	mTextTotalTime.setText(DateUtil.getMediaTime(duration));
     	mVideoseekBar.setScale(playPosition * 1.0f / duration);
     	mVideoseekBar.setKscale(seekPosition * 1.0f / duration);
     	mTextSeekTime.setText(DateUtil.getMediaTime(seekPosition));
+    	mVideoseekBar.setNeedShowSeekLayout(needShowSeekLayout);
     	mVideoseekBar.invalidate();
     }
     /**
-     * 更新位置
+     * 更新当前Seek位置
      * @param position
      */
     public void updateSeekLayoutPosition(int position){
     	RelativeLayout.LayoutParams seekTextParams = (RelativeLayout.LayoutParams)mLayoutSeekTime.getLayoutParams();
     	seekTextParams.leftMargin = SizeUtils.dp2px(mContext, 170) + position - mLayoutSeekTime.getWidth() / 2;
     	mLayoutSeekTime.setLayoutParams(seekTextParams);
-    	if(mLayoutSeekTime.getVisibility() != View.VISIBLE)
+    	if(mLayoutSeekTime.getVisibility() != View.VISIBLE){
     		mLayoutSeekTime.setVisibility(View.VISIBLE);
+    	}
     }
     
     /**
@@ -140,5 +144,9 @@ public class SeekBarLayout extends RelativeLayout
      */
     public void setSeekTimeVisibility(int type){
     	mLayoutSeekTime.setVisibility(type);
+    }
+    
+    public int getSeekTimeVisibility(){
+    	return mLayoutSeekTime.getVisibility();
     }
 }

@@ -15,6 +15,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.AbsSeekBar;
 
 import com.rockchips.mediacenter.R;
@@ -153,6 +154,8 @@ public class VideoseekBar extends AbsSeekBar
     private int lastKeycode;
     
     private int pos;
+    
+    private boolean mIsNeedShowSeekLayout;
     
     /**
      * 父布局
@@ -696,12 +699,15 @@ public class VideoseekBar extends AbsSeekBar
      * @param seekPosition
      */
     public void seekDraw(Canvas canvas, int seekPosition){
-    	if(seekPosition == 0)
+    	if(!mIsNeedShowSeekLayout){
+    		mSeekBarLayout.setSeekTimeVisibility(View.INVISIBLE);
     		return;
+    	}
+    		
         /** 修改者：l00174030；修改原因：先画背景，在画进度条**/
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.FILL);
-        paint.setColor(0X7F1296db);
+        paint.setColor(0X6F1296db);
         paint.setAntiAlias(true);
         RectF rectfbg = new RectF(0, 0 , seekPosition, getHeight());
         canvas.drawRect(rectfbg, paint);
@@ -715,5 +721,12 @@ public class VideoseekBar extends AbsSeekBar
     	mSeekBarLayout = seekBarLayout;
     }
     
+    /**
+     * 是否显示Seek布局
+     * @param needShow
+     */
+    public void setNeedShowSeekLayout(boolean needShow){
+    	mIsNeedShowSeekLayout = needShow;
+    }
     
 }

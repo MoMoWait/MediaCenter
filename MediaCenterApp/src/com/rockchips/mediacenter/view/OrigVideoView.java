@@ -838,7 +838,7 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
         Integer index = audioTrackMap.get(language);
         Log.d(TAG, "setSoundId id = " + index + ", language = " + language);
         
-        maudioInfoOfVidio = getAudioinfos().get(id);
+        maudioInfoOfVidio = audioinfos.get(id);
         int i = getmediaPlayerAdapter().setSoundId(index);
         
         Log.d(TAG, "setSoundId return :"+i);
@@ -1010,6 +1010,7 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
         {            
             audioinfos.clear();
             audioTrackMap.clear();
+            subinfos.clear();
             //DTS2015012804581 by wWX170514  根据caochao问题单中的描述，调用接口函数被人修改，导致问题的出现
             //MediaPlayer.TrackInfo[] trackInfo = mMediaPlayer.getAudioTrack();
             MediaPlayer.TrackInfo[] trackInfo = mMediaPlayer.getTrackInfo();

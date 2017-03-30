@@ -15,6 +15,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.Log;
+
 import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.bean.LocalDeviceInfo;
@@ -111,10 +113,7 @@ public abstract class PlayerBaseActivity extends DeviceActivity
     {
         Log.d(TAG, "onResume - IN");
         
-        getPlayStateInfo().setStop(false);
-        
-        setMCSReceiveMsgMode(MCS_RECEIVE_MSG_MODE_PROCESS);
-        
+        getPlayStateInfo().setStop(false);        
         
         super.onResume();
     }
@@ -149,9 +148,6 @@ public abstract class PlayerBaseActivity extends DeviceActivity
     protected void onDestroy()
     {
         Log.d(TAG, "onDestroy - IN");
-        
-        //设置拒绝信令
-        setMCSReceiveMsgMode(MCS_RECEIVE_MSG_MODE_REFUSE);
         
         getPlayStateInfo().setStop(true);
         mPlayStateInfo = null;
@@ -232,17 +228,6 @@ public abstract class PlayerBaseActivity extends DeviceActivity
         return mbReceiveMsg == MCS_RECEIVE_MSG_MODE_PROCESS;
     }
     
-    /**
-     * canReceiveMsg
-     *
-     * @return
-     *boolean
-     * @exception
-    */
-    public void setMCSReceiveMsgMode(int mode)
-    {
-        mbReceiveMsg = mode;
-    }
     
     protected FileInfo getCurrentMediaInfo()
     {
