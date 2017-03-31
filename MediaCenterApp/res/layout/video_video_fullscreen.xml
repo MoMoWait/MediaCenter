@@ -124,5 +124,21 @@
         android:focusable="false"
         android:gravity="center_vertical"
         android:orientation="horizontal" />
+    
+     <TextView
+        android:id="@+id/text_restart_play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="50dp"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="@string/press_left_restart"
+        android:textColor="@android:color/white"
+        android:background="@drawable/common_btn_normal_background"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:visibility="invisible"/>
 
 </RelativeLayout>

@@ -81,7 +81,6 @@ public abstract class AppBaseActivity extends Activity{
 			
 			@Override
 			public void onServiceConnected(ComponentName name, IBinder service) {
-				Log.i(TAG, "AppBaseActivity->serviceConnection on ServiceConnected" );
 				DeviceMonitorService.MonitorBinder serviceBinder = (DeviceMonitorService.MonitorBinder)service;
 				mDeviceMonitorService = serviceBinder.getMonitorService();
 				AppBaseActivity.this.onServiceConnected();

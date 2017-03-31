@@ -35,9 +35,7 @@ public class AppCrashHandler implements Thread.UncaughtExceptionHandler{
 	}
 	
 	private void handleUncaughtException(Thread t, Throwable e){
-		String language = Locale.getDefault().getLanguage();
-		Log.i(TAG, "handleUncaughtException->exception:" + e.toString());
-		Log.i(TAG, "handleUncaughtException->language:" + language);
+		Log.e(TAG, "handleUncaughtException->exception:" + e.toString());
 		//关闭所有Activities
 		 ActivityExitUtils.removeAllActivities();
 		//重启应用

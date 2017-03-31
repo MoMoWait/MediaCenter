@@ -22,9 +22,8 @@ public class ScanDirectoryService extends AppBeanService<ScanDirectory>{
 			directories =  MediaCenterApplication.mDBManager.selector(ScanDirectory.class).
 			where("deviceId", "=", deviceId).limit(maxLimit).findAll();
 		}catch (Exception e){
-			Log.i(TAG, "getDirectoriesByDeviceId exception : " + e);
+			Log.e(TAG, "getDirectoriesByDeviceId exception : " + e);
 		}
-		Log.i(TAG, "getDirectoriesByDeviceId->directories:" + directories);
 		return directories;
 	}
 	

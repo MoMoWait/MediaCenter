@@ -394,4 +394,5 @@
     <string name="no_add_smb_nfs">You have not added SMB or NFS devices</string>
     <string name="tip_select_delete">Please select the device you want to delete</string>
     <string name="file_not_exist">Soruce file not exist</string>
+    <string name="press_left_restart">Press left key to play from begin</string>
 </resources>

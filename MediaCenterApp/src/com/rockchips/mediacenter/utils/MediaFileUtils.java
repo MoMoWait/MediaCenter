@@ -52,6 +52,7 @@ import com.rockchips.mediacenter.data.ConstData;
  *
  */
 public class MediaFileUtils {
+	//private IICLOG Log = IICLOG.getInstance();
 	public static final String TAG = MediaFileUtils.class.getSimpleName();
 	/**
 	 * 从文件读取媒体文件类型，不能是目录
@@ -905,8 +906,8 @@ public class MediaFileUtils {
 					List<Property> properties = item.getProperties();
 					if(properties != null && properties.size() > 0){
 						for(Property property : properties){
-							Log.i(TAG, "Item->property->name:" + property.getDescriptorName() + " "
-									+ "Item->property->value:" + property.getValue().toString());
+							//Log.i(TAG, "Item->property->name:" + property.getDescriptorName() + " "
+							//		+ "Item->property->value:" + property.getValue().toString());
 							if(property.getDescriptorName().equals(ConstData.UpnpFileOhterInfo.DATE)){
 								jsonInfo.put(ConstData.UpnpFileOhterInfo.DATE, property.getValue().toString());
 								SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -936,7 +937,7 @@ public class MediaFileUtils {
 							strDuration = strDuration.substring(0, strDuration.lastIndexOf("."));
 							fileInfo.setDuration(strDuration);
 						}
-						Log.i(TAG, "getFileInfos->strDuration:" + strDuration);
+						//Log.i(TAG, "getFileInfos->strDuration:" + strDuration);
 						if(contentFormat.contains("audio")){
 							fileInfo.setType(ConstData.MediaType.AUDIO);
 						}else if(contentFormat.contains("video")){

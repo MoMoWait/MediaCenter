@@ -98,7 +98,6 @@ public class FloatView extends ImageView{
 		windowManager = (WindowManager) c.getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
 		screenWidth = windowManager.getDefaultDisplay().getWidth();
 		screenHeight = windowManager.getDefaultDisplay().getHeight();
-		Log.i(TAG,"screenWidth===" + screenWidth + "screenHeight === " + screenHeight);
 		windowManagerParams.type = LayoutParams.TYPE_PHONE;
 		windowManagerParams.format = PixelFormat.RGBA_8888;	// 背景透明
 		windowManagerParams.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL

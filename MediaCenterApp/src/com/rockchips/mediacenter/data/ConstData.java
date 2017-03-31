@@ -975,6 +975,14 @@ public class ConstData {
 
 	    int MSG_DOBLY_HIDE = 24;
 	    int MSG_HIDE_HINT = 25; // hide the hint container
+	    /**快进*/
+	    int MSG_FAST_GO = 26;
+	    /**快退*/
+	    int MSG_FAST_BACK = 27;
+	    /**从头播放提示框*/
+	    int MSG_SHOW_RESTART = 28;
+	    /**隐藏从头播放提示框*/
+	    int MSG_HIDE_RESTART = 29;
 		int MSG_UI_VIDEOVIEW_MAX = 30;
 	}
 	

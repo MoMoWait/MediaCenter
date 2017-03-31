@@ -87,7 +87,7 @@
                 android:textSize="20sp" />
         </LinearLayout>
     </RelativeLayout>
-
+    
     <LinearLayout
         android:id="@+id/layout_seek_time"
         android:layout_width="wrap_content"
@@ -111,5 +111,5 @@
 			android:gravity="center"
             android:textStyle="bold"/>
     </LinearLayout>
-
+    
 </RelativeLayout>

@@ -20,7 +20,7 @@ public abstract class AppBeanService<T> implements BaseBeanService<T>{
         try {
             MediaCenterApplication.mDBManager.save(object);
         } catch (Exception e) {
-            Log.i(TAG, "存储对象发生异常：" + e);
+            Log.e(TAG, "存储对象发生异常：" + e);
             e.printStackTrace();
         }
     }
@@ -74,7 +74,7 @@ public abstract class AppBeanService<T> implements BaseBeanService<T>{
         		MediaCenterApplication.mDBManager.save(objects);
 			
         } catch (Exception e) {
-        	Log.i(TAG, "saveAll->exception:" + e);
+        	Log.e(TAG, "saveAll->exception:" + e);
             e.printStackTrace();
         }
 
@@ -94,7 +94,7 @@ public abstract class AppBeanService<T> implements BaseBeanService<T>{
         try {
             MediaCenterApplication.mDBManager.saveOrUpdate(objects);
         } catch (Exception e) {
-        	Log.i(TAG, "saveOrUpdateAll->exception:" + e);
+        	Log.e(TAG, "saveOrUpdateAll->exception:" + e);
             e.printStackTrace();
         }
     }

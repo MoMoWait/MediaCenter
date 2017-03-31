@@ -336,6 +336,8 @@ public class TimeSeekDialog extends Dialog implements OnClickListener
 
     private void getFocus(int idx)
     {
+    	if(idx < 0 || idx >= mTvArr.length)
+    		return;
         mTvArr[mCurFocusIdx].requestFocus();
         mTvArr[mCurFocusIdx].setBackgroundResource(R.drawable.video_seek_select_background);
         if (!checkIsTimeExceed(mValues[idx] + 1))

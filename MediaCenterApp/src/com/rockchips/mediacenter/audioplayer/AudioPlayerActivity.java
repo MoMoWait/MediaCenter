@@ -367,15 +367,11 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-    	//Log.i(TAG, "onCreate");
     	mCurrentDevice = (Device)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
     	if(mCurrentDevice == null){
     		mCurrentDevice = new Device();
     		mCurrentDevice.setDeviceType(ConstData.DeviceType.DEVICE_TYPE_OTHER);
     	}
-/*        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-*/
         SearchLrc.isInternalPlayer(true);
         
         mImagePlayStateInfo = new PlayStateInfo();
@@ -913,7 +909,6 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event)
     {
-        //Log.i(TAG, "keyCode === " + keyCode);
         if (keyCode == KeyEvent.KEYCODE_MENU)
         {
             // Menu键自带5s的显示时间要包含进去
@@ -2193,7 +2188,6 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                 catch (IllegalArgumentException ex)
                 {
                 	
-                	//Log.i(TAG, "setDataSourceAsync->IllegalArgumentException->ex:" + ex);
                     mMediaPlayer = null;
 
                     removeLogicalMessage(AudioPlayerMsg.MSG_PROC_ERROR);

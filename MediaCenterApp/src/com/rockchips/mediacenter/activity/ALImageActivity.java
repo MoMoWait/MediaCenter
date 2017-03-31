@@ -92,7 +92,6 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position,
 			long id) {
-		Log.i(TAG, "onItemSelected->position:" + position);
 	}
 
 	@Override
@@ -103,7 +102,6 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
-		Log.i(TAG, "onItemClick");
 		if(parent == mGridAlbum){
 			mSelectMediaFolder = mLocalMediaFolders.get(position);
 			loadFiles(mSelectMediaFolder, false);
@@ -191,7 +189,6 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 		mFileLoadTask = new ImageFileLoadTask(new ImageFileLoadTask.CallBack() {
 			@Override
 			public void onGetFiles(List<FileInfo> fileInfos) {
-				Log.i(TAG, "loadFiles->onGetFiles->fileInfos:" + fileInfos);
 			    endTimer();
 				DialogUtils.closeLoadingDialog();
 				if(isOverTimer())
@@ -199,7 +196,6 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 				mLocalMediaFiles = fileInfos;
 				mGridAlbum.setVisibility(View.GONE);
 				mTextPathTitle.setText(mCurrDevice.getDeviceName() + ">" + folderFileInfo.getName());
-				//Log.i(TAG, "loadFiles->onSuccess->mediaFiles:" + mediaFiles);
 				if(fileInfos != null && fileInfos.size() > 0){
 					mGridImage.setVisibility(View.VISIBLE);
 					mGridImage.requestFocus();
@@ -250,7 +246,6 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
         intent.putExtra(ConstData.IntentKey.IS_INTERNAL_PLAYER, true);
         intent.putExtra(ConstData.IntentKey.CURRENT_INDEX, newPosition);
         InternalImagePlayer.setMediaList(mediaInfoList, newPosition);
-        //Log.i(TAG, "start internal player");
         startActivityForResult(intent, START_PLAYER_REQUEST_CODE);
     }
     

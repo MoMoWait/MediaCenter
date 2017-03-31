@@ -196,7 +196,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
 							try{
 								StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.NFS_INFOS, JsonUtils.listToJsonArray(mNFSList).toString());
 							}catch (Exception e){
-								LOG.i(TAG, "showNFSAddDialog->e" + e);
+								LOG.e(TAG, "showNFSAddDialog->e" + e);
 							}
 						    //提示挂载成功
 						    ToastUtils.showToast(getString(R.string.mount_success));
@@ -240,13 +240,12 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
 					@Override
 					protected void onPostExecute(Integer result) {
 						DialogUtils.closeLoadingDialog();
-						//Log.i(TAG, "showSambaAddDialog->mountResult:" + result);
 						if(result == ConstData.TaskExecuteResult.SUCCESS){
 							//存储至SharedPreference
 							try{
 								StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.SMB_INFOS, JsonUtils.listToJsonArray(mSmbList).toString());
 							}catch (Exception e){
-								LOG.i(TAG, "showSambaAddDialog->e" + e);
+								LOG.e(TAG, "showSambaAddDialog->e" + e);
 							}
 							//提示挂载成功
 							ToastUtils.showToast(getString(R.string.mount_success));
@@ -396,7 +395,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
      * 加载所有挂载设备信息的列表
      */
     public void loadDeviceInfoList(boolean isAddNetWork){
-    	LOG.i(TAG, "loadDeviceInfoList");
     	devUpdate(isAddNetWork);
     	
     }

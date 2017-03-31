@@ -33,7 +33,7 @@ public class MediaCenterApplication extends BaseApplication
             PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             Log.i(TAG, "versionName:" + packageInfo.versionName);
         }catch (Exception e){
-        	Log.i(TAG, "getVersionName->exception:" + e);
+        	Log.e(TAG, "getVersionName->exception:" + e);
         }
         
         ActivityExitUtils.clearActivities();
@@ -79,8 +79,6 @@ public class MediaCenterApplication extends BaseApplication
                     public void onDbOpened(DbManager db) {
                         // 开启WAL, 对写入加速提升巨大
                         db.getDatabase().enableWriteAheadLogging();
-                    	LOG.i(TAG, "database->maxNumSize:" + db.getDatabase().getMaximumSize());
-                    	LOG.i(TAG, "database->path:" + db.getDatabase().getPath());
                     }
                 }).setDbUpgradeListener(null);
         if (null == mDBManager)

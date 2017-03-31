@@ -209,7 +209,6 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	public void onItemSelected(AdapterView<?> parent, View view, int position,
 			long id) {
 		mCurrentFileInfo = (FileInfo)parent.getAdapter().getItem(position);
-		Log.i(TAG, "onItemSelected->mCurrentFileInfo->path:" + mCurrentFileInfo.getPath());
 		refreshPreview(mCurrentFileInfo);
 	}
 
@@ -320,7 +319,6 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 			mCurrentContainer = createRootContainer();
 			mContainers.add(mCurrentContainer);
 			mLastContainer = mCurrentContainer;
-			Log.i(TAG, "onServiceConnected->mCurrDevice:" + mCurrDevice);
 			DialogUtils.showLoadingDialog(this, false);
 			startTimer(ConstData.MAX_LOAD_FILES_TIME);
 			mDeviceMonitorService.loadUpnpFile(mCurrentContainer, mCurrDevice, mUpnpFileLoad);
@@ -343,6 +341,8 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	
 	@Override
 	public void onCopy(FileInfo fileInfo) {
+		if(fileInfo == null)
+			return;
 		//拷贝文件,存储当前待拷贝文件
 		StorageUtils.saveDataToSharedPreference(ConstData.SharedKey.COPY_FILE_PATH, JsonUtils.objectToJson(fileInfo).toString());
 		//接切信息设为空
@@ -404,7 +404,6 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 			
 			@Override
 			public void onStop() {
-				Log.i(TAG, "onPaste->onStop");
 				mFileOpTask.setStopPaste(true);
 			}
 		});
@@ -782,7 +781,6 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
         intent.putExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE, mCurrDevice);
         intent.putExtra(LocalDeviceInfo.DEVICE_EXTRA_NAME, MediaFileUtils.getDeviceInfoFromDevice(mCurrDevice).compress());
         List<FileInfo> fileInfos = MediaFileUtils.filterFileInfos(mLoadFileInfos, fileType);
-        Log.i(TAG, "loadActivity->fileInfos->size:" + fileInfos.size());
         List<LocalMediaInfo> mediaInfos = MediaFileUtils.getLocalMediaInfos(mLoadFileInfos, mCurrDevice, fileType);
         List<Bundle> mediaInfoList = new ArrayList<Bundle>();
         for(LocalMediaInfo itemInfo : mediaInfos){
@@ -941,15 +939,13 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 					if(mCurrMediaType == ConstData.MediaType.FOLDER){
 						try{
 							JSONObject otherInfoObject = new JSONObject(allFileInfos.get(i).getOtherInfo());
-							Log.i(TAG, "getFilePosition->LastContainerID:" + mLastContainer.getId());
-							Log.i(TAG, "getFilePosition->fileInfoContainerID:" + otherInfoObject.getString(ConstData.UpnpFileOhterInfo.ID));
 							if(mLastContainer != null && mLastContainer.getId().equals(otherInfoObject.getString(ConstData.UpnpFileOhterInfo.ID))){
 								position = i;
 								break;
 							}
 							//otherInfoObject.getString(ConstData.UpnpFileOhterInfo.ID).equals(mLastContainer.get)
 						}catch(Exception e){
-							Log.i(TAG, "getFilePosition->exception:" + e);
+							Log.e(TAG, "getFilePosition->exception:" + e);
 						}
 					}else{
 						if(allFileInfos.get(i).getPath().equals(path)){
@@ -1054,7 +1050,6 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	    @Override
 	    public void onReceive(Context context, Intent intent) {
 	    	if(intent.getAction().equals(ConstData.BroadCastMsg.DEVICE_UP)){
-	    		Log.i(TAG, "RefreshPreviewReceiver->device up action");
 	    		//重设ID
 	    		//String deviceID = intent.getStringExtra(ConstData.DeviceMountMsg.DEVICE_ID);
 	    		String mountPath = intent.getStringExtra(ConstData.DeviceMountMsg.MOUNT_PATH);

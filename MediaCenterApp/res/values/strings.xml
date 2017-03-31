@@ -395,4 +395,5 @@
     <string name="no_add_smb_nfs">未添加SMB或NFS设备</string>
     <string name="tip_select_delete">请选择要删除的设备</string>
     <string name="file_not_exist">源文件不存在</string>
+    <string name="press_left_restart">按左键从头播放</string>
 </resources>
