@@ -1,7 +1,4 @@
 package com.rockchips.mediacenter.adapter;
-
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import org.xutils.x;
 import org.xutils.common.util.DensityUtil;

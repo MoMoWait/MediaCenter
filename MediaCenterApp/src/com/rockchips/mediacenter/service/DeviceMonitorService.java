@@ -31,7 +31,6 @@ import org.fourthline.cling.support.model.DIDLContent;
 import org.fourthline.cling.support.model.DIDLObject;
 import org.fourthline.cling.support.model.SortCriterion;
 import org.fourthline.cling.support.model.container.Container;
-import com.rockchips.mediacenter.bean.AllFileInfo;
 import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.bean.DeviceScanInfo;
 import com.rockchips.mediacenter.bean.FileInfo;

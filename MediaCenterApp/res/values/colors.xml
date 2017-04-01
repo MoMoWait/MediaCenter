@@ -68,5 +68,6 @@
     <color name="preview_other_color">#ffffff</color>
     <color name="itemUnFocused">#FFFFFF</color>
     <color name="file_num_bg">#7bbbe8</color>
+    <color name="music_list_select_color">#7F13227a</color>
     
 </resources>

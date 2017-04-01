@@ -93,8 +93,6 @@ public abstract class PlayerBaseActivity extends DeviceActivity
 
     private Object mCallbackLock = new Object();
 
-    private RemoteController mRemoteControlCallback = null;
-
     private Intent mExtraIntent = null;
 
     protected boolean mReuseAudioplayer = false;
@@ -115,21 +113,6 @@ public abstract class PlayerBaseActivity extends DeviceActivity
             switch (msg.what)
             {
                 case ConstData.ServiceConnectionMSG.MSG_SERVICE_DISCONNECTED:
-                    Log.d(TAG, "------------->proc MSG_SERVICE_DISCONNECTED IN");
-                    synchronized (mCallbackLock)
-                    {
-                        if (mRemoteControlCallback != null)
-                        {
-                            mRemoteControlCallback.onRemoteDisconnect();
-                        }
-                        else
-                        {
-                            // FIXME: 有时3D引擎还没有初始化好，此时强行退出程序
-                            // exitQuickly();
-                            finish();
-                        }
-                    }
-
                     Log.d(TAG, "------------->proc MSG_SERVICE_DISCONNECTED OUT");
                     break;
 
@@ -695,50 +678,22 @@ public abstract class PlayerBaseActivity extends DeviceActivity
                 case ConstData.MCSMessage.MSG_SET_MEDIA_DATA:
                     Log.d(TAG, "MSG_SET_MEDIA_DATA start");
                     parseInputIntent(intent);
-                    synchronized (mCallbackLock)
-                    {
-                        if (mRemoteControlCallback != null)
-                        {
-                            mRemoteControlCallback.setDataSource(intent);
-                        }
-                    }
                     Log.d(TAG, "MSG_SET_MEDIA_DATA end");
 
                     break;
                 case ConstData.MCSMessage.MSG_PLAY:
                     Log.d(TAG, "MSG_PLAY start");
-                    synchronized (mCallbackLock)
-                    {
-                        if (mRemoteControlCallback != null)
-                        {
-                            mRemoteControlCallback.play(intent);
-                        }
-                    }
 
                     Log.d(TAG, "MSG_PLAY end");
 
                     break;
                 case ConstData.MCSMessage.MSG_PAUSE:
                     Log.d(TAG, "MSG_PAUSE start");
-                    synchronized (mCallbackLock)
-                    {
-                        if (mRemoteControlCallback != null)
-                        {
-                            mRemoteControlCallback.pause(intent);
-                        }
-                    }
                     Log.d(TAG, "MSG_PAUSE end");
 
                     break;
                 case ConstData.MCSMessage.MSG_SEEK:
                     Log.d(TAG, "MSG_SEEK start");
-                    synchronized (mCallbackLock)
-                    {
-                        if (mRemoteControlCallback != null)
-                        {
-                            mRemoteControlCallback.seekTo(intent);
-                        }
-                    }
 
                     Log.d(TAG, "MSG_SEEK end");
 
@@ -749,23 +704,6 @@ public abstract class PlayerBaseActivity extends DeviceActivity
                     // 收到stop信令就进行解绑操作，避免由于在onDestroy()中解绑太慢，导致MCS中刚注册上的播放器回调被正销毁的播放器反注册掉
                     // 执行拉回时，stop状态已经在MCS中返回给Sender端
                     unbind();
-
-                    synchronized (mCallbackLock)
-                    {
-                        if (mRemoteControlCallback != null)
-                        {
-                            mRemoteControlCallback.stop(intent);
-//                            exitQuickly();
-                        }
-                        else
-                        {
-                            Log.d(TAG, "MSG_STOP -----------NULL");
-                            // FIXME: 有时3D引擎还没有初始化好，此时强行退出程序
-                            // finish();
-//                            exitQuickly();
-                        }
-                        finish();
-                    }
 
                     Log.d(TAG, "MSG_STOP end");
 
@@ -1294,121 +1232,7 @@ public abstract class PlayerBaseActivity extends DeviceActivity
 
         return true;
     }
-
-    private RemoteCallback mRemoteCallback = new RemoteCallback()
-    {
-        @Override
-        public void onStop()
-        {
-            Log.d(TAG, "RemoteCallback::onStop - IN");
-            if (isMCSMode() && getPlayerClient() != null && getPlayerClient().isConnected())
-            {
-                Log.d(TAG, "----------->MediaCenterPlayerClient::stop()");
-                onNotifyStop();
-            }
-
-        }
-
-        @Override
-        public void onProgress(int pos)
-        {
-            Log.d(TAG, "RemoteCallback::onProgress - IN");
-            if (isMCSMode() && getPlayerClient() != null && getPlayerClient().isConnected())
-            {
-                Log.d(TAG, "----------->MediaCenterPlayerClient::seek()" + pos);
-                getPlayerClient().seek(pos);
-            }
-
-        }
-
-        @Override
-        public void onPlay()
-        {
-            Log.d(TAG, "RemoteCallback::onPlay - IN");
-            if (isMCSMode() && getPlayerClient() != null && getPlayerClient().isConnected())
-            {
-                Log.d(TAG, "----------->MediaCenterPlayerClient::play()");
-                getPlayerClient().play();
-            }
-
-        }
-
-        @Override
-        public void onPause()
-        {
-            Log.d(TAG, "RemoteCallback::onPause - IN");
-            if (isMCSMode() && getPlayerClient() != null && getPlayerClient().isConnected())
-            {
-                Log.d(TAG, "----------->MediaCenterPlayerClient::pause()");
-                getPlayerClient().pause();
-            }
-
-        }
-
-        @Override
-        public void onPrepared(IMediaPlayerAdapter mp)
-        {
-            Log.d(TAG, "RemoteCallback::onPrepared - IN");
-            if (isMCSMode() && getPlayerClient() != null && getPlayerClient().isConnected())
-            {
-
-                int duration = mp.getDuration();
-                int position = mp.getCurrentPosition();
-                Log.d(TAG, "----------->MediaCenterPlayerClient::reportDuration()" + duration);
-                getPlayerClient().reportDuration(position, duration);
-
-                // tangss modify it
-                if (isSupportToSeekWhenParepare())
-                {
-
-                }
-                else
-                {
-                    Log.d(TAG, "----------->MediaCenterPlayerClient::seek(0)");
-                    getPlayerClient().seek(0);
-                }
-            }
-
-        }
-
-        @Override
-        public void onCompletion(IMediaPlayerAdapter mp)
-        {
-            Log.d(TAG, "RemoteCallback::onCompletion - IN");
-            if (isMCSMode() && getPlayerClient() != null && getPlayerClient().isConnected())
-            {
-                int duration = mp.getDuration();
-                getPlayerClient().seek(duration); // 播放完成，把总时长当成当前进度，通知推送端，以便能继续推送下一首
-
-//                getPlayerClient().stop();
-            }
-        }
-
-        @Override
-        public void onError(IMediaPlayerAdapter mp, int what, int extra)
-        {
-            Log.d(TAG, "RemoteCallback::onError - IN");
-            if (isMCSMode() && getPlayerClient() != null && getPlayerClient().isConnected())
-            {
-
-//                getPlayerClient().stop();
-            }
-        }
-    };
-
-    public void setRemoteControlCallback(RemoteController callback)
-    {
-        synchronized (mCallbackLock)
-        {
-            mRemoteControlCallback = callback;
-            if (mRemoteControlCallback != null)
-            {
-                mRemoteControlCallback.setCallback(mRemoteCallback);
-            }
-        }
-
-    }
-       
+    
 
     // public RemoteController getRemoteControlCallback() {
     // return mRemoteControlCallback;

@@ -2,4 +2,5 @@ $(info >>>>>>>>>>================================build MediaCenter's all project
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 mk1:= $(LOCAL_PATH)/MediaCenterApp/Android.mk
-include $(mk1)
+mk2:= $(LOCAL_PATH)/Cling/Android.mk
+include $(mk1) $(mk2)

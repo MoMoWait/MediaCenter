@@ -228,6 +228,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     private int mFastBackCount;
     /**是否是第一次seek到上次播放的位置*/
     private boolean mIsFirstSeek = true;
+    /**是否需要弹出控制栏*/
+    private boolean mIsNeedShowPop;
     @ViewInject(R.id.vv)
     private OrigVideoView mVV;
     @ViewInject(R.id.video_layout)
@@ -555,9 +557,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 				if(mSeekPosition >= 0 && !mIsFirstBackOrGo){
 					mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_FAST_BACK);
 					Log.i(TAG, "mSeekPosition:" + DateUtil.getMediaTime(mSeekPosition));
+					mIsNeedShowPop = true;
 					mVV.isSeeking(true);
-					sendSeekMsg(mSeekPosition);
-					showPop();
+					sendSeekMsg(mSeekPosition, 500);
 				}
 				mFastBackCount = 0;
 				mIsFirstBackOrGo = true;
@@ -568,9 +570,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 				if(mSeekPosition > 0 && !mIsFirstBackOrGo){
 					mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_FAST_GO);
 					Log.i(TAG, "mSeekPosition:" + DateUtil.getMediaTime(mSeekPosition));
+					mIsNeedShowPop = true;
 					mVV.isSeeking(true);
-					sendSeekMsg(mSeekPosition);
-					showPop();
+					sendSeekMsg(mSeekPosition, 500);
 				}
 				mFastGoCount = 0;
 				mIsFirstBackOrGo = true;
@@ -818,6 +820,10 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         			mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_SHOW_RESTART);
         		}
             	play();
+            	if(mIsNeedShowPop){
+            		mIsNeedShowPop = false;
+            		showPop();
+            	}
         	}
         	
         }
@@ -1135,6 +1141,19 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         msg.what = 0;
 
         mSeekHandler.sendMessage(msg);
+    }
+    
+    private void sendSeekMsg(int msec, int dealyTime)
+    {
+        if (mSeekHandler == null)
+        {
+            return;
+        }
+
+        Message msg = Message.obtain();
+        msg.arg1 = msec;
+        msg.what = 0;
+        mSeekHandler.sendMessageDelayed(msg, dealyTime);
     }
 
     protected void pause()
@@ -3255,14 +3274,14 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 			//快进
 			mSeekBarLayout.setPlayStatus(ConstData.VIDEO_PLAY_STATUS.FAST_GO);
 			//Log.i(TAG, "change play step:" + (mFastGoCount << 1));
-			mSeekPosition += ((mFastGoCount << 1) * 1000 + CHANGE_PLAY_TIME_STEP);
+			mSeekPosition += ((mFastGoCount >> 1) * 1000 + CHANGE_PLAY_TIME_STEP);
 			if(mSeekPosition > duration)
 				mSeekPosition = duration;
 			break;
 		case -1:
 			//快退
 			mSeekBarLayout.setPlayStatus(ConstData.VIDEO_PLAY_STATUS.FAST_BACK);
-			mSeekPosition -= ((mFastBackCount << 1) * 1000 + CHANGE_PLAY_TIME_STEP);
+			mSeekPosition -= ((mFastBackCount >> 1) * 1000 + CHANGE_PLAY_TIME_STEP);
 			if(mSeekPosition < 0)
 				mSeekPosition = 0;
 			break;

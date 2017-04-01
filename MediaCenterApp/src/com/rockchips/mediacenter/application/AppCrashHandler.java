@@ -1,13 +1,5 @@
 package com.rockchips.mediacenter.application;
-import java.util.Locale;
-
-import momo.cn.edu.fjnu.androidutils.data.CommonValues;
-import com.rockchips.mediacenter.activity.MainActivity;
 import com.rockchips.mediacenter.utils.ActivityExitUtils;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Process;
 import android.util.Log;
 /**
@@ -39,13 +31,13 @@ public class AppCrashHandler implements Thread.UncaughtExceptionHandler{
 		//关闭所有Activities
 		 ActivityExitUtils.removeAllActivities();
 		//重启应用
-		 Intent intent = new Intent(CommonValues.application, MainActivity.class);
+		/* Intent intent = new Intent(CommonValues.application, MainActivity.class);
 		 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
          PendingIntent restartIntent = PendingIntent.getActivity(CommonValues.application, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT); 
          AlarmManager mgr = (AlarmManager)CommonValues.application.getSystemService(Context.ALARM_SERVICE); 
          //1秒钟后重启应用 
-         mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 1000, restartIntent);
+         mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 1000, restartIntent);*/
          //关闭进程
         Process.killProcess(Process.myPid());
 	}

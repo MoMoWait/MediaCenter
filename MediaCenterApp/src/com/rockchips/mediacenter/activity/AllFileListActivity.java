@@ -8,22 +8,15 @@ import momo.cn.edu.fjnu.androidutils.utils.JsonUtils;
 import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
 import momo.cn.edu.fjnu.androidutils.utils.StorageUtils;
 import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
-import org.fourthline.cling.support.model.SortCriterion;
 import org.fourthline.cling.support.model.container.Container;
 import org.json.JSONObject;
-import org.xutils.x;
 import org.xutils.view.annotation.ViewInject;
 import com.rockchips.mediacenter.adapter.AllFileListAdapter;
-import com.rockchips.mediacenter.adapter.FolderListAdapter;
 import com.rockchips.mediacenter.audioplayer.InternalAudioPlayer;
-import com.rockchips.mediacenter.bean.AllFileInfo;
 import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.bean.FileInfo;
-import com.rockchips.mediacenter.bean.LocalMediaFile;
-import com.rockchips.mediacenter.bean.LocalMediaFolder;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.imageplayer.InternalImagePlayer;
-import com.rockchips.mediacenter.modle.task.AVBitmapLoadTask;
 import com.rockchips.mediacenter.modle.task.AllFileLoadTask;
 import com.rockchips.mediacenter.modle.task.FileOpTask;
 import com.rockchips.mediacenter.service.UpnpFileLoadCallback;
@@ -38,7 +31,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
@@ -167,8 +159,8 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-       /* 
-        * String ex = null;
+        /**test crash*/
+       /* String ex = null;
         ex.toCharArray();*/
     }
     
@@ -571,13 +563,6 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 			mOldBitmap.recycle();
     }
     
-    /**
-     * 是否显示文件夹
-     * @return
-     */
-    public boolean isShowFolder(){
-    	return (mListFile.getAdapter() instanceof FolderListAdapter);
-    }
     
 	/**
 	 * 加载文件夹列表
@@ -992,16 +977,6 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 		return container;
 	}
 	
-	/**
-	 * 从文件信息中获取ParentContainer
-	 * @param container
-	 * @return
-	 */
-	private Container createParentContainer(Container container){
-		Container parentContainer = new Container();
-		parentContainer.setId(container.getParentID());
-		return parentContainer;
-	}
 	
 	class UpnpFileLoad implements UpnpFileLoadCallback{
 

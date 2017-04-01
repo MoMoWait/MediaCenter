@@ -32,13 +32,10 @@ import android.view.View;
 import android.media.iso.ISOManager;
 import com.rockchips.mediacenter.utils.HanziToPinyin;
 import com.rockchips.mediacenter.utils.HanziToPinyin.Token;
-import com.rockchips.mediacenter.adapter.AllUpnpFileListAdapter;
 import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.bean.LocalMediaInfo;
 import com.rockchips.mediacenter.bean.LocalDeviceInfo;
-import com.rockchips.mediacenter.bean.AllFileInfo;
-import com.rockchips.mediacenter.bean.AllUpnpFileInfo;
 import com.rockchips.mediacenter.bean.LocalDevice;
 import com.rockchips.mediacenter.bean.LocalMediaFile;
 import com.rockchips.mediacenter.bean.LocalMediaFolder;
@@ -678,28 +675,6 @@ public class MediaFileUtils {
     	return pnpServerDevice;
     }
     
-    /**
-     * 获取某个媒体文件对应该目录下的所有文件
-     * @param allFileInfo
-     * @return
-     */
-    public static List<LocalMediaInfo> getMediaInfosFromAllFileInfo(AllFileInfo allFileInfo, LocalDevice device){
-    	List<LocalMediaInfo> mediaInfos = new ArrayList<LocalMediaInfo>();
-    	File parentFile = allFileInfo.getFile().getParentFile();
-    	if(parentFile != null){
-    		File[] subFiles = parentFile.listFiles();
-    		if(subFiles != null && subFiles.length > 0){
-    			for(File itemFile : subFiles){
-    				//LocalMediaInfo localMediaInfo = getMediaInfoFromFile(itemFile, allFileInfo.getType(), getDeviceInfoFromDevice(device));
-    				LocalMediaInfo localMediaInfo = null;
-    				if(localMediaInfo != null)
-    					mediaInfos.add(localMediaInfo);
-    			}
-    		}
-    	}
-    	return mediaInfos;
-    }
-    
     
     /**
      * 获取某个媒体文件对应该目录下的所有文件
@@ -750,38 +725,6 @@ public class MediaFileUtils {
     			filterFileInfos.add(fileInfo);
     	}
     	return filterFileInfos;
-    }
-    
-    /**
-     * 获取当前目录下与upnpFileInfo对应的同类型的媒体文件列表
-     * @param upnpFileInfo
-     * @param container
-     * @return
-     */
-    public static List<LocalMediaInfo>  getMediaInfosFromAllUpnpFileInfo(AllUpnpFileInfo upnpFileInfo, DIDLContent content, LocalDevice localDevice){
-    	List<LocalMediaInfo> mediaInfos = new ArrayList<LocalMediaInfo>();
-    	List<Item> items = content.getItems();
-    	Log.i(TAG, "getMediaInfosFromAllUpnpFileInfo->items:" + items);
-    	if(items != null && items.size() > 0){
-    		for(Item item : items){
-    			if(upnpFileInfo.getType() == getMediaTypeFromUpnpItem(item)){
-    				LocalMediaInfo localMediaInfo = new LocalMediaInfo();
-    				localMediaInfo.setmFileName(item.getTitle());
-    				localMediaInfo.setmParentPath("");
-    				//localMediaInfo.setmModifyDate((int)mediaFile.getLast_modify_date());
-    				localMediaInfo.setmPinyin(MediaFileUtils.getFullPinYin(item.getTitle()));
-    				localMediaInfo.setmDeviceType(ConstData.DeviceType.DEVICE_TYPE_DMS);
-    				localMediaInfo.setmPhysicId(localDevice.getPhysic_dev_id());
-    				localMediaInfo.setmFileSize(getFileSizeFromUpnpItem(item));
-    				localMediaInfo.setmFiles(0);
-    				localMediaInfo.setmFileType(upnpFileInfo.getType());
-    				localMediaInfo.setmResUri(getPathFromUpnpItem(item));
-    				mediaInfos.add(localMediaInfo);
-    			}
-    		}
-    	}
-    	
-		return mediaInfos;
     }
     
     /**

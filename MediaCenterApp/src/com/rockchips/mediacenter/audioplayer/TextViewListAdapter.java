@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.rockchips.mediacenter.R;
 import com.rockchips.mediacenter.utils.StringUtils;
 import com.rockchips.mediacenter.view.IListDataAdapter;
@@ -78,7 +77,7 @@ public class TextViewListAdapter implements IListDataAdapter
 
         mItemName.setText(info);
         mItemName.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
-        mItemName.setPadding(mTextViewLeftPadding, 0, 0, 0);
+        //mItemName.setPadding(mTextViewLeftPadding, 0, 0, 0);
         if (index == mIndexNeedColored)
         {
             mItemName.setTextColor(mContext.getResources().getColor(R.color.white));
@@ -123,7 +122,7 @@ public class TextViewListAdapter implements IListDataAdapter
                     textView.setText(info);
 
                     textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
-                    textView.setPadding(mTextViewLeftPadding, 0, 0, 0);
+                    //textView.setPadding(mTextViewLeftPadding, 0, 0, 0);
 
                     tempView.setTag(i + offset);
                     if ((i + offset) != (mDataList.size() - 1) && i != visibleItemCount - 1)

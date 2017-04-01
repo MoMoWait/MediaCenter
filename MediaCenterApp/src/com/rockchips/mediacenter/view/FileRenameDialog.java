@@ -4,22 +4,14 @@
 package com.rockchips.mediacenter.view;
 import java.io.File;
 import java.util.List;
-import java.util.TreeMap;
-
 import momo.cn.edu.fjnu.androidutils.data.CommonValues;
 import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
-
 import org.xutils.view.annotation.ViewInject;
-
-import com.rockchips.mediacenter.bean.AllFileInfo;
 import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.data.ConstData;
-import com.rockchips.mediacenter.modle.db.FileInfoService;
 import com.rockchips.mediacenter.utils.DialogUtils;
 import com.rockchips.mediacenter.utils.FileOpUtils;
-
-import android.R.raw;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaScannerConnection;
@@ -27,13 +19,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
-import android.view.KeyboardShortcutGroup;
-import android.view.Menu;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-
 import com.rockchips.mediacenter.R;
 /**
  * @author GaoFei

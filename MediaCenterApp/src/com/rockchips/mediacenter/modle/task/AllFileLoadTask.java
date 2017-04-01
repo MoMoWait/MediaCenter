@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import android.media.iso.ISOManager;
-import com.rockchips.mediacenter.bean.AllFileInfo;
 import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.bean.LocalMediaFile;

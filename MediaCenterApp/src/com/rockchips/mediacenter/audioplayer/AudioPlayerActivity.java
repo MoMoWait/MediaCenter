@@ -1389,11 +1389,6 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
             setPlaying(true, true);
             // BroadCast the current LocalMediaInfo that is playing
 //            broadCastCurtMediaInfo(mCurrentMediaInfo);
-
-            if (mRemoteCallback != null)
-            {
-                mRemoteCallback.onPlay();
-            }
         }
     }
 
@@ -1409,10 +1404,6 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                 mIsPauseByOkKey = true;
                 /* END: Modified by c00224451 for 新增音乐播放，歌词滚动效果 2014/3/26 */
                 setPlaying(false, false);
-                if (mRemoteCallback != null)
-                {
-                    mRemoteCallback.onPause();
-                }
             }
         }
 
@@ -1752,10 +1743,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                         if (mBMCSMode)
                         {
                             sendUiMessage(AudioPlayerMsg.PUAH_MEDIAFILE_PLAY_SEEK, 0);
-                            if (mRemoteCallback != null)
-                            {
-                                mRemoteCallback.onStop();
-                            }
+     
                             break;
                         }
 						mMusicPlayer.seekTo(0);
@@ -1779,10 +1767,6 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                     removeLogicalMessage(AudioPlayerMsg.MSG_SYNC_POSTION);
                     sendLogicalMessage(AudioPlayerMsg.MSG_SYNC_POSTION, 300);
 
-                    if (mRemoteCallback != null)
-                    {
-                        mRemoteCallback.onProgress(pos);
-                    }
                     break;
 
                 case MSG_REQUSET_REFRESH_CURRENT_POSITION:
@@ -1807,8 +1791,6 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         return mDefaultMusicBitmap;
     }
 
-
-    private RemoteCallback mRemoteCallback = null;
 
     /**
      * BroadCast the current LocalMediaInfo
@@ -2428,11 +2410,6 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         {
 
             Log.d(TAG, "--------->MediaPlayer.OnCompletionListener:  onCompletion()");
-            // isPrepared = false;
-			if (mRemoteCallback != null)
-            {
-                mRemoteCallback.onCompletion(mp);
-            }
             setPlaying(false, false);
             removeLogicalMessage(AudioPlayerMsg.MSG_SYNC_POSTION);
 
@@ -2482,12 +2459,6 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 
             removeLogicalMessage(AudioPlayerMsg.MSG_PROC_ERROR);
             sendLogicalMessage(AudioPlayerMsg.MSG_PROC_ERROR, 0);
-
-            if (mRemoteCallback != null)
-            {
-                mRemoteCallback.onError(mp, what, extra);
-            }
-
             return true;
         }
     };
@@ -2574,10 +2545,6 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                 sendLogicalMessage(AudioPlayerMsg.MSG_CONTROL_PLAY, delayTime);
                 
                 sendUiMessage(AudioPlayerMsg.MSG_UPDATE_MUSIC_TOTALDURATION, 0);
-                if (mRemoteCallback != null)
-                {
-                    mRemoteCallback.onPrepared(mp);
-                }
 
                 requestSyncLyric();
 
@@ -2897,7 +2864,6 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     public void releaseResource()
     {
         Log.d(TAG, "releaseResource() IN...");     
-        setRemoteControlCallback(null);
         mMusicPlayer.release();
 
         removeLogicalMessage(AudioPlayerMsg.MSG_SYNC_POSTION);
@@ -2923,10 +2889,6 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         // 播放推送的音乐过程中按back键退出时，需要向mediacenterservice发送stop消息，将当前播放媒体文件置空；
         // 如果不调用此接口，连续进行搜索-推送-搜索-推送操作时会导致无法发送退出音乐播放器广播，造成IFXF_Event_Handler
         // failed with errorCode=-1异常。
-        if (mRemoteCallback != null)
-        {
-            mRemoteCallback.onStop();
-        }
     }
 
     private OnItemTouchListener mOnItemTouchListener = new OnItemTouchListener()
@@ -3641,165 +3603,6 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         requestExit();
     }
     
-    private RemoteController mRemoteControlListener = new RemoteController()
-    {
-        
-        @Override
-        public void stop(Intent intent)
-        {
-            
-            Log.d(TAG, "---------->stop(Intent intent)");
-            AudioPlayerActivity.this.stop(true);
-            // AudioPlayerModule.this.requestExit();
-            // System.exit(0);
-            
-        }
-        
-        @Override
-        public void setDataSource(Intent intent)
-        {
-            mMCSSeekTarget = 0;
-            Log.d(TAG, "---------->setDataSource(Intent intent)");
-            removeLogicalMessage(AudioPlayerMsg.MSG_REQUEST_EXIT);
-            AudioPlayerActivity.this.stop(true);
-            removeUiMessage(MSG_REQUEST_PLAY_MUSIC);
-            sendUiMessage(MSG_REQUEST_PLAY_MUSIC, 0);
-            sendUiMessage(obtainUiMessage(AudioPlayerMsg.MSG_SET_PLAYLIST_ADAPTER, 0, 0, true), 0);
-        }
-        
-        @Override
-        public void seekTo(Intent intent)
-        {
-            Log.d(TAG, "---------->seekTo(Intent intent)");
-            removeLogicalMessage(AudioPlayerMsg.MSG_REQUEST_EXIT);
-            
-            int targetPostion;
-            try
-            {
-                targetPostion = intent.getIntExtra(ConstData.IntentKey.SEEK_POS, -1);
-            }
-            catch (Exception e)
-            {                
-                targetPostion = -1;
-            }
-            try
-            {
-                if (targetPostion == -1)
-                {
-                    // 尝试百分比
-                    Log.d(TAG, "will calculate by percent!!!");
-                    float postionPercent = intent.getFloatExtra(ConstData.IntentKey.SEEK_POS, -1);
-                    Log.d(TAG, "postionPercent is " + postionPercent);
-                    if (postionPercent < 1.0)
-                    {
-                        int totalDuration = -1;
-                        if (mMusicPlayer.isInitialized())
-                        {
-                            totalDuration = (int)mMusicPlayer.getDuration();
-                        }
-                        targetPostion = (int)(totalDuration * postionPercent);
-                    }
-                    else
-                    {
-                        targetPostion = (int)(postionPercent);
-                    }
-                    Log.d(TAG, "targetPostion is " + targetPostion);
-                }
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-                targetPostion = -1;
-            }
-            
-            if (targetPostion >= 0)
-            {
-                mMusicPlayer.seekTo(targetPostion);
-            }
-            
-        }
-        
-        @Override
-        public void play(Intent intent)
-        {
-            
-             Log.d(TAG, "---------->play(Intent intent)");
-            removeLogicalMessage(AudioPlayerMsg.MSG_REQUEST_EXIT);
-            
-            AudioPlayerActivity.this.play();
-            if (isMusicPlayerReady())
-            {
-                sendUiMessage(obtainUiMessage(AudioPlayerMsg.MSG_REFRESH_PLAYICON, 0, 0, PlayState.PLAY), 0);
-            }
-            
-        }
-        
-        @Override
-        public void pause(Intent intent)
-        {
-            
-             Log.d(TAG, "---------->pause(Intent intent)");
-            removeLogicalMessage(AudioPlayerMsg.MSG_REQUEST_EXIT);
-            
-            AudioPlayerActivity.this.pause();
-            if (isMusicPlayerReady())
-            {
-                sendUiMessage(obtainUiMessage(AudioPlayerMsg.MSG_REFRESH_PLAYICON, 0, 0, PlayState.PAUSE), 0);
-            }
-            
-        }
-        
-        @Override
-        public void onRemoteDisconnect()
-        {
-            
-             Log.d(TAG, "---------->onRemoteDisconnect()");
-             exitRemoteConnect();
-            
-        }
-                
-        @Override
-        public int getDuration()
-        {
-            
-             Log.d(TAG, "---------->getDuration()");
-            if (mMusicPlayer.isInitialized())
-            {
-                
-                return (int)mMusicPlayer.getDuration();
-            }
-            else
-            {
-                
-                return 0;
-            }
-        }
-        
-        @Override
-        public int getPosition()
-        {
-            
-             Log.d(TAG, "---------->getPosition()");
-            if (mMusicPlayer.isInitialized())
-            {
-                
-                return mMusicPlayer.getCurrentPosition();
-            }
-            else
-            {
-                
-                return 0;
-            }
-        }
-        
-        @Override
-        public void setCallback(RemoteCallback callback)
-        {
-            
-            mRemoteCallback = callback;
-            
-        }
-    };
     
     private RetrieveCompleteListener mRetrieveCompleteListener = new RetrieveCompleteListener()
     {
@@ -4027,12 +3830,12 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 
 		// 创建焦点框
 		mGlobalFocus = new GlobalFocus(this);
-		mGlobalFocus.setFocusRes(R.drawable.music_list_focus_background);
+		mGlobalFocus.setFocusRes(R.color.music_list_select_color);
 		mGlobalFocus.setVisibility(View.INVISIBLE);
 
-		LayoutParams params = new LayoutParams(DeviceInfoUtils.getScreenWidth(this) / 2 - SizeUtils.dp2px(this, 20), 50);
+		LayoutParams params = new LayoutParams(DeviceInfoUtils.getScreenWidth(this) / 2 - SizeUtils.dp2px(this, 20), SizeUtils.dp2px(this, 69));
 
-		params.topMargin = -SizeUtils.dp2px(this, 620);
+		params.topMargin = -SizeUtils.dp2px(this, 652);
 		params.leftMargin = DeviceInfoUtils.getScreenWidth(this) / 2;
 		mGlobalFocus.setFocusInitParams(params);
 		mParentLinear.addView(mGlobalFocus);
@@ -4069,9 +3872,6 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 
 		// 注册同步播放列表完成监听器
 		mAudioPlayStateInfo.registerOnPlayListSyncCompletedListener(mOnPlayListSyncCompletedListener);
-
-		// 设置远程播放回调
-		setRemoteControlCallback(mRemoteControlListener);
 
 		// mPriInterface = new MediaplayerPriInterface();
 

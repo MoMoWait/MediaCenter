@@ -3,9 +3,6 @@ package com.rockchips.mediacenter.adapter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.rockchips.mediacenter.adapter.FileListAdapter.ViewHolder;
-import com.rockchips.mediacenter.bean.AllFileInfo;
 import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.bean.LocalMediaFile;
 import com.rockchips.mediacenter.data.ConstData;
