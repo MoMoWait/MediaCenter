@@ -4,20 +4,16 @@ import momo.cn.edu.fjnu.androidutils.data.CommonValues;
 import momo.cn.edu.fjnu.androidutils.utils.DeviceInfoUtils;
 import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
 import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
-import android.R.integer;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Camera;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.PaintFlagsDrawFilter;
-import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -39,29 +35,17 @@ public class DeviceItemView extends View implements OnGestureListener
     
     private Context mContext;
 
-    private static final int ANIMATION_START_MSG_WHAT = 1;
-
-    private static final int ANIMATIONING_MSG_WHAT = 2;
-
-    private static final int ANIMATIONING_REFRESH_MSG = 3;
-
     private static final int COUNTVISIABLE = 4;
 
-    private static final int BITMAP_WIDTH = 280;
+    private static final int BITMAP_WIDTH = SizeUtils.dp2px(CommonValues.application, 280);
 
-    private static final int BITMAP_WIDTH_SHADOW = 200;
-
-    private static final int BITMAP_HEIGHT = 180;
-
-    private static final int MAX_OFFSETX = 260;
+    private static final int BITMAP_HEIGHT = SizeUtils.dp2px(CommonValues.application, 180);
 
     private static final int NAMESIZE = 20;
     
     private Bitmap[] mIconReflectedImage = new Bitmap[COUNTVISIABLE];
 
     private static final float REFLECTRATESIZE = 0.3f;
-
-    private Bitmap mDdestBmp, mRightShadowBmp, mLeftShadowBmp;
 
     private Paint mPaint;
 
@@ -70,18 +54,11 @@ public class DeviceItemView extends View implements OnGestureListener
 
     private int mOffset = 1;
 
-    private float mTranslateOffsetX;
-
-    private float mScaleOffset;
-
-    private int mAlpha;
-
     private boolean mRightKey = false;
     private boolean mLeftKey = false;
     private boolean mBeFristLoading = true;
     /**第一次绘制*/
     private boolean mIsFirstDraw = true;
-    private Canvas mCanvas;
     private GestureDetector mGestureDetector;
         
     private static final int[] IMAGEIDS =
@@ -137,9 +114,6 @@ public class DeviceItemView extends View implements OnGestureListener
         mShadowPaint = new Paint();
         mShadowPaint.setAntiAlias(true);
         mShadowPaint.setFilterBitmap(true);
-
-        mLeftShadowBmp = ImageHelper.createBitmap(getContext(), R.drawable.left_shadow, BITMAP_WIDTH_SHADOW, BITMAP_HEIGHT);
-        mRightShadowBmp = ImageHelper.createBitmap(getContext(), R.drawable.right_shadow, BITMAP_WIDTH_SHADOW, BITMAP_HEIGHT);
 
         // 鍔犺浇鍥剧墖
         loadImages();
@@ -209,7 +183,6 @@ public class DeviceItemView extends View implements OnGestureListener
     protected void onDraw(Canvas canvas)
     {
     	Log.i(TAG, "onDraw");
-    	mCanvas = canvas;
         canvas.setDrawFilter(new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG));
         canvas.drawColor(Color.TRANSPARENT);
         if(mBeFristLoading){
@@ -227,17 +200,7 @@ public class DeviceItemView extends View implements OnGestureListener
         }
         
     }
-
-    private static final int ROTATE_Y_LEFT_IN = 8;
-
-    private static final int TRANSLATE_OFFSET_X_RIGHT_PLUS = 80;
-
-    private static final int TRANSLATE_OFFSET_X_210 = 210;
-
-    private static final int TRANSLATE_OFFSET_X_45 = 45;
-
-    private static final int ROTATE_Y_RIGHT_OUT = -8;
-
+    
     private void rightMove(Canvas canvas)
     {
     	int offsetX = (SCREEN_WIDTH - BITMAP_WIDTH * 4) / 2;
@@ -297,13 +260,6 @@ public class DeviceItemView extends View implements OnGestureListener
     	canvas.restore();
     }
 
-    private Bitmap getDestBmp(int index)
-    {
-        int i = index % 4;
-
-        return mIconReflectedImage[i];
-    }
-
     @Override
     public boolean onDown(MotionEvent arg0)
     {
@@ -346,17 +302,6 @@ public class DeviceItemView extends View implements OnGestureListener
     {
         recycleReflectedImage();
 
-        if (mLeftShadowBmp != null)
-        {
-            mLeftShadowBmp.recycle();
-            mLeftShadowBmp = null;
-        }
-
-        if (mRightShadowBmp != null)
-        {
-            mRightShadowBmp.recycle();
-            mRightShadowBmp = null;
-        }
     }
 
 

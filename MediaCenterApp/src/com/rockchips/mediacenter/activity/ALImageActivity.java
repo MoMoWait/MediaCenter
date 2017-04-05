@@ -11,7 +11,6 @@
 package com.rockchips.mediacenter.activity;
 import java.util.ArrayList;
 import java.util.List;
-import org.xutils.x;
 import org.xutils.view.annotation.ViewInject;
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,7 +31,6 @@ import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.imageplayer.InternalImagePlayer;
-import com.rockchips.mediacenter.modle.task.AllFileLoadTask;
 import com.rockchips.mediacenter.modle.task.ImageFileLoadTask;
 import com.rockchips.mediacenter.utils.DialogUtils;
 import com.rockchips.mediacenter.utils.MediaFileUtils;

@@ -78,4 +78,13 @@ public class Device implements Serializable{
 				+ deviceName + ", netWorkPath=" + netWorkPath + "]";
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null || !(obj instanceof Device))
+			return false;
+		Device otherDevice = (Device)obj;
+		if(localMountPath != null && localMountPath.equals(otherDevice.getLocalMountPath()))
+			return true;
+		return false;
+	}
 }

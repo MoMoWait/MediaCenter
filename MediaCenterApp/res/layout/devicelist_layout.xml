@@ -2,10 +2,9 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" 
-    android:background="@drawable/main_page_mask">
+    android:orientation="vertical">
 
-    <RelativeLayout
+   <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
@@ -24,7 +23,7 @@
         <TextView
             android:id="@+id/zeroDevice"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:gravity="center"
             android:layout_marginTop="30dp"
             android:textColor="@color/white"
@@ -35,7 +34,7 @@
         <TextView
             android:id="@+id/firstDevice"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_marginTop="80dp"
             android:gravity="center"
             android:textColor="@color/white"
@@ -46,7 +45,7 @@
         <TextView
             android:id="@+id/secondDevice"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_marginTop="130dp"
             android:gravity="center"
             android:textColor="@color/white"
@@ -58,7 +57,7 @@
             android:id="@+id/thirdDevice"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
-            android:layout_marginTop="185dp"
+            android:layout_marginTop="180dp"
             android:textColor="@color/white"
             android:gravity="center"
 	        android:singleLine="true"
@@ -69,7 +68,7 @@
         <TextView
             android:id="@+id/fourthDevice"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:textColor="@color/white"
             android:gravity="center"
             android:layout_marginTop="580dp"
@@ -80,8 +79,8 @@
         <TextView
             android:id="@+id/fiveDevice"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="680dp"
+            android:layout_height= "50dp"
+            android:layout_marginTop="630dp"
             android:textColor="@color/white"
             android:gravity="center"
 	        android:singleLine="true"
@@ -130,9 +129,9 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_centerVertical="true"
                 android:text="@string/more_operation_pre"
-                android:textSize="16sp" />
+                android:textColor="@android:color/white"
+                android:textSize="18sp" />
         </LinearLayout>   
         
        <RelativeLayout

@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONArray;
 import org.xutils.view.annotation.ViewInject;
+
+import momo.cn.edu.fjnu.androidutils.data.CommonValues;
 import momo.cn.edu.fjnu.androidutils.utils.DeviceInfoUtils;
 import momo.cn.edu.fjnu.androidutils.utils.JsonUtils;
+import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
 import momo.cn.edu.fjnu.androidutils.utils.StorageUtils;
 import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
 import android.content.BroadcastReceiver;
@@ -79,7 +82,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
     /**
      * 每一张海报的宽度
      */
-    private static int BITMAP_WIDTH = 280;
+    private static int BITMAP_WIDTH = SizeUtils.dp2px(CommonValues.application, 280);
     /**
      * 焦点路径
      */
@@ -359,12 +362,6 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
             case KeyEvent.KEYCODE_BACK:
                 finish();
                 break;
-            //case KeyEvent.KEYCODE_1:
-            //    onOpenMenu();
-           //     return true;
-            //case KeyEvent.KEYCODE_2:
-            //	showNetWorkSelectDialog();
-            //	return true;
             default:
                 mDevicesListView.onKeyDown(keyCode, event);
                 break;

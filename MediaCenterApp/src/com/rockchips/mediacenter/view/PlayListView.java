@@ -114,7 +114,7 @@ public class PlayListView extends RelativeLayout
     /**
      * 焦点框上下移动步长
      */
-    private int mFocusYStep = 70;
+    private int mFocusYStep = SizeUtils.dp2px(CommonValues.application, 69);
 
     /**
      * 焦点框当前x值
@@ -204,7 +204,7 @@ public class PlayListView extends RelativeLayout
      */
     public void initItemSize()
     {
-        this.mListItemHeight = 70;
+        this.mListItemHeight = SizeUtils.dp2px(mContext, 69);
         //计算item宽度，这里根据屏幕宽度，动态生成
         this.mListItemWidth = DeviceInfoUtils.getScreenWidth(mContext) / 2 - SizeUtils.dp2px(mContext, 20);
     }
@@ -750,7 +750,7 @@ public class PlayListView extends RelativeLayout
         //params.topMargin = SizeUtils.dp2px(CommonValues.application, 40) + mActiveSlot * mListItemHeight;
         params.topMargin = mFocusView.getInitTopMargin() + mActiveSlot * mListItemHeight;
         params.leftMargin = mFocusView.getInitLeftMargin();
-        params.rightMargin = SizeUtils.dp2px(mContext, 10);
+        //params.rightMargin = SizeUtils.dp2px(mContext, 10);
         //params.leftMargin = DeviceInfoUtils.getScreenWidth(mContext) / 2;
         mFocusView.setLayoutParams(params);
 

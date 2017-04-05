@@ -479,6 +479,10 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         switch (keyCode)
         {
             case KeyEvent.KEYCODE_MENU:
+            	if(mVV.isSeeking())
+            		return true;
+            	if(!isMenuNeedShow)
+            		return true;
             	hideRestartPlayTip();
                 openBottomMenu();
                 return true;
@@ -869,7 +873,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             progressGone();
             // 弹出杜比信息框
             // 之前要設置信息
-            showDoblyWin();
+            if(!isInPictureInPictureMode())
+            	showDoblyWin();
             // 重置无法播放次数为0
             playerErrorTimes = 0;
 
@@ -1101,8 +1106,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         if (!StringUtils.isEmpty(strUrl))
         {
             delayHidePop(1);
-            //显示加载栏
-            mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_SHOW_PROGRESS);
+            //非PIP模式显示加载栏
+            if(!isInPictureInPictureMode())
+            	mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_SHOW_PROGRESS);
             // 处理来自界面点击/甩屏的请求，甩、推的时候带有seek，其他不会带有
             int seek = 0;
             Message msgVideo = Message.obtain();
@@ -1274,20 +1280,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         pause();
 
         createBottomPopMenu();
-
-        if (isMenuNeedShow)
-        {
-            // Log.e("subinfolog", "onMenuOpened");
-            /*if (mVV.getSubtitleList().size() > 0)
-            {
-                subId = mVV.getCurrentSudId();
-            }*/
-
-            /*if (mVV.getAudioinfos() != null && mVV.getAudioinfos().size() > 0)
-            {
-                soundId = mVV.getCurrentSoundId();
-            }*/
-        }
 
         return true;
     }

@@ -1,6 +1,9 @@
 package com.rockchips.mediacenter.view;
 import java.util.ArrayList;
 import java.util.List;
+
+import momo.cn.edu.fjnu.androidutils.data.CommonValues;
+import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
@@ -140,6 +143,8 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
     public void notifyDataChanged()
     {
         refreshDevicesName();
+        resetDeviceList();
+        //mTextViews[TEXTVIEW_THIRD].setBackgroundResource(R.drawable.current_select_device_background);
     }
 
     /**
@@ -233,7 +238,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
         mTextViews[TEXTVIEW_FIVE] = (TextView) findViewById(R.id.fiveDevice);
     }
 
-    private static final int TRANSLATE_TO_X = 40;
+    private static final int TRANSLATE_TO_X = SizeUtils.dp2px(CommonValues.application, 40);
 
     private void initData()
     {
@@ -326,13 +331,13 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
     private static final float FOCUS_SCALE_RATE = 1.5f;
 
     // 鍒嗙被娴锋姤鐢诲粖鐨刌鍧愭爣
-    private static final int GY = 250;
+    private static final int GY = SizeUtils.dp2px(CommonValues.application, 250);
 
     // 涓嬬Щ璺濈
-    private static final int DOWN_MOVE_DISTANCE = 200;
+    private static final int DOWN_MOVE_DISTANCE = SizeUtils.dp2px(CommonValues.application, 200);
 
     // 涓婄Щ璺濈
-    private static final int UP_MOVE_DISTANCE = 50;
+    private static final int UP_MOVE_DISTANCE = SizeUtils.dp2px(CommonValues.application, 50);
 
     private AnimatorSet mGalleryAnimatorSetDown;
 
@@ -437,6 +442,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
             @Override
             public void onAnimationEnd(Animation animation)
             {
+            	Log.i(TAG, "initDownAnimation->mBStopAnimation:" + mBStopAnimation);
                 mBStopAnimation = true;
             }
         });
@@ -610,6 +616,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
             @Override
             public void onAnimationEnd(Animation animation)
             {
+            	Log.i(TAG, "initUpAnimation->mBStopAnimation:" + mBStopAnimation);
                 mBStopAnimation = true;
             }
         });
@@ -1160,7 +1167,7 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
             mTextViews[TEXTVIEW_THIRD].setText(mDevicesList.get(mFocusIndex).mName);
             mTextViews[TEXTVIEW_FOURTH].setText((mFocusIndex + 1) < dSize ? mDevicesList.get(mFocusIndex + 1).mName : "");
             mTextViews[TEXTVIEW_FIVE].setText((mFocusIndex + 2) < dSize ? mDevicesList.get(mFocusIndex + 2).mName : "");
-
+            
         }
     }
 
@@ -1177,5 +1184,25 @@ public class DevicesListView extends RelativeLayout implements OnClickListener
             mDeviceItem.recycle();
             mDeviceItem = null;
         }
+    }
+    
+    /**
+     * 重置设备列表
+     */
+    private void resetDeviceList(){
+    	if(mDevicesList == null || mDevicesList.size() == 0 || mDeviceItem == null)
+    		return;
+        ScaleAnimation focusDeviceScaleAnim = new ScaleAnimation(1.0F, FOCUS_SCALE_RATE, 1.0F, FOCUS_SCALE_RATE);
+        focusDeviceScaleAnim.setDuration(0);
+        Animation focusDeviceTransAnim = new TranslateAnimation(0, TRANSLATE_TO_X, 0, 0);
+        focusDeviceScaleAnim.setDuration(0);
+        AnimationSet initAnimationSet = new AnimationSet(true);
+        initAnimationSet.setFillAfter(true);
+        initAnimationSet.setFillEnabled(true);
+        initAnimationSet.addAnimation(focusDeviceTransAnim);
+        initAnimationSet.addAnimation(focusDeviceScaleAnim);
+        mTextViews[TEXTVIEW_THIRD].setAnimation(initAnimationSet);
+        mTextViews[TEXTVIEW_THIRD].setBackgroundResource(R.drawable.current_select_device_background);
+        mBStopAnimation = true;
     }
 }

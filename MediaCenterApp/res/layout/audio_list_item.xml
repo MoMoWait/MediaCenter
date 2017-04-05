@@ -33,8 +33,6 @@
         android:scaleType="fitXY"
         android:layout_below="@+id/itemname"
         android:alpha="0.25"
-        android:visibility="invisible"
-        
-        />
+        android:visibility="gone"/>
 
 </RelativeLayout>
