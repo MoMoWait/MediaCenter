@@ -194,6 +194,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     private boolean isMenuNeedShow = false;
     // 菜单是否已被创建
     private boolean isMenuHasCreated = false;
+    //标识视频是否已经准备好
+    private boolean isHasPrepared = false;
     // 若片源是杜比音效，则必须弹出杜比标识
     private DoblyPopWin doblyPopWin = null;
     // zkf61715 是否支持快进快退
@@ -488,6 +490,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                 return true;
             case KeyEvent.KEYCODE_DPAD_LEFT:
             case KeyEvent.KEYCODE_MEDIA_REWIND:
+            	if(!isHasPrepared)
+            		return true;
             	if(mTextRestartPlay.getVisibility() == View.VISIBLE){
             		mVV.isSeeking(true);
             		sendSeekMsg(0);
@@ -505,6 +509,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             	break;
             case KeyEvent.KEYCODE_DPAD_RIGHT:
             case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+            	if(!isHasPrepared)
+            		return true;
             	hideRestartPlayTip();
             	if(mSeekBarLayout.getVisibility() != View.VISIBLE){
             		showPop();
@@ -518,6 +524,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                 break;
             case KeyEvent.KEYCODE_DPAD_CENTER:
             case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+            	if(!isHasPrepared)
+            		return true;
             	hideRestartPlayTip();
             	Log.d(TAG, "onKeyDown - KEYCODE_DPAD_CENTER or KEYCODE_MEDIA_PLAY_PAUSE --");
                 //显示控制条
@@ -738,6 +746,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             // 播放失败时，菜单需要重新加载
             isMenuHasCreated = false;
             isMenuNeedShow = false;
+            isHasPrepared = false;
             mSeekPosition = 0;
             progressGone();
 
@@ -871,6 +880,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             
             }
             progressGone();
+            isHasPrepared = true;
             // 弹出杜比信息框
             // 之前要設置信息
             if(!isInPictureInPictureMode())
@@ -885,7 +895,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             createPopMenu();
             //loadMenu();
             isMenuHasCreated = true;
-
             /** liyang DTS2013051702993 **/
             // 本地播放视频文件，设置视频循环播放，影片播放完，在将要播放下一影片时，切换全屏播放模式或音轨或字幕时，停止运行。
             isMenuNeedShow = true;
@@ -1187,6 +1196,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         isMenuNeedShow = false;
         // 返回键时，菜单需要重新加载
         isMenuHasCreated = false;
+        //视频未准备好
+        isHasPrepared = false;
         // 隐藏杜比弹出框
         //sendDoblyWinMsg(false);
         mUIHandler.removeAllMsgs();
@@ -3101,6 +3112,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         // 播放完毕时，菜单需要重新加载
         isMenuHasCreated = false;
 		
+        //视频未准备好
+        isHasPrepared = false;
         //播放完成，重置当前Seek位置
         mSeekPosition = 0;
         
