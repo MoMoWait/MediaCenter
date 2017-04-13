@@ -9,17 +9,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import momo.cn.edu.fjnu.androidutils.utils.JsonUtils;
 import momo.cn.edu.fjnu.androidutils.utils.StorageUtils;
 import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
-
 import org.xutils.view.annotation.ViewInject;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.view.KeyboardShortcutGroup;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;

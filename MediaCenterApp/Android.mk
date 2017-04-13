@@ -23,7 +23,7 @@ LOCAL_STATIC_JAVA_LIBRARIES += mozilla_chardet
 LOCAL_STATIC_JAVA_LIBRARIES += jcifs-1.3.18
 LOCAL_STATIC_JAVA_LIBRARIES += org.apache.http.legacy
 LOCAL_PROGUARD_ENABLED := disabled
-LOCAL_JNI_SHARED_LIBRARIES := libmediacenter-jni
+#LOCAL_JNI_SHARED_LIBRARIES := libmediacenter-jni
 include $(BUILD_PACKAGE)
 #include $(LOCAL_PATH)/jni/Android.mk
 include $(LIBS_PATH)/libs/Common.mk

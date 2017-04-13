@@ -21,6 +21,7 @@ import com.rockchips.mediacenter.modle.db.LocalMediaFolderService;
 import com.rockchips.mediacenter.modle.db.ScanDirectoryService;
 import com.rockchips.mediacenter.utils.MediaFileUtils;
 import com.rockchips.mediacenter.utils.MediaUtils;
+import com.rockchips.mediacenter.utils.PlatformUtils;
 
 import android.util.Log;
 /**
@@ -87,7 +88,7 @@ public class FileScanThread extends Thread{
 				return;
 			}
 			//存在视频播放，并且设备已经上线
-			boolean haveVideoPlay = MediaUtils.hasMediaClient();
+			boolean haveVideoPlay = PlatformUtils.getSDKVersion() >= 24 && MediaUtils.hasMediaClient();
 			//Log.i(TAG, "FileScanThread->haveVideoPlay:" + haveVideoPlay);
 			try {
 				//存在视频播放，并且设备已经挂载
@@ -95,7 +96,7 @@ public class FileScanThread extends Thread{
 					// 睡眠1s
 					Thread.sleep(1000);
 					Log.i(TAG, "FileScanThread->haveVideoPlay:" + haveVideoPlay);
-					haveVideoPlay = MediaUtils.hasMediaClient();
+					haveVideoPlay = PlatformUtils.getSDKVersion() >= 24 && MediaUtils.hasMediaClient();
 					deviceScanInfo = mService.getDeviceScanInfo(mDevice.getDeviceID());
 				}
 			}catch(Exception e){
@@ -134,7 +135,7 @@ public class FileScanThread extends Thread{
 						continue;
 					if(subFile.isDirectory()){
 						//如果是蓝光文件夹
-						if(ISOManager.isBDDirectory(subFile.getPath())){
+						if(PlatformUtils.getSDKVersion() >= 23 && ISOManager.isBDDirectory(subFile.getPath())){
 							FileInfo fileInfo = MediaFileUtils.getBDFileInfo(subFile, mDevice);
 							mTmpFileInfos.add(fileInfo);
 							++mediaCount;

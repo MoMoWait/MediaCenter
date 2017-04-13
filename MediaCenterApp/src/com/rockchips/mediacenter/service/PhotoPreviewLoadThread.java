@@ -27,6 +27,7 @@ import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.modle.db.FileInfoService;
 import com.rockchips.mediacenter.modle.db.PreviewPhotoInfoService;
 import com.rockchips.mediacenter.utils.MediaUtils;
+import com.rockchips.mediacenter.utils.PlatformUtils;
 
 /**
  * @author GaoFei
@@ -44,10 +45,8 @@ public class PhotoPreviewLoadThread extends AbstractPreviewLoadThread{
     @Override
     public void run() {
     	//存在视频播放，关闭缩列图获取
-    	boolean haveVideoPlay = MediaUtils.hasMediaClient();
-		Log.i(TAG, "PhotoPreviewLoadThread->haveVideoPlay:" + haveVideoPlay);
-        if(haveVideoPlay)
-            return;
+        if(PlatformUtils.getSDKVersion() >= 24 && MediaUtils.hasMediaClient())
+        	return;
         if(!TextUtils.isEmpty(mFileInfo.getPreviewPath()))
         	return;
 	    //读取缓存数据库

@@ -12,6 +12,7 @@ import com.rockchips.mediacenter.bean.LocalMediaFile;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.modle.db.FileInfoService;
 import com.rockchips.mediacenter.utils.MediaFileUtils;
+import com.rockchips.mediacenter.utils.PlatformUtils;
 
 import android.os.AsyncTask;
 import android.util.Log;
@@ -55,7 +56,7 @@ public class AllFileLoadTask extends AsyncTask<Object, Integer, Integer> {
 						fileInfo.setParentPath(currFolder);
 						if(itemFile.isDirectory()){
 							//如果是蓝光文件夹
-							if(ISOManager.isBDDirectory(itemFile.getPath())){
+							if(PlatformUtils.getSDKVersion() >= 23 && ISOManager.isBDDirectory(itemFile.getPath())){
 								fileInfo.setType(ConstData.MediaType.VIDEO);
 							}else{
 								fileInfo.setType(ConstData.MediaType.FOLDER);

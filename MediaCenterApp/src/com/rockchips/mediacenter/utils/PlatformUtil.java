@@ -255,4 +255,5 @@ public class PlatformUtil
     public static String getVersionOffice(){
         return SystemProperties.get(KEY_REGION);
     }
+    
 }

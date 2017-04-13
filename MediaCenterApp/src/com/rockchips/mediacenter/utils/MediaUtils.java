@@ -6,7 +6,8 @@ package com.rockchips.mediacenter.utils;
  */
 public class MediaUtils {
     static{
-        System.loadLibrary("mediacenter-jni");
+    	if(android.os.Build.VERSION.SDK_INT >= 24)
+    		System.loadLibrary("mediacenter-jni");
     }
     public static native boolean hasMediaClient();
     public static native int getCurrentPostion();

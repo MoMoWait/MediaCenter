@@ -157,18 +157,7 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
     {  
     	Log.i(TAG, "onMeasure->videoOrigWidth:" + videoOrigWidth);
     	Log.i(TAG, "onMeasure->videoOrigHeight:" + videoOrigHeight);
-    	if(android.os.Build.VERSION.SDK_INT < 24){
-    	    setMeasuredDimension(videoOrigWidth, videoOrigHeight);
-    	}else {
-    	    boolean isInPictureMode = ((Activity)mContext).isInPictureInPictureMode();
-            //Log.i(TAG, "240dp->px:" + SizeUtils.dp2px(mContext, 240));
-            //Log.i(TAG, "135dp->px:" + SizeUtils.dp2px(mContext, 135));
-    	    if(isInPictureMode)
-                setMeasuredDimension(SizeUtils.dp2px(mContext, 240), SizeUtils.dp2px(mContext, 135));
-            else
-                setMeasuredDimension(videoOrigWidth, videoOrigHeight);
-    	}
-    	
+    	setMeasuredDimension(videoOrigWidth, videoOrigHeight);
     }
     
     
@@ -987,21 +976,9 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
     @Override
     public void layout(int l, int t, int r, int b)
     {
-    /*	Log.i(TAG, "layout->l:" + l);
-    	Log.i(TAG, "layout->t:" + t);
-    	Log.i(TAG, "layout->r:" + r);
-    	Log.i(TAG, "layout->b:" + b);*/
         int left = (maxWidth - videoOrigWidth) / 2;
         int top = (maxHeight - videoOrigHeight) / 2;
-        if(android.os.Build.VERSION.SDK_INT < 24)
-            super.layout(left, top, left + videoOrigWidth, top + videoOrigHeight);
-        else{
-            boolean isInPictureMode = ((Activity)mContext).isInPictureInPictureMode();
-            if(isInPictureMode)
-                super.layout(0, 0, SizeUtils.dp2px(mContext, 240), SizeUtils.dp2px(mContext, 135));
-            else
-                super.layout(left, top, left + videoOrigWidth, top + videoOrigHeight);
-        }
+        super.layout(left, top, left + videoOrigWidth, top + videoOrigHeight);
     }
         
     private void setSubTrackInfo()

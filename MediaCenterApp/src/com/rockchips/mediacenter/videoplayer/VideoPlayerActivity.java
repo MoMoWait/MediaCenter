@@ -77,6 +77,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.io.File;
+import java.lang.reflect.Method;
 
 import org.xutils.x;
 import org.xutils.view.annotation.ViewInject;
@@ -96,6 +97,7 @@ import com.rockchips.mediacenter.utils.DateUtil;
 import com.rockchips.mediacenter.utils.MathUtil;
 import com.rockchips.mediacenter.utils.MediaUtils;
 import com.rockchips.mediacenter.utils.PlatformUtil;
+import com.rockchips.mediacenter.utils.PlatformUtils;
 import com.rockchips.mediacenter.utils.StringUtils;
 import com.rockchips.mediacenter.service.IMediaPlayerAdapter;
 import com.rockchips.mediacenter.service.IVideoViewAdapter;
@@ -292,10 +294,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 				String subTitle = text.getText();
 				subTitle = subTitle.replace(CRLF, "<br/>");
 			    mTextSubtitle.setVisibility(View.VISIBLE);
-			    if(android.os.Build.VERSION.SDK_INT < 24)
-			        mTextSubtitle.setText(Html.fromHtml(subTitle));
-			    else
-			        mTextSubtitle.setText(Html.fromHtml(subTitle,  Html.FROM_HTML_MODE_COMPACT));
+			    mTextSubtitle.setText(Html.fromHtml(subTitle));
 			}
 		});
     }
@@ -384,8 +383,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         
         try
         {
-        	if(!isInPictureInPictureMode())
-        		pauseNow();
+        	pauseNow();
             Log.e(TAG, "onpause is bMCSMode 11");
             // 仅仅在Pause的时候保存，原因是怕状态在onStop的时候状态乱了，无法获取duratson
             saveSeekPosIntoMbi();
@@ -403,17 +401,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     @Override
     protected void onStop() {
     	Log.d(TAG, "VideoPlayerActivity --> onStop()--");
-    	if(isInPictureInPictureMode()){
-    		//保存记录
-    		//saveSeekPosIntoMbi();
-    		try{
-    			mVV.pause();
-        		stop();
-    		}catch (Exception e){
-    			// no handle
-    		}
-    		
-    	}
         super.onStop();
         
     }
@@ -439,36 +426,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     	super.finish();
     }
     
-    
-    /**
-     * 画中画模式改变监听器
-     */
-    @Override
-    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode) {
-        Log.i(TAG, "onPictureInPictureModeChanged->isInPictureInPictureMode:" + isInPictureInPictureMode);
-        MediaPlayer originMediaPlayer = mMediaPlayer.getOriginMediaPlayer();
-        if(isInPictureInPictureMode){
-            //当前是画中画模式,设置关闭字幕(使用属性控制)
-            String strIsPipSubtitleDisplay = SystemProperties.get(ConstData.PROPERTY_PIP_SUBTITLE, "false");
-            boolean isShowPIPSubtitle = "true".equals(strIsPipSubtitleDisplay);
-            try{
-            	 originMediaPlayer.setSubtitleVisible(isShowPIPSubtitle && !mIsCloseSubtitle);
-            }catch (Exception e){
-            	Log.i(TAG, "setSubtitleVisible->exception:" + e);
-            }
-           
-        }else{
-            savePositionNow();
-            //开启字幕
-            if(originMediaPlayer != null)
-                try{
-                    originMediaPlayer.setSubtitleVisible(!mIsCloseSubtitle && true);
-                }catch (Exception e) {
-                    Log.i(TAG, "setSubtitleVisible->exception:" + e);
-                }
-                
-        }
-    }
     
     /**
      * 处理按键堆积
@@ -883,8 +840,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             isHasPrepared = true;
             // 弹出杜比信息框
             // 之前要設置信息
-            if(!isInPictureInPictureMode())
-            	showDoblyWin();
+            showDoblyWin();
             // 重置无法播放次数为0
             playerErrorTimes = 0;
 
@@ -909,29 +865,22 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
      * 重置视频字幕显示
      */
     private void resetSubtitleVisible(){
-    	mIsCloseSubtitle = false;
-        MediaPlayer originMediaPlayer = mMediaPlayer.getOriginMediaPlayer();
-        if(isSupportPIPMode() && isInPictureInPictureMode()){
-            String strIsPipSubtitleDisplay = SystemProperties.get(ConstData.PROPERTY_PIP_SUBTITLE, "false");
-            boolean isPIPShowSubtitle = "true".equals(strIsPipSubtitleDisplay);
-            try{
-            	originMediaPlayer.setSubtitleVisible(isPIPShowSubtitle && !mIsCloseSubtitle);
-            }catch (Exception e){
-            	Log.i(TAG, "resetSubtitleVisible->resetSubtitleVisible->exception1:" + e);
-            }
-            
-        }else{
-        	try{
-        		originMediaPlayer.setSubtitleVisible(!mIsCloseSubtitle && true);
-        	}catch (Exception e){
-        		Log.i(TAG, "resetSubtitleVisible->resetSubtitleVisible->exception2:" + e);
-        	}
-            
-        }
-        //originMediaPlayer.setSubtitleVisible(!mIsCloseSubtitle);
-            
+    	setVideoSubtitleVisible(true);
     }
     
+    /**
+     * 设置视频字幕可见性
+     * @param visible
+     */
+    private void setVideoSubtitleVisible(boolean visible){
+    	 MediaPlayer originMediaPlayer = mMediaPlayer.getOriginMediaPlayer();
+     	try{
+     		Method method = MediaPlayer.class.getDeclaredMethod("setSubtitleVisible", boolean.class);
+     		method.invoke(originMediaPlayer, visible);
+     	}catch (Exception e){
+     		Log.i(TAG, "resetSubtitleVisible->resetSubtitleVisible->exception2:" + e);
+     	}
+    }
     
     /**
      * 当前系统是否支持PIP模式
@@ -1115,9 +1064,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         if (!StringUtils.isEmpty(strUrl))
         {
             delayHidePop(1);
-            //非PIP模式显示加载栏
-            if(!isInPictureInPictureMode())
-            	mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_SHOW_PROGRESS);
+            mUIHandler.sendEmptyMessage(ConstData.VideoPlayUIMsg.MSG_SHOW_PROGRESS);
             // 处理来自界面点击/甩屏的请求，甩、推的时候带有seek，其他不会带有
             int seek = 0;
             Message msgVideo = Message.obtain();
@@ -1631,12 +1578,12 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             	MediaPlayer mediaPlayer = mMediaPlayer.getOriginMediaPlayer();
             	if(menuIndex != subNum){
             		mIsCloseSubtitle = false;
-            		mediaPlayer.setSubtitleVisible(true);
+            		setVideoSubtitleVisible(true);
             		mediaPlayer.selectTrack(trackIndex);
             	}
             	else{
             		mIsCloseSubtitle = true;
-            		mediaPlayer.setSubtitleVisible(false);
+            		setVideoSubtitleVisible(true);
             	}
             	subId = menuIndex;
                /* Log.d(TAG, "subtitle 1 subNum:" + subNum);
@@ -2848,7 +2795,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         }
         else if(mCurrSelectType == BottomMenuSelectType.PIC_TO_PIC){
             mBottomPopMenu.dismiss();
-            enterPictureInPictureMode();
+            //enterPictureInPictureMode();
         }
 
         else

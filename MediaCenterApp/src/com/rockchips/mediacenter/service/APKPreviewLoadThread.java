@@ -19,6 +19,7 @@ import com.rockchips.mediacenter.modle.db.FileInfoService;
 import com.rockchips.mediacenter.modle.db.PreviewPhotoInfoService;
 import com.rockchips.mediacenter.utils.APKUtils;
 import com.rockchips.mediacenter.utils.MediaUtils;
+import com.rockchips.mediacenter.utils.PlatformUtils;
 /**
  * @author GaoFei
  * APK图标加载线程
@@ -35,9 +36,7 @@ public class APKPreviewLoadThread extends AbstractPreviewLoadThread{
 	
 	@Override
 	public void run() {
-		boolean haveVideoPlay = MediaUtils.hasMediaClient();
-		Log.i(TAG, "APKPreviewLoadThread->haveVideoPlay:" + haveVideoPlay);
-		if(haveVideoPlay)
+		if(PlatformUtils.getSDKVersion() >= 24 && MediaUtils.hasMediaClient())
 			return;
 		if(!TextUtils.isEmpty(mFileInfo.getPreviewPath()))
 			return;
