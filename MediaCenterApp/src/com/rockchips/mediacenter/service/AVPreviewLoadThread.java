@@ -36,6 +36,7 @@ import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.modle.db.FileInfoService;
 import com.rockchips.mediacenter.modle.db.PreviewPhotoInfoService;
 import com.rockchips.mediacenter.utils.MediaUtils;
+import com.rockchips.mediacenter.utils.PlatformUtils;
 
 /**
  * @author GaoFei
@@ -53,11 +54,8 @@ public class AVPreviewLoadThread extends AbstractPreviewLoadThread{
     
     @Override
     public void run() {
-    	boolean haveVideoPlay = MediaUtils.hasMediaClient();
-		Log.i(TAG, "AVPreviewLoadThread->haveVideoPlay:" + haveVideoPlay);
-		Log.i(TAG, "AVPreviewLoadThread->proprity:" + getThreadPriporty());
-        if(haveVideoPlay)
-        	return;
+        if(PlatformUtils.getSDKVersion() >= 24 && MediaUtils.hasMediaClient())
+			return;
         if(!TextUtils.isEmpty(mFileInfo.getPreviewPath()))
             return;
 		PreviewPhotoInfoService previewPhotoInfoService = new PreviewPhotoInfoService();

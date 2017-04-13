@@ -17,4 +17,12 @@ public class PlatformUtils {
         return android.os.Build.VERSION.SDK_INT >= 24;
     }
     
+    /**
+     * 获取SDK版本
+     * @return
+     */
+    public static int getSDKVersion(){
+    	return android.os.Build.VERSION.SDK_INT;
+    }
+    
 }

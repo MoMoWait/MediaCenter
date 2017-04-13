@@ -31,11 +31,11 @@ import android.util.Log;
  */
 public class MountUtils {
 	public static final String TAG = "MountUtils";
-	public static final String SHELL_FILE_DIR = "/data/cifsmanager";
+	public static final String SHELL_FILE_DIR = "/data/etc";
 	/**
 	 * 执行Mount,Unmount命令的脚本文件
 	 */
-	public static final String SHELL_PATH = "/data/cifsmanager/cifsmanager.sh";
+	public static final String SHELL_PATH = "/data/etc/cifsmanager.sh";
 	/**
 	 * 最多尝试挂载3次
 	 */
