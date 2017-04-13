@@ -357,7 +357,8 @@
     <string name="file_op_delete">删除</string>
     <string name="file_op_move">剪切</string>
     <string name="file_op_paste">粘帖</string>
-    <string name="file_op_rename">重命名</string> 
+    <string name="file_op_rename">重命名</string>
+    <string name="file_op_sort">排序</string> 
     <string name="enter_new_file_name">输入新文件名</string>
     <string name="no_svq">没有SVQ版权</string>  
     
@@ -396,4 +397,10 @@
     <string name="tip_select_delete">请选择要删除的设备</string>
     <string name="file_not_exist">源文件不存在</string>
     <string name="press_left_restart">按左键从头播放</string>
+    <string name="name">名称</string>
+    <string name="time">修改日期</string>
+    <string name="type">类型</string>
+    <string name="size">大小</string>
+    <string name="increasing">递增</string>
+    <string name="descending">递减</string>
 </resources>

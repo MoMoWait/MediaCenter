@@ -356,6 +356,7 @@
     <string name="file_op_move">Move</string>
     <string name="file_op_paste">Paste</string>
     <string name="file_op_rename">Rename</string>
+    <string name="file_op_sort">Sort</string>
     <string name="enter_new_file_name">Enter new file name</string>
     <string name="no_svq">No SVQ</string>
     
@@ -395,4 +396,10 @@
     <string name="tip_select_delete">Please select the device you want to delete</string>
     <string name="file_not_exist">Soruce file not exist</string>
     <string name="press_left_restart">Press left key to play from begin</string>
+    <string name="name">Name</string>
+    <string name="time">Time</string>
+    <string name="type">Type</string>
+    <string name="size">Size</string>
+    <string name="increasing">Increasing</string>
+    <string name="descending">Descending</string>
 </resources>
