@@ -5,7 +5,7 @@ LIBS_PATH := $(LOCAL_PATH)
 LOCAL_MODULE_TAGS := optional
 LOCAL_PACKAGE_NAME := MediaCenter
 LOCAL_CERTIFICATE := platform
-LOCAL_DEX_PREOPT := false
+#LOCAL_DEX_PREOPT := false
 ALL_DEFAULT_INSTALLED_MODULES += $(LOCAL_PACKAGE_NAME)
 
 LOCAL_SRC_FILES := $(call all-subdir-java-files)
@@ -25,7 +25,7 @@ LOCAL_STATIC_JAVA_LIBRARIES += org.apache.http.legacy
 LOCAL_PROGUARD_ENABLED := disabled
 LOCAL_JNI_SHARED_LIBRARIES := libmediacenter-jni
 include $(BUILD_PACKAGE)
-include $(LOCAL_PATH)/jni/Android.mk
+#include $(LOCAL_PATH)/jni/Android.mk
 include $(LIBS_PATH)/libs/Common.mk
 #include $(call all-makefiles-under,$(LOCAL_PATH))
 

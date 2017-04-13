@@ -34,6 +34,7 @@
         <item>@string/file_op_move</item>
         <item>@string/file_op_rename</item>
         <item>@string/file_op_paste</item>
+        <item>@string/file_op_sort</item>
     </string-array>
     
     <!-- 文件操作，不包含paste -->
@@ -47,5 +48,19 @@
     <!-- 文件操作，只有paste -->
     <string-array name="file_oprations_only_paste">
         <item>@string/file_op_paste</item>
+    </string-array>
+    
+    <!-- 文件排序方式 -->
+    <string-array name="file_sort_ways">
+        <item>@string/name</item>
+        <item>@string/time</item>
+        <item>@string/type</item>
+        <item>@string/size</item>
+    </string-array>
+    
+    <!-- 文件升降方式 -->
+    <string-array name="file_sort_type">
+        <item>@string/increasing</item>
+        <item>@string/descending</item>
     </string-array>
 </resources>

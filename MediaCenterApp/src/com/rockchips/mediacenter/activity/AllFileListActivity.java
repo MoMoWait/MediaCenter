@@ -51,6 +51,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import com.rockchips.mediacenter.view.FileDeleteTipDialog;
 import com.rockchips.mediacenter.view.FileOpDialog;
 import com.rockchips.mediacenter.view.FileRenameDialog;
+import com.rockchips.mediacenter.view.FileSortDialog;
 import com.rockchips.mediacenter.view.OprationProgressDialog;
 import com.rockchips.mediacenter.view.PreviewWidget;
 import com.rockchips.mediacenter.R;
@@ -262,7 +263,6 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 				}
 			}
 			if(keyCode == KeyEvent.KEYCODE_MENU){
-				//唤醒文件操作对话框,暂时屏蔽空文件夹下文件操作
 				new FileOpDialog(this, mCurrentFileInfo, isEmptyFolder, this).show();
 				return true;
 			}else if(keyCode == KeyEvent.KEYCODE_DPAD_CENTER){
@@ -466,6 +466,11 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 			mRenameDialog.setAllFileInfo(fileInfo);
 		}
 		mRenameDialog.show();
+	}
+	
+	@Override
+	public void onSort(FileInfo fileInfo) {
+		new FileSortDialog(this).show();
 	}
 	
     public void initDataAndView(){
