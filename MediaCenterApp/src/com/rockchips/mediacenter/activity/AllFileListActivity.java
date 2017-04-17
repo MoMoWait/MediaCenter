@@ -25,6 +25,8 @@ import com.rockchips.mediacenter.utils.DialogUtils;
 import com.rockchips.mediacenter.utils.MediaFileUtils;
 import com.rockchips.mediacenter.utils.GetDateUtil;
 import com.rockchips.mediacenter.videoplayer.InternalVideoPlayer;
+
+import android.R.integer;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -156,6 +158,12 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	 * Upnp目录访问列表
 	 */
 	private LinkedList<Container> mContainers = new LinkedList<>();
+	/**文件排序对话框*/
+	private FileSortDialog mFileSortDialog;
+	/**排序方式*/
+	private int mSortWay;
+	/**排序类型*/
+	private int mSortType;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -470,7 +478,18 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	
 	@Override
 	public void onSort(FileInfo fileInfo) {
-		new FileSortDialog(this).show();
+		if(mFileSortDialog == null)
+			mFileSortDialog = new FileSortDialog(this, new FileSortDialog.CallBack() {
+				@Override
+				public void onSelected(int way, int type) {
+					if(mSortWay != way || mSortType != type){
+						mSortWay = way;
+						mSortType = type;
+						loadFiles();
+					}
+				}
+			});
+		mFileSortDialog.show();
 	}
 	
     public void initDataAndView(){
@@ -490,6 +509,19 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
     			mCurrMediaType == ConstData.MediaType.FOLDER){
     		mCurrentContainer = createRootContainer();
     	}else{
+    		//加载mSortType,mSortWay
+    		String sortWay = StorageUtils.getDataFromSharedPreference(ConstData.SharedKey.FILE_SORT_WAY);
+    		String sortType = StorageUtils.getDataFromSharedPreference(ConstData.SharedKey.FILE_SORT_TYPE);
+    		if(TextUtils.isEmpty(sortWay)){
+    			mSortWay = ConstData.FILE_SORT_WAY.TYPE;
+    		}else{
+    			mSortWay = Integer.parseInt(sortWay);
+    		}
+    		if(TextUtils.isEmpty(sortType)){
+    			mSortType = ConstData.FILE_SORT_TYPE.INCREASING;
+    		}else{
+    			mSortWay = Integer.parseInt(sortType);
+    		}
     		loadFiles();
     	}
     	
@@ -610,7 +642,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 				}
 			}
 		});
-		mAllFileLoadTask.execute(mCurrDevice, mCurrMediaType, mCurrFolder);
+		mAllFileLoadTask.execute(mCurrDevice, mCurrMediaType, mCurrFolder, mSortWay, mSortType);
 	}
 	
 	

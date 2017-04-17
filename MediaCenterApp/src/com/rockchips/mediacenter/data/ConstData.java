@@ -252,6 +252,10 @@ public class ConstData {
 	    String LAST_VIDEO_PLAY_PATH = "last_video_play_path";
 	    /**上次视频播放的位置*/
 	    String LAST_VIDEO_PLAY_POSITION = "last_video_play_positon";
+	    /**文件排序方式*/
+	    String FILE_SORT_WAY = "file_sort_way";
+	    /**文件排序类型*/
+	    String FILE_SORT_TYPE = "file_sort_type";
 	}
 	
 	public interface ViewTags{
@@ -1534,5 +1538,27 @@ public class ConstData {
 		int PAUSED = 1;
 		int FAST_GO = 2;
 		int FAST_BACK = 3;
+	}
+	
+	/**
+	 * 文件排序方式
+	 * @author GaoFei
+	 *
+	 */
+	public interface FILE_SORT_WAY{
+		int NAME = 0;
+		int TIME = 1;
+		int TYPE = 2;
+		int SIZE = 3;
+	}
+	
+	/**
+	 * 文件排序类型
+	 * @author GaoFei
+	 *
+	 */
+	public interface FILE_SORT_TYPE{
+		int INCREASING = 0;
+		int DESCENDING = 1;
 	}
 }

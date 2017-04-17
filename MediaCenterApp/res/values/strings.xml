@@ -403,4 +403,5 @@
     <string name="size">大小</string>
     <string name="increasing">递增</string>
     <string name="descending">递减</string>
+    <string name="sort">排序</string>
 </resources>

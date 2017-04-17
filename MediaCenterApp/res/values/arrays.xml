@@ -33,8 +33,8 @@
         <item>@string/file_op_delete</item>
         <item>@string/file_op_move</item>
         <item>@string/file_op_rename</item>
-        <item>@string/file_op_paste</item>
         <item>@string/file_op_sort</item>
+        <item>@string/file_op_paste</item>
     </string-array>
     
     <!-- 文件操作，不包含paste -->
@@ -43,6 +43,7 @@
         <item>@string/file_op_delete</item>
         <item>@string/file_op_move</item>
         <item>@string/file_op_rename</item>
+        <item>@string/file_op_sort</item>
     </string-array>
     
     <!-- 文件操作，只有paste -->
@@ -59,7 +60,7 @@
     </string-array>
     
     <!-- 文件升降方式 -->
-    <string-array name="file_sort_type">
+    <string-array name="file_sort_types">
         <item>@string/increasing</item>
         <item>@string/descending</item>
     </string-array>

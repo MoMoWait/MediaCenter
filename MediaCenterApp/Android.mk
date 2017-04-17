@@ -8,7 +8,8 @@ LOCAL_CERTIFICATE := platform
 #LOCAL_DEX_PREOPT := false
 ALL_DEFAULT_INSTALLED_MODULES += $(LOCAL_PACKAGE_NAME)
 
-LOCAL_SRC_FILES := $(call all-subdir-java-files)
+#LOCAL_SRC_FILES := $(call all-subdir-java-files)
+LOCAL_SRC_FILES := $(call all-java-files-under, src)
 #ViewUtils_res_dir := ../ViewUtils/res
 #res_dir := res $(ViewUtils_res_dir)
 #LOCAL_RESOURCE_DIR := $(addprefix $(LOCAL_PATH)/, $(res_dir))
