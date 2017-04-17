@@ -520,7 +520,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
     		if(TextUtils.isEmpty(sortType)){
     			mSortType = ConstData.FILE_SORT_TYPE.INCREASING;
     		}else{
-    			mSortWay = Integer.parseInt(sortType);
+    			mSortType = Integer.parseInt(sortType);
     		}
     		loadFiles();
     	}

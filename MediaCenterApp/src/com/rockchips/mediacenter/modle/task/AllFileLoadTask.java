@@ -70,7 +70,10 @@ public class AllFileLoadTask extends AsyncTask<Object, Integer, Integer> {
 							fileInfo.setSize(itemFile.length());
 							fileInfo.setType(MediaFileUtils.getMediaTypeFromFile(itemFile));
 						}
-						mFileInfos.add(fileInfo);
+						if(PlatformUtils.getSDKVersion() > 19)
+							mFileInfos.add(fileInfo);
+						else if(fileInfo.getType() != ConstData.MediaType.APK)
+							mFileInfos.add(fileInfo);
 					}
 				}
 			}
@@ -103,7 +106,6 @@ public class AllFileLoadTask extends AsyncTask<Object, Integer, Integer> {
 								else
 									return lFile.getName().compareTo(rFile.getName());
 							}
-							return (int)(rFile.lastModified() / 1000 - lFile.lastModified() / 1000);
 						}else if(mSortWay == ConstData.FILE_SORT_WAY.TYPE){
 							File lFile = new File(lhs.getPath());
 							File rFile = new File(rhs.getPath());
