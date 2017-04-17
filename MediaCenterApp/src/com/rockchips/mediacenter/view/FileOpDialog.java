@@ -128,11 +128,11 @@ public class FileOpDialog extends AppBaseDialog implements OnItemClickListener{
 			dismiss();
 			break;
 		case 4:
-			mCallback.onPaste(mFileInfo);
+			mCallback.onSort(mFileInfo);
 			dismiss();
 			break;
-		case 6:
-			mCallback.onSort(mFileInfo);
+		case 5:
+			mCallback.onPaste(mFileInfo);
 			dismiss();
 			break;
 		default:

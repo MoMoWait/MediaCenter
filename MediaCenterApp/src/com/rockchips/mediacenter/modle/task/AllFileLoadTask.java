@@ -22,6 +22,8 @@ import android.util.Log;
  */
 public class AllFileLoadTask extends AsyncTask<Object, Integer, Integer> {
 	private static final String TAG = "AllFileLoadTask";
+	private int mSortWay;
+	private int mSortType;
 	public interface CallBack{
 		void onGetFiles(List<FileInfo> fileInfos);
 	}
@@ -41,6 +43,8 @@ public class AllFileLoadTask extends AsyncTask<Object, Integer, Integer> {
 		String currFolder = (String)params[2];
 		FileInfoService fileInfoService = new FileInfoService();
 		if(mediaType == ConstData.MediaType.FOLDER){
+			mSortWay = (Integer)params[3];
+			mSortType = (Integer)params[4];
 			File dirFile = new File(currFolder);
 			FileInfo fileInfo;
 			if(dirFile.exists()){
@@ -75,15 +79,79 @@ public class AllFileLoadTask extends AsyncTask<Object, Integer, Integer> {
 
 					@Override
 					public int compare(FileInfo lhs, FileInfo rhs) {
-						File lFile = new File(lhs.getPath());
-						File rFile = new File(rhs.getPath());
-						if(lFile.isDirectory() && rFile.isFile())
-							return -1;
-						else if(lFile.isDirectory() && rFile.isDirectory()
-						        || lFile.isFile() && rFile.isFile())
-						    return lFile.getPath().compareTo(rFile.getPath());
-						else if(lFile.isFile() && rFile.isDirectory())
-							return 1;
+						if(mSortWay == ConstData.FILE_SORT_WAY.NAME){
+							File lFile = new File(lhs.getPath());
+							File rFile = new File(rhs.getPath());
+							if(mSortType == ConstData.FILE_SORT_TYPE.INCREASING)
+								return lFile.getName().compareTo(rFile.getName());
+							return rFile.getName().compareTo(lFile.getName());
+						}else if(mSortWay == ConstData.FILE_SORT_WAY.TIME){
+							File lFile = new File(lhs.getPath());
+							File rFile = new File(rhs.getPath());
+							if(mSortType == ConstData.FILE_SORT_TYPE.INCREASING){
+								if(lFile.lastModified() < rFile.lastModified())
+									return -1;
+								else if(lFile.lastModified() > rFile.lastModified())
+									return 1;
+								else
+									return lFile.getName().compareTo(rFile.getName());
+							}else{
+								if(lFile.lastModified() < rFile.lastModified())
+									return -1;
+								else if(lFile.lastModified() > rFile.lastModified())
+									return 1;
+								else
+									return lFile.getName().compareTo(rFile.getName());
+							}
+							return (int)(rFile.lastModified() / 1000 - lFile.lastModified() / 1000);
+						}else if(mSortWay == ConstData.FILE_SORT_WAY.TYPE){
+							File lFile = new File(lhs.getPath());
+							File rFile = new File(rhs.getPath());
+							if(lFile.isDirectory() && rFile.isFile()){
+								if(mSortType == ConstData.FILE_SORT_TYPE.INCREASING)
+									return -1;
+								return 1;
+							}else if(lFile.isDirectory() && rFile.isDirectory()
+							        || lFile.isFile() && rFile.isFile())
+							    return lFile.getName().compareTo(rFile.getName());
+							else if(lFile.isFile() && rFile.isDirectory()){
+								if(mSortType == ConstData.FILE_SORT_TYPE.INCREASING)
+									return 1;
+								return -1;
+							}
+							
+						}else if(mSortWay == ConstData.FILE_SORT_WAY.SIZE){
+							File lFile = new File(lhs.getPath());
+							File rFile = new File(rhs.getPath());
+							if(mSortType == ConstData.FILE_SORT_TYPE.INCREASING){
+								if(lFile.isFile() && rFile.isFile()){
+									if(rFile.length() > lFile.length())
+										return -1;
+									else if(rFile.length() < lFile.length())
+										return 1;
+								}else if(lFile.isDirectory() && rFile.isFile()){
+									return -1;
+								}else if(lFile.isFile() && rFile.isDirectory()){
+									return 1;
+								}else{
+									return lFile.getName().compareTo(rFile.getName());
+								}
+							}else{
+								if(lFile.isFile() && rFile.isFile()){
+									if(rFile.length() > lFile.length())
+										return 1;
+									else if(rFile.length() < lFile.length())
+										return -1;
+								}else if(lFile.isDirectory() && rFile.isFile()){
+									return 1;
+								}else if(lFile.isFile() && rFile.isDirectory()){
+									return -1;
+								}else{
+									return lFile.getName().compareTo(rFile.getName());
+								}
+							
+							}
+						}
 						return 0;
 					}
 				});
