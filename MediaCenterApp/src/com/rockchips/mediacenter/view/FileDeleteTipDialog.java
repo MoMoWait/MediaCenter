@@ -29,7 +29,6 @@ public class FileDeleteTipDialog extends AppBaseDialog implements View.OnClickLi
 	
 	public FileDeleteTipDialog(Context context, CallBack callBack) {
 		super(context);
-		setCancelable(false);
 		mCallBack = callBack;
 	}
 
@@ -55,6 +54,7 @@ public class FileDeleteTipDialog extends AppBaseDialog implements View.OnClickLi
 			dismiss();
 			mCallBack.onOK();
 		}else{
+			dismiss();
 			mCallBack.onCancel();
 		}
 	}
