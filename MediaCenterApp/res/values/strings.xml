@@ -358,7 +358,8 @@
     <string name="file_op_move">剪切</string>
     <string name="file_op_paste">粘帖</string>
     <string name="file_op_rename">重命名</string>
-    <string name="file_op_sort">排序</string> 
+    <string name="file_op_sort">排序</string>
+    <string name="file_op_search">搜索</string> 
     <string name="enter_new_file_name">输入新文件名</string>
     <string name="no_svq">没有SVQ版权</string>  
     
@@ -404,4 +405,11 @@
     <string name="increasing">递增</string>
     <string name="descending">递减</string>
     <string name="sort">排序</string>
+    <string name="delete_selected_files">确认删除选中文件？</string>
+    <string name="select_delete_files">请选择要删除的文件</string>
+    <string name="alerady_delete_select">已删除选中文件</string>
+    <string name="delete_select_error">无法删除选中文件</string>
+    <string name="enter_search_content">请输入搜索内容</string>
+    <string name="currdevice_no_images">当前设备没有图片文件</string>
+    <string name="sel_back_photo">请选择背景图</string>
 </resources>

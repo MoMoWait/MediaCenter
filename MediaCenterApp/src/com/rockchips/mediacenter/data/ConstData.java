@@ -5,7 +5,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.R.integer;
+import com.rockchips.mediacenter.utils.PlatformUtils;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -38,6 +39,8 @@ public class ConstData {
 	public static final String MEDIACENTER_PERMISSION = "com.android.rockchips.permission.MEDIACENTER_SEND_RECV";
 	public static final String EXTRA_IS_SEARCH = "is_search";
 	public static final String UNKNOW = "unknow";
+	/**是否支持多文件删除*/
+	public static boolean IS_SUPPORT_MUTIL_DELETE = true;
 	public class NFS{
 		//挂载路径
 		public static final String MOUNT_PATH = "/mnt/sdcard/nfs";
@@ -629,6 +632,8 @@ public class ConstData {
                 case DEVICE_TYPE_SD:
                 case DEVICE_TYPE_U:
                 case DEVICE_TYPE_INTERNEL_STORAGE:
+                case DEVICE_TYPE_SMB:
+                case DEVICE_TYPE_NFS:
                     return true;
 
                 default:

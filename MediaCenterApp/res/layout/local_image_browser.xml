@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
         android:padding="10dp"
-        android:textColor="#8fffffff"
+        android:textColor="#8fffffff" 
         android:textSize="20sp" />
 
     <View

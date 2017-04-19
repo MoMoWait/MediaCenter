@@ -17,8 +17,11 @@ import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.imageplayer.InternalImagePlayer;
+import com.rockchips.mediacenter.imageplayer.downloader.FileService;
 import com.rockchips.mediacenter.modle.task.AllFileLoadTask;
+import com.rockchips.mediacenter.modle.task.FileMutiDeleteTask;
 import com.rockchips.mediacenter.modle.task.FileOpTask;
+import com.rockchips.mediacenter.modle.task.FileSearchTask;
 import com.rockchips.mediacenter.service.UpnpFileLoadCallback;
 import com.rockchips.mediacenter.utils.ActivityUtils;
 import com.rockchips.mediacenter.utils.DialogUtils;
@@ -42,6 +45,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -53,6 +57,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import com.rockchips.mediacenter.view.FileDeleteTipDialog;
 import com.rockchips.mediacenter.view.FileOpDialog;
 import com.rockchips.mediacenter.view.FileRenameDialog;
+import com.rockchips.mediacenter.view.FileSearchDialog;
 import com.rockchips.mediacenter.view.FileSortDialog;
 import com.rockchips.mediacenter.view.OprationProgressDialog;
 import com.rockchips.mediacenter.view.PreviewWidget;
@@ -132,7 +137,8 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	 * 文件重命名对话框
 	 */
 	private FileRenameDialog mRenameDialog;	
-	
+	/**文件搜索对话框*/
+	private FileSearchDialog mFileSearchDialog;
 	/**
 	 * Bitmap内存缓存器
 	 */
@@ -164,6 +170,12 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	private int mSortWay;
 	/**排序类型*/
 	private int mSortType;
+	/**是否是删除模式*/
+	private boolean mIsDeleteMode;
+	/**选中删除的文件*/
+	private List<FileInfo> mSelectDeleteFileInfos = new ArrayList<>();
+	/**是否是搜索模式*/
+	private boolean mIsSearchMode;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -177,7 +189,17 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
+		Log.i(TAG, "mListFile->onItemclick");
 		FileInfo fileInfo = (FileInfo)parent.getAdapter().getItem(position);
+		if(mIsDeleteMode){
+			CheckBox checkBox = (CheckBox)view.findViewById(R.id.check_select);
+			checkBox.setChecked(!checkBox.isChecked());
+			if(checkBox.isChecked())
+				mSelectDeleteFileInfos.add(fileInfo);
+			else
+				mSelectDeleteFileInfos.remove(fileInfo);
+			return;
+		}
 		if(fileInfo.getType() == ConstData.MediaType.FOLDER){
 			mCurrDirFileInfo = fileInfo;
 			mCurrFolder = fileInfo.getPath();
@@ -222,6 +244,16 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if(keyCode == KeyEvent.KEYCODE_BACK){
+			if(mIsDeleteMode && mCurrDevice.getDeviceType() != ConstData.DeviceType.DEVICE_TYPE_DMS){
+				mIsDeleteMode = false;
+				loadFiles();
+				return true;
+			}
+			if(mIsSearchMode && mCurrDevice.getDeviceType() != ConstData.DeviceType.DEVICE_TYPE_DMS){
+				mIsSearchMode = false;
+				loadFiles();
+				return true;
+			}
 			if(mCurrDevice.getDeviceType() != ConstData.DeviceType.DEVICE_TYPE_DMS && !mCurrFolder.equals(mCurrDevice.getLocalMountPath())){
 				mLastSelectPath = mCurrFolder;
 				if(mCurrMediaType == ConstData.MediaType.FOLDER){
@@ -352,42 +384,25 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 
 	@Override
 	public void onDelete(final FileInfo fileInfo) {
-		FileDeleteTipDialog deleteTipDialog = new FileDeleteTipDialog(this, new FileDeleteTipDialog.CallBack() {
-			@Override
-			public void onOK() {
-				mFileOpTask = new FileOpTask(mCurrDevice, new FileOpTask.CallBack() {
-					@Override
-					public void onFinish(int errorCode) {
-						DialogUtils.closeLoadingDialog();
-						if(errorCode == ConstData.FileOpErrorCode.WRITE_ERR){
-							//没有写权限
-							ToastUtils.showToast(getString(R.string.no_delete_permission));
-						}else if(errorCode == ConstData.FileOpErrorCode.DELETE_PART_FILE_ERR){
-							//部分文件无法删除
-							ToastUtils.showToast(getString(R.string.delete_part_file_error));
-						}else{
-							loadFiles();
-						}
-						
-					}
-					
-					@Override
-					public void onProgress(int value) {
-						
-					}
-				});
-				mFileOpTask.setOpMode(ConstData.FileOpMode.DELETE);
-				DialogUtils.showLoadingDialog(AllFileListActivity.this, false);
-				mFileOpTask.execute(fileInfo);
-			}
-			
-			@Override
-			public void onCancel() {
+		if(ConstData.IS_SUPPORT_MUTIL_DELETE){
+			//如果是删除模式
+			if(mIsDeleteMode){
+				if(mSelectDeleteFileInfos.size() > 0){
+					mIsDeleteMode = false;
+					//显示删除提示
+					showMutiFileDeleteTipDialog();
+				}else{
+					ToastUtils.showToast(getString(R.string.select_delete_files));
+				}
 				
+			}else{
+				mSelectDeleteFileInfos.clear();
+				mIsDeleteMode = true;
+				loadFiles();
 			}
-		});
-		deleteTipDialog.show();
-
+			return;
+		}
+		showSingleFileDeleteTipDialog(fileInfo);
 	}
 
 
@@ -489,7 +504,50 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 					}
 				}
 			});
+		else
+			mFileSortDialog.focusSortWayList();
 		mFileSortDialog.show();
+	}
+	
+	@Override
+	public void onSearch(FileInfo fileInfo) {
+		if(mFileSearchDialog == null)
+			mFileSearchDialog = new FileSearchDialog(this, new FileSearchDialog.Callback() {
+				
+				@Override
+				public void onOk(String text) {
+					mIsSearchMode = true;
+					DialogUtils.showLoadingDialog(AllFileListActivity.this, false);
+					//启动搜索异步块
+					FileSearchTask searchTask = new FileSearchTask(mLoadFileInfos, new FileSearchTask.Callback() {
+						
+						@Override
+						public void OnFinished(List<FileInfo> resultFileInfos) {
+							DialogUtils.closeLoadingDialog();
+							if(resultFileInfos != null && resultFileInfos.size() > 0){
+								mLayoutContentPage.setVisibility(View.VISIBLE);
+								mLayoutNoFiles.setVisibility(View.GONE);
+								mListFile.requestFocus();
+								mAllFileListAdapter = new AllFileListAdapter(AllFileListActivity.this, R.layout.adapter_file_list_item, resultFileInfos);
+								mAllFileListAdapter.setIsDeleteMode(mIsDeleteMode);
+								mListFile.setAdapter(mAllFileListAdapter);
+								if(!TextUtils.isEmpty(mLastSelectPath)){
+									int position = getFilePosition(mLastSelectPath, resultFileInfos);
+									mListFile.setSelection(position);
+								}
+							}else{
+								mTextFileName.setText("");
+								mLayoutContentPage.setVisibility(View.GONE);
+								mLayoutNoFiles.setVisibility(View.VISIBLE);
+							}
+						}
+					});
+					searchTask.execute(text);
+				}
+			});
+		else
+			mFileSearchDialog.focusInputSearch();
+		mFileSearchDialog.show();
 	}
 	
     public void initDataAndView(){
@@ -630,6 +688,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 					mLayoutNoFiles.setVisibility(View.GONE);
 					mListFile.requestFocus();
 					mAllFileListAdapter = new AllFileListAdapter(AllFileListActivity.this, R.layout.adapter_file_list_item, fileInfos);
+					mAllFileListAdapter.setIsDeleteMode(mIsDeleteMode);
 					mListFile.setAdapter(mAllFileListAdapter);
 					if(!TextUtils.isEmpty(mLastSelectPath)){
 						int position = getFilePosition(mLastSelectPath, fileInfos);
@@ -1012,6 +1071,90 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 		}
 		
 		return container;
+	}
+	
+	/**
+	 * 显示单个文件删除提示
+	 */
+	private void showSingleFileDeleteTipDialog(final FileInfo fileInfo){
+		FileDeleteTipDialog deleteTipDialog = new FileDeleteTipDialog(this, new FileDeleteTipDialog.CallBack() {
+			@Override
+			public void onOK() {
+				mFileOpTask = new FileOpTask(mCurrDevice, new FileOpTask.CallBack() {
+					@Override
+					public void onFinish(int errorCode) {
+						DialogUtils.closeLoadingDialog();
+						if(errorCode == ConstData.FileOpErrorCode.WRITE_ERR){
+							//没有写权限
+							ToastUtils.showToast(getString(R.string.no_delete_permission));
+						}else if(errorCode == ConstData.FileOpErrorCode.DELETE_PART_FILE_ERR){
+							//部分文件无法删除
+							ToastUtils.showToast(getString(R.string.delete_part_file_error));
+						}else{
+							loadFiles();
+						}
+						
+					}
+					
+					@Override
+					public void onProgress(int value) {
+						
+					}
+				});
+				mFileOpTask.setOpMode(ConstData.FileOpMode.DELETE);
+				DialogUtils.showLoadingDialog(AllFileListActivity.this, false);
+				mFileOpTask.execute(fileInfo);
+			}
+			
+			@Override
+			public void onCancel() {
+				
+			}
+		});
+		deleteTipDialog.show();
+	}
+	/**
+	 * 显示多文件删除提示对话框
+	 */
+	private void showMutiFileDeleteTipDialog(){
+		FileDeleteTipDialog deleteTipDialog = new FileDeleteTipDialog(this, new FileDeleteTipDialog.CallBack() {
+			@Override
+			public void onOK() {
+				DialogUtils.showLoadingDialog(AllFileListActivity.this, false);
+				FileMutiDeleteTask mutiDeleteTask = new FileMutiDeleteTask(new FileMutiDeleteTask.Callback() {
+					
+					@Override
+					public void onProgress(int value) {						
+					}
+					
+					@Override
+					public void onFinished(int errCode) {
+						DialogUtils.closeLoadingDialog();
+						if(errCode == ConstData.FileOpErrorCode.NO_ERR){
+							//删除成功
+							ToastUtils.showToast(getString(R.string.alerady_delete_select));
+						}else if(errCode == ConstData.FileOpErrorCode.DELETE_PART_FILE_ERR){
+							//部分文件无法删除
+							ToastUtils.showToast(getString(R.string.delete_part_file_error));
+						}else if(errCode == ConstData.FileOpErrorCode.DELETE_ERR){
+							//无法删除文件
+							ToastUtils.showToast(getString(R.string.delete_select_error));
+						}
+						loadFiles();
+					}
+				}, mCurrDevice, mSelectDeleteFileInfos);
+				//启动多文件删除任务
+				mutiDeleteTask.execute();
+			}
+			
+			@Override
+			public void onCancel() {
+				
+			}
+		});
+		deleteTipDialog.setTipText(getString(R.string.delete_selected_files));
+		deleteTipDialog.show();
+	
 	}
 	
 	

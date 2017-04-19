@@ -82,4 +82,9 @@ public class FileSortDialog extends AppBaseDialog implements View.OnClickListene
 			dismiss();
 		}
 	}
+	
+	public void focusSortWayList(){
+		mListSortWay.requestFocus();
+		mListSortWay.setSelection(0);
+	}
 }

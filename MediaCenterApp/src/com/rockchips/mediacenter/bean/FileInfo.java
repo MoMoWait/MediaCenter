@@ -45,6 +45,8 @@ public class FileInfo implements Serializable
 	private String duration;
 	@Column(name = "otherInfo")
 	private String otherInfo;
+	/**是否选中删除*/
+	private boolean isSelectDelete;
 	public int getId() {
 		return id;
 	}
@@ -135,7 +137,12 @@ public class FileInfo implements Serializable
 	public void setDuration(String duration) {
 		this.duration = duration;
 	}
-	
+	public boolean isSelectDelete() {
+		return isSelectDelete;
+	}
+	public void setSelectDelete(boolean isSelectDelete) {
+		this.isSelectDelete = isSelectDelete;
+	}
 	/**
 	 * 是否是媒体文件类型
 	 * @return

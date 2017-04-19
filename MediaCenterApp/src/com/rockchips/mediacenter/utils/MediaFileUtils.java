@@ -114,6 +114,8 @@ public class MediaFileUtils {
     
         for (Token token : tokens)
         { 
+        	//Log.i(TAG, "token->source:" + token.source);
+        	//Log.i(TAG, "token->target:" + token.target);
            if (token.type == Token.PINYIN) 
            { 
                result.append(token.target); 
@@ -127,6 +129,38 @@ public class MediaFileUtils {
         return result.toString(); 
     }
 	
+    /**
+     * 获取拼音首字母列表
+     * @param souce
+     * @return
+     */
+    public static List<String> getHeadPinyins(String source){
+    	List<String> heads = new ArrayList<>();
+        ArrayList<Token> tokens = HanziToPinyin.getInstance().get(source); 
+        if (tokens == null || tokens.size() == 0) 
+        { 
+           return null; 
+        } 
+    
+        String itemHead = "";
+        for (Token token : tokens)
+        { 
+        	Log.i(TAG, "token->source:" + token.source);
+        	Log.i(TAG, "token->target:" + token.target);
+           if (token.type == Token.PINYIN) 
+           { 
+        	   itemHead += token.target.substring(0, 1);
+           } 
+           else 
+           { 
+        	   if(!TextUtils.isEmpty(itemHead))
+        		   heads.add(itemHead);
+               itemHead = "";
+           } 
+        }
+        return heads;
+    }
+    
     
     /**
      * 获取文件的大小
@@ -710,6 +744,22 @@ public class MediaFileUtils {
     	}
     	return mediaInfos;
     }
+    
+    public static LocalMediaInfo getLocalMediaInfo(FileInfo fileInfo, Device device){
+		LocalMediaInfo localMediaInfo = new LocalMediaInfo();
+		localMediaInfo.setmFileName(fileInfo.getName());
+		localMediaInfo.setmParentPath(fileInfo.getParentPath());
+		localMediaInfo.setmModifyDate((int) (fileInfo.getModifyTime() / 1000));
+		localMediaInfo.setmPinyin(MediaFileUtils.getFullPinYin(fileInfo.getName()));
+		localMediaInfo.setmDeviceType(device.getDeviceType());
+		localMediaInfo.setmPhysicId(device.getDeviceName());
+		localMediaInfo.setmFileSize(fileInfo.getSize());
+		localMediaInfo.setmFiles(0);
+		localMediaInfo.setmFileType(fileInfo.getType());
+		localMediaInfo.setmResUri(fileInfo.getPath());
+		return localMediaInfo;
+    }
+    
     /**
      * 过滤指定类型的文件
      * @param fileInfos
