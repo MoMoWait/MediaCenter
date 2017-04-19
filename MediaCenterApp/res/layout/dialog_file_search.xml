@@ -17,10 +17,10 @@
         android:gravity="center"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:text="@string/file_op_rename"/>
+        android:text="@string/file_op_search"/>
     
     <EditText
-        android:id="@+id/edit_file_name"
+        android:id="@+id/edit_search"
         android:layout_width="match_parent"
         android:inputType="textUri" 
         android:layout_height="40dp"

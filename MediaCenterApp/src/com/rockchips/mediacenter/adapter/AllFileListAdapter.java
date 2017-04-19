@@ -1,10 +1,6 @@
 package com.rockchips.mediacenter.adapter;
-
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import com.rockchips.mediacenter.bean.FileInfo;
-import com.rockchips.mediacenter.bean.LocalMediaFile;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.R;
 import android.content.Context;
@@ -12,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,6 +20,7 @@ public class AllFileListAdapter extends ArrayAdapter<FileInfo> {
 
 	private int mResourceId = 0;
 	private LayoutInflater mInflater;
+	private boolean mIsDeleteMode;
 	public AllFileListAdapter(Context context, int resource, List<FileInfo> objects) {
 		super(context, resource, objects);
 		mResourceId = resource;
@@ -34,6 +32,9 @@ public class AllFileListAdapter extends ArrayAdapter<FileInfo> {
 		if(convertView == null){
 			convertView = mInflater.inflate(mResourceId, parent, false);
 			ViewHolder viewHolder = new ViewHolder();
+			viewHolder.checkSelect = (CheckBox)convertView.findViewById(R.id.check_select);
+			if(mIsDeleteMode)
+				viewHolder.checkSelect.setVisibility(View.VISIBLE);
 			viewHolder.imgFileIcon =  (ImageView)convertView.findViewById(R.id.img_file_icon);
 			viewHolder.textFileName = (TextView)convertView.findViewById(R.id.text_file_name);
 			convertView.setTag(viewHolder);
@@ -55,10 +56,16 @@ public class AllFileListAdapter extends ArrayAdapter<FileInfo> {
 			holder.imgFileIcon.setImageResource(R.drawable.unknow_file_type);
 		}
 		holder.textFileName.setText(fileInfo.getName());
+		holder.checkSelect.setChecked(fileInfo.isSelectDelete());
 		return convertView;
 	}
 	
+	public void setIsDeleteMode(boolean isDeleteMode){
+		mIsDeleteMode = isDeleteMode;
+	}
+	
 	final class ViewHolder{
+		CheckBox checkSelect;
 		ImageView imgFileIcon;
 		TextView textFileName;
 	}

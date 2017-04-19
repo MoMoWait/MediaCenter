@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/common_grey_dailog_background"
+    android:orientation="horizontal"
+    android:padding="20dp"
+    android:baselineAligned="false"
+    android:gravity="center_vertical">
+    <GridView
+        android:id="@+id/grid_image"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:columnWidth="120dp"
+        android:gravity="center"
+        android:horizontalSpacing="10dp"
+        android:listSelector="@drawable/common_list_background"
+        android:numColumns="auto_fit"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="10dp"/>
+
+    <LinearLayout
+        android:id="@+id/layout_control"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/btn_ok"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/common_btn_background"
+            android:text="@string/ok" />
+
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/common_btn_background"
+            android:text="@string/cancel" />
+    </LinearLayout>
+    
+   	<TextView 
+   	    android:id="@+id/text_no_image"
+   	    android:layout_width="wrap_content"
+   	    android:layout_height="wrap_content"
+   	    android:textColor="@android:color/white"
+   	    android:textSize="25sp"
+   	    android:text="@string/currdevice_no_images"
+   	    android:visibility="gone"/>
+</LinearLayout>

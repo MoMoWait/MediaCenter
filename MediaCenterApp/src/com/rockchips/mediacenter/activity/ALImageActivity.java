@@ -14,7 +14,6 @@ import java.util.List;
 import org.xutils.view.annotation.ViewInject;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;

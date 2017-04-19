@@ -41,6 +41,7 @@ public class FileOpDialog extends AppBaseDialog implements OnItemClickListener{
 		void onPaste(FileInfo fileInfo);
 		void onRename(FileInfo fileInfo);
 		void onSort(FileInfo fileInfo);
+		void onSearch(FileInfo fileInfo);
 	}
 	
 	private Callback mCallback;
@@ -132,6 +133,10 @@ public class FileOpDialog extends AppBaseDialog implements OnItemClickListener{
 			dismiss();
 			break;
 		case 5:
+			mCallback.onSearch(mFileInfo);
+			dismiss();
+			break;
+		case 6:
 			mCallback.onPaste(mFileInfo);
 			dismiss();
 			break;

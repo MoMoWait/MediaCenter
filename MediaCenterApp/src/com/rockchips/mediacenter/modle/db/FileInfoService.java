@@ -1,6 +1,5 @@
 package com.rockchips.mediacenter.modle.db;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import org.xutils.db.sqlite.WhereBuilder;
 import com.rockchips.mediacenter.application.MediaCenterApplication;
@@ -122,6 +121,18 @@ public class FileInfoService extends AppBeanService<FileInfo> {
 		try {
 			fileInfos = MediaCenterApplication.mDBManager.selector(FileInfo.class).where("type", "=", mediaType).
 			and("deviceID", "=", deviceID).and("parentPath", "=", parentPath).orderBy("name", false).findAll();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return fileInfos;
+	
+	}
+	
+	public List<FileInfo> getFileInfos(String deviceID, int mediaType){
+		List<FileInfo> fileInfos = null;
+		try {
+			fileInfos = MediaCenterApplication.mDBManager.selector(FileInfo.class).where("type", "=", mediaType).
+			and("deviceID", "=", deviceID).orderBy("name", false).findAll();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -48,6 +48,7 @@ import android.widget.TextView;
 import com.rockchips.mediacenter.R;
 import com.rockchips.mediacenter.service.LocalDeviceManager;
 import com.rockchips.mediacenter.bean.Device;
+import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.bean.LocalDeviceInfo;
 import com.rockchips.mediacenter.bean.LocalMediaInfo;
 import com.rockchips.mediacenter.data.ConstData;
@@ -61,6 +62,7 @@ import com.rockchips.mediacenter.utils.DateUtil;
 import com.rockchips.mediacenter.utils.ID3V2;
 import com.rockchips.mediacenter.utils.IICLOG;
 import com.rockchips.mediacenter.utils.Lyric;
+import com.rockchips.mediacenter.utils.MediaFileUtils;
 import com.rockchips.mediacenter.utils.SearchLrc;
 import com.rockchips.mediacenter.utils.UriTexture;
 import com.rockchips.mediacenter.bean.PlayStateInfo;
@@ -85,6 +87,7 @@ import com.rockchips.mediacenter.view.AudioSettingsDialog;
 import com.rockchips.mediacenter.view.ListSelectItem;
 import com.rockchips.mediacenter.view.ListSelectPopup;
 import com.rockchips.mediacenter.view.ListSelectPopup.OnSelectPopupListener;
+import com.rockchips.mediacenter.view.BackgroundPhotoDialog;
 import com.rockchips.mediacenter.view.BottomPopMenu;
 import com.rockchips.mediacenter.view.MenuCategory;
 import com.rockchips.mediacenter.view.MenuItemImpl;
@@ -382,10 +385,9 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     // 获取背景图片标志
     private void getBackgroundPicFlag()
     {
-       /* SharedPreferences sp = getAudioSettingsSharedPreferences();
+        SharedPreferences sp = getAudioSettingsSharedPreferences();
         boolean flag = sp.getBoolean("isShowBackgroundPic", true);
-        mStIsShowBackgroundPic = flag;*/
-    	mStIsShowBackgroundPic = false;
+        mStIsShowBackgroundPic = flag;
     }
 
     // 设置背景图片是否开启
@@ -3004,55 +3006,47 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         ArrayList<MenuItemImpl> itemImpls = null;
         MenuItemImpl item = null;
         mPopMenu.clearCategories();
-        /**
-         * 切换方式
-         */
-        menuCgy = new MenuCategory();
-        menuCgy.setCategoryName(getResources().getString(R.string.play_mode_audio));
-        itemImpls = new ArrayList<MenuItemImpl>();
-        // 随机播放
-        item = new MenuItemImpl(this, 1, ENUMLAYOUTDISPLAYTYPE.ENUM_RANDOM_PLAY, R.drawable.menu_btn_item_icon, 1, 1, getResources().getString(
-                R.string.play_mode_random_play));
-        itemImpls.add(item);
+        if (isPlayMode){
+            menuCgy = new MenuCategory();
+            menuCgy.setCategoryName(getResources().getString(R.string.play_mode_audio));
+            itemImpls = new ArrayList<MenuItemImpl>();
+            // 随机播放
+            item = new MenuItemImpl(this, 1, ENUMLAYOUTDISPLAYTYPE.ENUM_RANDOM_PLAY, R.drawable.menu_btn_item_icon, 1, 1, getResources().getString(
+                    R.string.play_mode_random_play));
+            itemImpls.add(item);
 
-        // 循环播放
-        item = new MenuItemImpl(this, 1, ENUMLAYOUTDISPLAYTYPE.ENUM_LOOP_PLAY, R.drawable.menu_btn_item_icon, 1, 1, getResources().getString(
-                R.string.play_mode_loop_play));
-        itemImpls.add(item);
+            // 循环播放
+            item = new MenuItemImpl(this, 1, ENUMLAYOUTDISPLAYTYPE.ENUM_LOOP_PLAY, R.drawable.menu_btn_item_icon, 1, 1, getResources().getString(
+                    R.string.play_mode_loop_play));
+            itemImpls.add(item);
 
-        // 顺序播放
-        item = new MenuItemImpl(this, 1, ENUMLAYOUTDISPLAYTYPE.ENUM_SEQUENTIAL_PLAY, R.drawable.menu_btn_item_icon, 1, 1, getResources().getString(
-                R.string.play_mode_sequence_play));
-        itemImpls.add(item);
+            // 顺序播放
+            item = new MenuItemImpl(this, 1, ENUMLAYOUTDISPLAYTYPE.ENUM_SEQUENTIAL_PLAY, R.drawable.menu_btn_item_icon, 1, 1, getResources().getString(
+                    R.string.play_mode_sequence_play));
+            itemImpls.add(item);
 
-        // 单曲循环
-        item = new MenuItemImpl(this, 1, ENUMLAYOUTDISPLAYTYPE.ENUM_SINGLE_PLAY, R.drawable.menu_btn_item_icon, 1, 1, getResources().getString(
-                R.string.play_mode_single_play));
-        itemImpls.add(item);
-        menuCgy.setMenuItems(itemImpls);
-        menuCgy.setSelectIndex(getMenuIndex(AudioPlayStateInfo.getPlayMode()));
-        if (isPlayMode)
-        	mPopMenu.addMenuCategory(menuCgy);
-        // 要播放背景图片时，请打开下面注释的代码
-        /**
-         * 播放背景
-         */
-/*        menuCgy = new MenuCategory();
-        menuCgy.setCategoryName(getResources().getString(R.string.background_pics));
-        itemImpls = new ArrayList<MenuItemImpl>();
-        // 关闭播放背景
-        item = new MenuItemImpl(this, 1, ENUMLAYOUTDISPLAYTYPE.ENUM_CLOSE_BACKGROUND_PIC, R.drawable.menu_btn_item_icon, 1, 1, getResources()
-                .getString(R.string.close));
-        itemImpls.add(item);
-        // 打开播放背景
-        item = new MenuItemImpl(this, 1, ENUMLAYOUTDISPLAYTYPE.ENUM_OPEN_BACKGROUND_PIC, R.drawable.menu_btn_item_icon, 1, 1, getResources()
-                .getString(R.string.open_album));
-        itemImpls.add(item);
-        menuCgy.setMenuItems(itemImpls);
-        menuCgy.setSelectIndex(mStIsShowBackgroundPic ? 1 : 0);
-        if (!isPlayMode)
+            // 单曲循环
+            item = new MenuItemImpl(this, 1, ENUMLAYOUTDISPLAYTYPE.ENUM_SINGLE_PLAY, R.drawable.menu_btn_item_icon, 1, 1, getResources().getString(
+                    R.string.play_mode_single_play));
+            itemImpls.add(item);
+            menuCgy.setMenuItems(itemImpls);
+            menuCgy.setSelectIndex(getMenuIndex(AudioPlayStateInfo.getPlayMode()));
             mPopMenu.addMenuCategory(menuCgy);
-*/
+        }else{
+        	menuCgy = new MenuCategory();
+            menuCgy.setCategoryName(getResources().getString(R.string.background_pics));
+            itemImpls = new ArrayList<MenuItemImpl>();
+            // 关闭播放背景
+            item = new MenuItemImpl(this, 1, ENUMLAYOUTDISPLAYTYPE.ENUM_CLOSE_BACKGROUND_PIC, R.drawable.menu_btn_item_icon, 1, 1, getResources()
+                    .getString(R.string.close));
+            itemImpls.add(item);
+            // 打开播放背景
+            item = new MenuItemImpl(this, 1, ENUMLAYOUTDISPLAYTYPE.ENUM_OPEN_BACKGROUND_PIC, R.drawable.menu_btn_item_icon, 1, 1, getResources().getString(R.string.open_album));
+            itemImpls.add(item);
+            menuCgy.setMenuItems(itemImpls);
+            menuCgy.setSelectIndex(mStIsShowBackgroundPic ? 1 : 0);
+            mPopMenu.addMenuCategory(menuCgy);
+        }
         openMenu();
     }
 
@@ -3131,7 +3125,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     private String getDeviceId()
     {
         /** 解析intent获取设备id 用于获取数据 */
-        Bundle bundle = getIntent().getBundleExtra(LocalDeviceInfo.DEVICE_EXTRA_NAME);
+/*        Bundle bundle = getIntent().getBundleExtra(LocalDeviceInfo.DEVICE_EXTRA_NAME);
         Log.d(TAG, "parseIntent---bundle==" + bundle);
         String deviceId = null;
         if (bundle != null)
@@ -3145,18 +3139,13 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
             { // U盘设备类型 SD盘设备类型,返回的类型为string
                 deviceId = bundle.getString(LocalDeviceInfo.MOUNT_PATH);
             }
-        }
-        return deviceId;
+        }*/
+        return mCurrentDevice.getDeviceID();
     }
 
     private int getmDeviceType()
     {
-        Bundle bundle = getIntent().getBundleExtra(LocalDeviceInfo.DEVICE_EXTRA_NAME);
-        if (bundle == null)
-        {
-            return ConstData.DeviceType.DEVICE_TYPE_UNKNOWN;
-        }
-        return bundle.getInt("devices_type");
+    	return mCurrentDevice.getDeviceType();
     }
 
     private void createBottomPopMenu()
@@ -3197,8 +3186,8 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         {
             mBottomPopMenu.add(1, ENUMLAYOUTDISPLAYTYPE.ENUM_AUDIO_PLAY_MODE, R.drawable.menu_icon_audio_play_mode, 1, 1,
                     getResources().getString(R.string.play_mode_audio));
-            //mBottomPopMenu.add(2, ENUMLAYOUTDISPLAYTYPE.ENUM_AUDIO_PLAY_BACKGROUND, R.drawable.menu_icon_background_pic, 2, 2, getResources()
-             //       .getString(R.string.background_pics));
+            mBottomPopMenu.add(2, ENUMLAYOUTDISPLAYTYPE.ENUM_AUDIO_PLAY_BACKGROUND, R.drawable.menu_icon_background_pic, 2, 2, getResources()
+                    .getString(R.string.background_pics));
         }
         /* END: Modified by c00224451 for DTS2014031902972 2014/3/19 */
     }
@@ -3372,7 +3361,35 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                 break;
 
             case ENUM_OPEN_BACKGROUND_PIC:
-                MenuItemImpl menuFocusItem = mPopMenu.getCurrentFocusItemImpl();
+            	mStIsShowBackgroundPic = false;
+                setBackgroundPicFlag(true);
+                mBackgroundRet = false;
+                mUiHandler.removeMessages(MSG_SHOW_BACKGRPUND_PICS);
+            	BackgroundPhotoDialog backgroundPhotoDialog = new BackgroundPhotoDialog(this, mCurrentDevice, new BackgroundPhotoDialog.Callback() {
+					
+					@Override
+					public void onFinished(List<FileInfo> fileInfos) {
+				        Set<String> urls = new HashSet<String>();
+				        mMediaList.clear();
+				        for (FileInfo fileInfo : fileInfos){
+				            mMediaList.add(MediaFileUtils.getLocalMediaInfo(fileInfo, mCurrentDevice));
+				            urls.add(fileInfo.getPath());
+				        }            
+				        saveBgPicImageUrls(urls);
+				        saveBgPicDeviceId(getDeviceId());
+				        PlayStateInfo.setBackgroundImages(mMediaList);
+				        mImagePlayStateInfo.setMediaFileList(mMediaList);
+				      /*  Log.d(TAG, "showImageSelectDialog: onListSelected()=" + PlayStateInfo.getDevIdForSelectImg() + ",getDeviceId()=" + getDeviceId()
+				                + ",selectedIdxList.size()=" + selectedIdxList.size());*/
+				        PlayStateInfo.setDevIdForSelectImg(getDeviceId());
+				        //PlayStateInfo.setSelectedImgIdxListForAudioPlayer(selectedIdxList);
+				        mImagePlayStateInfo.setCurrentIndex(0);
+				        mBackgroundRet = true;
+				        showBackgroundPics(true);
+					}
+				});
+            	backgroundPhotoDialog.show();
+             /*   MenuItemImpl menuFocusItem = mPopMenu.getCurrentFocusItemImpl();
                 mStIsShowBackgroundPic = false;
                 // xWX184171 DTS2014021910705 需要断电保存
                 setBackgroundPicFlag(true);
@@ -3398,7 +3415,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                         showImageSelectDialog();
                         mUiHandler.removeMessages(MSG_SHOW_BACKGRPUND_PICS);
                     }
-                }
+                }*/
                 break;
 
             case ENUM_CLOSE_BACKGROUND_PIC:

@@ -357,6 +357,7 @@
     <string name="file_op_paste">Paste</string>
     <string name="file_op_rename">Rename</string>
     <string name="file_op_sort">Sort</string>
+    <string name="file_op_search">Search</string>
     <string name="enter_new_file_name">Enter new file name</string>
     <string name="no_svq">No SVQ</string>
     
@@ -403,4 +404,11 @@
     <string name="increasing">Increasing</string>
     <string name="descending">Descending</string>
     <string name="sort">Sort</string>
+    <string name="delete_selected_files">Confirm delete selected files？</string>
+    <string name="select_delete_files">Please select files yous need delete</string>
+    <string name="alerady_delete_select">The selected files has deleted</string>
+    <string name="delete_select_error">Can not delete the selected files</string>
+    <string name="enter_search_content">Please input search text</string>
+    <string name="currdevice_no_images">Current device not contain images</string>
+    <string name="sel_back_photo">Please select background photos</string>
 </resources>

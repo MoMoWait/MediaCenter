@@ -34,6 +34,7 @@
         <item>@string/file_op_move</item>
         <item>@string/file_op_rename</item>
         <item>@string/file_op_sort</item>
+        <item>@string/file_op_search</item>
         <item>@string/file_op_paste</item>
     </string-array>
     
@@ -44,6 +45,7 @@
         <item>@string/file_op_move</item>
         <item>@string/file_op_rename</item>
         <item>@string/file_op_sort</item>
+        <item>@string/file_op_search</item>
     </string-array>
     
     <!-- 文件操作，只有paste -->
