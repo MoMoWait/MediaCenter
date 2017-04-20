@@ -3,9 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_01" >
-
+    
+    <com.rockchips.mediacenter.view.BackPhotoImgSwitcher 
+        android:id="@+id/switcher_back_photo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:inAnimation="@android:anim/fade_in"
+        android:outAnimation="@android:anim/fade_out"/>
+    
     <!-- 音乐播放界面整体布局文件 -->
-
     <LinearLayout
         android:id="@+id/parent_linear"
         android:layout_width="match_parent"

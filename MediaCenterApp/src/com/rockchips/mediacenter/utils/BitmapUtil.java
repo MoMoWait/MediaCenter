@@ -8,6 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
+import android.R.integer;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -639,4 +640,52 @@ public final class BitmapUtil
         return targBitmap;
     }
 
+	public static Bitmap getScaledBitmapFromFile(String path,int targetWidth,int targetHeight){
+		File file = new File(path);
+		if(!file.exists())
+			return null;
+		BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inJustDecodeBounds = true;
+		BitmapFactory.decodeFile(path, options);
+	    int	originWidth = options.outWidth;
+	    int originHeight = options.outHeight;
+	    int scaleX = originWidth/targetWidth;
+	    int scaleY = originHeight/targetHeight;
+	    int scale = Math.max(scaleX, scaleY);
+	    if(scale < 1)
+	    	scale = 1;
+	    options.inSampleSize = scale;
+	    options.inJustDecodeBounds = false;
+	    Bitmap targetBitmap = null;
+	    try{
+	    	targetBitmap = BitmapFactory.decodeFile(path, options);
+	    }catch(OutOfMemoryError error){
+	    	
+	    }
+	    return targetBitmap;
+	}
+	
+	public static Bitmap getScaledBitmapFromResource(Resources resources, int resID, int targetWidth,int targetHeight){
+
+		BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inJustDecodeBounds = true;
+		BitmapFactory.decodeResource(resources, resID, options);
+	    int	originWidth = options.outWidth;
+	    int originHeight = options.outHeight;
+	    int scaleX = (2 * originWidth - 1)/targetWidth;
+	    int scaleY = ( 2* originHeight - 1)/targetHeight;
+	    int scale = Math.max(scaleX, scaleY);
+	    if(scale < 1)
+	    	scale = 1;
+	    options.inSampleSize = scale;
+	    options.inJustDecodeBounds = false;
+	    Bitmap targetBitmap = null;
+	    try{
+	    	targetBitmap = BitmapFactory.decodeResource(resources, resID, options);
+	    }catch(OutOfMemoryError error){
+	    	
+	    }
+	    return targetBitmap;
+	}
+    
 }

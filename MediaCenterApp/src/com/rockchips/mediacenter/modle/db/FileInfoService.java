@@ -5,6 +5,7 @@ import org.xutils.db.sqlite.WhereBuilder;
 import com.rockchips.mediacenter.application.MediaCenterApplication;
 import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.bean.FileInfo;
+import com.rockchips.mediacenter.bean.LocalDevice;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.utils.MediaFileUtils;
 
@@ -133,6 +134,26 @@ public class FileInfoService extends AppBeanService<FileInfo> {
 		try {
 			fileInfos = MediaCenterApplication.mDBManager.selector(FileInfo.class).where("type", "=", mediaType).
 			and("deviceID", "=", deviceID).orderBy("name", false).findAll();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return fileInfos;
+	
+	}
+	
+	public List<FileInfo> getLocalFileInfos(int mediaType){
+		List<FileInfo> fileInfos = new ArrayList<>();
+		try {
+			List<Device> allLocalDevices = new DeviceService().getAllLocalDevices();
+			if(allLocalDevices != null && allLocalDevices.size() > 0){
+				
+				for(Device itemDevice : allLocalDevices){
+					List<FileInfo> itemFileInfos = MediaCenterApplication.mDBManager.selector(FileInfo.class).where("type", "=", mediaType).
+							and("deviceID", "=", itemDevice.getDeviceID()).orderBy("name", false).findAll();
+					fileInfos.addAll(itemFileInfos);
+				}
+				
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

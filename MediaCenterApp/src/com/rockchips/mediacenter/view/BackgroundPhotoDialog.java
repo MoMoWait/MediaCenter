@@ -71,7 +71,7 @@ public class BackgroundPhotoDialog extends AppBaseDialog implements OnDismissLis
 			@Override
 			protected List<FileInfo> doInBackground(Void... params) {
 				FileInfoService fileInfoService = new FileInfoService();
-				return fileInfoService.getFileInfos(mCurrDevice.getDeviceID(), ConstData.MediaType.IMAGE);
+				return fileInfoService.getLocalFileInfos(ConstData.MediaType.IMAGE);
 			}
 			
 			@Override
