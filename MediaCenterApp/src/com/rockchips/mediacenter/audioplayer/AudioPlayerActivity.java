@@ -8,10 +8,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
+import momo.cn.edu.fjnu.androidutils.data.CommonValues;
 import momo.cn.edu.fjnu.androidutils.utils.DeviceInfoUtils;
 import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
 import android.content.Context;
@@ -23,11 +21,13 @@ import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.os.SystemClock;
+import android.os.AsyncTask.Status;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
@@ -36,7 +36,9 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
+import android.widget.ImageSwitcher;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.PopupWindow;
@@ -45,16 +47,15 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
+import android.widget.ViewSwitcher;
 import com.rockchips.mediacenter.R;
 import com.rockchips.mediacenter.service.LocalDeviceManager;
+import com.rockchips.mediacenter.bean.BackMusicPhotoInfo;
 import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.bean.FileInfo;
-import com.rockchips.mediacenter.bean.LocalDeviceInfo;
 import com.rockchips.mediacenter.bean.LocalMediaInfo;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.data.ConstData.AudioPlayerMsg;
-import com.rockchips.mediacenter.data.ConstData.EBrowerType;
-import com.rockchips.mediacenter.data.ConstData.MediaType;
 import com.rockchips.mediacenter.data.ConstData.PlayState;
 import com.rockchips.mediacenter.utils.BitmapUtil;
 import com.rockchips.mediacenter.utils.CharsetUtils;
@@ -62,10 +63,7 @@ import com.rockchips.mediacenter.utils.DateUtil;
 import com.rockchips.mediacenter.utils.ID3V2;
 import com.rockchips.mediacenter.utils.IICLOG;
 import com.rockchips.mediacenter.utils.Lyric;
-import com.rockchips.mediacenter.utils.MediaFileUtils;
 import com.rockchips.mediacenter.utils.SearchLrc;
-import com.rockchips.mediacenter.utils.UriTexture;
-import com.rockchips.mediacenter.bean.PlayStateInfo;
 import com.rockchips.mediacenter.service.IMediaPlayerAdapter;
 import com.rockchips.mediacenter.service.IVideoViewAdapter;
 import com.rockchips.mediacenter.bean.AudioInfoOfVideo;
@@ -81,9 +79,12 @@ import com.rockchips.mediacenter.audioplayer.AudioPlayStateInfo.OnPlayListSyncCo
 import com.rockchips.mediacenter.dobly.DoblyPopWin;
 import com.rockchips.mediacenter.imageplayer.DLNAImageSwitcher;
 import com.rockchips.mediacenter.imageplayer.DLNAImageSwitcher.DLNAImageSwitcherListener;
+import com.rockchips.mediacenter.modle.task.BackPhotoLoadTask;
+import com.rockchips.mediacenter.modle.task.BackPhotoSaveTask;
 import com.rockchips.mediacenter.retrieve.RetrieveCompleteListener;
 import com.rockchips.mediacenter.retrieve.RetrieveInfoManager;
 import com.rockchips.mediacenter.view.AudioSettingsDialog;
+import com.rockchips.mediacenter.view.BackPhotoImgSwitcher;
 import com.rockchips.mediacenter.view.ListSelectItem;
 import com.rockchips.mediacenter.view.ListSelectPopup;
 import com.rockchips.mediacenter.view.ListSelectPopup.OnSelectPopupListener;
@@ -103,8 +104,7 @@ import com.rockchips.mediacenter.view.WheelView;
 import com.rockchips.mediacenter.utils.StringUtils;
 /**
  */
-public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelChangedListener, OnKeyListener, OnClickListener, OnSelectTypeListener,
-        OnSelectPopupListener, DLNAImageSwitcherListener
+public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelChangedListener, OnKeyListener, OnClickListener, OnSelectTypeListener, DLNAImageSwitcherListener
 {
     private static final String TAG = "AudioPlayer_REAL";
     private IICLOG Log = IICLOG.getInstance();
@@ -159,6 +159,10 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
      * 播放模式显示文本
      */
     private TextView mPlayModeText;
+    /**
+     * 播放背景图切换控件
+     */
+    private  BackPhotoImgSwitcher mSwitcherBackPhoto;
 
     private Object mHandlerLock = new Object();
 
@@ -285,9 +289,6 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     // 菜单
     protected AudioSettingsDialog mPopMenu;
 
-    // 背景图片下标
-    private int mCurrentImageIndex;
-
     // 没有图片时显示的进度条
     private ProgressBar mProgressBar;
 
@@ -326,28 +327,17 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 
     private boolean mIsPicActivityShow;
 
-    private boolean mShowDefaultBg;
-
-    private static boolean mStIsShowBackgroundPic = true;
+    private boolean mNeedShowBackPic = true;
 
     // Sharedpreferences名字
     private static final String PERFS_NAME = "audioSetting";
     
-    private static final String PERFS_DEVICE_TYPE = "PERFS_DEVICE_TYPE";
     private static final String PERFS_DEVICE_ID = "PERFS_DEVICE_ID";
     private static final String PERFS_BG_IMAGE_URLS = "PERFS_BG_IMAGE_URLS";
     
-    private static final int INVALID_VALUE = -1;
-    
     public static AudioPlayerActivity mInstance;
-
-    // zkf61715 当多个菜单选项变化时，而主选不在背景图片这一栏
-    private boolean mBackgroundRet = true; // 为了避免再次进入音乐播放界面时只显示动态背景 初始值设为true
-
     // zkf61715 首次进入播放界面
     private boolean mFirstShowBg = true;
-
-    private Bundle mBundle;
 
     // DTS2014011707941 是否需要在播放之后seek.
     private boolean mIsResumeNeedSeek;
@@ -355,18 +345,27 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     // DTS2014011707941 如果需要seek,这个值就是需要seek到那个位置。
     private int mResumeNeedSeekValue;
 
-    private List<LocalMediaInfo> mMediaList = new ArrayList<LocalMediaInfo>();
-
     protected LocalDeviceManager mLocalDeviceManager;   
     
-    private PlayStateInfo mImagePlayStateInfo;
-
     //    private RetrieveInfoManager mAsyncRetrieveMediaInfo;
     //    private Thread mRetrieveMediaInfoThread;
     private int mMCSSeekTarget = 0;
     private static final int BG_IMAGE_SHOW_DELAY_TIME = 10 * 1000;
     private static final int TOAST_SHOW_TIME = 500;
     private Device mCurrentDevice;
+    private static final int SCREEN_WIDTH = DeviceInfoUtils.getScreenWidth(CommonValues.application);
+    private static final int SCREEN_HEIGHT = DeviceInfoUtils.getScreenHeight(CommonValues.application);
+    private BackPhotoSaveTask mBackPhotoSaveTask;
+    private BackPhotoLoadTask mBackPhotoLoadTask;
+    private List<BackMusicPhotoInfo> mBackMusicPhotoInfos;
+    /**当前背景图*/
+    private int mCurrBackPhotoIndex;
+    /**上一张背景图*/
+    private Bitmap mOldBackBitmap;
+    /**默认背景图*/
+    private Bitmap mDefaultBackBitmap;
+    /**异步加载背景图片任务*/
+    private AsyncTask<Object, Void, Bitmap> mLoadPhotoTask;
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -376,9 +375,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     		mCurrentDevice.setDeviceType(ConstData.DeviceType.DEVICE_TYPE_OTHER);
     	}
         SearchLrc.isInternalPlayer(true);
-        
-        mImagePlayStateInfo = new PlayStateInfo();
-        
+                
         super.onCreate(savedInstanceState);
     }
 
@@ -387,7 +384,8 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     {
         SharedPreferences sp = getAudioSettingsSharedPreferences();
         boolean flag = sp.getBoolean("isShowBackgroundPic", true);
-        mStIsShowBackgroundPic = flag;
+        mNeedShowBackPic = flag;
+        Log.i(TAG, "getBackgroundPicFlag->mNeedShowBackPic:" + mNeedShowBackPic);
     }
 
     // 设置背景图片是否开启
@@ -447,6 +445,12 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     @Override
     protected void onDestroy()
     {
+    	if(mBackPhotoLoadTask != null && mBackPhotoLoadTask.getStatus() == Status.RUNNING){
+    		mBackPhotoLoadTask.cancel(true);
+    	}
+    	if(mBackPhotoSaveTask != null && mBackPhotoLoadTask.getStatus() == Status.RUNNING){
+    		mBackPhotoSaveTask.cancel(true);
+    	}
         Log.d(TAG, "---->enter onDestroy() IN...");
         // zkf61715
         removeUiMessage(MSG_SHOW_BACKGRPUND_PICS);
@@ -492,7 +496,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         if (mBackgroundAudioPreviewWidget.isShown())
         {
             mBackgroundAudioPreviewWidget.hide();
-        }		
+        }
         super.onPause();
     }
 
@@ -562,15 +566,6 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     protected void onNewIntent(Intent intent)
     {
         super.onNewIntent(intent);
-
-        // mResumePlay = false;
-        // AudioPlayer app = (AudioPlayer) this.getApplication();
-        // if (app.getAudioPlayerModule() != null ) {
-        // app.getAudioPlayerModule().stop(true);
-        // }
-
-        // bResumePlay = false;
-        // stop(true);
     }
 
     @Override
@@ -585,21 +580,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         {
             onResume2StartMediaPlayer();
         }
-        Message msg = new Message();
-        msg.what = MSG_SHOW_BACKGRPUND_PICS;
-        boolean fromResume = true;
-        msg.obj = fromResume;
-
-        // zkf61715 DTS2014011516299 10秒显示
-        if (mFirstShowBg)
-        {
-            sendUiMessage(msg, 2 * BG_IMAGE_SHOW_DELAY_TIME);
-        }
-        else
-        {
-            sendUiMessage(msg, BG_IMAGE_SHOW_DELAY_TIME);
-        }
-
+        loadBackPhotos();
         Log.d(TAG, "current deviceId " + mAudioPlayStateInfo.getDeviceId());
     }
 
@@ -613,7 +594,6 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 
     private Object mSeekLock = new Object();
 
-    private static final int SEEK_LEFT_DURATION = 3000;
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
@@ -621,19 +601,10 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         Log.d(TAG, "proc KEYCODE_DPAD_CENTER IN..." + keyCode);
         int targetIndex = -1;
         mNowTick = System.currentTimeMillis();
-        if (mIMPRL.isShown() && keyCode != KeyEvent.KEYCODE_VOLUME_DOWN && keyCode != KeyEvent.KEYCODE_VOLUME_UP)
-        {
-            mIMPRL.setVisibility(View.GONE);
-            mImageSwitcher.setAutoMode(false, 0);
-            if (mBackgroundAudioPreviewWidget.isShown())
-            {
-                mBackgroundAudioPreviewWidget.hide();
-            }
-            return true;
-        }
-
+    	mNoLyricText.setVisibility(View.VISIBLE);
+		mParentLinear.setVisibility(View.VISIBLE);
+		mSwitcherBackPhoto.setImageBitmap(null);
         removeUiMessage(MSG_SHOW_BACKGRPUND_PICS);
-
         switch (keyCode)
         {
             case KeyEvent.KEYCODE_DPAD_CENTER:
@@ -1763,9 +1734,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                 case AudioPlayerMsg.MSG_SYNC_POSTION:
                     // Log.d(TAG,
                     // "---------->proc message AudioPlayerMsg.MSG_SYNC_POSTION()");
-                    requestRefreshCurrentPosition();
-                    int pos = mMusicPlayer.getCurrentPosition();
-                    
+                    requestRefreshCurrentPosition();                    
                     removeLogicalMessage(AudioPlayerMsg.MSG_SYNC_POSTION);
                     sendLogicalMessage(AudioPlayerMsg.MSG_SYNC_POSTION, 300);
 
@@ -1977,7 +1946,6 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                 case AudioPlayerMsg.MSG_REFRESH_ALBUMICON:
                     if (msg.obj != null)
                     {
-                        Bitmap bitmap = (Bitmap) msg.obj;
                         mAlbumInfoView.setImage((Bitmap) msg.obj);
                     }
                     break;
@@ -2054,13 +2022,8 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                     break;
 
                 case MSG_SHOW_BACKGRPUND_PICS:
-                    boolean fromResume = false;
-                    if (msg.obj != null)
-                    {
-                        fromResume = (Boolean) msg.obj;
-                    }
-                    if (mStIsShowBackgroundPic)
-                        showBackgroundPics(fromResume);
+                    if (mNeedShowBackPic)
+                        showBackPic();
                     break;
 
                 case MSG_SETTING_LYRIC:
@@ -3044,7 +3007,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
             item = new MenuItemImpl(this, 1, ENUMLAYOUTDISPLAYTYPE.ENUM_OPEN_BACKGROUND_PIC, R.drawable.menu_btn_item_icon, 1, 1, getResources().getString(R.string.open_album));
             itemImpls.add(item);
             menuCgy.setMenuItems(itemImpls);
-            menuCgy.setSelectIndex(mStIsShowBackgroundPic ? 1 : 0);
+            menuCgy.setSelectIndex(mNeedShowBackPic ? 1 : 0);
             mPopMenu.addMenuCategory(menuCgy);
         }
         openMenu();
@@ -3111,43 +3074,15 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         //Log.i(TAG, "onActivityResult ");
         // TODO Auto-generated method stub
         mIsPicActivityShow = false;
-        if (data != null)
-            mShowDefaultBg = data.getBooleanExtra("hasNoContent", false);
         setImageList();
-        showBackgroundPics(true);
+        showBackPic();
         super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void setImageList()
     {
     }
-
-    private String getDeviceId()
-    {
-        /** 解析intent获取设备id 用于获取数据 */
-/*        Bundle bundle = getIntent().getBundleExtra(LocalDeviceInfo.DEVICE_EXTRA_NAME);
-        Log.d(TAG, "parseIntent---bundle==" + bundle);
-        String deviceId = null;
-        if (bundle != null)
-        {
-            int deviceType = bundle.getInt(LocalDeviceInfo.DEVICE_TYPE);
-            if (ConstData.DeviceType.isDLNADevice(deviceType))
-            { // DMS设备类型
-                deviceId = bundle.getString(LocalDeviceInfo.PHYSIC_ID);
-            }
-            else if (ConstData.DeviceType.isExternalStorage(deviceType))
-            { // U盘设备类型 SD盘设备类型,返回的类型为string
-                deviceId = bundle.getString(LocalDeviceInfo.MOUNT_PATH);
-            }
-        }*/
-        return mCurrentDevice.getDeviceID();
-    }
-
-    private int getmDeviceType()
-    {
-    	return mCurrentDevice.getDeviceType();
-    }
-
+    
     private void createBottomPopMenu()
     {
         if (mBottomPopMenu == null)
@@ -3163,7 +3098,6 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
             // 清空之前备份当前聚焦的MenuItem的ID
             int id = -1;
             id = mBottomPopMenu.getCurrentMenuItem();
-            ArrayList<MenuItemImpl> menuItems = mBottomPopMenu.getCurrentMenuItemImpl();
             mBottomPopMenu.clear();
 
             // 重新加载menu项
@@ -3191,144 +3125,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         }
         /* END: Modified by c00224451 for DTS2014031902972 2014/3/19 */
     }
-
-    private ListSelectPopup mListSelectPopup;
-
-    private void showImageSelectDialog()
-    {
-        if (mListSelectPopup == null)
-        {
-            mListSelectPopup = new ListSelectPopup(this, getDataList(getmDeviceType(), getDeviceId()), getDeviceId(), 1, R.style.DialogCustomizeStyle);
-        }
-        else
-        {
-            mListSelectPopup.initParam();
-        }
-        Log.d(TAG, "showImageSelectDialog: getDevIdForSelectImg()=" + PlayStateInfo.getDevIdForSelectImg() + ",getDeviceId()=" + getDeviceId());
-        if (PlayStateInfo.getDevIdForSelectImg() == null || PlayStateInfo.getDevIdForSelectImg().equals(getDeviceId()))
-        {
-            mListSelectPopup.setSelected(PlayStateInfo.getSelectedImgIdxListForAudioPlayer());
-        }
-        mListSelectPopup.setOnSelectPopupListener(this);
-        mListSelectPopup.setLogoAndTip(R.drawable.image_default, R.string.select_bg_image, R.string.no_album);
-        mListSelectPopup.showDialog();
-    }
-
-    private List<ListSelectItem> getDataList(int deviceType, String deviceId)
-    {
-        List<ListSelectItem> miList = new ArrayList<ListSelectItem>();
-        List<LocalMediaInfo> mediaInfoList = null;
-
-        Bundle bundle = getIntent().getBundleExtra(LocalDeviceInfo.DEVICE_EXTRA_NAME);
-        if (bundle == null)
-        {
-            return null;
-        }
-        /*
-        if (ConstData.DeviceType.isDLNADevice(deviceType))
-        {
-            //Log.i(TAG, "DEVICE_TYPE_DMS");
-            int devId = bundle.getInt(LocalDeviceInfo.DEVICE_ID, -1);
-            if (devId == -1)
-            {
-                return null;
-            }
-            List<DlnaBaseObjectInfo> tmpList = ObjectFactory.getMediaBrowserClient().getFlatFileFolder(devId,
-                    MediaInfoConvertor.LocalType2DlnaType(ConstData.MediaType.IMAGE));
-            mediaInfoList = MediaInfoConvertor.DlnaBaseObjectInfoList2LocalMediaInfoList(tmpList);
-        }*/
-        
-      //else if (deviceType == ConstData.DeviceType.DEVICE_TYPE_U || deviceType == ConstData.DeviceType.DEVICE_TYPE_SD)
-        else if (ConstData.DeviceType.isLocalDevice(deviceType)) 
-        {
-            //Log.i(TAG, "DEVICE_TYPE_U");
-            String mountPath = bundle.getString(LocalDeviceInfo.MOUNT_PATH);
-            mediaInfoList = mLocalDeviceManager.getFlatAVIFile(mountPath, MediaType.IMAGE, 0, 100, EBrowerType.ORDER_TYPE_CHARACTER);
-        }
-        else
-        {
-            //Log.i(TAG, "unknown device type");
-        }
-
-        ListSelectItem item;
-        if (mediaInfoList != null && mediaInfoList.size() != 0)
-        {
-            for (LocalMediaInfo info : mediaInfoList)
-            {
-                item = new ListSelectItem(info.getmFileName(), info.getmFiles() + getString(R.string.image_unit), info);
-                miList.add(item);
-            }
-        }
-        else
-        {
-            //Log.i(TAG, "no Image data in it");
-        }
-
-        return miList;
-    }
-
-    @Override
-    public void onListSelected(List<ListSelectItem> list, ArrayList<Integer> selectedIdxList)
-    {
-        int deviceType = getmDeviceType();
-
-        mMediaList.clear();
-        /*
-        if (ConstData.DeviceType.isDLNADevice(deviceType))
-        {
-            int devId = getDevId();
-            if (devId == -1)
-            {
-                return;
-            }
-
-            for (ListSelectItem mi : list)
-            {
-                LocalMediaInfo info = (LocalMediaInfo) mi.getObject();
-                List<DlnaBaseObjectInfo> tmpList = ObjectFactory.getMediaBrowserClient().getMediaListByTypeInFolder(devId, info.getmObjectId(),
-                        MediaInfoConvertor.LocalType2DlnaType(ConstData.MediaType.IMAGE), EDlnaSortType.DLNA_SORT_TYPE_BY_DATE_DESC);
-
-                List<LocalMediaInfo> localMediaInfoList = MediaInfoConvertor.DlnaBaseObjectInfoList2LocalMediaInfoList(tmpList);
-                if (localMediaInfoList != null && localMediaInfoList.size() > 0)
-                {
-                    mMediaList.addAll(localMediaInfoList);
-                }
-            }
-        }
-      //else if (deviceType == ConstData.DeviceType.DEVICE_TYPE_U || deviceType == ConstData.DeviceType.DEVICE_TYPE_SD)
-        else*/ if (ConstData.DeviceType.isLocalDevice(deviceType)) 
-        {
-            Set<String> urls = new HashSet<String>();
-            for (ListSelectItem mi : list)
-            {
-                LocalMediaInfo info = (LocalMediaInfo) mi.getObject();
-                List<LocalMediaInfo> listflat = getImagesByUrl(info.getUrl());
-                mMediaList.addAll(listflat);
-                urls.add(info.getUrl());
-            }            
-            saveBgPicImageUrls(urls);
-            saveBgPicDeviceId(getDeviceId());
-        }
-        PlayStateInfo.setBackgroundImages(mMediaList);
-        mImagePlayStateInfo.setMediaFileList(mMediaList);
-        Log.d(TAG, "showImageSelectDialog: onListSelected()=" + PlayStateInfo.getDevIdForSelectImg() + ",getDeviceId()=" + getDeviceId()
-                + ",selectedIdxList.size()=" + selectedIdxList.size());
-        PlayStateInfo.setDevIdForSelectImg(getDeviceId());
-        PlayStateInfo.setSelectedImgIdxListForAudioPlayer(selectedIdxList);
-        mImagePlayStateInfo.setCurrentIndex(0);
-        mBackgroundRet = true;
-        showBackgroundPics(true);
-    }
     
-    private List<LocalMediaInfo> getImagesByUrl(String url)
-    {
-        return mLocalDeviceManager.getFlatAVIFileSubWithType(url, MediaType.IMAGE, 0, 100, EBrowerType.ORDER_TYPE_CHARACTER);
-    }
-
-    @Override
-    public void onSelectPopupHide()
-    {
-    }
 
     @Override
     public void onSelectType(MenuItemImpl menuItem)
@@ -3361,65 +3158,21 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                 break;
 
             case ENUM_OPEN_BACKGROUND_PIC:
-            	mStIsShowBackgroundPic = false;
+            	mNeedShowBackPic = false;
                 setBackgroundPicFlag(true);
-                mBackgroundRet = false;
                 mUiHandler.removeMessages(MSG_SHOW_BACKGRPUND_PICS);
             	BackgroundPhotoDialog backgroundPhotoDialog = new BackgroundPhotoDialog(this, mCurrentDevice, new BackgroundPhotoDialog.Callback() {
 					
 					@Override
 					public void onFinished(List<FileInfo> fileInfos) {
-				        Set<String> urls = new HashSet<String>();
-				        mMediaList.clear();
-				        for (FileInfo fileInfo : fileInfos){
-				            mMediaList.add(MediaFileUtils.getLocalMediaInfo(fileInfo, mCurrentDevice));
-				            urls.add(fileInfo.getPath());
-				        }            
-				        saveBgPicImageUrls(urls);
-				        saveBgPicDeviceId(getDeviceId());
-				        PlayStateInfo.setBackgroundImages(mMediaList);
-				        mImagePlayStateInfo.setMediaFileList(mMediaList);
-				      /*  Log.d(TAG, "showImageSelectDialog: onListSelected()=" + PlayStateInfo.getDevIdForSelectImg() + ",getDeviceId()=" + getDeviceId()
-				                + ",selectedIdxList.size()=" + selectedIdxList.size());*/
-				        PlayStateInfo.setDevIdForSelectImg(getDeviceId());
-				        //PlayStateInfo.setSelectedImgIdxListForAudioPlayer(selectedIdxList);
-				        mImagePlayStateInfo.setCurrentIndex(0);
-				        mBackgroundRet = true;
-				        showBackgroundPics(true);
+						saveBackPhotos(fileInfos);
 					}
 				});
             	backgroundPhotoDialog.show();
-             /*   MenuItemImpl menuFocusItem = mPopMenu.getCurrentFocusItemImpl();
-                mStIsShowBackgroundPic = false;
-                // xWX184171 DTS2014021910705 需要断电保存
-                setBackgroundPicFlag(true);
-                mBackgroundRet = true;
-
-                Bundle bundle = getIntent().getBundleExtra(LocalDeviceInfo.DEVICE_EXTRA_NAME);
-                if (bundle == null)
-                {
-                    // 搜索出来的音乐，直接显示默认相册
-                    if (menuFocusItem != null && enumLDT == menuFocusItem.getSelectType())
-                    {
-                        mBackgroundRet = false;
-                    }
-                    mShowDefaultBg = true;
-                    showBackgroundPics(true);
-                }
-                else
-                {
-
-                    if (menuFocusItem != null && enumLDT == menuFocusItem.getSelectType())
-                    {
-                        mBackgroundRet = false;
-                        showImageSelectDialog();
-                        mUiHandler.removeMessages(MSG_SHOW_BACKGRPUND_PICS);
-                    }
-                }*/
                 break;
 
             case ENUM_CLOSE_BACKGROUND_PIC:
-                mStIsShowBackgroundPic = false;
+                mNeedShowBackPic = false;
                 setBackgroundPicFlag(false);
                 removeUiMessage(MSG_SHOW_BACKGRPUND_PICS);
                 if (mIMPRL != null)
@@ -3521,97 +3274,61 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     {
     }
 
-    private void showBackgroundPics(boolean fromResult)
-    {
-        Log.d(TAG, " showBackgroundPics");
-
-        List<LocalMediaInfo> mediaLists;
-        String bgDevId;
-        
-        if (mImageSwitcher == null)
-        {
-            mImageSwitcher = new DLNAImageSwitcher(this);
-            mImageSwitcher.init();
-            UriTexture.setCacheDir(getCacheDir().getAbsolutePath());
-            mImageSwitcher.setBackgroundColor(Color.TRANSPARENT);
-
-            mImageSwitcher.setProgress(mProgressBar);
-            mImageSwitcher.setAnimateFirstView(false);
-            mImageSwitcher.setListener(this);
-            
-            int deviceType = getmDeviceType();
-            if (deviceType == ConstData.DeviceType.DEVICE_TYPE_U || deviceType == ConstData.DeviceType.DEVICE_TYPE_SD)
-            {
-                mediaLists = getBgImagesFromPreferences();
-                bgDevId = getBgPicDeviceId();
-                Log.d(TAG, "cc msg showBackgroundPics bgDevId = " + bgDevId + " getDeviceId() = " + getDeviceId());
-                if (!isListEmpty(mediaLists) && bgDevId != null && bgDevId.equals(getDeviceId()))
-                {                
-                    if (isListEmpty(PlayStateInfo.getBackgroundImages()))
-                    {
-                        PlayStateInfo.setDevIdForSelectImg(bgDevId);
-                        PlayStateInfo.setBackgroundImages(mediaLists);
-                    }                    
-                }
-            }
-            
-            mImagePlayStateInfo.setMediaFileList(PlayStateInfo.getBackgroundImages());
-            mImageSwitcher.setPlayInfo(mImagePlayStateInfo);
-            mImageSwitcher.setInternalPlayer(true);
-            android.widget.RelativeLayout.LayoutParams lp = new android.widget.RelativeLayout.LayoutParams(LayoutParams.FILL_PARENT,
-                    LayoutParams.FILL_PARENT);
-            lp.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-            if (mIMPRL != null)
-            {
-                mIMPRL.addView(mImageSwitcher, lp);
-            }
-        }
-
-        if (!mIMPRL.isShown())
-        {
-            if (fromResult || mBackgroundRet)
-            {
-                mBackgroundRet = false;
-                if (PlayStateInfo.getDevIdForSelectImg() == null || !(PlayStateInfo.getDevIdForSelectImg().equals(getDeviceId()))
-                        || mImagePlayStateInfo.getMediaList().size() == 0)
-                {
-                    mImageSwitcher.setShowDefaultPic(true);
-                }
-                else
-                {
-                    mImageSwitcher.setShowDefaultPic(false);
-                }
-                mImageSwitcher.currImage();
-            }
-            mIMPRL.setVisibility(View.VISIBLE);
-            // zkf61715 避免出现刷新同一张图片
-            mImageSwitcher.setAutoMode(true, AUTO_PLAY_INTERVAL);
-
-            // zkf61715 避免焦点框的出现
-            mGlobalFocus.setVisibility(View.INVISIBLE);
-
-            // zkf61715 DTS2014011516299 选择完图片回到音乐界面展示背景图片
-          
-            //begin modify by caochao for DTS2014110900287 媒体中心推送音乐显示背景图片，然后推送下一首音乐信息不刷新仍为第一次推送的音乐信息
-            refreshAudioPreview(mAudioPlayStateInfo.getCurrentIndex());   
-            //end modify by caochao for DTS2014110900287 媒体中心推送音乐显示背景图片，然后推送下一首音乐信息不刷新仍为第一次推送的音乐信息
-            mFirstShowBg = false;            
-
-        }
-        else
-        {
-            // Toast.makeText(this, "failed to play image",Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private int getDevId()
-    {
-        Bundle bundle = getIntent().getBundleExtra(LocalDeviceInfo.DEVICE_EXTRA_NAME);
-        if (bundle == null)
-        {
-            return -1;
-        }
-        return bundle.getInt(LocalDeviceInfo.DEVICE_ID, -1);
+    /**
+     * 显示 背景图
+     */
+    private void showBackPic(){
+		//异步加载图片
+    	if(mLoadPhotoTask != null && mLoadPhotoTask.getStatus() == Status.RUNNING){
+    		mLoadPhotoTask.cancel(true); 
+    	}
+		mLoadPhotoTask = new AsyncTask<Object, Void, Bitmap>() {
+			protected Bitmap doInBackground(Object[] params) {
+		    	if(mBackMusicPhotoInfos == null || mBackMusicPhotoInfos.size() == 0){		    			
+		    		//显示默认图片
+		    		if(mDefaultBackBitmap == null)
+		    			mDefaultBackBitmap = BitmapUtil.getScaledBitmapFromResource(getResources(), R.drawable.default_audio_bg_a, SCREEN_WIDTH, SCREEN_HEIGHT);
+		    		return  mDefaultBackBitmap;
+		    	}
+		    	BackMusicPhotoInfo photoInfo = null;
+		    	String photoPath = null;
+		    	while(!mBackMusicPhotoInfos.isEmpty()){
+		    		photoInfo = mBackMusicPhotoInfos.get(mCurrBackPhotoIndex++ % mBackMusicPhotoInfos.size());
+			    	photoPath = photoInfo.getPath();
+			    	//路径不存在则移除列表
+			    	if(!new File(photoPath).exists())
+			    		mBackMusicPhotoInfos.remove(photoInfo);
+			    	else{
+			    		return BitmapUtil.getScaledBitmapFromFile(photoPath, SCREEN_WIDTH, SCREEN_HEIGHT);
+			    	}
+		    	}
+		    	if(mBackMusicPhotoInfos == null || mBackMusicPhotoInfos.size() == 0){		    			
+		    		//显示默认图片
+		    		if(mDefaultBackBitmap == null)
+		    			mDefaultBackBitmap = BitmapUtil.getScaledBitmapFromResource(getResources(), R.drawable.default_audio_bg_a, SCREEN_WIDTH, SCREEN_HEIGHT);
+		    		return  mDefaultBackBitmap;
+		    	}
+		    	return null;
+			};
+			protected void onPostExecute(Bitmap bmp) {
+				if(bmp != null){
+					//隐藏相关控件
+					mNoLyricText.setVisibility(View.INVISIBLE);
+					mParentLinear.setVisibility(View.INVISIBLE);
+					//Log.i(TAG, "showBackPic->onPostExecute->bmp:" + bmp);
+					mSwitcherBackPhoto.setImageBitmap(null);
+					//手动干预内存回收
+					if(mOldBackBitmap != null && !mOldBackBitmap.isRecycled())
+						mOldBackBitmap.recycle();
+					mOldBackBitmap = bmp;
+					mSwitcherBackPhoto.setImageBitmap(bmp);
+				}
+				if(mNeedShowBackPic && mUiHandler != null)
+					mUiHandler.sendEmptyMessageDelayed(MSG_SHOW_BACKGRPUND_PICS, BG_IMAGE_SHOW_DELAY_TIME);
+			}
+		};
+    	mLoadPhotoTask.execute();
+		
     }
     
     private void exitRemoteConnect()
@@ -3680,102 +3397,13 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 
         return false;
     }
-
-    //    // 获取当前播放图片的设备类型
-    //    private int getBgPicDeviceType()
-    //    {
-    //        SharedPreferences sp = getAudioSettingsSharedPreferences();
-    //        return sp.getInt(PERFS_DEVICE_TYPE, INVALID_VALUE);
-    //    }
-    //
-    //    // 设置当前播放图片的设备类型
-    //    private void saveBgPicDeviceType(int type)
-    //    {
-    //        SharedPreferences sp = getAudioSettingsSharedPreferences();
-    //        Editor ed = sp.edit();
-    //        ed.putInt(PERFS_DEVICE_TYPE, type);
-    //        ed.commit();
-    //    }
-
-    // 获取当前播放图片的设备类型
-    private String getBgPicDeviceId()
-    {
-        SharedPreferences sp = getAudioSettingsSharedPreferences();
-        return sp.getString(PERFS_DEVICE_ID, "");        
-    }
-
-    // 设置当前播放图片的设备类型
-    private void saveBgPicDeviceId(String devId)
-    {
-        SharedPreferences sp = getAudioSettingsSharedPreferences();
-        Editor ed = sp.edit();
-        ed.putString(PERFS_DEVICE_ID, devId);
-        ed.commit();
-    }
-    // 获取背景图片的所有url信息
-    private Set<String> getBgPicImageUrls()
-    {
-        SharedPreferences sp = getAudioSettingsSharedPreferences();        
-        return sp.getStringSet(PERFS_BG_IMAGE_URLS, null);        
-    }
-
-    // 设置背景图片的所有url信息
-    private void saveBgPicImageUrls(Set<String> urls)
-    {
-        SharedPreferences sp = getAudioSettingsSharedPreferences();
-        Editor ed = sp.edit();
-        ed.putStringSet(PERFS_BG_IMAGE_URLS, urls);
-        ed.commit();
-    }
+    
     
     private SharedPreferences getAudioSettingsSharedPreferences()
     {
         return getSharedPreferences(PERFS_NAME, Context.MODE_PRIVATE);
     }
     
-    private List<LocalMediaInfo> getBgImagesFromPreferences()
-    {
-        List<LocalMediaInfo> lists = new ArrayList<LocalMediaInfo>();
-        Set<String> urls =  getBgPicImageUrls();
-        if (urls == null || urls.size() == 0)
-        {
-            return lists;
-        }
-        Iterator<String> iterator = urls.iterator();
-        while (iterator.hasNext())
-        {
-            String url = iterator.next();
-            if (isFileExist(url))
-            {
-                List<LocalMediaInfo> listflat = getImagesByUrl(url);
-                if (!isListEmpty(listflat))
-                {
-                    lists.addAll(listflat);
-                }
-            }
-        }
-        
-        return lists;
-    }
-    
-    private boolean isFileExist(String url)
-    {
-        File file = new File(url);
-        if (file.exists())
-        {
-            return true;
-        }
-        return false;
-    }
-    
-    private boolean isListEmpty(List<LocalMediaInfo> lists)
-    {
-        if (lists == null  || lists.size() == 0)
-        {
-            return true;
-        }
-        return false;
-    }
 	
 	//begin add by caochao for DTS2014110900287 媒体中心推送音乐显示背景图片，然后推送下一首音乐信息不刷新仍为第一次推送的音乐信息
     private void refreshAudioPreview(int index)
@@ -3815,16 +3443,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 	@Override
 	public void init() {
 		mLocalDeviceManager = LocalDeviceManager.getInstance(getBaseContext());
-
-		// xWX184171 DTS2014021910705 需要断电保存 add by 2014.2.20
 		getBackgroundPicFlag();
-
-		// mAudioManager = (AudioManager)
-		// getSystemService(Context.AUDIO_SERVICE);
-
-		// CacheManager.getInstance().setCacheDir(getBaseContext().getCacheDir().toString()
-		// + "/");
-
 		synchronized (mHandlerLock) {
 			// 创建过程执行线程
 			mLogicalThread = new HandlerThread(this.getClass().toString());
@@ -3903,6 +3522,18 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 		mIMPRL = (RelativeLayout) findViewById(R.id.fullRelative);
 		mDisplayException = (LinearLayout) findViewById(R.id.image_exception);
 		mNoLyricText = (TextView) findViewById(R.id.center_no_lyric);
+		mSwitcherBackPhoto = (BackPhotoImgSwitcher)findViewById(R.id.switcher_back_photo);
+		mSwitcherBackPhoto.setFactory(new ViewSwitcher.ViewFactory() {
+			
+			@Override
+			public View makeView() {
+				//创建ImageView
+				ImageView imageView = new ImageView(AudioPlayerActivity.this);
+				imageView.setScaleType(ScaleType.CENTER_INSIDE);
+				imageView.setLayoutParams(new ImageSwitcher.LayoutParams(SCREEN_WIDTH, SCREEN_HEIGHT));
+				return imageView;
+			}
+		});
 		// zkf61715 暂时不显示“暂无歌词
 		mNoLyricText.setVisibility(View.GONE);
 		if (mIMPRL != null) {
@@ -3913,5 +3544,48 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 		mGlobalFocus.setBackgroud(mIMPRL);
 
 		ToastUtil.build(getApplicationContext());
+	}
+	/**
+	 * 保存背景图，存储至数据库中
+	 * @param fileInfos
+	 */
+	public void saveBackPhotos(List<FileInfo> fileInfos){
+		if(mBackPhotoSaveTask != null && mBackPhotoSaveTask.getStatus() == Status.RUNNING)
+			mBackPhotoLoadTask.cancel(true);
+		mBackPhotoSaveTask = new BackPhotoSaveTask(fileInfos, new BackPhotoSaveTask.Callback() {
+			
+			@Override
+			public void onFinished(List<BackMusicPhotoInfo> backPhotoInfos) {
+				mBackMusicPhotoInfos = backPhotoInfos;
+				if(mNeedShowBackPic)
+					showBackPic();
+			}
+		});
+		mBackPhotoSaveTask.execute();
+	}
+	/**
+	 * 从数据库中加载图片
+	 */
+	public void loadBackPhotos(){
+		if(mBackPhotoLoadTask != null && mBackPhotoLoadTask.getStatus() == Status.RUNNING)
+			mBackPhotoLoadTask.cancel(true);
+		mBackPhotoLoadTask = new BackPhotoLoadTask(new BackPhotoLoadTask.Callback() {
+			
+			@Override
+			public void onFinished(List<BackMusicPhotoInfo> musicPhotoInfos) {
+				mBackMusicPhotoInfos = musicPhotoInfos;
+				if(mNeedShowBackPic){
+					 Message msg = new Message();
+				     msg.what = MSG_SHOW_BACKGRPUND_PICS;
+				     if (mFirstShowBg){
+				            sendUiMessage(msg, 2 * BG_IMAGE_SHOW_DELAY_TIME);
+				            mFirstShowBg = false;
+				     }else{
+				            sendUiMessage(msg, BG_IMAGE_SHOW_DELAY_TIME);
+				     }
+				}
+			}
+		});
+		mBackPhotoLoadTask.execute();
 	}
 }

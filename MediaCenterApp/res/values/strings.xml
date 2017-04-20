@@ -410,6 +410,6 @@
     <string name="alerady_delete_select">已删除选中文件</string>
     <string name="delete_select_error">无法删除选中文件</string>
     <string name="enter_search_content">请输入搜索内容</string>
-    <string name="currdevice_no_images">当前设备没有图片文件</string>
+    <string name="currdevice_no_images">本地设备没有图片文件</string>
     <string name="sel_back_photo">请选择背景图</string>
 </resources>
