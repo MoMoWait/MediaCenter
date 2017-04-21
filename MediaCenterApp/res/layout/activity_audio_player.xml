@@ -9,7 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:inAnimation="@android:anim/fade_in"
-        android:outAnimation="@android:anim/fade_out"/>
+        android:outAnimation="@android:anim/fade_out"
+        android:visibility="invisible"/>
     
     <!-- 音乐播放界面整体布局文件 -->
     <LinearLayout

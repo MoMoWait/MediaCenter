@@ -899,6 +899,7 @@ public class MediaFileUtils {
 					List<Property> properties = item.getProperties();
 					if(properties != null && properties.size() > 0){
 						for(Property property : properties){
+							Log.i(TAG, "Item->property->name:" + property.getDescriptorName());
 							//Log.i(TAG, "Item->property->name:" + property.getDescriptorName() + " "
 							//		+ "Item->property->value:" + property.getValue().toString());
 							if(property.getDescriptorName().equals(ConstData.UpnpFileOhterInfo.DATE)){
@@ -911,6 +912,8 @@ public class MediaFileUtils {
 								jsonInfo.put(ConstData.UpnpFileOhterInfo.ALBUM, property.getValue().toString());
 							else if(property.getDescriptorName().equals(ConstData.UpnpFileOhterInfo.ALBUM_URI) && !jsonInfo.has(ConstData.UpnpFileOhterInfo.ALBUM_URI))
 								jsonInfo.put(ConstData.UpnpFileOhterInfo.ALBUM_URI, property.getValue().toString());
+							else if(property.getDescriptorName().equals(ConstData.UpnpFileOhterInfo.TITLE) && !jsonInfo.has(ConstData.UpnpFileOhterInfo.TITLE))
+								jsonInfo.put(ConstData.UpnpFileOhterInfo.TITLE, property.getValue().toString());
 							
 						}
 					}

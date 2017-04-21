@@ -1530,7 +1530,7 @@ public class ConstData {
 		String DURATION = "duration";
 		String ALBUM = "album";
 		String ALBUM_URI = "albumArtURI";
-		
+		String TITLE = "title";
 	}
 	
 	/**

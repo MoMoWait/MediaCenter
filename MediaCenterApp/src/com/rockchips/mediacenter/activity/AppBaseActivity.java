@@ -1,9 +1,7 @@
 package com.rockchips.mediacenter.activity;
 
 import java.util.List;
-
 import org.xutils.x;
-
 import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
 import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.data.ConstData;
@@ -22,7 +20,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
