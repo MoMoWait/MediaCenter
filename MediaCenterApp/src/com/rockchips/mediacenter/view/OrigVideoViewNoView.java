@@ -25,14 +25,10 @@ import com.rockchips.mediacenter.service.OnFastForwardCompleteListener;
 import com.rockchips.mediacenter.service.OnInfoListener;
 import com.rockchips.mediacenter.service.OnPreparedListener;
 import com.rockchips.mediacenter.service.OnSeekCompleteListener;
-
 import android.content.Context;
-import android.media.AudioManager;
-import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaPlayer;
 import android.util.Log;
 import android.view.SurfaceHolder;
-import android.view.WindowManager;
 
 
 /**
@@ -47,7 +43,6 @@ import android.view.WindowManager;
 public class OrigVideoViewNoView extends VideoViewNoViewBase implements IVideoViewAdapter
 {
 
-    private WindowManager mWindowManager;
 
     private int mDisplayW = 0;
 
@@ -100,13 +95,8 @@ public class OrigVideoViewNoView extends VideoViewNoViewBase implements IVideoVi
         init(context);
     }
  
-    private Context mContext = null;
     private void init(Context context)
     {
-        mContext = context;
-        if(mAudioManager == null)
-            mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-
         if(mediaplayer == null)
         {
             mediaplayer =  new OrigMediaPlayerAdapter(context);
@@ -155,26 +145,16 @@ public class OrigVideoViewNoView extends VideoViewNoViewBase implements IVideoVi
     }
 
 
-    private AudioManager mAudioManager = null;
 
     public void start()
     {
         super.start();
-        if(mAudioManager == null)
-        {
-            mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-        }
-
-         mAudioManager.requestAudioFocus(mAudioFocusListener, AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN);
+     
     }
 
     public void pause()
     {
         super.pause();
-        if(mAudioManager != null)
-        {
-            mAudioManager.abandonAudioFocus(mAudioFocusListener);
-        }
     }
 
     public void stopPlayback()
@@ -183,16 +163,11 @@ public class OrigVideoViewNoView extends VideoViewNoViewBase implements IVideoVi
         mMediaPlayer = null;
         
         super.stopPlayback();
-        if(mAudioManager != null)
-        {
-            mAudioManager.abandonAudioFocus(mAudioFocusListener);
-        }
     }
 
     public void resume() 
     {
         super.resume();
-        mAudioManager.requestAudioFocus(mAudioFocusListener, AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN);
     }
 
 
@@ -454,40 +429,6 @@ public class OrigVideoViewNoView extends VideoViewNoViewBase implements IVideoVi
     }
 
     /**end**/
-
-    private boolean mPausedByTransientLossOfFocus = false;
-
-    private OnAudioFocusChangeListener mAudioFocusListener = new OnAudioFocusChangeListener() {
-        public void onAudioFocusChange(int focusChange) {
-//            if (mAudioManager != null) {
-//
-//                mAudioManager.abandonAudioFocus(this);
-//                return;
-//            }    
-            switch (focusChange) {
-                case AudioManager.AUDIOFOCUS_LOSS:
-                    mPausedByTransientLossOfFocus = true;
-                    OrigVideoViewNoView.super.pause();
-                    break;
-                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                    mPausedByTransientLossOfFocus = true;
-                    OrigVideoViewNoView.super.pause();
-                    break;
-                case AudioManager.AUDIOFOCUS_GAIN:
-                    if (mPausedByTransientLossOfFocus) {
-                        mPausedByTransientLossOfFocus = false;
-                        OrigVideoViewNoView.super.start();
-                    }    
-                    break;
-            }    
-            //updatePlayPause();
-        }                                                                                                              
-    };
-        
-    //视频原始大小
-    private int videoOrigHeight = 0;
-    private int videoOrigWidth = 0;
     
     private List<AudioInfoOfVideo> audioinfos = new ArrayList<AudioInfoOfVideo>();
     private List<SubInfo> subinfos = new ArrayList<SubInfo>();
@@ -504,15 +445,11 @@ public class OrigVideoViewNoView extends VideoViewNoViewBase implements IVideoVi
             mMediaPlayer = mp;
             mediaplayer.setMediaPlayer(mp);
             setmediaPlayerAdapter(mediaplayer);
-            
             mp.setOnBufferingUpdateListener(mbufferingListener);
             mp.setOnErrorListener(mOnErrorListener);
             mp.setOnCompletionListener(mcompleteListener);
             mp.setOnSeekCompleteListener(mseekListener);
             mp.setOnInfoListener(mInfoListener);
-//            mp.setOnFastBackwordCompleteListener(mFB);
-//            mp.setFastForwardCompleteListener(mFF);
-            
             //获取音轨 字幕信息
             setAudioinfos(getmediaPlayerAdapter().getAudioInfos());
             if(getAudioinfos() == null)
@@ -526,8 +463,6 @@ public class OrigVideoViewNoView extends VideoViewNoViewBase implements IVideoVi
                 Log.e(TAG, "get Subinfos failed, return null");
             }
             
-            videoOrigHeight = getVideoHeight();
-            videoOrigWidth = getVideoWidth();
                         
             if(mSH != null)
             {
@@ -843,18 +778,14 @@ public class OrigVideoViewNoView extends VideoViewNoViewBase implements IVideoVi
         mSH = sh;
     }
     
-    private OnFastForwardCompleteListener mOnFastForwardCompleteListener = null;
-    private OnFastBackwordCompleteListener mOnFastBackwordCompleteListener = null;
     @Override
     public void setOnFastForwardCompleteListener(OnFastForwardCompleteListener l)
     {
-        mOnFastForwardCompleteListener = l;
     }
 
     @Override
     public void setOnBackForwardCompleteListener(OnFastBackwordCompleteListener l)
     {
-        mOnFastBackwordCompleteListener = l;
     }
 
     public int setSpeed(int i)

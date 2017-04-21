@@ -879,7 +879,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
         {
             intent.setClass(this, InternalAudioPlayer.class);
             intent.putExtra(ConstData.IntentKey.CURRENT_INDEX, newPosition);
-            InternalAudioPlayer.setMediaList(mediaInfoList, newPosition);
+            InternalAudioPlayer.setMediaList(fileInfos, newPosition);
         }
         else if (fileInfo.getType() == ConstData.MediaType.VIDEO)
         {

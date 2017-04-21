@@ -1,13 +1,11 @@
 package com.rockchips.mediacenter.utils;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
@@ -57,6 +55,11 @@ public class SearchLrc
      */
     public static String LYRIC_CACHE_PATH = LYRIC_CACHE_PATH_DMS;
 
+    
+    public SearchLrc(){
+    	
+    }
+    
     /*
      * 初期化，根据参数取得lrc的地址
      */
@@ -385,7 +388,7 @@ public class SearchLrc
         return true;
     }
 
-    public static String getLyricCachePath(String musicName, String singerName)
+    public String getLyricCachePath(String musicName, String singerName)
     {
         Log.d(LOGTAG, "getLyricCachePath() IN...");
         try
@@ -409,19 +412,19 @@ public class SearchLrc
         return lyricFilePath;
     }
 
-    static boolean bInternalAudioPlayer = false;
+    boolean bInternalAudioPlayer = false;
 
-    public static boolean isInternalPlayer()
+    public boolean isInternalPlayer()
     {
         return bInternalAudioPlayer;
     }
 
-    public static boolean isInternalPlayer(boolean b)
+    public boolean isInternalPlayer(boolean b)
     {
         return bInternalAudioPlayer = b;
     }
 
-    public static void setLyricCachePath()
+    public void setLyricCachePath()
     {
         if (bInternalAudioPlayer)
         {

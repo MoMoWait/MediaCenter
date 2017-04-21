@@ -1,34 +1,18 @@
-/**
- *
- * com.rockchips.iptv.stb.dlna.player
- * dd.java
- *
- * 2011-10-31-下午06:57:57
- * Copyright 2011 Huawei Technologies Co., Ltd
- *
- */
 package com.rockchips.mediacenter.audioplayer;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import android.os.Bundle;
 import android.util.Log;
-
-import com.rockchips.mediacenter.bean.LocalMediaInfo;
+import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.data.ConstData;
 
 /**
- * 
- * PlayStateInfo 1 2011-10-31 下午06:57:57
- * 
- * @version 1.0.0
- * 
+ * 记录播放信息
+ * @author GaoFei
+ *
  */
-
-// 记录当前播状态的信息
 public class AudioPlayStateInfo
 {
     private static final String TAG = "MediaCenterApp";
@@ -39,47 +23,12 @@ public class AudioPlayStateInfo
 
     private String deviceId = null;
 
-//    private boolean mFirstSync = true;
-
-    /**
-     * @return the mFirstSync
-     */
-//    public boolean isFirstSync()
-//    {
-//        return mFirstSync;
-//    }
-
-    /**
-     * @param mFirstSync the mFirstSync to set
-     */
-//    public void setFirstSync(boolean firstSync)
-//    {
-//        Log.d(TAG, "setFirstSync() IN..., firstSync " + firstSync);
-//        this.mFirstSync = firstSync;
-//    }
-
-//    public static synchronized AudioPlayStateInfo getInstance()
-//    {
-//        synchronized (instanceLock)
-//        {
-//            if (instance == null)
-//            {
-//                instance = new AudioPlayStateInfo();
-//            }
-//            return instance;
-//        }
-//    }
-
-    public static void recycle()
+    public void recycle()
     {
         Log.d(TAG, "recycle() IN...");
         synchronized (instanceLock)
         {
-            if (instance != null)
-            {
-                instance.release();
-                instance = null;
-            }
+           release();
         }
     }
 
@@ -101,7 +50,7 @@ public class AudioPlayStateInfo
     }
 
     // 播放列表
-    private List<LocalMediaInfo> mMediaList = new ArrayList<LocalMediaInfo>();
+    private List<FileInfo> mMediaList = new ArrayList<FileInfo>();
 
     // 当前播放索引
     private int mCurrIndex = 0;
@@ -109,7 +58,7 @@ public class AudioPlayStateInfo
     private HashMap<String, PlayRecord> mPlayHistoryMap = new HashMap<String, PlayRecord>();
 
     // 播放列表
-    private List<LocalMediaInfo> mMediaListCache = new ArrayList<LocalMediaInfo>();
+    private List<FileInfo> mMediaListCache = new ArrayList<>();
 
     // 当前播放索引
     private int mPrepareIndex = -1;
@@ -140,7 +89,7 @@ public class AudioPlayStateInfo
 
     // add by s00203507 2012年7月30日 end
 
-    private static int playMode = ConstData.MediaPlayMode.MP_MODE_ALL_CYC;
+    private int playMode = ConstData.MediaPlayMode.MP_MODE_ALL_CYC;
 
     private String mSenderClientUniq = null;
 
@@ -259,15 +208,15 @@ public class AudioPlayStateInfo
         }
     }
 
-    private void setCurrentMediaInfo(LocalMediaInfo hCurrentMediaInfo)
+    private void setCurrentMediaInfo(FileInfo hCurrentMediaInfo)
     {
         mCurrIndex = 0;
         if (hCurrentMediaInfo != null)
         {
             for (int i = 0; i < mMediaList.size(); i++)
             {
-                LocalMediaInfo mediaInfo = mMediaList.get(i);
-                if (mediaInfo.getUrl().equals(hCurrentMediaInfo.getUrl()))
+                FileInfo fileInfo = mMediaList.get(i);
+                if (fileInfo.getPath().equals(hCurrentMediaInfo.getPath()))
                 {
                     mCurrIndex = i;
                     break;
@@ -308,7 +257,7 @@ public class AudioPlayStateInfo
      * @param mode void
      * @exception
      */
-    public static void setPlayMode(int mode)
+    public void setPlayMode(int mode)
     {
         playMode = mode;
     }
@@ -320,175 +269,13 @@ public class AudioPlayStateInfo
      * @return int
      * @exception
      */
-    public static int getPlayMode()
+    public  int getPlayMode()
     {
         return playMode;
     }
-
-    public void addList(List<Bundle> hBundleList)
-    {
-        List<LocalMediaInfo> hMediaList = null;
-        if (hBundleList != null && hBundleList.size() > 0)
-        {
-            hMediaList = parseBundleList(hBundleList);
-        }
-
-        synchronized (mMediaListCache)
-        {
-
-            if (hMediaList != null && hMediaList.size() > 0)
-            {
-                mMediaListCache.addAll(hMediaList);
-            }
-            if (!mNeedSync)
-            {
-                mNeedSync = true;
-                synchronized (mOnPlayListChangedCallback)
-                {
-                    for (int i = 0; i < mOnPlayListChangedCallback.size(); i++)
-                    {
-                        mOnPlayListChangedCallback.get(i).OnPlayListChanged();
-                    }
-                }
-
-            }
-        }
-    }
-
-//    public void deleteList(String devID, String realDeviceId)
-//    {
-//        String currentDeviceId = "";
-//        LocalMediaInfo tempInfo = null;
-//        String tempUrl = "";
-//
-//        synchronized (mMediaList)
-//        {
-//            synchronized (mMediaListCache)
-//            {
-//
-//                // TODO:根据devID删除
-//                Log.d(TAG, "deleteList()");
-//
-//                if (StringUtils.isEmpty(devID))
-//                {
-//                    Log.d(TAG, "devID is null");
-//                    return;
-//                }
-//
-//                if (StringUtils.isEmpty(realDeviceId))
-//                {
-//                    Log.d(TAG, "realDeviceId is null");
-//                    realDeviceId = devID;
-//                }
-//
-//                if (mMediaList == null || mMediaList.size() == 0)
-//                {
-//                    Log.d(TAG, "mMediaList is null or mMediaList.size()==0 ");
-//                    return;
-//                }
-//
-//                // 删除被拔掉U盘在播放列表中的记录。
-//                for (int i = mMediaList.size() - 1; i >= 0; i--)
-//                {
-//                    tempInfo = mMediaList.get(i);
-//
-//                    if (null == tempInfo)
-//                    {
-//                        Log.d(TAG, "null == tempInfo");
-//                        continue;
-//                    }
-//
-//                    tempUrl = tempInfo.getData();
-//                    Log.d(TAG, "tempUrl is: " + tempUrl);
-//
-//                    currentDeviceId = tempInfo.getDeviceId();
-//
-//                    Log.d(TAG, "currentDeviceId is: " + currentDeviceId);
-//
-//                    if (!StringUtils.isEmpty(tempUrl))
-//                    {
-//                        if (devID.equalsIgnoreCase(currentDeviceId) || realDeviceId.equalsIgnoreCase(currentDeviceId) || tempUrl.startsWith(devID))
-//                        {
-//                            Log.d(TAG, "deleted song displayname is :" + tempInfo.getDisplayName());
-//
-//                            mMediaList.remove(i);
-//                            Log.d(TAG, "mMediaList size is:" + mMediaList.size());
-//                        }
-//                    }
-//
-//                }
-//
-//                // 删除被拔掉U盘在缓存播放列表中的记录。
-//
-//                if (mMediaListCache == null || mMediaListCache.size() == 0)
-//                {
-//                    Log.d(TAG, "mMediaListCache is null or mMediaListCache.size()==0 ");
-//                    return;
-//                }
-//                for (int i = mMediaListCache.size() - 1; i >= 0; i--)
-//                {
-//                    tempInfo = mMediaListCache.get(i);
-//
-//                    if (null == tempInfo)
-//                    {
-//                        continue;
-//                    }
-//
-//                    tempUrl = tempInfo.getData();
-//
-//                    currentDeviceId = tempInfo.getDeviceId();
-//
-//                    if (!StringUtils.isEmpty(tempUrl))
-//                    {
-//                        if (devID.equalsIgnoreCase(currentDeviceId) || realDeviceId.equalsIgnoreCase(currentDeviceId) || tempUrl.startsWith(devID))
-//                        {
-//                            mMediaListCache.remove(i);
-//                        }
-//                    }
-//
-//                }
-//
-//                if (!mNeedSync)
-//                {
-//                    Log.d(TAG, "mNeedSync is false!!!");
-//                    mNeedSync = true;
-//                    Log.d(TAG, "mNeedSync is true!!!");
-//
-//                    Log.d(TAG, "before delete!!!");
-//                    for (int i = 0; i < mOnPlayListChangedCallback.size(); i++)
-//                    {
-//                        mOnPlayListChangedCallback.get(i).OnPlayListChanged();
-//                    }
-//                    Log.d(TAG, "after delete!!!");
-//                }
-//            }
-//        }
-//    }
-
-    /**
-     * 
-     * parseBundleList 转换数据到具体的类型并返回
-     * 
-     * @param list
-     * @return List<LocalMediaInfo>
-     * @exception
-     */
-    private List<LocalMediaInfo> parseBundleList(List<Bundle> hBundleList)
-    {
-        List<LocalMediaInfo> hMediaList = new ArrayList<LocalMediaInfo>();
-        if (hBundleList != null)
-        {
-            for (int i = 0; i < hBundleList.size(); i++)
-            {
-                LocalMediaInfo hMediaInfo = new LocalMediaInfo();
-                hMediaInfo.decompress(hBundleList.get(i));
-                hMediaList.add(hMediaInfo);
-            }
-        }
-        return hMediaList;
-    }
-
-    public LocalMediaInfo getMediaInfo(int index)
+    
+    
+    public FileInfo getMediaInfo(int index)
     {
         synchronized (mMediaList)
         {
@@ -501,82 +288,22 @@ public class AudioPlayStateInfo
         }
     }
 
-    public void setMediaList(List<Bundle> hBundleList)
-    {
-        Log.d(TAG, "setMediaList()");
-        List<LocalMediaInfo> hMediaList = null;
-        if (hBundleList != null && hBundleList.size() > 0)
-        {
-            hMediaList = parseBundleList(hBundleList);
-        }
-        else
-        {
-            return;
-        }
-        Log.d(TAG, "list size=" + hMediaList.size());
-        synchronized (mMediaListCache)
-        {
-            Log.d(TAG, "set new media list....");
-            LocalMediaInfo targetMediaInfo = null;
-            if (mPrepareIndex != -1 && mPrepareIndex < mMediaListCache.size())
-            {
-                targetMediaInfo = mMediaListCache.get(mPrepareIndex);
-            }
-            mMediaListCache.clear();
-
-            if (hMediaList != null && hMediaList.size() > 0)
-            {
-                mMediaListCache.addAll(hMediaList);
-
-                if (targetMediaInfo != null)
-                {
-                    for (int i = 0; i < mMediaListCache.size(); i++)
-                    {
-                        LocalMediaInfo mediaInfo = mMediaListCache.get(i);
-                        if (mediaInfo.getUrl().equals(targetMediaInfo.getUrl()))
-                        {
-                            mPrepareIndex = i;
-                            break;
-                        }
-                    }
-                }
-            }
-            Log.d(TAG, "set new media list ok....");
-
-            if (!mNeedSync)
-            {
-                mNeedSync = true;
-                synchronized (mOnPlayListChangedCallback)
-                {
-                    for (int i = 0; i < mOnPlayListChangedCallback.size(); i++)
-                    {
-                        Log.d(TAG, "OnPlayListChanged call back... ");
-                        mOnPlayListChangedCallback.get(i).OnPlayListChanged();
-                    }
-                }
-            }
-            else
-            {
-                Log.d(TAG, "not repeat sync ...");
-            }
-        }
-
+    public FileInfo getCurrentMediaInfo(){
+    	 synchronized (mMediaList)
+         {
+            return mMediaList.get(mCurrIndex);
+         }
     }
 
-    public void setMediaList(List<Bundle> hBundleList, int currentIndex)
+    public void setMediaList(List<FileInfo> hBundleList, int currentIndex)
     {
         synchronized (mMediaListCache)
         {
             mPrepareIndex = currentIndex;
         }
-        setMediaList(hBundleList);
+        mMediaList = hBundleList;
     }
-
-    public void setMediaList2(List<LocalMediaInfo> list, int currentIndex)
-    {
-        mCurrIndex = currentIndex;
-        mMediaList = list;
-    }
+    
 
     /**
      * 
@@ -585,7 +312,7 @@ public class AudioPlayStateInfo
      * @return List<Bundle>
      * @exception
      */
-    public final List<LocalMediaInfo> getMediaList()
+    public final List<FileInfo> getMediaList()
     {
         synchronized (mMediaList)
         {
@@ -593,7 +320,7 @@ public class AudioPlayStateInfo
         }
     }
 
-    public int getIndex(LocalMediaInfo hMediaInfo)
+    public int getIndex(FileInfo hMediaInfo)
     {
 
         synchronized (mMediaList)
@@ -621,7 +348,7 @@ public class AudioPlayStateInfo
                 {
                     Log.d(TAG, "syncList run begin...");
                     // 备份当前焦点
-                    LocalMediaInfo currentMediaInfo = getMediaInfo(mCurrIndex);
+                    FileInfo currentMediaInfo = getMediaInfo(mCurrIndex);
 
                     mMediaList.clear();
 
@@ -647,17 +374,9 @@ public class AudioPlayStateInfo
 
                     if (mOnPlayListSyncCompletedListener != null)
                     {
-//                        if (mFirstSync)
-//                        {
-                            mOnPlayListSyncCompletedListener.onPlayListSyncCompleted(true);
-//                        }
-//                        else
-//                        {
-//                            mOnPlayListSyncCompletedListener.onPlayListSyncCompleted(false);
-//                        }
+                    	mOnPlayListSyncCompletedListener.onPlayListSyncCompleted(true);
                     }
 
-//                    mFirstSync = false;
                     Log.d(TAG, "syncList run end...");
                 }
                 else
@@ -697,12 +416,9 @@ public class AudioPlayStateInfo
     public int getNextIndex()
     {
         int index = -1;
-
-        if (isPushType())
-        {
-            return 0;
-        }
-
+        int currendIndex = getCurrentIndex();
+        int totalCount = 0;
+        int nextIndex = 0;
         synchronized (mMediaList)
         {
             int playmode = getPlayMode();
@@ -714,55 +430,26 @@ public class AudioPlayStateInfo
             switch (playmode)
             {
                 case ConstData.MediaPlayMode.MP_MODE_ALL_CYC: // 所有循环
-                    if (getMediaList().size() == 1)
-                    {
-                        // 当只有一首歌时，等同单曲循环
-                        if (isCanPlay(getMediaInfo(getCurrentIndex())))
-                        {
-                            index = getCurrentIndex();
-                        }
+                    nextIndex = (currendIndex + 1) % getMediaList().size();
+                    while(!isCanPlay(getMediaList().get(nextIndex)) && totalCount < getMediaList().size()){
+                    	++totalCount;
+                    	nextIndex = (currendIndex + 1) % getMediaList().size();
                     }
-                    else
-                    {
-                        // 先遍历到结尾
-                        for (int i = getCurrentIndex() + 1; i < getMediaList().size(); i++)
-                        {
-                            if (isCanPlay(getMediaInfo(i)))
-                            {
-                                index = i;
-                                break;
-                            }
-                        }
-                        // 从0遍历到当前聚焦的项
-                        if (index == -1)
-                        {
-                            for (int i = 0; i < getCurrentIndex(); i++)
-                            {
-                                if (isCanPlay(getMediaInfo(i)))
-                                {
-                                    index = i;
-                                    break;
-                                }
-                            }
-                        }
-                    }
+                    if(totalCount != getMediaList().size())
+                    	index = nextIndex;
                     break;
                 case ConstData.MediaPlayMode.MP_MODE_ALL: // 所有顺序播放
                     // 遍历到结尾
-                    for (int i = getCurrentIndex() + 1; i < getMediaList().size(); i++)
-                    {
-                        if (isCanPlay(getMediaInfo(i)))
-                        {
-                            index = i;
-                            break;
-                        }
-                    }
-                    break;
+                	  nextIndex = currendIndex + 1;
+                      while(nextIndex < getMediaList().size() && !isCanPlay(getMediaList().get(nextIndex))){
+                    	  ++nextIndex;
+                      }
+                      if(nextIndex != getMediaList().size())
+                    	  index = nextIndex;
                 case ConstData.MediaPlayMode.MP_MODE_SINGLE_CYC: // 单曲循环
-                    if (isCanPlay(getMediaInfo(getCurrentIndex())))
-                    {
-                        index = getCurrentIndex();
-                    }
+                	nextIndex = getCurrentIndex();
+                	if(isCanPlay(getCurrentMediaInfo()))
+                		index = nextIndex;
                     break;
                 case ConstData.MediaPlayMode.MP_MODE_RONDOM: // 随机
                     List<Integer> indexList = new ArrayList<Integer>();
@@ -799,18 +486,18 @@ public class AudioPlayStateInfo
     }
 
     // 当设备下线时，判断当前的媒体信息是否存在于播放列表中。
-    public boolean isMediaInfoExistedInMediaList(LocalMediaInfo info)
+    public boolean isMediaInfoExistedInMediaList(FileInfo info)
     {
         synchronized (mMediaList)
         {
 
             // 修正空指针异常，getData()有空能为空
-            if (null == info || null == info.getUrl())
+            if (null == info || null == info.getPath())
             {
                 return false;
             }
 
-            Log.d(TAG, "info data is : " + info.getUrl());
+            Log.d(TAG, "info data is : " + info.getPath());
 
             if (mMediaList.size() <= 0)
             {
@@ -818,23 +505,23 @@ public class AudioPlayStateInfo
                 return false;
             }
 
-            LocalMediaInfo tempInfo = null;
+            FileInfo tempInfo = null;
 
             for (int i = 0; i < mMediaList.size(); i++)
             {
                 tempInfo = mMediaList.get(i);
 
                 // 修正空指针异常，getData()有空能为空
-                if (null == tempInfo || null == tempInfo.getUrl())
+                if (null == tempInfo || null == tempInfo.getPath())
                 {
                     continue;
                 }
 
-                Log.d(TAG, "tempInfo data is : " + tempInfo.getUrl());
+                Log.d(TAG, "tempInfo data is : " + tempInfo.getPath());
 
                 // 如果相等则说明当前媒体存在于播放列表中
 
-                if (info.getUrl().equalsIgnoreCase(tempInfo.getUrl()))
+                if (info.getPath().equalsIgnoreCase(tempInfo.getPath()))
                 {
                     Log.d(TAG, "current mediainfo existed in playlist!!!");
                     return true;
@@ -845,13 +532,13 @@ public class AudioPlayStateInfo
         }
     }
 
-    public boolean isCanPlay(LocalMediaInfo hMediaInfo)
+    public boolean isCanPlay(FileInfo hMediaInfo)
     {
-        if (hMediaInfo != null && hMediaInfo.getUrl() != null)
+        if (hMediaInfo != null && hMediaInfo.getPath() != null)
         {
             synchronized (mPlayHistoryMap)
             {
-                PlayRecord historyRecord = mPlayHistoryMap.get(hMediaInfo.getUrl());
+                PlayRecord historyRecord = mPlayHistoryMap.get(hMediaInfo.getPath());
                 if (historyRecord != null)
                 {
                     return historyRecord.isCanPlay();
@@ -863,12 +550,12 @@ public class AudioPlayStateInfo
 
     public void savePlayPostion(int index, int pos)
     {
-        LocalMediaInfo mediaInfo = getMediaInfo(index);
-        if (mediaInfo != null && mediaInfo.getUrl() != null)
+        FileInfo mediaInfo = getMediaInfo(index);
+        if (mediaInfo != null && mediaInfo.getPath() != null)
         {
             synchronized (mPlayHistoryMap)
             {
-                PlayRecord historyRecord = mPlayHistoryMap.get(mediaInfo.getUrl());
+                PlayRecord historyRecord = mPlayHistoryMap.get(mediaInfo.getPath());
                 if (historyRecord != null)
                 {
                     historyRecord.setPosion(pos);
@@ -877,7 +564,7 @@ public class AudioPlayStateInfo
                 {
                     historyRecord = new PlayRecord();
                     historyRecord.setPosion(pos);
-                    mPlayHistoryMap.put(mediaInfo.getUrl(), historyRecord);
+                    mPlayHistoryMap.put(mediaInfo.getPath(), historyRecord);
                 }
             }
         }
@@ -885,12 +572,12 @@ public class AudioPlayStateInfo
 
     public void saveIsCanPlay(int index, boolean bCanPlay)
     {
-        LocalMediaInfo mediaInfo = getMediaInfo(index);
-        if (mediaInfo != null && mediaInfo.getUrl() != null)
+        FileInfo mediaInfo = getMediaInfo(index);
+        if (mediaInfo != null && mediaInfo.getPath() != null)
         {
             synchronized (mPlayHistoryMap)
             {
-                PlayRecord historyRecord = mPlayHistoryMap.get(mediaInfo.getUrl());
+                PlayRecord historyRecord = mPlayHistoryMap.get(mediaInfo.getPath());
                 if (historyRecord != null)
                 {
                     historyRecord.setCanPlayFlag(bCanPlay);
@@ -901,7 +588,7 @@ public class AudioPlayStateInfo
                     {
                         historyRecord = new PlayRecord();
                         historyRecord.setCanPlayFlag(bCanPlay);
-                        mPlayHistoryMap.put(mediaInfo.getUrl(), historyRecord);
+                        mPlayHistoryMap.put(mediaInfo.getPath(), historyRecord);
                     }
                 }
             }
