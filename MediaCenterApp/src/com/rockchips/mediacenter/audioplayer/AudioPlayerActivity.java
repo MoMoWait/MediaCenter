@@ -5,8 +5,6 @@
 package com.rockchips.mediacenter.audioplayer;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONObject;
@@ -14,7 +12,6 @@ import momo.cn.edu.fjnu.androidutils.data.CommonValues;
 import momo.cn.edu.fjnu.androidutils.utils.DeviceInfoUtils;
 import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -61,9 +58,7 @@ import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.data.ConstData.AudioPlayerMsg;
 import com.rockchips.mediacenter.data.ConstData.PlayState;
 import com.rockchips.mediacenter.utils.BitmapUtil;
-import com.rockchips.mediacenter.utils.CharsetUtils;
 import com.rockchips.mediacenter.utils.DateUtil;
-import com.rockchips.mediacenter.utils.ID3V2;
 import com.rockchips.mediacenter.utils.IICLOG;
 import com.rockchips.mediacenter.utils.Lyric;
 import com.rockchips.mediacenter.utils.SearchLrc;
@@ -80,6 +75,7 @@ import com.rockchips.mediacenter.view.OrigVideoViewNoView;
 import com.rockchips.mediacenter.audioplayer.AudioPlayStateInfo.OnPlayListSyncCompletedListener;
 import com.rockchips.mediacenter.dobly.DoblyPopWin;
 import com.rockchips.mediacenter.imageplayer.DLNAImageSwitcher.DLNAImageSwitcherListener;
+import com.rockchips.mediacenter.modle.db.BackMusicPhotoInfoService;
 import com.rockchips.mediacenter.modle.task.BackPhotoLoadTask;
 import com.rockchips.mediacenter.modle.task.BackPhotoSaveTask;
 import com.rockchips.mediacenter.view.AudioSettingsDialog;
@@ -246,11 +242,9 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 
     private boolean mMusicPageFocused = true;
 
-    private static final int THUMBNAIL_WIDTH = 280;
+    private static final int THUMBNAIL_WIDTH = SizeUtils.dp2px(CommonValues.application, 280);
 
-    private static final int THUMBNAIL_HEIGHT = 280;
-
-    private int mCurrentPlayIndex;
+    private static final int THUMBNAIL_HEIGHT = SizeUtils.dp2px(CommonValues.application, 280);
 
     private boolean mbSeeking;
 
@@ -322,7 +316,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     private static final int TOAST_SHOW_TIME = 500;
     private Device mCurrentDevice;
     private static final int SCREEN_WIDTH = DeviceInfoUtils.getScreenWidth(CommonValues.application);
-    private static final int SCREEN_HEIGHT = DeviceInfoUtils.getScreenHeight(CommonValues.application);
+    private static int SCREEN_HEIGHT = DeviceInfoUtils.getScreenHeight(CommonValues.application);
     private BackPhotoSaveTask mBackPhotoSaveTask;
     private BackPhotoLoadTask mBackPhotoLoadTask;
     private List<BackMusicPhotoInfo> mBackMusicPhotoInfos;
@@ -337,10 +331,16 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     /**歌词搜索器*/
     private SearchLrc mSearchLrc;
     /**背景图选择对话框*/
-    private BackgroundPhotoDialog mBackPhotoDialog;
+    //private BackgroundPhotoDialog mBackPhotoDialog;
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+    	Log.i(TAG, "onCreate->SCREEN_HEIGHT:" + SCREEN_HEIGHT);
+    	int resourceId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+		if (resourceId > 0) {
+			int navigationBarHeight = getResources().getDimensionPixelSize(resourceId);
+			SCREEN_HEIGHT += navigationBarHeight;
+		}
     	mCurrentDevice = (Device)getIntent().getSerializableExtra(ConstData.IntentKey.EXTRAL_LOCAL_DEVICE);
     	if(mCurrentDevice == null){
     		mCurrentDevice = new Device();
@@ -501,8 +501,8 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     {
     	Log.i("Audio_OnKey", "onKeyDown");
     	removeUiMessage(MSG_SHOW_BACKGRPUND_PICS);
-    	if(mNoLyricText.getVisibility() != View.VISIBLE)
-    		mNoLyricText.setVisibility(View.VISIBLE);
+    	//if(mNoLyricText.getVisibility() != View.VISIBLE)
+    	//	mNoLyricText.setVisibility(View.VISIBLE);
     	if(mParentLinear.getVisibility() != View.VISIBLE)
     		mParentLinear.setVisibility(View.VISIBLE);
     	if(mSwitcherBackPhoto.getVisibility() == View.VISIBLE){
@@ -804,9 +804,9 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     private class LyricThread extends Thread
     {
 
-        private LocalMediaInfo mMediaInfo = null;
+        private FileInfo mMediaInfo = null;
 
-        public LyricThread(LocalMediaInfo hMediaInfo)
+        public LyricThread(FileInfo hMediaInfo)
         {
 
             mMediaInfo = hMediaInfo;
@@ -818,9 +818,9 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         {
             if (mMediaInfo != null)
             {
-
                 // 检查当前媒体的Url
-                String Url = mMediaInfo.getUrl();
+                String Url = mMediaInfo.getPath();
+                isLrcReady = false;
                 String title = null;
                 String artist = null;
 
@@ -835,74 +835,6 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                 if (Url.trim().startsWith("content://"))
                 {
                     DBUtils.fillValuesByDisplayName(mMediaInfo, getApplicationContext(), Url);
-                }
-
-                if (ConstData.DeviceType.isLocalDevice(mMediaInfo.getmDeviceType()))
-                {
-                    if (StringUtils.isEmpty(mMediaInfo.getmArtist()))
-                    {
-                        // 如果是U盘还需查找歌手名称、专辑名称等
-                        if (Url.trim().endsWith(".mp3"))
-                        {
-                            RandomAccessFile ran = null;
-                            try
-                            {
-                                // 按ID3V1读取
-                                File file = new File(Url);
-                                if (!file.exists())
-                                {
-                                    return;
-                                }
-                                ran = new RandomAccessFile(file, "r");
-
-                                byte[] buffer = new byte[128];
-                                ran.seek(ran.length() - 128);
-                                ran.read(buffer);
-
-                                SongInfo songInfo = new SongInfo(buffer);
-                                if (StringUtils.isNotEmpty(songInfo.getArtist()))
-                                {
-                                    mMediaInfo.setmArtist(CharsetUtils.tranEncode(songInfo.getArtist()));
-
-                                    if (StringUtils.isEmpty(mMediaInfo.getmAlbum()))
-                                    {
-                                        if (StringUtils.isNotEmpty(songInfo.getAlbum()))
-                                        {
-                                            mMediaInfo.setmAlbum(CharsetUtils.tranEncode(songInfo.getAlbum()));
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    // ID3V1未读取信息，转为按ID3V2读取
-                                    File f = new File(Url);
-                                    ID3V2 id3v2 = new ID3V2(f);
-
-                                    id3v2.initialize();
-
-                                    mMediaInfo.setmArtist(id3v2.tpe1());
-                                    mMediaInfo.setmAlbum(id3v2.talb());
-                                }
-                                requestRefreshMediaInfo();
-                            }
-                            catch (Exception e)
-                            {
-                            }
-                            finally
-                            {
-                                if (ran != null)
-                                {
-                                    try
-                                    {
-                                        ran.close();
-                                    }
-                                    catch (IOException e)
-                                    {
-                                    }
-                                }
-                            }
-                        }
-                    }
                 }
                 // 查询最后一个点的位置,将后缀名前的名称截取
                 int lastPointIndex = Url.lastIndexOf(".");
@@ -924,89 +856,13 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                     try
                     {
                         Lyric lrcParser = Lyric.getInstance();
-                        isLrcReady = lrcParser.parserFileToLrc(lyricUrl);
-
-                        if (!isLrcReady)
+                      /*  isLrcReady = lrcParser.parserFileToLrc(lyricUrl);*/
+                      /*  String lyricPath = mSearchLrc.getLyricCachePath(title, artist);*/
+                        if (SearchLrc.isLyricExistInCache(lyricUrl))
                         {
-                            // 网络搜索歌词
-                            title = StringUtils.isNotEmpty(mMediaInfo.getmTitle()) ? mMediaInfo.getmTitle() : mMediaInfo.getmFileName();
-                            artist = mMediaInfo.getmArtist();
-
-                            String[] songs = null;
-                            if (StringUtils.isNotEmpty(artistFromRetriever))
-                            {
-                                artist = artistFromRetriever;
-                            }
-
-                            if (StringUtils.isNotEmpty(titleFromRetriever))
-                            {
-                                // 如果歌曲名称中包含有歌手名，则仅使用歌名作为搜索条件。例如凤凰传奇的《最炫民族风》，有时
-                                // displayName为凤凰传奇-最炫民族风，则必须过滤掉displayName中包含的歌手名，才能搜索到歌词。
-                                boolean isContainReg = false;
-
-                                for (String s : mFilter)
-                                {
-                                    if (-1 != titleFromRetriever.indexOf(s))
-                                    {
-                                        isContainReg = true;
-                                        songs = titleFromRetriever.split(s);
-
-                                        for (String temp : songs)
-                                        {
-                                            if (!temp.contains(artist))
-                                            {
-                                                title = temp;
-                                                break;
-                                            }
-                                        }
-
-                                        break;
-                                    }
-                                }
-
-                                if (!isContainReg)
-                                {
-                                    title = titleFromRetriever;
-                                }
-                                if (StringUtils.isNotEmpty(artist))
-                                {
-                                    // 如果歌手是多个，则仅使用一个歌手名搜索歌词，使用多个歌手是搜索不到歌词的。例如：陶喆/蔡依林合唱的《今天你要嫁给我》，
-                                    // 如果使用“陶喆/蔡依林”作为歌手名，是搜索不到歌词的，但是使用陶喆或者蔡依林，都能搜到到歌词。
-
-                                    artist = artistFromRetriever.replaceAll("-", ",").replaceAll("/", ",").replaceAll("&", ",");  
-                                    String[] artists = artist.split(",");
-                                    //默认取第一个艺术家去搜索
-                                    artist = artists[0]; 
-                                } 
-
-                            }
-
-                            Log.d(TAG, "title is: " + title);
-                            Log.d(TAG, "artist is: " + artist);
+                            Log.d(TAG, "lyric has existed in cache!");
+                            isLrcReady = lrcParser.parserFileToLrc(lyricUrl);
                         }
-
-                        if (StringUtils.isNotEmpty(title) && StringUtils.isNotEmpty(artist))
-                        {
-                            String lyricPath = mSearchLrc.getLyricCachePath(title, artist);
-                            if (SearchLrc.isLyricExistInCache(lyricPath))
-                            {
-                                Log.d(TAG, "lyric has existed in cache!");
-                                isLrcReady = lrcParser.parserFileToLrc(lyricPath);
-                            }
-                            else
-                            {
-                                Log.d(TAG, "lyric has not existed in cache, start search lyric from internet!");
-                                SearchLrc search = new SearchLrc(title, artist);
-                                String lycText = search.fetchLyric();
-                                Log.d(TAG, "lycText is " + lycText);
-                                if (StringUtils.isNotEmpty(lycText))
-                                {
-                                    isLrcReady = lrcParser.paser(lycText);
-                                }
-                            }
-
-                        }
-
                     }
                     catch (Exception ex)
                     {
@@ -1017,8 +873,9 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
             if (isLrcReady)
             {
                 Log.d(TAG, "download lyric successfully from internet!");
-                requestSyncLyric();
+                //requestSyncLyric();
                 Message msg = Message.obtain();
+                removeUiMessage(MSG_SETTING_LYRIC);
                 msg.what = MSG_SETTING_LYRIC;
                 msg.arg1 = 0;
                 sendUiMessage(msg, 0);
@@ -1028,6 +885,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                 Log.d(TAG, "download lyric failed from internet!");
                 removeUiMessage(AudioPlayerMsg.MSG_SYNC_LYRIC);
                 Message msg = Message.obtain();
+                removeUiMessage(MSG_SETTING_LYRIC);
                 msg.what = MSG_SETTING_LYRIC;
                 msg.arg1 = 1;
                 sendUiMessage(msg, 0);
@@ -1299,6 +1157,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 
     private void requestRefreshMediaInfo()
     {
+    	removeUiMessage(AudioPlayerMsg.MSG_REQUEST_REFRESH_MEDIAINFO);
         mUiHandler.sendEmptyMessage(AudioPlayerMsg.MSG_REQUEST_REFRESH_MEDIAINFO);
     }
 
@@ -1327,7 +1186,6 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         Log.d(TAG, "input-parameter index is : " + index);
         mAudioPlayStateInfo.setCurrentIndex(index);
         mPlayListView.setCurrentPlayIndex(index);
-        mCurrentPlayIndex = index;
         Log.d(TAG, "PlayStateInfo.getInstance().getCurrentIndex is : " + mAudioPlayStateInfo.getCurrentIndex());
         FileInfo fileInfo = mAudioPlayStateInfo.getMediaInfo(index);
         Log.d(TAG, "mCurrentMediaInfo is " + mCurrentMediaInfo);
@@ -1378,29 +1236,19 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         public void onOpen()
         {
             Log.d(TAG, "--------->onOpen() ");
-            if (mCurrentMediaInfo == null)
+            requestPlay(mAudioPlayStateInfo.getCurrentIndex());
+            /*if (mCurrentMediaInfo == null)
             {
                 // 第一次打开Menu，自动播放
                 Log.d(TAG, "first open menu,auto play!!!");
-                requestPlay(mAudioPlayStateInfo.getCurrentIndex());
+               
 
             }
             else
             {
-                Log.d(TAG, "mCurrentMediaInfo is not null, will replay!!!");
-
-                // DTS2012091402762 【STC Android
-                // B008】（概率性30%）推送后返回到音乐列表页面，播放某一音乐，右边音乐与实际播放的音乐不符。
-                if (mAudioPlayStateInfo.isDMSType())
-                {
-                    requestPlay(mAudioPlayStateInfo.getCurrentIndex());
-                }
-                else
-                {
-                    requestPlay(0);
-                }
+            	 requestPlay(0);
             }
-
+*/
         }
 
         @Override
@@ -1433,7 +1281,10 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                         stop(true);
 
                         removeUiMessage(AudioPlayerMsg.MSG_SYNC_LYRIC);
-
+                        
+                        removeLogicalMessage(AudioPlayerMsg.MSG_REQUEST_LYRIC);
+                        //搜索歌词
+                        sendLogicalMessage(obtainLogicalMessage(AudioPlayerMsg.MSG_REQUEST_LYRIC, 0, 0, mCurrentMediaInfo), 0);
                         // DTS2012061804317 播放音乐时按上下键切换，概率性（50%）播放歌曲不是列表当前指向的歌曲 end
                         String uri = mCurrentMediaInfo.getPath();
                         
@@ -1475,7 +1326,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                     Log.d(TAG, "--------proc message AudioPlayerMsg.MSG_REQUEST_LYRIC");
                     if (msg.obj != null)
                     {
-                        LocalMediaInfo hMediaInfo = (LocalMediaInfo) msg.obj;
+                        FileInfo hMediaInfo = (FileInfo) msg.obj;
                         new LyricThread(hMediaInfo).start();
                     }
                     break;
@@ -1625,27 +1476,22 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                         int targetItem = Lyric.getInstance().getLineByTime(currentPos);
                         int lineDuration = Lyric.getInstance().getDuration(targetItem);
                         int lineStartTime = Lyric.getInstance().getStartTime(targetItem);
-                        // currentPos = mMusicPlayer.getCurrentPosition();
                         Log.d(TAG, "cc msg currentPos " + currentPos + ", targetItem " + targetItem + " lineStartTime = " + lineStartTime
                                 + " lineDuration = " + lineDuration);
-
-                        // if (currentLyricArray != null)
-                        // {
-                        // for (int i = 0; i < currentLyricArray.length; i++)
-                        // {
-                        // if (i == 0)
-                        // {
-                        // Log.d(TAG, "leftLyric is " + currentLyricArray[i]);
-                        // }
-                        // else
-                        // {
-                        // Log.d(TAG, "rightLyric is " + currentLyricArray[i]);
-                        // }
-                        // }
-                        // }
                         mNextLineLyricDuration = lineStartTime + lineDuration - currentPos + 100;
                         sendUiMessage(AudioPlayerMsg.MSG_SYNC_LYRIC, mNextLineLyricDuration);
                         mCurrPauseTimeStamp = System.currentTimeMillis();
+                        if(targetItem == -1){
+                        	String[] lyricList = Lyric.getInstance().getLyricList();
+                        	if(lyricList != null && lyricList.length > 0)
+                        	mLeftLyric.setText(lyricList[0]);
+                        	mLeftLyric.setTextColor(Color.WHITE);
+                        	if(lyricList.length > 1){
+                        		mRightLyric.setText(lyricList[1]);
+                        		mRightLyric.setTextColor(Color.WHITE);
+                        	}
+                        	
+                        }
                         if (prevTargetItem != targetItem)
                         {
                             colorLyric(currentLyricArray, targetItem, lineDuration);
@@ -1669,7 +1515,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                     {
                         curDur = 0;
                     }
-                    Log.d(TAG, "DateUtil.formatTime(curDur):"+curDur);
+                    //Log.d(TAG, "DateUtil.formatTime(curDur):"+curDur);
                     mMusicAlreadyPlayedDuration.setText(DateUtil.formatTime(curDur));
                     break;
                 case AudioPlayerMsg.MSG_REQUEST_REFRESH_MEDIAINFO:
@@ -2317,7 +2163,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                 if (0 == mResumeNeedSeekValue)
                 {
                     mSeekBar.setProgress(mSeekValue);
-                    Log.d(TAG, " requestRefreshCurrentPosition()+ currentPosition" + currentPosition);
+                    //Log.d(TAG, " requestRefreshCurrentPosition()+ currentPosition" + currentPosition);
                     sendUiMessage(obtainUiMessage(AudioPlayerMsg.MSG_UPDATE_MUSIC_PROGRESS, currentPosition, 0, null), 0);
                 }
             }
@@ -2841,24 +2687,21 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
             	mNeedShowBackPic = false;
                 setBackgroundPicFlag(true);
                 mUiHandler.removeMessages(MSG_SHOW_BACKGRPUND_PICS);
-                if(mBackPhotoDialog == null){
-                	mBackPhotoDialog = new BackgroundPhotoDialog(this, mCurrentDevice, new BackgroundPhotoDialog.Callback() {
-    					
-    					@Override
-    					public void onFinished(List<FileInfo> fileInfos) {
-    						saveBackPhotos(fileInfos);
-    					}
-    				});
-                	mBackPhotoDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-						
-						@Override
-						public void onDismiss(DialogInterface dialog) {
+            	BackgroundPhotoDialog backgroundPhotoDialog = new BackgroundPhotoDialog(this, mCurrentDevice, new BackgroundPhotoDialog.Callback() {
+					
+					@Override
+					public void onFinished(List<FileInfo> fileInfos) {
+						mNeedShowBackPic = true;
+						removeUiMessage(MSG_SHOW_BACKGRPUND_PICS);
+						if(fileInfos == null)
 							sendUiMessage(MSG_SHOW_BACKGRPUND_PICS, BG_IMAGE_SHOW_DELAY_TIME);
+						else{
+							saveBackPhotos(fileInfos);
 						}
-					});
-                }
-            	
-            	mBackPhotoDialog.show();
+					}
+				});
+                backgroundPhotoDialog.setIsOK(false);
+            	backgroundPhotoDialog.show();
                 break;
 
             case ENUM_CLOSE_BACKGROUND_PIC:
@@ -2967,6 +2810,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 		    			mDefaultBackBitmap = BitmapUtil.getScaledBitmapFromResource(getResources(), R.drawable.default_audio_bg_a, SCREEN_WIDTH, SCREEN_HEIGHT);
 		    		return  mDefaultBackBitmap;
 		    	}
+		    	int prvSize = mBackMusicPhotoInfos.size();
 		    	BackMusicPhotoInfo photoInfo = null;
 		    	String photoPath = null;
 		    	while(!mBackMusicPhotoInfos.isEmpty()){
@@ -2978,6 +2822,13 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 			    	else{
 			    		return BitmapUtil.getScaledBitmapFromFile(photoPath, SCREEN_WIDTH, SCREEN_HEIGHT);
 			    	}
+		    	}
+		    	int newSize = mBackMusicPhotoInfos.size();
+		    	if(newSize != prvSize){
+		    		//更新至数据库
+		    		BackMusicPhotoInfoService infoService = new BackMusicPhotoInfoService();
+		    		infoService.deleteAll();
+		    		infoService.saveAll(mBackMusicPhotoInfos);
 		    	}
 		    	if(mBackMusicPhotoInfos == null || mBackMusicPhotoInfos.size() == 0){		    			
 		    		//显示默认图片
@@ -3004,8 +2855,11 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 					mOldBackBitmap = bmp;
 					mSwitcherBackPhoto.setImageBitmap(bmp);
 				}
-				if(mNeedShowBackPic && mUiHandler != null)
-					mUiHandler.sendEmptyMessageDelayed(MSG_SHOW_BACKGRPUND_PICS, BG_IMAGE_SHOW_DELAY_TIME);
+				if(mNeedShowBackPic && mUiHandler != null){
+					removeUiMessage(MSG_SHOW_BACKGRPUND_PICS);
+					sendUiMessage(MSG_SHOW_BACKGRPUND_PICS, BG_IMAGE_SHOW_DELAY_TIME);
+				}
+					
 			}
 		};
     	mLoadPhotoTask.execute();
@@ -3050,69 +2904,49 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 			mLogicalHandler = new Handler(mLogicalThread.getLooper(), mLogicalHandlerCallback);
 
 		}
-
 		mParentLinear = (LinearLayout) findViewById(R.id.parent_linear);
-
 		// 音乐专辑组件
 		mAlbumInfoView = (PreviewWidget) findViewById(R.id.music_info);
-
 		// 进度条
 		mSeekBar = (SeekBar) findViewById(R.id.music_seekbar);
 		mSeekBar.setFocusable(false);
 		mSeekBar.setOnSeekBarChangeListener(mOnSeekBarChangeListener);
-
 		mMusicPlayer = new MusicPlayer();
-
 		// 创建焦点框
 		mGlobalFocus = new GlobalFocus(this);
 		mGlobalFocus.setFocusRes(R.color.music_list_select_color);
 		mGlobalFocus.setVisibility(View.INVISIBLE);
-
 		LayoutParams params = new LayoutParams(DeviceInfoUtils.getScreenWidth(this) / 2 - SizeUtils.dp2px(this, 20), SizeUtils.dp2px(this, 69));
-
 		params.topMargin = -SizeUtils.dp2px(this, 652);
 		params.leftMargin = DeviceInfoUtils.getScreenWidth(this) / 2;
 		mGlobalFocus.setFocusInitParams(params);
 		mParentLinear.addView(mGlobalFocus);
-
 		// 播放列表组件
 		mPlayListView = (PlayListView) findViewById(R.id.music_playlist);
 		mPlayListView.setOnMenuListener(mOnMenuListener);
 		mPlayListView.addFocus(mGlobalFocus);
 		mPlayListView.setItemFocusListener(mGlobalFocus);
 		mPlayListView.setItemTouchListener(mOnItemTouchListener);
-
 		// 播放列表适配器
 		mAdapter = new TextViewListAdapter(this);
-
 		mPlayModeIcon = (ImageView) findViewById(R.id.playmode_icon);
 		mPlayModeText = (TextView) findViewById(R.id.main_playmode_text);
-
 		// zkf61715
 		showPlayMode(mAudioPlayStateInfo.getPlayMode());
-
 		mMusicAlreadyPlayedDuration = (TextView) findViewById(R.id.music_already_played_duration);
 		mMusicTotalDuration = (TextView) findViewById(R.id.music_total_duration);
-
 		// 左边歌词
 		mLeftLyric = (TextView) findViewById(R.id.left_lyric);
 		// 右边歌词
 		mRightLyric = (TextView) findViewById(R.id.right_lyric);
-
 		loadDefaultMusicBitmap();
-
 		mAlbumInfoView.setRes(mDefaultMusicBitmap, null, null);
-
 		loadPlayModeSettingLayout();
-
 		// 注册同步播放列表完成监听器
 		mAudioPlayStateInfo.registerOnPlayListSyncCompletedListener(mOnPlayListSyncCompletedListener);
-
 		// mPriInterface = new MediaplayerPriInterface();
-
 		// 初始化杜比的弹出视窗
 		doblyPopWin = new DoblyPopWin(this);
-
 		// 进度条
 		mProgressBar = (ProgressBar) findViewById(R.id.circleProgressBar);
 		if (mProgressBar != null) {
@@ -3128,7 +2962,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 			public View makeView() {
 				//创建ImageView
 				ImageView imageView = new ImageView(AudioPlayerActivity.this);
-				imageView.setScaleType(ScaleType.CENTER_INSIDE);
+				imageView.setScaleType(ScaleType.CENTER);
 				imageView.setLayoutParams(new ImageSwitcher.LayoutParams(SCREEN_WIDTH, SCREEN_HEIGHT));
 				return imageView;
 			}
@@ -3138,9 +2972,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 		if (mIMPRL != null) {
 			mIMPRL.setVisibility(View.GONE);
 		}
-
 		mGlobalFocus.setBackgroud(mIMPRL);
-
 		ToastUtil.build(getApplicationContext());
 	}
 	/**
@@ -3175,6 +3007,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 				if(mNeedShowBackPic){
 					 Message msg = new Message();
 				     msg.what = MSG_SHOW_BACKGRPUND_PICS;
+				     removeUiMessage(MSG_SHOW_BACKGRPUND_PICS);
 				     if (mFirstShowBg){
 				            sendUiMessage(msg, 2 * BG_IMAGE_SHOW_DELAY_TIME);
 				            mFirstShowBg = false;

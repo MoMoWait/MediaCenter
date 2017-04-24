@@ -15,7 +15,7 @@ import com.rockchips.mediacenter.data.ConstData;
  */
 public class AudioPlayStateInfo
 {
-    private static final String TAG = "MediaCenterApp";
+    private static final String TAG = "AudioPlayStateInfo";
 
     private static AudioPlayStateInfo instance = null;
 
@@ -341,50 +341,10 @@ public class AudioPlayStateInfo
         Log.d(TAG, "syncList()");
         synchronized (mMediaList)
         {
-
-            synchronized (mMediaListCache)
-            {
-                if (mNeedSync)
-                {
-                    Log.d(TAG, "syncList run begin...");
-                    // 备份当前焦点
-                    FileInfo currentMediaInfo = getMediaInfo(mCurrIndex);
-
-                    mMediaList.clear();
-
-                    if (mMediaListCache.size() > 0)
-                    {
-                        mMediaList.addAll(mMediaListCache);
-                    }
-                    if (mPrepareIndex != -1)
-                    {
-                        setCurrentIndex(mPrepareIndex);
-                        mPrepareIndex = -1;
-                    }
-                    else if (currentMediaInfo != null)
-                    {
-                        // 恢复当前焦点
-                        setCurrentMediaInfo(currentMediaInfo);
-                    }
-                    else
-                    {
-
-                    }
-                    mNeedSync = false;
-
-                    if (mOnPlayListSyncCompletedListener != null)
-                    {
-                    	mOnPlayListSyncCompletedListener.onPlayListSyncCompleted(true);
-                    }
-
-                    Log.d(TAG, "syncList run end...");
-                }
-                else
-                {
-                    Log.d(TAG, "not need sync...");
-                }
-
-            }
+        	FileInfo currentMediaInfo = getMediaInfo(mCurrIndex);
+            // 恢复当前焦点
+            setCurrentMediaInfo(currentMediaInfo);
+         
         }
     }
 

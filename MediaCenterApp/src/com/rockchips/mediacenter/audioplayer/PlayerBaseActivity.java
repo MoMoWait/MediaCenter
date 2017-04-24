@@ -161,7 +161,7 @@ public abstract class PlayerBaseActivity extends DeviceActivity
             return false;
         }
         mAudioPlayStateInfo.setNeedShowMenuBar(false);
-        Log.d(TAG, "isInternalPlayer is : " + mIsInternalAudioPlayer);
+      /*  Log.d(TAG, "isInternalPlayer is : " + mIsInternalAudioPlayer);
         if (mIsInternalAudioPlayer)
         {
             mAudioPlayStateInfo.syncList();
@@ -169,7 +169,7 @@ public abstract class PlayerBaseActivity extends DeviceActivity
         }
         mReuseAudioplayer = intent.getBooleanExtra(ConstData.IntentKey.IS_REUSE_AUDIOPLAYER, false);
         Log.d(TAG, "mReuseAudioplayer is : " + mReuseAudioplayer);      
-        mAudioPlayStateInfo.setSenderClientUniq(ConstData.ClientTypeUniq.UNKNOWN_UNIQ);
+        mAudioPlayStateInfo.setSenderClientUniq(ConstData.ClientTypeUniq.UNKNOWN_UNIQ);*/
         return true;
     }
 
