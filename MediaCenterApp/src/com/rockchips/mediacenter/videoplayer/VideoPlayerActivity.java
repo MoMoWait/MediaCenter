@@ -1,23 +1,6 @@
 /**
- * 
- * com.rockchips.iptv.stb.dlna.player
- * VideoPlayerActivity.java
- * 
- * AR-0000698410
- * 4.2平台通地海思播放器实现trickplay
- *  
- * AR-0000698411
- * 4.0中通过seek实现trickplay
- * 
- * AR-0000698413
- * 视频播放的功能 
- * 
- * AR-0000698414
- * 视频播放的性能
- * 
- * 2011-10-18 下午02:02:55
- * Copyright 2011 Huawei Technologies Co., Ltd
- * 
+ * @author GaoFei
+ * 视频播放器
  */
 package com.rockchips.mediacenter.videoplayer;
 

@@ -11,6 +11,8 @@ package com.rockchips.mediacenter.audioplayer;
 
 import java.util.HashMap;
 
+import org.json.JSONObject;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -18,7 +20,9 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.bean.LocalMediaInfo;
+import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.utils.StringUtils;
 
 /**
@@ -201,7 +205,7 @@ public class DBUtils
      * @param context 当前的上下文对象
      * @param displayName 以"content://"开头的显示名
      */    
-    public static void fillValuesByDisplayName(LocalMediaInfo mediaInfo, Context context, String displayName){
+    public static void fillValuesByDisplayName(FileInfo mediaInfo, Context context, String displayName){
         Log.i(LOGTAG, "data----------content://---------------" + displayName);
         
         Uri uri = Uri.parse(displayName);
@@ -225,10 +229,12 @@ public class DBUtils
                 
                 if (c.moveToNext())
                 {
-                    mediaInfo.setmFileName(c.getString(dataColumn));
-                    mediaInfo.setmAlbum(c.getString(albumColumn));
-                    mediaInfo.setmArtist(c.getString(artistColumn));
-                    mediaInfo.setmTitle(c.getString(titleColumn));
+                    mediaInfo.setName(c.getString(dataColumn));
+                    JSONObject otherInfoObject = new JSONObject();
+                    otherInfoObject.put(ConstData.AudioOtherInfo.TITLE, c.getString(titleColumn));
+                    otherInfoObject.put(ConstData.AudioOtherInfo.ALBUM, c.getString(albumColumn));
+                    otherInfoObject.put(ConstData.AudioOtherInfo.ARTIST, c.getString(artistColumn));
+                    mediaInfo.setOtherInfo(otherInfoObject.toString());
                 }
             }
         }

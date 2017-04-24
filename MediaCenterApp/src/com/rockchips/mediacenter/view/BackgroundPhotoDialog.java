@@ -4,9 +4,11 @@ import java.util.List;
 import org.xutils.view.annotation.ViewInject;
 import com.rockchips.mediacenter.R;
 import com.rockchips.mediacenter.adapter.BackgroundPhotoAdapter;
+import com.rockchips.mediacenter.bean.BackMusicPhotoInfo;
 import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.data.ConstData;
+import com.rockchips.mediacenter.modle.db.BackMusicPhotoInfoService;
 import com.rockchips.mediacenter.modle.db.FileInfoService;
 import momo.cn.edu.fjnu.androidutils.utils.DeviceInfoUtils;
 import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
@@ -45,13 +47,14 @@ public class BackgroundPhotoDialog extends AppBaseDialog implements OnDismissLis
 	private LinearLayout mLayoutControl;
 	@ViewInject(R.id.text_no_image)
 	private TextView mTextNoImage;
-	
 	private Callback mCallback;
 	private View mainView;
 	private Context mContext;
 	private AsyncTask<Void, Void, List<FileInfo>> mLoadPhotoTask;
 	private Device mCurrDevice;
 	private List<FileInfo> mSelectFileInfos = new LinkedList<>();
+	private boolean mIsOK;
+	private List<BackMusicPhotoInfo> mPreBackMusicPhotoInfos;
 	public BackgroundPhotoDialog(Context context, Device device, Callback callback){
 		super(context);
 		mContext = context;
@@ -71,6 +74,8 @@ public class BackgroundPhotoDialog extends AppBaseDialog implements OnDismissLis
 			@Override
 			protected List<FileInfo> doInBackground(Void... params) {
 				FileInfoService fileInfoService = new FileInfoService();
+				BackMusicPhotoInfoService musicInfoService = new BackMusicPhotoInfoService();
+				mPreBackMusicPhotoInfos = musicInfoService.getAll(BackMusicPhotoInfo.class);
 				return fileInfoService.getLocalFileInfos(ConstData.MediaType.IMAGE);
 			}
 			
@@ -99,6 +104,16 @@ public class BackgroundPhotoDialog extends AppBaseDialog implements OnDismissLis
 		mBtnOK.setOnClickListener(this);
 		mBtnCancel.setOnClickListener(this);
 		mGridImage.setOnItemClickListener(this);
+		setOnDismissListener(new OnDismissListener() {
+			
+			@Override
+			public void onDismiss(DialogInterface dialog) {
+				if(mIsOK)
+					mCallback.onFinished(mSelectFileInfos);
+				else
+					mCallback.onFinished(null);
+			}
+		});
 	}
 	
 	@Override
@@ -126,9 +141,10 @@ public class BackgroundPhotoDialog extends AppBaseDialog implements OnDismissLis
 				ToastUtils.showToast(mContext.getString(R.string.sel_back_photo));
 				return;
 			}
+			mIsOK = true;
 			dismiss();
-			mCallback.onFinished(mSelectFileInfos);
 		}else if(v == mBtnCancel){
+			mIsOK = false;
 			dismiss();
 		}
 	}
@@ -146,4 +162,7 @@ public class BackgroundPhotoDialog extends AppBaseDialog implements OnDismissLis
 		}
 	}
 
+	public void setIsOK(boolean isOK){
+		mIsOK = isOK;
+	}
 }

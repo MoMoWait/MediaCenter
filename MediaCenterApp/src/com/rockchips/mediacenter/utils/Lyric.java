@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.R.integer;
 import android.util.Log;
 
 /**
@@ -96,6 +97,9 @@ public final class Lyric
 
     public int getLineCount()
     {
+    	/*for(String item : mLyricList){
+    		Log.i(TAG, "getLineCount->item:" + item);
+    	}*/
         if (mLyricList != null)
         {
             return mLyricList.length;
@@ -124,17 +128,20 @@ public final class Lyric
 
     public int getLineByTime(int time)
     {
+    	Log.i(TAG, "getLineByTime->time:" + time);
 
-        if (null == mTimeList)
+        if (null == mTimeList || mTimeList.length == 0)
         {
             return -1;
         }
-        // TODO:采用二分法查找速度会更快， 暂且使用此方法
         int lineCount = getLineCount();
-        if (lineCount < 2 || time < mTimeList[1])
+       /* for(int i = 0; i < mTimeList.length; ++i){
+        	Log.i(TAG, "getLineByTime->timeItem:" + mTimeList[i]);
+        }*/
+        /*if (lineCount < 2 || time < mTimeList[1])
         {
-            return 0;
-        }
+            return  -1;
+        }*/
         if (time >= mTimeList[lineCount - 1])
         {
             return lineCount - 1;
@@ -147,7 +154,7 @@ public final class Lyric
                 return i;
             }
         }
-        return 0;
+        return -1;
 
     }
 
