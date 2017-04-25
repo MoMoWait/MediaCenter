@@ -21,6 +21,10 @@ public class ConstData {
 	public static final String DB_NAME = "mediacenter.db";
 	public static final int DB_VERSION = 1;
 	/**
+	 * 最多支持
+	 */
+	public static final int MAX_BACK_MUSIC_COUNT = 20;
+	/**
 	 * 最大加载文件时间
 	 */
 	public static final long MAX_LOAD_FILES_TIME = 20 * 1000L;

@@ -1,12 +1,6 @@
 package com.rockchips.mediacenter.imageplayer;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -14,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -32,22 +25,16 @@ import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.data.ConstData.EBrowerType;
 import com.rockchips.mediacenter.data.ConstData.MediaType;
 import com.rockchips.mediacenter.utils.IICLOG;
-import com.rockchips.mediacenter.utils.StringUtils;
 import com.rockchips.mediacenter.bean.PlayStateInfo;
-import com.rockchips.mediacenter.activity.MainActivity;
 import com.rockchips.mediacenter.audioplayer.BackgroundAudioPreviewWidget;
 import com.rockchips.mediacenter.view.ListSelectItem;
 import com.rockchips.mediacenter.view.ListSelectPopup;
 import com.rockchips.mediacenter.view.ListSelectPopup.OnSelectPopupListener;
 
 /**
- * 
- * AR-0000698423 媒体中心支持相片全屏播放背景音乐
- * 
- * @author xWX184171
- * @version [版本号, 2014-4-10]
- * @see [相关类/方法]
- * @since [产品/模块版本]
+ * 图片浏览器
+ * @author GaoFei
+ *
  */
 public class InternalImagePlayer extends ImagePlayerActivity implements OnSelectPopupListener
 {
@@ -79,9 +66,6 @@ public class InternalImagePlayer extends ImagePlayerActivity implements OnSelect
     private static final int MSG_ALERTDIALOG_DISMISS = 0x0015;
 
     private int mCurrentPlayIndex;
-
-    // 背景音乐播放到的位置
-    private int mbgAudioPlayIndex = 0;
 
     private static String mCurDevId;
 
@@ -120,8 +104,6 @@ public class InternalImagePlayer extends ImagePlayerActivity implements OnSelect
      */
     protected static final int SHOW_MSG_ERROR = 3;
 
-    private static final long DELAY_TIME = 10000;
-
     /**
      * 自定义背景音乐序列化到file文件目录下的文件名
      */
@@ -131,8 +113,6 @@ public class InternalImagePlayer extends ImagePlayerActivity implements OnSelect
      * 自定义音乐序列化最大条数
      */
     private int mMusicSericalizeMaxNum = 100;
-
-    private List<LocalMediaInfo> mPlaylist = null;
 
 //    private int deviceType;
     
@@ -327,12 +307,9 @@ public class InternalImagePlayer extends ImagePlayerActivity implements OnSelect
             palylist = PlayStateInfo.getmBackGroupAudiolist();
         }
         /* END: Modified by s00211113 for DTS2014033000145 2014/3/31 */
-
-        mPlaylist = palylist;
         // 自定义背景音乐发生改变时，重新序列化保存
         if (bBackGroupAudioChange)
         {
-            File music = getFileStreamPath(mMusicSerializeFileName);
             bBackGroupAudioChange = false;
         }
 
@@ -430,99 +407,14 @@ public class InternalImagePlayer extends ImagePlayerActivity implements OnSelect
     @Override
     protected void onResume()
     {
-        // TODO Auto-generated method stub
-//        DataNotify.getInstance().registerDataChangedListener(this);
-//        isNeedGoHome = false;
-//        Message msg;
-//        String devId;
-//        LocalMediaInfo curInfo = mPlayStateInfo.getCurrentMediaInfo();
-//        if (curInfo != null && curInfo.getUrl() != null)
-//        {
-//            File f = new File(curInfo.getUrl());
-//            if (!f.exists())
-//            {
-//                for (int i = 0; i < DataNotify.list.size(); i++)
-//                {
-//                    msg = DataNotify.list.get(i);
-//                    if (msg != null && msg.obj != null)
-//                    {
-//                        devId = (String) msg.obj;
-//                        mLog.d(TAG, "devId = " + devId);
-//                        mLog.d(TAG, "devType = " + msg.arg1);
-//                        mLog.d(TAG, "mCurId = " + mCurDevId);
-//                        isNeedGoHome = isCurrentDev(devId, msg.arg1);
-//                        if (isNeedGoHome)
-//                        {
-//                            mUIHandler.sendEmptyMessageDelayed(MSG_UI_GOHOME, DELAY_TIME);
-//                            break;
-//                        }
-//                    }
-//                }
-//            }
-//            else
-//            {
-//                DataNotify.list.clear();
-//            }
-//        }
-//        else
-//        {
-//            DataNotify.list.clear();
-//        }
         super.onResume();
     }
-
-    private boolean currentFileExists()
-    {
-        LocalMediaInfo curInfo = mPlayStateInfo.getCurrentMediaInfo();
-        if (curInfo != null && curInfo.getUrl() != null)
-        {
-            File f = new File(curInfo.getUrl());
-            if (f.exists())
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isCurrentDev(String devId, int devType)
-    {
-        boolean isCurrentDev = false;
-        if (devId != null && mCurDevId != null)
-        {
-            if (devType == ConstData.DeviceType.DEVICE_TYPE_U || devType == ConstData.DeviceType.DEVICE_TYPE_SD)
-            {
-                isCurrentDev = devId.contains(mCurDevId);
-            }
-            else
-            {
-                isCurrentDev = devId.equals(mCurDevId);
-            }
-        }
-        return isCurrentDev;
-    }
+    
 
     /**
      * 跳转到首页
      */
-    protected void gotoHome()
-    {
-//        mLog.d(TAG, "gotoHome--------->");
-//        // 跳转到首页
-//        DataNotify.list.clear();
-//        mUIHandler.removeMessages(MSG_UI_GOHOME);
-//        isNeedGoHome = false;
-//        if (currentFileExists())
-//        {
-//            return;
-//        }
-//        this.finish();
-//        Intent intent = new Intent();
-//        intent.setClass(this, MainActivity.class);
-//        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);// 必须加上，开启MyMediaActivity时将会清除该进程空间的所有Activity。
-//        startActivity(intent);
-
-    }
+    protected void gotoHome(){}
 
     /**
      * 分析intent 获取设备id，用于设备上下线比较
@@ -552,79 +444,7 @@ public class InternalImagePlayer extends ImagePlayerActivity implements OnSelect
             mLog.d(TAG, "parseIntent--device_id--hashCode:" + mDeviceIdHashCode);
         }
     }
-
-    /**
-     * 比较当前浏览的设备id与上下线的设备id
-     * @param flag 上下线标志
-     * @param deviceId 设备id
-     * @param deviceType 设备类型
-     */
-    private void compareDeviceId(int flag, String deviceId, int deviceType)
-    {
-        if (StringUtils.isEmpty(deviceId))
-        {
-            mLog.w(TAG, "onDeviceDown deviceId is empty");
-            return;
-        }
-        mLog.d(TAG, "onDeviceDown deviceId---> 1:" + deviceId);
-        int deviceIdHashCode = 0;
-        mLog.d(TAG, "onDeviceDown deviceType:" + deviceType);
-        // DMS设备类型
-        if (deviceType == ConstData.DeviceType.DEVICE_TYPE_DMS)
-        {
-            deviceIdHashCode = deviceId.hashCode();
-        }
-        // U盘设备类型,sdcard类型
-        else if (deviceType == ConstData.DeviceType.DEVICE_TYPE_U || deviceType == ConstData.DeviceType.DEVICE_TYPE_SD)
-        {
-            deviceId = deviceId.substring(0, deviceId.lastIndexOf("/"));
-            deviceIdHashCode = deviceId.hashCode();
-        }
-        mLog.d(TAG, "onDeviceDown deviceId---> 2:" + deviceId);
-        mLog.e(TAG, "CurrentdeviceIdHashCode:" + getDeviceIdHashCode());
-        mLog.e(TAG, "DownDeviceIdHashCode:" + deviceIdHashCode);
-        mLog.e(TAG, "flag:" + flag);
-        mLog.e(TAG, "DEVICES_DOWN_FLAG:" + DEVICES_DOWN_FLAG);
-
-        // 若当前下线的设备与正在播放的音乐是一个设备，则清除播放列表
-        /* BEGIN: Modified by s00211113 for DTS2014033000145 2014/3/31 */
-        if (flag == DEVICES_DOWN_FLAG && !getPlayDefaultBgMusic())
-        {            
-            List<LocalMediaInfo> palylist = PlayStateInfo.getmBackGroupAudiolist();
-            if (palylist != null && !palylist.isEmpty())
-            {
-                if (deviceId.equals(palylist.get(0).getmPhysicId()))
-                {
-                    PlayStateInfo.setmBackGroupAudiolist(null);
-                    PlayStateInfo.getmFavoriteSet().clear();
-                }
-            }
-        }
-        /* END: Modified by s00211113 for DTS2014033000145 2014/3/31 */
-
-        // 设备是否为上下线设备？如果是就mbDeviceDown置为true 否则不变化
-        if (deviceIdHashCode == getDeviceIdHashCode())
-        {
-            if (flag == DEVICES_DOWN_FLAG)
-            {
-                mbDeviceDown = true;
-                mLog.e(TAG, "mbDeviceDown-----true");
-                mLog.e(TAG, "DowndeviceIdHashCode:" + deviceIdHashCode);
-            }
-            else
-            {
-                mbDeviceDown = false;
-                mLog.e(TAG, "mbDeviceup-----false");
-                mLog.e(TAG, "UpdeviceIdHashCode:" + deviceIdHashCode);
-            }
-        }
-        else
-        {
-            mbDeviceDown = false;
-            mLog.e(TAG, "mbDeviceDown-----false");
-        }
-        mLog.e(TAG, "mbDeviceDown:" + mbDeviceDown);
-    }
+    
 
     @Override
     protected void onDestroy()
@@ -634,7 +454,6 @@ public class InternalImagePlayer extends ImagePlayerActivity implements OnSelect
         List<LocalMediaInfo> palylist = PlayStateInfo.getmBackGroupAudiolist();
         if (palylist != null && palylist.size() > 0)
         {
-            File music = getFileStreamPath(mMusicSerializeFileName);
         }        
         stopTimer();
         super.onDestroy();
@@ -799,151 +618,7 @@ public class InternalImagePlayer extends ImagePlayerActivity implements OnSelect
         }
 
     }
-
-
-    /**
-     * <一句话功能简述>序列化背景音乐 <功能详细描述>
-     * @param fileName 序列化路径
-     * @param musics 序列化内容
-     * @see [类、类#方法、类#成员]
-     */
-    private void serialize(String fileName, List<LocalMediaInfo> musics)
-    {
-        mLog.d(TAG, "serialize-->in");
-        mLog.d(TAG, "serialize-->serializeFile = " + fileName);
-        if (musics == null || musics.size() == 0)
-        {
-            return;
-        }
-
-        // 创建一个对象输出流，讲对象输出到文件
-        ObjectOutputStream out = null;
-        FileOutputStream fos = null;
-        try
-        {
-            fos = new FileOutputStream(fileName);
-            out = new ObjectOutputStream(fos);
-
-            LocalMediaInfo info = null;
-
-            // 序列化音乐条数最大不能大于100条
-            int count = (musics.size() > mMusicSericalizeMaxNum) ? mMusicSericalizeMaxNum : musics.size();
-            for (int i = 0; i < count; i++)
-            {
-                info = musics.get(i);
-                out.writeObject(new BackgroundMusic(info.getmFileName(), info.getUrl()));
-            }
-            out.writeObject(null);
-        }
-        catch (FileNotFoundException e)
-        {
-        }
-        catch (IOException e)
-        {
-        }
-        finally
-        {
-            if (out != null)
-            {
-                try
-                {
-                    out.close();
-                }
-                catch (IOException e)
-                {
-                }
-                out = null;
-            }
-            if (fos != null)
-            {
-                try
-                {
-                    fos.close();
-                }
-                catch (IOException e)
-                {
-                }
-                fos = null;
-            }
-        }
-        mLog.d(TAG, "serialize-->out");
-    }
-
-    /**
-     * <一句话功能简述>反序列化自定义背景音乐。反序列化和序列化出来的数据 的顺序是相同的。 <功能详细描述>
-     * @param fileName
-     * @see [类、类#方法、类#成员]
-     */
-    private void deserialize(String fileName)
-    {
-        mLog.d(TAG, "deserialize-->in");
-        mLog.d(TAG, "deserialize-->deserializeFile = " + fileName);
-
-        // 创建一个对象输入流，从文件读取对象
-        ObjectInputStream in = null;
-        FileInputStream fis = null;
-        try
-        {
-            List<LocalMediaInfo> musics = new ArrayList<LocalMediaInfo>();
-
-            fis = new FileInputStream(fileName);
-            in = new ObjectInputStream(fis);
-            BackgroundMusic music = (BackgroundMusic) in.readObject();
-            LocalMediaInfo info;
-            while (music != null)
-            {
-                info = new LocalMediaInfo();
-                info.setmFileName(music.getMusicName());
-                info.setmData(music.getMusicPath());
-                musics.add(info);
-                mLog.d(TAG, "deserialize-->music" + music.toString());
-
-                music = (BackgroundMusic) in.readObject();
-            }
-
-            if (musics.size() > 0)
-            {
-                mLog.d(TAG, "deserialize-->musics.size() = " + musics.size());
-                PlayStateInfo.setmBackGroupAudiolist(musics);
-            }
-
-        }
-        catch (ClassNotFoundException e)
-        {
-        }
-        catch (FileNotFoundException e)
-        {
-        }
-        catch (IOException e)
-        {
-        }
-        finally
-        {
-            if (in != null)
-            {
-                try
-                {
-                    in.close();
-                }
-                catch (IOException e)
-                {
-                }
-                in = null;
-            }
-            if (fis != null)
-            {
-                try
-                {
-                    fis.close();
-                }
-                catch (IOException e)
-                {
-                }
-                fis = null;
-            }
-        }
-        mLog.d(TAG, "deserialize-->out");
-    }
+    
     
     private LocalDeviceInfo getDeviceInfo()
     {
@@ -1086,7 +761,7 @@ public class InternalImagePlayer extends ImagePlayerActivity implements OnSelect
         PlayStateInfo.setDevIdForSelectAud(mCurDevId);
         PlayStateInfo.setSelectedAudioIdxListForImagePlayer(selectedIdxList);
         mIsplayBackgroundMusic = true;
-        playBackgroundMusic(null);
+        playBackgroundMusic();
 
     }
 

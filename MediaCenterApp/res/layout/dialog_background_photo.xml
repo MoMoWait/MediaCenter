@@ -46,9 +46,10 @@
     
    	<TextView 
    	    android:id="@+id/text_no_image"
-   	    android:layout_width="wrap_content"
+   	    android:layout_width="match_parent"
    	    android:layout_height="wrap_content"
    	    android:textColor="@android:color/white"
+   	    android:gravity="center"
    	    android:textSize="25sp"
    	    android:text="@string/currdevice_no_images"
    	    android:visibility="gone"/>

@@ -1,111 +1,118 @@
 package com.rockchips.mediacenter.view;
+
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import org.xutils.view.annotation.ViewInject;
-import com.rockchips.mediacenter.R;
-import com.rockchips.mediacenter.adapter.BackgroundPhotoAdapter;
-import com.rockchips.mediacenter.bean.BackMusicPhotoInfo;
-import com.rockchips.mediacenter.bean.Device;
-import com.rockchips.mediacenter.bean.FileInfo;
-import com.rockchips.mediacenter.data.ConstData;
-import com.rockchips.mediacenter.modle.db.BackMusicPhotoInfoService;
-import com.rockchips.mediacenter.modle.db.FileInfoService;
 import momo.cn.edu.fjnu.androidutils.utils.DeviceInfoUtils;
 import momo.cn.edu.fjnu.androidutils.utils.ToastUtils;
+import org.xutils.view.annotation.ViewInject;
+import com.rockchips.mediacenter.R;
+import com.rockchips.mediacenter.adapter.BackMusicAdapter;
+import com.rockchips.mediacenter.bean.FileInfo;
+import com.rockchips.mediacenter.data.ConstData;
+import com.rockchips.mediacenter.modle.db.FileInfoService;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.GridView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.content.DialogInterface.OnDismissListener;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckedTextView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
+
 /**
  * @author GaoFei
- * 背景图选择对话框
+ * 背景音乐选择对话框
  */
-public class BackgroundPhotoDialog extends AppBaseDialog implements OnClickListener, OnItemClickListener{
+public class BackMusicDialog extends AppBaseDialog implements OnClickListener, OnItemClickListener{
+
 	
 	public interface Callback{
 		void onFinished(List<FileInfo> fileInfos);
 	}
 	
-	@ViewInject(R.id.grid_image)
-	private GridView mGridImage;
+	@ViewInject(R.id.list_music)
+	private ListView mListMusic;
 	@ViewInject(R.id.btn_ok)
 	private Button mBtnOK;
 	@ViewInject(R.id.btn_cancel)
 	private Button mBtnCancel;
-	@ViewInject(R.id.layout_control)
-	private LinearLayout mLayoutControl;
-	@ViewInject(R.id.text_no_image)
-	private TextView mTextNoImage;
+	@ViewInject(R.id.layout_content)
+	private LinearLayout mLayouContent;
+	@ViewInject(R.id.text_no_music)
+	private TextView mTextNoMusic;
 	private Callback mCallback;
 	private View mainView;
 	private Context mContext;
-	private AsyncTask<Void, Void, List<FileInfo>> mLoadPhotoTask;
-	private Device mCurrDevice;
+	private AsyncTask<Void, Void, List<FileInfo>> mLoadMusicTask;
 	private List<FileInfo> mSelectFileInfos = new LinkedList<>();
+	private List<FileInfo> mAllFileInfos;
 	private boolean mIsOK;
-	public BackgroundPhotoDialog(Context context, Device device, Callback callback){
+	public BackMusicDialog(Context context, Callback callback){
 		super(context);
 		mContext = context;
-		mCurrDevice = device;
 		mCallback = callback;
 	}
 
 	@Override
 	public int getLayoutRes() {
-		return R.layout.dialog_background_photo;
+		return R.layout.dialog_back_music;
 	}
 
 	@Override
 	public void initData() {
 		//装载数据
-		mLoadPhotoTask = new AsyncTask<Void, Void, List<FileInfo>>(){
+		mLoadMusicTask = new AsyncTask<Void, Void, List<FileInfo>>(){
 			@Override
 			protected List<FileInfo> doInBackground(Void... params) {
 				FileInfoService fileInfoService = new FileInfoService();
-				return fileInfoService.getLocalFileInfos(ConstData.MediaType.IMAGE);
+				mAllFileInfos = fileInfoService.getLocalFileInfos(ConstData.MediaType.AUDIO);
+				List<String> strList = new ArrayList<>();
+				if(mAllFileInfos != null && mAllFileInfos.size() > 0){
+					for(FileInfo itemFileInfo : mAllFileInfos){
+						strList.add(itemFileInfo.getName());
+					}
+				}
+				return mAllFileInfos;
 			}
 			
 			@Override
 			protected void onPostExecute(List<FileInfo> result) {
 				//数据加载完毕，更新页面
 				if(result != null && result.size() > 0){
-					BackgroundPhotoAdapter photoGridAdapter = new BackgroundPhotoAdapter(mContext,  R.layout.adapter_background_photo, result);
-					mGridImage.setAdapter(photoGridAdapter);
-					mGridImage.setFocusable(true);
-					mGridImage.setFocusableInTouchMode(true);
-					mGridImage.requestFocus();
+					BackMusicAdapter adapter = new BackMusicAdapter(mContext, android.R.layout.simple_list_item_multiple_choice, android.R.id.text1, mAllFileInfos);
+					mListMusic.setAdapter(adapter);
+					mListMusic.requestFocus();
+					//mListMusic.setSelection(0);
 				}else{
-					mGridImage.setVisibility(View.GONE);
-					mLayoutControl.setVisibility(View.GONE);
-					mTextNoImage.setVisibility(View.VISIBLE);
+					mLayouContent.setVisibility(View.GONE);
+					mTextNoMusic.setVisibility(View.VISIBLE);
 				}
 			}
 		};
-		mLoadPhotoTask.execute();
+		mLoadMusicTask.execute();
 	}
 
 	@Override
 	public void initEvent() {
 		mBtnOK.setOnClickListener(this);
 		mBtnCancel.setOnClickListener(this);
-		mGridImage.setOnItemClickListener(this);
+		mListMusic.setOnItemClickListener(this);
 		setOnDismissListener(new OnDismissListener() {
 			
 			@Override
 			public void onDismiss(DialogInterface dialog) {
-				if(mLoadPhotoTask != null && mLoadPhotoTask.getStatus() == Status.RUNNING)
-					mLoadPhotoTask.cancel(true);
+
+				if(mLoadMusicTask != null && mLoadMusicTask.getStatus() == Status.RUNNING)
+					mLoadMusicTask.cancel(true);
+			
 				if(mIsOK)
 					mCallback.onFinished(mSelectFileInfos);
 				else
@@ -126,8 +133,6 @@ public class BackgroundPhotoDialog extends AppBaseDialog implements OnClickListe
 	}
 	
 
-	
-
 	@Override
 	public void onClick(View v) {
 		if(v == mBtnOK){
@@ -146,11 +151,16 @@ public class BackgroundPhotoDialog extends AppBaseDialog implements OnClickListe
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
-		FileInfo itemFileInfo = (FileInfo)parent.getAdapter().getItem(position);
-		CheckBox checkBox = (CheckBox)view.findViewById(R.id.check_select);
-		checkBox.setChecked(!checkBox.isChecked());
-		if(checkBox.isChecked()){
-			mSelectFileInfos.add(itemFileInfo);
+		FileInfo itemFileInfo = mAllFileInfos.get(position);
+		CheckedTextView checkedTextView = (CheckedTextView)view;
+		checkedTextView.setChecked(!checkedTextView.isChecked());
+		if(checkedTextView.isChecked()){
+			if(mSelectFileInfos.size() == ConstData.MAX_BACK_MUSIC_COUNT){
+				//提示最多只能选择20首背景音乐
+				ToastUtils.showToast(mContext.getString(R.string.max_sel_music_tip));
+			}else{
+				mSelectFileInfos.add(itemFileInfo);
+			}
 		}else{
 			mSelectFileInfos.remove(itemFileInfo);
 		}
@@ -159,4 +169,5 @@ public class BackgroundPhotoDialog extends AppBaseDialog implements OnClickListe
 	public void setIsOK(boolean isOK){
 		mIsOK = isOK;
 	}
+
 }

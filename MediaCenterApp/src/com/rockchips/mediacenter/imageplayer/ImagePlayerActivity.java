@@ -1,11 +1,6 @@
 /**
- * 
- * com.rockchips.iptv.stb.dlna.player
- * NewImagePlayerActivity.java
- * 
- * 2011-11-1-下午08:23:45
- * Copyright 2011 Huawei Technologies Co., Ltd
- * 
+ * 图片播放模块
+ * @author GaoFei
  */
 package com.rockchips.mediacenter.imageplayer;
 
@@ -14,10 +9,15 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import jcifs.dcerpc.msrpc.netdfs;
+
+import org.json.JSONArray;
+
+import momo.cn.edu.fjnu.androidutils.utils.JsonUtils;
+import android.R.anim;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -30,10 +30,13 @@ import android.graphics.PixelFormat;
 import android.hardware.input.InputManager;
 import android.media.AudioManager;
 import android.media.ExifInterface;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.KeyEvent;
@@ -51,14 +54,14 @@ import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.rockchips.mediacenter.R;
-import com.rockchips.mediacenter.bean.LocalDeviceInfo;
+import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.bean.LocalMediaInfo;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.utils.DateUtil;
 import com.rockchips.mediacenter.utils.IICLOG;
 import com.rockchips.mediacenter.utils.PlatformUtil;
+import com.rockchips.mediacenter.utils.SharedUtils;
 import com.rockchips.mediacenter.utils.StringUtils;
 import com.rockchips.mediacenter.utils.GifOpenHelper;
 import com.rockchips.mediacenter.view.GifView;
@@ -75,12 +78,12 @@ import com.rockchips.mediacenter.imageplayer.image.CurlDownload;
 import com.rockchips.mediacenter.imageplayer.image.ImageUtils;
 import com.rockchips.mediacenter.imageplayer.image.UriTexture;
 import com.rockchips.mediacenter.utils.GetDateUtil;
+import com.rockchips.mediacenter.view.BackMusicDialog;
 import com.rockchips.mediacenter.view.ImageSettingsDialog;
 import com.rockchips.mediacenter.view.BottomPopMenu;
 import com.rockchips.mediacenter.view.MenuCategory;
 import com.rockchips.mediacenter.view.MenuItemImpl;
 import com.rockchips.mediacenter.view.OnSelectTypeListener;
-import com.rockchips.mediacenter.view.PopMenu;
 import com.rockchips.mediacenter.utils.ToastUtil;
 
 /**
@@ -94,7 +97,7 @@ import com.rockchips.mediacenter.utils.ToastUtil;
 public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImageSwitcherListener,
     OnGestureListener, OnTouchListener
 {
-    private static final String TAG = "MediaCenterApp";
+    private static final String TAG = "ImagePlayerActivity";
     
     private IICLOG mLog = IICLOG.getInstance();
     
@@ -295,7 +298,29 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
     private boolean beMusicPlayError = false;
     
     private static InputManager mInputManager = null;
-
+    
+    /**
+     * 背景音乐播放器
+     */
+    private MediaPlayer mBackMusicPlayer;
+    /**
+     * 背景音乐信息
+     */
+    private List<FileInfo> mBackMusicInfos;
+    private static final String BACK_MUSIC_NAME = "name_image_back_music";
+    private static final String BACK_MUSIC_KEY = "key_image_back_music";
+    /**
+     * 背景音乐消息处理
+     */
+    private Handler mBackMusicHandler = new Handler(){
+    	public void handleMessage(Message msg) {
+    		playBackgroundMusic();
+    	};
+    };
+    /**
+     * 当前背景音乐播放位置
+     */
+    private int mBackMusicPlayPosition;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -354,11 +379,7 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
         }
     }
     
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.rockchips.iptv.stb.dlna.player.PlayerBaseActivity#onResume()
-     */
+    
     @Override
     protected void onResume()
     {
@@ -377,13 +398,12 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
             mImageSwitcher.currImage();
 			/* END: Modified by c00224451 for  DTS2014022708542 2014/3/4 */
             mIsplayBackgroundMusic = mImagePlaySetHelper.isPlay();
-            
+            Log.i(TAG, "onResume->mIsplayBackgroundMusic:" + mIsplayBackgroundMusic);
             switch (mImagePlaySetHelper.getPlayModeIndex())
             {
                 case 0:
                     //循环播放
                     setPlayMode(ConstData.MediaPlayMode.MP_MODE_ALL_CYC);
-                    
                     break;
                 case 1:
                     setPlayMode(ConstData.MediaPlayMode.MP_MODE_ALL);
@@ -391,15 +411,8 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
                 default:
                     break;
             }
-            
-            new Thread()
-            {
-                public void run()
-                {
-                    mLog.d(TAG, "onResume()-->playBackgroundMusic(null)");
-                    playBackgroundMusic(null);
-                };
-            }.start();
+            loadBackMusic();
+            playBackgroundMusic();
             
         }
         else
@@ -423,6 +436,8 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
     {
         mLog.d(TAG, "onPause()--->");
         mbCovered = true;
+        releaseBackMusicPlayer();
+        saveBackMusic(mBackMusicInfos);
         super.onPause();
         if (mImageSwitcher != null)
         {
@@ -430,8 +445,6 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
             mImageSwitcher.setAutoMode(false, 0);
         }
         
-        //为解决播放DMS/U盘图片和播放推送过来的图片之间切换时背景音乐破音的问题
-        myRelease();
         
     }
     /**
@@ -525,7 +538,6 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
         if(isNeedRejectKey){
             setInputUnBlock();
         }
-        myRelease();
         //取消下载云相册图片 
         UriTexture.cancelDownload();
         mCanntPreToast = null;
@@ -1096,7 +1108,6 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
         uiHandler.sendEmptyMessageDelayed(MSG_UI_HIDE_NAV, 2000);
         mLog.d(TAG, "onKeyUp----------->mLongPressFlag-->" + mLongPressFlag);
         long now = System.currentTimeMillis();
-        long d = now - keyuptime;
         if (now - keyuptime < 800)
         {
             return true;
@@ -1567,27 +1578,6 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
         return bitmap;
     }
     
-    public synchronized void myRelease()
-    {
-        if (mMediaPlayer != null && mMediaPlayer.isPlaying())
-        {
-            SharedPreferences sp = getSharedPreferences(BACKGROUNDMUSICINFO, MODE_PRIVATE);
-            Editor editor = sp.edit();
-            int position = mMediaPlayer.getCurrentPosition();
-            editor.putInt("position", position);
-            // editor.putString("lastPlayingMusicPath", mCurMusicPath);
-            editor.putInt("lastPlayingMusicRes", mCurMusicRes);
-            mMediaPlayer.stopPlayback();
-            mLog.e(TAG, "mMediaPlayer stoping---");
-            editor.commit();
-        }
-        // modified by keke 原始逻辑有可能没有被回收掉 2013.10.24
-        if (mMediaPlayer != null)
-        {
-            mMediaPlayer.stopPlayback();
-            mMediaPlayer = null;
-        }
-    }
     
     private final static int MENUBUTTON_STOREUP = 0;
     
@@ -1706,46 +1696,68 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
     private static String BACKGROUNDMUSICINFO = "BackgroundMusicInfo";
     
     /** 播放背景音乐 */
-    public synchronized void playBackgroundMusic(MenuItemImpl item)
+    public synchronized void playBackgroundMusic()
     {
         mLog.d(TAG, "playBackgroundMusic--->1");
-        if (resids.length < 1)
-        {
-            ToastUtil.showDefault(getBaseContext().getString(R.string.no_exite_background_music));
-            return;
+        releaseBackMusicPlayer();
+        if (mIsplayBackgroundMusic){
+        	mBackMusicPlayer = new MediaPlayer();
+        	mBackMusicPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+				
+				@Override
+				public void onPrepared(MediaPlayer mp) {
+					Log.i(TAG, "playBackgroundMusic->onPrepared");
+					mBackMusicPlayer.start();
+				}
+			});
+        	
+        	mBackMusicPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+				
+				@Override
+				public boolean onError(MediaPlayer mp, int what, int extra) {
+					Log.i(TAG, "playBackgroundMusic->onError");
+					removeCurrBackMusic();
+					//播放下一首歌曲
+					mBackMusicHandler.sendEmptyMessageDelayed(0, 1000);
+					return true;
+				}
+			});
+        	if(mBackMusicInfos != null && mBackMusicInfos.size() > 0){
+        		try{
+            		mBackMusicPlayer.setDataSource(this, Uri.fromFile(new File(mBackMusicInfos.get(mBackMusicPlayPosition++ % mBackMusicInfos.size()).getPath())));
+        		}catch (Exception e){
+        			Log.e(TAG, "playBackgroundMusic->setDataSource->exception1:" + e);
+        			removeCurrBackMusic();
+        			//播放下一首歌曲
+					mBackMusicHandler.sendEmptyMessageDelayed(0, 1000);
+        			return;
+        		}
+        		
+        	}else{
+        		//播放默认背景音乐
+        		String defaultBackUrl = "android.resource://" + getPackageName() + "/" + R.raw.bach_french;
+        		try{
+        			mBackMusicPlayer.setDataSource(this, Uri.parse(defaultBackUrl));
+        		}catch (Exception e){
+        			Log.e(TAG, "playBackgroundMusic->setDataSource->exception2:" + e);
+        			removeCurrBackMusic();
+        			//播放下一首歌曲
+					mBackMusicHandler.sendEmptyMessageDelayed(0, 1000);
+        			return;
+        		}
+        		
+        	}
+        	try{
+        		mBackMusicPlayer.prepareAsync();
+        	}catch (Exception e){
+        		Log.e(TAG, "playBackgroundMusic->prepareAsync->exception:" + e);
+        		removeCurrBackMusic();
+    			//播放下一首歌曲
+				mBackMusicHandler.sendEmptyMessageDelayed(0, 1000);
+        	}
+        	
         }
-        if (mIsplayBackgroundMusic)
-        {
-            SharedPreferences sp = getSharedPreferences(BACKGROUNDMUSICINFO, MODE_PRIVATE);
-            // 获取上次播放的音乐资源
-            int musicRes = sp.getInt("lastPlayingMusicRes", -1);
-            int musicIndex = 0;
-            int position = 0;
-            
-            // 获取上次播放信息
-            if (musicRes != -1)
-            {
-                for (int i = 0; i < resids.length; i++)
-                {
-                    if (musicRes == resids[i])
-                    {
-                        musicIndex = i;
-                        position = sp.getInt("position", 0);
-                        break;
-                    }
-                }
-            }
-            if (mMediaPlayer != null && mMediaPlayer.isPlaying())
-            {
-                return;
-            }
-            mLog.d(TAG, "playBackgroundMusic--->playMusic");
-            playMusic(resids[musicIndex], position);
-        }
-        else
-        {
-            myRelease();
-        }
+        
     }
     
     /**
@@ -1939,7 +1951,6 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
         if (mbCovered)
         {
             mLog.d(TAG, "mMediaPlayer myRelease--->");
-            myRelease();
         }
         else
         {
@@ -2367,7 +2378,7 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
                 if (type == EnumImagePopmenuType.ENUM_BG_MUSIC_CLOSE)
                 {
                     mIsplayBackgroundMusic = false;
-                    playBackgroundMusic(null);
+                    playBackgroundMusic();
                     mImagePlaySetHelper.saveBGMusic(false);
                 }
                 // 开启背景音乐
@@ -2375,50 +2386,20 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
                 {
                     
                     mLog.i(TAG, "onSelectType start music");
-                    
-                    boolean isSelectMusic = false;
-                    //获取当前获得焦点的项
-                    MenuItemImpl menuFocusItem = mPopMenu.getCurrentFocusItemImpl();
-                    
-                    Bundle bundle = getIntent().getBundleExtra(LocalDeviceInfo.DEVICE_EXTRA_NAME);
-                    if (bundle != null)
-                    {
-                        //确定菜单选择时，焦点在“ 开启”项时，需要跳转。
-                        if (menuFocusItem != null && type == menuFocusItem.getSelectType())
-                        {
-                            isSelectMusic = true;
-                        }
-                    }
-                    /*
-                    //选择音乐并开启（内置播放器）
-                    if (isSelectMusic && mbInternalPlayer)
-                    {
-                        if (jumpToMusicBrowser())
-                        {
-                            new Thread()
-                            {
-                                public void run()
-                                {
-                                    mIsplayBackgroundMusic = false;
-                                    playBackgroundMusic(null);
-                                };
-                            }.start();
-                        }
-                        //不用跳转时，直接开启
-                        else
-                        {
-                            mIsplayBackgroundMusic = true;
-                            playBackgroundMusic(null);
-                        }
-                    }
-                    //直接开启音乐（外置播放器）
-                    else
-                    {
-                        mIsplayBackgroundMusic = true;
-                        playBackgroundMusic(null);
-                    }*/
+                    BackMusicDialog  backMusicDialog = new BackMusicDialog(ImagePlayerActivity.this, new BackMusicDialog.Callback() {
+						
+						@Override
+						public void onFinished(List<FileInfo> fileInfos) {
+							if(fileInfos != null){
+								mBackMusicInfos = fileInfos;
+								mBackMusicPlayPosition = 0;
+								saveBackMusic(fileInfos);
+							}
+							playBackgroundMusic();
+						}
+					});
+                    backMusicDialog.show();
                     mIsplayBackgroundMusic = true;
-                    playBackgroundMusic(null);
                     mImagePlaySetHelper.saveBGMusic(true);
                     
                 }
@@ -2657,7 +2638,6 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
 	{
 		if (mMediaCenterPlayerClient != null)
         {
-            int seekTo = 0;  //图片同步进度为0
             mMediaCenterPlayerClient.reportDuration(0, 0);
         }
 	}
@@ -2844,5 +2824,61 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
 			mMediaCenterPlayerClient.play();
 		}
 		mDetector = new GestureDetector(this);
+	}
+	
+	/**
+	 * 释放背景音乐播放器
+	 */
+	private void releaseBackMusicPlayer(){
+		if(mBackMusicPlayer != null){
+			try{
+				mBackMusicPlayer.release();
+			}catch (Exception e){
+				//no handle
+			}
+			mBackMusicPlayer = null;
+		}
+	}
+	
+	/**
+	 * 保存背景音乐
+	 */
+	private void saveBackMusic(List<FileInfo> fileInfos){
+		try{
+			if(fileInfos != null && fileInfos.size() > 0)
+				SharedUtils.saveValue(BACK_MUSIC_NAME, BACK_MUSIC_KEY, JsonUtils.listToJsonArray(fileInfos).toString());
+			else
+				SharedUtils.saveValue(BACK_MUSIC_NAME, BACK_MUSIC_KEY, "");
+		}catch (Exception e){
+			//no handle
+			Log.e(TAG, "saveBackMusic->exception:" + e);
+		}
+	}
+	
+	/**
+	 * 加载背景音乐
+	 */
+	private void loadBackMusic(){
+		try{
+			String value = SharedUtils.getValue(BACK_MUSIC_NAME, BACK_MUSIC_KEY);
+			if(!TextUtils.isEmpty(value)){
+				JSONArray array  = new JSONArray(value);
+				mBackMusicInfos = (List<FileInfo>)JsonUtils.arrayToList(FileInfo.class, array);
+			}
+		}catch (Exception e){
+			Log.e(TAG, "loadBackMusic->exception:" + e);
+		}
+		
+	}
+	
+	/**
+	 * 移除当前播放的背景音乐
+	 */
+	private void removeCurrBackMusic(){
+		//移除当前播放
+		if(mBackMusicInfos != null && mBackMusicInfos.size() > 0){
+			int currPlayIndex = (mBackMusicPlayPosition - 1 + mBackMusicInfos.size()) % mBackMusicInfos.size();
+			mBackMusicInfos.remove(currPlayIndex);
+		}
 	}
 }

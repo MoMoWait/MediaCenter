@@ -412,4 +412,7 @@
     <string name="enter_search_content">请输入搜索内容</string>
     <string name="currdevice_no_images">本地设备没有图片文件</string>
     <string name="sel_back_photo">请选择背景图</string>
+    <string name="back_music">背景音乐</string>
+    <string name="local_no_music">本地设备没有音乐文件</string>
+    <string name="max_sel_music_tip">最多只能选择20首音乐</string>
 </resources>
