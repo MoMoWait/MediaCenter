@@ -899,7 +899,7 @@ public class MediaFileUtils {
 					List<Property> properties = item.getProperties();
 					if(properties != null && properties.size() > 0){
 						for(Property property : properties){
-							Log.i(TAG, "Item->property->name:" + property.getDescriptorName());
+							//Log.i(TAG, "Item->property->name:" + property.getDescriptorName());
 							//Log.i(TAG, "Item->property->name:" + property.getDescriptorName() + " "
 							//		+ "Item->property->value:" + property.getValue().toString());
 							if(property.getDescriptorName().equals(ConstData.UpnpFileOhterInfo.DATE)){

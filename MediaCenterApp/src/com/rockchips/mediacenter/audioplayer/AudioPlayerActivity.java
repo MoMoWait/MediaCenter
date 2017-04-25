@@ -9,10 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONObject;
 import momo.cn.edu.fjnu.androidutils.data.CommonValues;
+import momo.cn.edu.fjnu.androidutils.utils.BitmapUtils;
 import momo.cn.edu.fjnu.androidutils.utils.DeviceInfoUtils;
 import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
@@ -27,6 +30,7 @@ import android.os.HandlerThread;
 import android.os.Message;
 import android.os.SystemClock;
 import android.os.AsyncTask.Status;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -330,8 +334,10 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     private AsyncTask<Object, Void, Bitmap> mLoadPhotoTask;
     /**歌词搜索器*/
     private SearchLrc mSearchLrc;
-    /**背景图选择对话框*/
-    //private BackgroundPhotoDialog mBackPhotoDialog;
+    /**更新预览接收器*/
+    private RefreshPreviewReceiver mRefreshPreviewReceiver;
+    /**之前的专辑图片*/
+    private Bitmap mOldAlbumBitmp;
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -458,6 +464,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         mBExitPage = true;
         mMusicPlayer.resetPlayer();
         super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRefreshPreviewReceiver);
     }
 
     private void onResume2StartMediaPlayer(){
@@ -478,6 +485,9 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     {
         Log.d(TAG, "---->enter onResume()");
         super.onResume();
+        IntentFilter refershFilter  = new IntentFilter();
+	    refershFilter.addAction(ConstData.BroadCastMsg.REFRESH_AUDIO_PREVIEW);
+	    LocalBroadcastManager.getInstance(this).registerReceiver(mRefreshPreviewReceiver, refershFilter);
         getBackgroundPicFlag();
         mBExitPage = false;
         onResume2StartMediaPlayer();
@@ -1301,7 +1311,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                             }
                             openFile(uri);
                             requestRefreshMediaInfo();
-                            sendUiMessage(obtainUiMessage(AudioPlayerMsg.MSG_REFRESH_ALBUMICON, 0, 0, mDefaultMusicBitmap), 0);
+                            //sendUiMessage(obtainUiMessage(AudioPlayerMsg.MSG_REFRESH_ALBUMICON, 0, 0, mDefaultMusicBitmap), 0);
                         }
                     }
                     else
@@ -1483,14 +1493,14 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                         mCurrPauseTimeStamp = System.currentTimeMillis();
                         if(targetItem == -1){
                         	String[] lyricList = Lyric.getInstance().getLyricList();
-                        	if(lyricList != null && lyricList.length > 0)
-                        	mLeftLyric.setText(lyricList[0]);
-                        	mLeftLyric.setTextColor(Color.WHITE);
-                        	if(lyricList.length > 1){
-                        		mRightLyric.setText(lyricList[1]);
-                        		mRightLyric.setTextColor(Color.WHITE);
+                        	if(lyricList != null && lyricList.length > 0){
+                        		mLeftLyric.setText(lyricList[0]);
+                            	mLeftLyric.setTextColor(Color.WHITE);
+                            	if(lyricList.length > 1){
+                            		mRightLyric.setText(lyricList[1]);
+                            		mRightLyric.setTextColor(Color.WHITE);
+                            	}
                         	}
-                        	
                         }
                         if (prevTargetItem != targetItem)
                         {
@@ -1526,14 +1536,29 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                     	try{
                     		String audioOtherInfo = mCurrentMediaInfo.getOtherInfo();
                         	JSONObject audioObject = new JSONObject(audioOtherInfo);
-                        	name = audioObject.getString(ConstData.AudioOtherInfo.TITLE);
+                        	if(mCurrentDevice.getDeviceType() != ConstData.DeviceType.DEVICE_TYPE_DMS)
+                        		name = audioObject.getString(ConstData.AudioOtherInfo.TITLE);
                         	albumArtist = audioObject.getString(ConstData.AudioOtherInfo.ARTIST);
                         	albumName = audioObject.getString(ConstData.AudioOtherInfo.ALBUM);
                     	}catch (Exception e){
-                    		
+                    		Log.e(TAG, "MSG_REQUEST_REFRESH_MEDIAINFO->exception:" + e);
                     	}
                     	
+                    }else{
+                    	mAlbumInfoView.setImage(mDefaultMusicBitmap);
+                    	//发送广播，获取音乐文件信息
+                    	loadBitmapForAudioFile(mCurrentMediaInfo);
                     }
+                    mAlbumInfoView.setImage(mDefaultMusicBitmap);
+                    if(!ConstData.UNKNOW.equals(mCurrentMediaInfo.getPreviewPath()) && !TextUtils.isEmpty(mCurrentMediaInfo.getPreviewPath())){
+                    	 recycleOldAlbumBitmap();
+                    	 //设置专辑图片
+                    	 mOldAlbumBitmp = BitmapUtils.getBitmapFromFile(mCurrentMediaInfo.getPreviewPath());
+                    	 mAlbumInfoView.setImage(mOldAlbumBitmp);
+                    }
+                    Log.i(TAG, "MSG_REQUEST_REFRESH_MEDIAINFO->name:" + name);
+                    Log.i(TAG, "MSG_REQUEST_REFRESH_MEDIAINFO->albumArtist:" + albumArtist);
+                    Log.i(TAG, "MSG_REQUEST_REFRESH_MEDIAINFO->albumName:" + albumName);
                     if(TextUtils.isEmpty(name))
                     	name = mCurrentMediaInfo.getName();
                     if(TextUtils.isEmpty(albumArtist))
@@ -2973,8 +2998,29 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 			mIMPRL.setVisibility(View.GONE);
 		}
 		mGlobalFocus.setBackgroud(mIMPRL);
+		mRefreshPreviewReceiver = new RefreshPreviewReceiver();
 		ToastUtil.build(getApplicationContext());
 	}
+	
+    /**
+     * 加载音乐文件缩列图
+     * @param allFileInfo
+     */
+    private void loadBitmapForAudioFile(FileInfo fileInfo){
+        //此处直接发送广播出去,服务接受后开始获取缩列图
+        Intent loadIntent = new Intent(ConstData.BroadCastMsg.LOAD_AUDIO_PREVIEW);
+        loadIntent.putExtra(ConstData.IntentKey.EXTRA_FILE_INFO, fileInfo);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(loadIntent);
+    }
+    
+    /**
+     * 回收旧专辑图
+     */
+    private void recycleOldAlbumBitmap(){
+    	if(mOldAlbumBitmp != null && !mOldAlbumBitmp.isRecycled())
+    		mOldAlbumBitmp.recycle();
+    }
+	
 	/**
 	 * 保存背景图，存储至数据库中
 	 * @param fileInfos
@@ -3018,5 +3064,25 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
 			}
 		});
 		mBackPhotoLoadTask.execute();
+	}
+	
+	/**
+	 * 
+	 * @author GaoFei
+	 * 更新音频,视频，图片的文件预览图监听器
+	 */
+	class RefreshPreviewReceiver extends BroadcastReceiver{
+	    @Override
+	    public void onReceive(Context context, Intent intent) {
+	    	Log.i(TAG, "RefreshPreviewReceiver->onReceive");
+    		//更新预览图
+            FileInfo fileInfo = (FileInfo)intent.getSerializableExtra(ConstData.IntentKey.EXTRA_FILE_INFO);
+            if(mCurrentMediaInfo != null && fileInfo != null && fileInfo.getPath().equals(mCurrentMediaInfo.getPath())){
+            	mCurrentMediaInfo.setPreviewPath(fileInfo.getPreviewPath());
+            	mCurrentMediaInfo.setOtherInfo(fileInfo.getOtherInfo());
+            	requestRefreshMediaInfo();
+            }
+    	
+	    }
 	}
 }

@@ -959,7 +959,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
     
     
     /**
-     * 加载视频文件缩列图
+     * 加载音乐文件缩列图
      * @param allFileInfo
      */
     private void loadBitmapForAudioFile(FileInfo fileInfo){

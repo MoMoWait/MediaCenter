@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 添加网络设备对话框 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/common_grey_dailog_background"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/text_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:text="@string/back_music"
+        android:textColor="@android:color/white"
+        android:textSize="25sp" />
+
+    <LinearLayout
+        android:id="@+id/layout_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal" 
+        android:baselineAligned="false">
+
+        <ListView
+            android:id="@+id/list_music"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical" 
+            android:gravity="center_vertical">
+
+            <Button
+                android:id="@+id/btn_ok"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/common_btn_background"
+                android:text="@string/ok" />
+
+            <Button
+                android:id="@+id/btn_cancel"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/common_btn_background"
+                android:text="@string/cancel" />
+        </LinearLayout>
+    </LinearLayout>
+    <TextView 
+   	    android:id="@+id/text_no_music"
+   	    android:layout_width="match_parent"
+   	    android:layout_height="wrap_content"
+   	    android:textColor="@android:color/white"
+   	    android:gravity="center"
+   	    android:textSize="25sp"
+   	    android:text="@string/local_no_music"
+   	    android:visibility="gone"/>
+</LinearLayout>

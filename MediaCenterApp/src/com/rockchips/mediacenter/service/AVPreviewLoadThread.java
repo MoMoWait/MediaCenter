@@ -259,9 +259,9 @@ public class AVPreviewLoadThread extends AbstractPreviewLoadThread{
 	private void sendRefreshBroadCast(){
 		 Intent previewIntent = new Intent();
          if(mFileInfo.getType() == ConstData.MediaType.AUDIO){
-         	previewIntent.setAction(ConstData.BroadCastMsg.REFRESH_VIDEO_PREVIEW);
-         }else{
          	previewIntent.setAction(ConstData.BroadCastMsg.REFRESH_AUDIO_PREVIEW);
+         }else{
+         	previewIntent.setAction(ConstData.BroadCastMsg.REFRESH_VIDEO_PREVIEW);
          }
          previewIntent.putExtra(ConstData.IntentKey.EXTRA_FILE_INFO, mFileInfo);
          LocalBroadcastManager.getInstance(mService).sendBroadcast(previewIntent);

@@ -59,7 +59,6 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 	private PhotoGridAdapter mAlbumAdapter;
 	private PhotoGridAdapter mPhotoAdapter;
 	private List<FileInfo> mLocalMediaFolders;
-	private List<LocalMediaInfo> mLocalMediaInfos;
 	private List<FileInfo> mLocalMediaFiles;
 	/**
 	 * 当前选中的文件
