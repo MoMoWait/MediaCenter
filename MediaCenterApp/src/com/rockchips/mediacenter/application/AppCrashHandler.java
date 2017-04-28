@@ -1,4 +1,7 @@
 package com.rockchips.mediacenter.application;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import com.rockchips.mediacenter.utils.ActivityExitUtils;
 import android.os.Process;
 import android.util.Log;
@@ -27,7 +30,7 @@ public class AppCrashHandler implements Thread.UncaughtExceptionHandler{
 	}
 	
 	private void handleUncaughtException(Thread t, Throwable e){
-		Log.e(TAG, "handleUncaughtException->exception:" + e.toString());
+		Log.e(TAG, "handleUncaughtException->exception:" + e);
 		//关闭所有Activities
 		 ActivityExitUtils.removeAllActivities();
 		//重启应用

@@ -53,20 +53,23 @@ public class StorageUtils {
     	            }
     	        }
     	}else{
-    		File sdCardFile = (File)(invokeStaticMethod("android.os.Environment","getSecondVolumeStorageDirectory",null));
-    		if(sdCardFile != null && sdCardFile.exists()){
-    			String sdCardPath = sdCardFile.getPath();
-    			List<String> allDfPaths = getAllDfPaths();
-    			if(allDfPaths != null && allDfPaths.size() > 0){
-    				for(String line : allDfPaths){
-    					if(line.equals(sdCardPath)){
-    						sdPaths.add(sdCardPath);
-    						break;
-    					}
-    				}
-    			}
+    		try{
+    			Method methodPath = storageManager.getClass().getDeclaredMethod("getVolumePaths");
+        		String[] volumePaths = (String[])methodPath.invoke(storageManager);
+        		if(volumePaths != null && volumePaths.length > 0){
+        			for(String volumePath : volumePaths){
+        				if(volumePath.startsWith("/mnt/external_sd")){
+        					File sdCardFile = new File(volumePath);
+        					if(sdCardFile != null && sdCardFile.exists() && sdCardFile.list() != null)
+        						sdPaths.add(volumePath);
+        				}
+        			}
+        				
+        		}
+    		}catch (Exception e){
+    			Log.i(TAG, "getUSBPaths->exception:" + e);
     		}
-    			
+    		
     	}
       
 		
@@ -96,13 +99,21 @@ public class StorageUtils {
     	            }
     	        }
     	}else{
-    		List<String> dfPaths = getAllDfPaths();
-    		if(dfPaths != null && dfPaths.size() > 0){
-    			for(String item : dfPaths){
-    				if(item.contains("/mnt/usb_storage/USB"))
-    					usbPaths.add(item);
-    			}
+    		try{
+    			Method methodPath = storageManager.getClass().getDeclaredMethod("getVolumePaths");
+        		String[] volumePaths = (String[])methodPath.invoke(storageManager);
+        		if(volumePaths != null && volumePaths.length > 0){
+        			for(String volumePath : volumePaths){
+        				if(volumePath.startsWith("/mnt/usb_storage") && new File(volumePath).exists()){
+        					usbPaths.add(volumePath);
+        				}
+        			}
+        				
+        		}
+    		}catch (Exception e){
+    			Log.i(TAG, "getUSBPaths->exception:" + e);
     		}
+    		
     	}
       
 		
