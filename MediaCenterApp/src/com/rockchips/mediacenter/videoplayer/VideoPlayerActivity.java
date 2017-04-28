@@ -3210,8 +3210,11 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 			mSeekBarLayout.setPlayStatus(ConstData.VIDEO_PLAY_STATUS.FAST_GO);
 			//Log.i(TAG, "change play step:" + (mFastGoCount << 1));
 			mSeekPosition += ((mFastGoCount >> 1) * 1000 + CHANGE_PLAY_TIME_STEP);
+			//不允许快进到最后
 			if(mSeekPosition > duration)
-				mSeekPosition = duration;
+				mSeekPosition = duration - 2000;
+			if(mSeekPosition < 0)
+				mSeekPosition = 0;
 			break;
 		case -1:
 			//快退

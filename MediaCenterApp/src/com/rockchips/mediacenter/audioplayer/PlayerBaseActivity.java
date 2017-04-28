@@ -11,6 +11,8 @@ package com.rockchips.mediacenter.audioplayer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -59,16 +61,30 @@ public abstract class PlayerBaseActivity extends DeviceActivity
      * 从其他应用跳转至媒体中心的音乐播放器
      */
     protected Uri mExtraUri;
-    
+    protected FileInfo mExtraFileInfo;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         Log.d(TAG, "onCreate - IN: " + this);
-        mAudioPlayStateInfo = new AudioPlayStateInfo();
-        mAudioPlayStateInfo.setMediaList(mStBundleList, mStCurrentIndex);
-        mAudioPlayStateInfo.setCurrentIndex(mStCurrentIndex);
         mExtraIntent = getIntent();
+        mAudioPlayStateInfo = new AudioPlayStateInfo();
         mIsInternalAudioPlayer = mExtraIntent.getBooleanExtra(ConstData.IntentKey.IS_INTERNAL_PLAYER, false);
+        if(!mIsInternalAudioPlayer){
+        	mExtraUri = mExtraIntent.getData();
+        	if(mExtraUri == null)
+        		finish();
+        	else{
+        		List<FileInfo> extraFileInfos = new ArrayList<>();
+        		mExtraFileInfo = new FileInfo();
+        		mExtraFileInfo.setPath(mExtraUri.toString());
+        		extraFileInfos.add(mExtraFileInfo);
+        		mAudioPlayStateInfo.setMediaList(extraFileInfos, 0);
+                mAudioPlayStateInfo.setCurrentIndex(0);
+        	}
+        }else{
+        	 mAudioPlayStateInfo.setMediaList(mStBundleList, mStCurrentIndex);
+             mAudioPlayStateInfo.setCurrentIndex(mStCurrentIndex);
+        }
         super.onCreate(savedInstanceState);
         Log.d(TAG, "mExtraIntent is " + mExtraIntent);
         Log.d(TAG, "onCreate - OUT");

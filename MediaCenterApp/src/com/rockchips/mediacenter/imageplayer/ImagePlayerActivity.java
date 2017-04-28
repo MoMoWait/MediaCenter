@@ -11,13 +11,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import jcifs.dcerpc.msrpc.netdfs;
-
 import org.json.JSONArray;
-
 import momo.cn.edu.fjnu.androidutils.utils.JsonUtils;
-import android.R.anim;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -1710,7 +1705,14 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
 					mBackMusicPlayer.start();
 				}
 			});
-        	
+        	mBackMusicPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+				
+				@Override
+				public void onCompletion(MediaPlayer mp) {
+					//播放下一首歌曲
+					mBackMusicHandler.sendEmptyMessageDelayed(0, 1000);
+				}
+			});
         	mBackMusicPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
 				
 				@Override
