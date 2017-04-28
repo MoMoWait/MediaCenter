@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import android.R.anim;
 import android.media.iso.ISOManager;
 import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.bean.FileInfo;
@@ -70,7 +72,7 @@ public class AllFileLoadTask extends AsyncTask<Object, Integer, Integer> {
 							fileInfo.setSize(itemFile.length());
 							fileInfo.setType(MediaFileUtils.getMediaTypeFromFile(itemFile));
 						}
-						if(PlatformUtils.getSDKVersion() > 19)
+						if(android.os.Build.VERSION.SDK_INT > 19)
 							mFileInfos.add(fileInfo);
 						else if(fileInfo.getType() != ConstData.MediaType.APK)
 							mFileInfos.add(fileInfo);

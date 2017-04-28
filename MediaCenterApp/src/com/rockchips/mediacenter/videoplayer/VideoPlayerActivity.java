@@ -2060,7 +2060,12 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         public void handleMessage(Message msg)
         {
         	Log.i(TAG, "SeekHandler->handleMessage");
-            mVV.seekTo(msg.arg1);
+        	try{
+        		mVV.seekTo(msg.arg1);
+        	}catch (Exception e){
+        		//no handle
+        	}
+            
             super.handleMessage(msg);
         }
 

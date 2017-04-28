@@ -44,7 +44,7 @@ public class ConstData {
 	public static final String EXTRA_IS_SEARCH = "is_search";
 	public static final String UNKNOW = "unknow";
 	/**是否支持多文件删除*/
-	public static boolean IS_SUPPORT_MUTIL_DELETE = true;
+	public static boolean IS_SUPPORT_MUTIL_DELETE = false;
 	public class NFS{
 		//挂载路径
 		public static final String MOUNT_PATH = "/mnt/sdcard/nfs";

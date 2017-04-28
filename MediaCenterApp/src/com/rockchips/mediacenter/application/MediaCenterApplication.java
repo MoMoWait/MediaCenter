@@ -28,7 +28,7 @@ public class MediaCenterApplication extends BaseApplication
         
         //Log.i(TAG, "currentMediaPostion:" + MediaUtils.getCurrentPostion());
         //设置默认的奔溃处理器
-        Thread.setDefaultUncaughtExceptionHandler(AppCrashHandler.getInstace());
+        //Thread.setDefaultUncaughtExceptionHandler(AppCrashHandler.getInstace());
         try{
             PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             Log.i(TAG, "versionName:" + packageInfo.versionName);
