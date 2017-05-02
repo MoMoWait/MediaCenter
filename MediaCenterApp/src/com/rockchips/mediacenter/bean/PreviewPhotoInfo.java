@@ -22,6 +22,8 @@ public class PreviewPhotoInfo {
 	private String originPath;
 	@Column(name = "duration")
 	private String duration;
+	@Column(name = "bigPhotoPath")
+	private String bigPhotoPath;
 	//以json格式数据存储
 	@Column(name = "ohterInfo")
 	private String ohterInfo;
@@ -61,11 +63,19 @@ public class PreviewPhotoInfo {
 	public void setOhterInfo(String ohterInfo) {
 		this.ohterInfo = ohterInfo;
 	}
+	public String getBigPhotoPath() {
+		return bigPhotoPath;
+	}
+	public void setBigPhotoPath(String bigPhotoPath) {
+		this.bigPhotoPath = bigPhotoPath;
+	}
 	@Override
 	public String toString() {
 		return "PreviewPhotoInfo [id=" + id + ", deviceID=" + deviceID
 				+ ", previewPath=" + previewPath + ", originPath=" + originPath
-				+ ", duration=" + duration + ", ohterInfo=" + ohterInfo + "]";
+				+ ", duration=" + duration + ", bigPhotoPath=" + bigPhotoPath
+				+ ", ohterInfo=" + ohterInfo + "]";
 	}
+	
 	
 }

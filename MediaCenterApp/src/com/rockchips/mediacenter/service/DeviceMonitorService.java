@@ -101,6 +101,10 @@ public class DeviceMonitorService extends Service {
 	 */
 	private ExecutorService mLocalDeviceUpDownProcessService;
 	/**
+	 *固定大小线程池服务，Htttp图片下载器
+	 */
+	private ThreadPoolExecutor mHttpPhotoDownloadService;
+	/**
 	 * 单线程池服务，加载视频文件缩列图
 	 */
 	private ThreadPoolExecutor mVideoPreviewLoadService;
@@ -213,6 +217,7 @@ public class DeviceMonitorService extends Service {
 	 * 初始化数据
 	 */
 	private void initData() {
+		mHttpPhotoDownloadService = new ThreadPoolExecutor(5, 5, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 	    mVideoPreviewLoadService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
 	    mOtherPreviewLoadService = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new PriorityBlockingQueue<Runnable>());
 	    mNetWorkCheckService = Executors.newSingleThreadExecutor();
@@ -385,7 +390,13 @@ public class DeviceMonitorService extends Service {
 		unbindService(mUpnpConnection);
 	}
 	
-	
+	/**
+	 * 获取Http图片下载服务
+	 * @return
+	 */
+	public ExecutorService getHttpPhotoDownloadService(){
+		return mHttpPhotoDownloadService;
+	}
 	
 	/**
 	 * 删除Upnp数据

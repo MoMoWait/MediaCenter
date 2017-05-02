@@ -2,9 +2,7 @@ package com.rockchips.mediacenter.activity;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.json.JSONArray;
 import org.xutils.view.annotation.ViewInject;
-
 import momo.cn.edu.fjnu.androidutils.data.CommonValues;
 import momo.cn.edu.fjnu.androidutils.utils.DeviceInfoUtils;
 import momo.cn.edu.fjnu.androidutils.utils.JsonUtils;

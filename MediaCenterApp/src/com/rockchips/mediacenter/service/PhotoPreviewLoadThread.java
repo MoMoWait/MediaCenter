@@ -10,9 +10,12 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.UUID;
-
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
-
 import momo.cn.edu.fjnu.androidutils.utils.BitmapUtils;
 import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
 import android.content.Intent;
@@ -59,14 +62,21 @@ public class PhotoPreviewLoadThread extends AbstractPreviewLoadThread{
 			return;
 		}
 		if(mFileInfo.getPath().startsWith("http")){
-			String otherInfo = mFileInfo.getOtherInfo();
+			String photoUrl = mFileInfo.getPath();
 			try{
-				JSONObject otherInfoObject = new JSONObject(otherInfo);
-				String albumPhotoURI = otherInfoObject.getString(ConstData.UpnpFileOhterInfo.ALBUM_URI);
-				if(!TextUtils.isEmpty(albumPhotoURI)){
-					URL url = new URL(albumPhotoURI);
-					HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-					InputStream inputStream = connection.getInputStream();
+				if(!TextUtils.isEmpty(photoUrl)){
+					URL url = new URL(photoUrl);
+					InputStream inputStream = null;
+					if(PlatformUtils.getSDKVersion() >= 23){
+						HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+						inputStream = connection.getInputStream();
+					}else{
+						HttpClient client = new DefaultHttpClient();
+						HttpGet httpGet = new HttpGet(photoUrl);
+						HttpResponse response = client.execute(httpGet);
+						if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK)
+							inputStream = response.getEntity().getContent();
+					}
 					String tmpPath = ConstData.CACHE_IMAGE_DIRECTORY + File.separator + UUID.randomUUID().toString();
 					BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(tmpPath));
 					byte[] buffer = new byte[2048];
@@ -78,19 +88,17 @@ public class PhotoPreviewLoadThread extends AbstractPreviewLoadThread{
 					bufferedOutputStream.flush();
 					bufferedOutputStream.close();
 					inputStream.close();
+					mFileInfo.setBigPhotoPath(tmpPath);
 					String savePath = tmpPath + ".png";
 					boolean isSuccess = BitmapUtils.saveScaledBitmap(tmpPath, SizeUtils.dp2px(mService, 280), SizeUtils.dp2px(mService, 280), savePath, CompressFormat.PNG, 80);
 					//预览文件存储成功
 					if(isSuccess){
-						//删除临时文件
-						File tmpFile = new File(tmpPath);
-						tmpFile.delete();
 						//获取成功
 						mFileInfo.setPreviewPath(savePath);
-						updateToDB();
-						savePreviewPhotoInfo(savePath);
 						sendRefreshBroadCast();
 					}
+					updateToDB();
+					savePreviewPhotoInfo();
 				}
 			}catch (Exception e){
 				Log.i(TAG, "get net work preview photo exception:" + e);
@@ -144,5 +152,26 @@ public class PhotoPreviewLoadThread extends AbstractPreviewLoadThread{
 		saveInfo.setOriginPath(mFileInfo.getPath());
 		saveInfo.setPreviewPath(savePath);
 		previewPhotoInfoService.save(saveInfo);
+	}
+	
+	/**
+	 * 保存Http图片
+	 */
+	private void savePreviewPhotoInfo(){
+		PreviewPhotoInfoService previewPhotoInfoService = new PreviewPhotoInfoService();
+		PreviewPhotoInfo updatePhotoInfo = previewPhotoInfoService.getPreviewPhotoInfo(mFileInfo.getDeviceID(), mFileInfo.getPath());
+		if(updatePhotoInfo != null){
+			updatePhotoInfo.setPreviewPath(mFileInfo.getPreviewPath());
+			updatePhotoInfo.setBigPhotoPath(mFileInfo.getBigPhotoPath());
+			previewPhotoInfoService.update(updatePhotoInfo);
+		}else{
+			PreviewPhotoInfo saveInfo = new PreviewPhotoInfo();
+			saveInfo.setDeviceID(mFileInfo.getDeviceID());
+			saveInfo.setOriginPath(mFileInfo.getPath());
+			saveInfo.setPreviewPath(mFileInfo.getPreviewPath());
+			saveInfo.setPreviewPath(mFileInfo.getBigPhotoPath());
+			previewPhotoInfoService.save(saveInfo);
+		}
+		
 	}
 }

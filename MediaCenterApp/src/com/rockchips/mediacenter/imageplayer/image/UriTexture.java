@@ -37,6 +37,8 @@ import java.util.Timer;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.params.HttpClientParams;
@@ -46,6 +48,7 @@ import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
@@ -70,6 +73,7 @@ import com.rockchips.mediacenter.utils.DateUtil;
 import com.rockchips.mediacenter.utils.FileUtil;
 import com.rockchips.mediacenter.utils.IICLOG;
 import com.rockchips.mediacenter.utils.Performance;
+import com.rockchips.mediacenter.utils.PlatformUtils;
 import com.rockchips.mediacenter.utils.StringUtils;
 import com.rockchips.mediacenter.utils.Texture;
 import com.rockchips.mediacenter.utils.Utils;
@@ -2487,48 +2491,60 @@ public class UriTexture extends Texture
             HttpURLConnection conn = null;
             if (devType == ConstData.DeviceType.DEVICE_TYPE_DMS)
             {
-                mLog.d(TAG, "CreateBitMap 3");
-                try
-                {
-                    myFileUrl = new URL(url);
+            	if(PlatformUtils.getSDKVersion() >= 23){
+                    mLog.d(TAG, "CreateBitMap 3");
+                    try
+                    {
+                        myFileUrl = new URL(url);
+                        
+                    }
+                    catch (MalformedURLException e)
+                    {
+                    }
                     
-                }
-                catch (MalformedURLException e)
-                {
-                }
-                
-                if (myFileUrl == null)
-                {
-                    mLog.e(TAG, "CreateBitMap - HttpURLConnection (myFileUrl == null)");
-                    return null;
-                }
-                
-                conn = (HttpURLConnection)myFileUrl.openConnection();
-                
-                if (conn == null)
-                {
-                    mLog.e(TAG, "CreateBitMap - HttpURLConnection conn == null");
-                    return null;
-                }
-                
-                conn.setConnectTimeout(2000); // 连接超时2s，避免断网死等
-                conn.setReadTimeout(5000); // 读数据超时5s，避免断网死等
-                conn.setRequestMethod("GET");
-                
-                try
-                {
-                    conn.connect();
-                }
-                catch (Exception e)
-                {
-                    conn.disconnect();
-                    conn = null;
-                    //异常信息网络连接超时
-                    CurlDownload.mCurlCode = 28;
-                    return null;
-                }
-                
-                is = conn.getInputStream();
+                    if (myFileUrl == null)
+                    {
+                        mLog.e(TAG, "CreateBitMap - HttpURLConnection (myFileUrl == null)");
+                        return null;
+                    }
+                    
+                    conn = (HttpURLConnection)myFileUrl.openConnection();
+                    
+                    if (conn == null)
+                    {
+                        mLog.e(TAG, "CreateBitMap - HttpURLConnection conn == null");
+                        return null;
+                    }
+                    
+                    conn.setConnectTimeout(2000); // 连接超时2s，避免断网死等
+                    conn.setReadTimeout(5000); // 读数据超时5s，避免断网死等
+                    conn.setRequestMethod("GET");
+                    
+                    try
+                    {
+                        conn.connect();
+                    }
+                    catch (Exception e)
+                    {
+                        conn.disconnect();
+                        conn = null;
+                        //异常信息网络连接超时
+                        CurlDownload.mCurlCode = 28;
+                        return null;
+                    }
+                    
+                    is = conn.getInputStream();
+            	}else{
+					HttpClient client = new DefaultHttpClient();
+					client.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 2000); 
+					client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 5000);
+					HttpGet httpGet = new HttpGet(url);
+					HttpResponse response = client.execute(httpGet);
+					if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK)
+						is = response.getEntity().getContent();
+				
+            	}
+
                 mLog.d(TAG, "CreateBitMap 9");
                 
             }

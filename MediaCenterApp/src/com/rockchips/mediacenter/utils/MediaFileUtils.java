@@ -899,9 +899,9 @@ public class MediaFileUtils {
 					List<Property> properties = item.getProperties();
 					if(properties != null && properties.size() > 0){
 						for(Property property : properties){
-							//Log.i(TAG, "Item->property->name:" + property.getDescriptorName());
-							//Log.i(TAG, "Item->property->name:" + property.getDescriptorName() + " "
-							//		+ "Item->property->value:" + property.getValue().toString());
+						/*	Log.i(TAG, "getFileInfos->Item->property->name:" + property.getDescriptorName());
+							Log.i(TAG, "getFileInfos->Item->property->name:" + property.getDescriptorName() + " "
+									+ "getFileInfos->Item->property->value:" + property.getValue().toString());*/
 							if(property.getDescriptorName().equals(ConstData.UpnpFileOhterInfo.DATE)){
 								jsonInfo.put(ConstData.UpnpFileOhterInfo.DATE, property.getValue().toString());
 								SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -926,11 +926,17 @@ public class MediaFileUtils {
 					if(resources != null &&  resources.size() > 0 && resources.get(0) != null && resources.get(0).getProtocolInfo() != null
 							&& resources.get(0).getProtocolInfo().getContentFormat() != null){
 						String contentFormat = resources.get(0).getProtocolInfo().getContentFormat();
+						//Log.i(TAG, "getFileInfos->contentFormat:" + contentFormat);
 						fileInfo.setPath(resources.get(0).getValue());
 						fileInfo.setSize(resources.get(0).getSize());
 						String strDuration = resources.get(0).getDuration();
+						//Log.i(TAG, "getFileInfos->duration:" + resources.get(0).getDuration());
 						if(strDuration != null){
-							strDuration = strDuration.substring(0, strDuration.lastIndexOf("."));
+							int lastPosition = strDuration.lastIndexOf(".");
+							if(lastPosition >= 0)
+								strDuration = strDuration.substring(0, lastPosition);
+							if(strDuration.equals("00:00:00"))
+								strDuration = "";
 							fileInfo.setDuration(strDuration);
 						}
 						//Log.i(TAG, "getFileInfos->strDuration:" + strDuration);

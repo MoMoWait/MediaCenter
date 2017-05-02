@@ -17,7 +17,7 @@ import android.content.Context;
 import android.util.Log;
 
 public class FileDownloader {
-	private static final String TAG = "MediaCenterApp";
+	private static final String TAG = "FileDownloader";
 	private Context context;
 	private FileService fileService;	
 	
