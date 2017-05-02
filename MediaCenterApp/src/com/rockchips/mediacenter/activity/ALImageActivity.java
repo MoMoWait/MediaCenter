@@ -148,7 +148,7 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 					mLayoutNoFiles.setVisibility(View.GONE);
 					mLocalMediaFolders = fileInfos;
 					mGridAlbum.setVisibility(View.VISIBLE);
-					mAlbumAdapter = new PhotoGridAdapter(ALImageActivity.this, R.layout.adapter_photo_grid_item, fileInfos);
+					mAlbumAdapter = new PhotoGridAdapter(ALImageActivity.this, R.layout.adapter_photo_grid_item, fileInfos, mDeviceMonitorService);
 					mGridAlbum.setAdapter(mAlbumAdapter);
 					mGridAlbum.setFocusable(true);
 					mGridAlbum.setFocusableInTouchMode(true);
@@ -196,7 +196,7 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 					mGridImage.setVisibility(View.VISIBLE);
 					mGridImage.requestFocus();
 					mLayoutNoFiles.setVisibility(View.GONE);
-					mPhotoAdapter = new PhotoGridAdapter(ALImageActivity.this,  R.layout.adapter_photo_grid_item, mLocalMediaFiles);
+					mPhotoAdapter = new PhotoGridAdapter(ALImageActivity.this,  R.layout.adapter_photo_grid_item, mLocalMediaFiles, mDeviceMonitorService);
 					mGridImage.setAdapter(mPhotoAdapter);
 					mGridImage.setFocusable(true);
 					mGridImage.setFocusableInTouchMode(true);
@@ -286,7 +286,8 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 
 	@Override
 	public void onServiceConnected() {
-		
+		initDataAndView();
+		initEvent();
 	}
     
 	
@@ -297,7 +298,8 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 	
 	@Override
 	public void init() {
-		initDataAndView();
-		initEvent();
+		
 	}
+	
+	
 }

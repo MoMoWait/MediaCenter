@@ -45,6 +45,8 @@ public class FileInfo implements Serializable
 	private String duration;
 	@Column(name = "otherInfo")
 	private String otherInfo;
+	@Column(name = "bigPhotoPath")
+	private String bigPhotoPath;
 	/**是否选中删除*/
 	private boolean isSelectDelete;
 	public int getId() {
@@ -143,6 +145,12 @@ public class FileInfo implements Serializable
 	public void setSelectDelete(boolean isSelectDelete) {
 		this.isSelectDelete = isSelectDelete;
 	}
+	public String getBigPhotoPath() {
+		return bigPhotoPath;
+	}
+	public void setBigPhotoPath(String bigPhotoPath) {
+		this.bigPhotoPath = bigPhotoPath;
+	}
 	/**
 	 * 是否是媒体文件类型
 	 * @return
@@ -150,8 +158,6 @@ public class FileInfo implements Serializable
 	public boolean isMediaFile(){
 		return (type == ConstData.MediaType.VIDEO || type == ConstData.MediaType.AUDIO || type == ConstData.MediaType.IMAGE);
 	}
-	
-	
 	@Override
 	public String toString() {
 		return "FileInfo [id=" + id + ", deviceID=" + deviceID + ", path="
@@ -160,7 +166,8 @@ public class FileInfo implements Serializable
 				+ type + ", musicCount=" + musicCount + ", videoCount="
 				+ videoCount + ", imageCount=" + imageCount + ", previewPath="
 				+ previewPath + ", childCount=" + childCount + ", duration="
-				+ duration + ", otherInfo=" + otherInfo + "]";
+				+ duration + ", otherInfo=" + otherInfo + ", bigPhotoPath="
+				+ bigPhotoPath + ", isSelectDelete=" + isSelectDelete + "]";
 	}
 	
 }

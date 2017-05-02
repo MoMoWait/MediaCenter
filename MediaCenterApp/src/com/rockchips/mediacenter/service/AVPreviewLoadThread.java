@@ -11,11 +11,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.UUID;
 
-import javax.net.ssl.HttpsURLConnection;
+import jcifs.dcerpc.msrpc.samr;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import momo.cn.edu.fjnu.androidutils.data.CommonValues;
 import momo.cn.edu.fjnu.androidutils.utils.BitmapUtils;
 import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
@@ -25,7 +29,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Bitmap.CompressFormat;
 import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
-import android.net.Uri;
 import android.provider.MediaStore.Video.Thumbnails;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
@@ -80,8 +83,17 @@ public class AVPreviewLoadThread extends AbstractPreviewLoadThread{
 				String albumPhotoURI = otherInfoObject.getString(ConstData.UpnpFileOhterInfo.ALBUM_URI);
 				if(!TextUtils.isEmpty(albumPhotoURI)){
 					URL url = new URL(albumPhotoURI);
-					HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-					InputStream inputStream = connection.getInputStream();
+					InputStream inputStream = null;
+					if(PlatformUtils.getSDKVersion() >= 23){
+						HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+						inputStream = connection.getInputStream();
+					}else{
+						HttpClient client = new DefaultHttpClient();
+						HttpGet httpGet = new HttpGet(albumPhotoURI);
+						HttpResponse response = client.execute(httpGet);
+						if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK)
+							inputStream = response.getEntity().getContent();
+					}
 					String tmpPath = ConstData.CACHE_IMAGE_DIRECTORY + File.separator + UUID.randomUUID().toString();
 					BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(tmpPath));
 					byte[] buffer = new byte[2048];
@@ -97,15 +109,21 @@ public class AVPreviewLoadThread extends AbstractPreviewLoadThread{
 					boolean isSuccess = BitmapUtils.saveScaledBitmap(tmpPath, SizeUtils.dp2px(mService, 280), SizeUtils.dp2px(mService, 280), savePath, CompressFormat.PNG, 80);
 					//预览文件存储成功
 					if(isSuccess){
-						//删除临时文件
-						File tmpFile = new File(tmpPath);
-						tmpFile.delete();
 						//获取成功
 						mFileInfo.setPreviewPath(savePath);
 						updateToDB();
 						savePreviewPhotoInfo(mFileInfo.getDuration(), savePath);
 						sendRefreshBroadCast();
 					}
+					File tmpFile = new File(tmpPath);
+					//删除临时文件
+					tmpFile.delete();
+				}else{
+					mFileInfo.setPreviewPath(ConstData.UNKNOW);
+		        	updateToDB();
+		        	savePreviewPhotoInfo(mFileInfo.getDuration(), ConstData.UNKNOW);
+		            //发送广播
+		            sendRefreshBroadCast();
 				}
 			}catch (Exception e){
 				Log.i(TAG, "get net work preview photo exception:" + e);
@@ -213,6 +231,7 @@ public class AVPreviewLoadThread extends AbstractPreviewLoadThread{
         	//为发生异常，获取缩列图为null,文件存在问题或者无法获取
         	if(priviewBitmap == null){
         		mFileInfo.setPreviewPath(ConstData.UNKNOW);
+        		savePath = ConstData.UNKNOW;
         	}
         	updateToDB();
         	savePreviewPhotoInfo(timeDuration, savePath);
