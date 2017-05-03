@@ -166,6 +166,16 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
 			public void onDeleteSMBOrNFSDevices() {
 				showSmbOrNFSDeleteDialog();
 			}
+			@Override
+			public void onStartHomeMediaShare() {
+				//启动家庭媒体共享功能
+				Intent intent = new Intent();
+				intent.setClassName("com.rockchip.mediacenter", "com.rockchip.mediacenter.IndexActivity");
+				if(intent.resolveActivity(getPackageManager()) != null){
+					startActivity(intent);
+				}
+				
+			}
 		});
     	selectDialog.show();
     	

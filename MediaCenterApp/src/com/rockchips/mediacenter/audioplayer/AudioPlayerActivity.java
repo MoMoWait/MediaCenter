@@ -65,6 +65,7 @@ import com.rockchips.mediacenter.utils.BitmapUtil;
 import com.rockchips.mediacenter.utils.DateUtil;
 import com.rockchips.mediacenter.utils.IICLOG;
 import com.rockchips.mediacenter.utils.Lyric;
+import com.rockchips.mediacenter.utils.PlatformUtils;
 import com.rockchips.mediacenter.utils.SearchLrc;
 import com.rockchips.mediacenter.service.IMediaPlayerAdapter;
 import com.rockchips.mediacenter.service.IVideoViewAdapter;
@@ -491,7 +492,8 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         getBackgroundPicFlag();
         mBExitPage = false;
         onResume2StartMediaPlayer();
-        loadBackPhotos();
+        if(PlatformUtils.isSupportBackPhoto())
+        	loadBackPhotos();
         Log.d(TAG, "current deviceId " + mAudioPlayStateInfo.getDeviceId());
     }
 
@@ -771,10 +773,12 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     {
     	Log.i("Audio_OnKey", "onKeyUp");
     	removeUiMessage(MSG_SHOW_BACKGRPUND_PICS);
-    	if(keyCode == KeyEvent.KEYCODE_MENU)
-    		sendUiMessage(MSG_SHOW_BACKGRPUND_PICS, BG_IMAGE_SHOW_DELAY_TIME + 5);
-    	else
-    		sendUiMessage(MSG_SHOW_BACKGRPUND_PICS, BG_IMAGE_SHOW_DELAY_TIME);
+    	if(PlatformUtils.isSupportBackPhoto()){
+    		if(keyCode == KeyEvent.KEYCODE_MENU)
+        		sendUiMessage(MSG_SHOW_BACKGRPUND_PICS, BG_IMAGE_SHOW_DELAY_TIME + 5);
+        	else
+        		sendUiMessage(MSG_SHOW_BACKGRPUND_PICS, BG_IMAGE_SHOW_DELAY_TIME);
+    	}
         switch (keyCode)
         {
             case KeyEvent.KEYCODE_DPAD_RIGHT:
@@ -2671,8 +2675,10 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
         {
             mBottomPopMenu.add(1, ENUMLAYOUTDISPLAYTYPE.ENUM_AUDIO_PLAY_MODE, R.drawable.menu_icon_audio_play_mode, 1, 1,
                     getResources().getString(R.string.play_mode_audio));
-            mBottomPopMenu.add(2, ENUMLAYOUTDISPLAYTYPE.ENUM_AUDIO_PLAY_BACKGROUND, R.drawable.menu_icon_background_pic, 2, 2, getResources()
-                    .getString(R.string.background_pics));
+            if(PlatformUtils.isSupportBackPhoto()){
+            	mBottomPopMenu.add(2, ENUMLAYOUTDISPLAYTYPE.ENUM_AUDIO_PLAY_BACKGROUND, R.drawable.menu_icon_background_pic, 2, 2, getResources()
+                        .getString(R.string.background_pics));
+            }
         }
         /* END: Modified by c00224451 for DTS2014031902972 2014/3/19 */
     }

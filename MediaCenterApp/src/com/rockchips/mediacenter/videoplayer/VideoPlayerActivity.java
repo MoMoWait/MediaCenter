@@ -1351,7 +1351,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
         /* BEGIN: Added by r00178559 for AR-0000698413 2014/02/12 */
         /* 支持音效选择 */
-        loadMenuChannelMode();
+        if(PlatformUtils.isSupportSoundChannel())
+        	loadMenuChannelMode();
         /* END: Added by r00178559 for AR-0000698413 2014/02/12 */
 
         // 播放模式菜单的显示项

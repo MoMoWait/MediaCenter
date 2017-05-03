@@ -384,6 +384,7 @@
     <string name="no_delete_permission">没有删除权限</string>
     <string name="no_write_permission">没有写权限</string>
     <string name="confirm_delete">确认删除?</string>
+    <string name="confirm_delete_sel_file">确认删除选中文件?</string>
     <string name="paste_error">黏贴错误</string>
     <string name="exist_same_file">存在同名文件(夹)</string>
     <string name="delete_part_file_error">部分文件无法删除</string>
@@ -415,4 +416,7 @@
     <string name="back_music">背景音乐</string>
     <string name="local_no_music">本地设备没有音乐文件</string>
     <string name="max_sel_music_tip">最多只能选择20首音乐</string>
+    <string name="delete_all">删除全部</string>
+    <string name="delete_single">删除单个</string>
+    <string name="start_home_media_share">启动家庭媒体共享</string>
 </resources>

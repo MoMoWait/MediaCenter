@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
+import android.os.SystemProperties;
 import com.rockchips.mediacenter.utils.PlatformUtils;
 
 import android.content.Intent;
@@ -21,7 +21,7 @@ public class ConstData {
 	public static final String DB_NAME = "mediacenter.db";
 	public static final int DB_VERSION = 1;
 	/**
-	 * 最多支持
+	 * 最多支持背景音乐数
 	 */
 	public static final int MAX_BACK_MUSIC_COUNT = 20;
 	/**
@@ -30,6 +30,8 @@ public class ConstData {
 	public static final long MAX_LOAD_FILES_TIME = 20 * 1000L;
 	/**全局线程优先级*/
 	public static volatile int THREAD_PRIORITY = Integer.MAX_VALUE;
+	/**Http图片是否可以下载*/
+	public static volatile boolean httpPhotoCanDownload = false;
 	/**设备路径，ID匹配表*/
 	public static Map<String, String> devicePathIDs = Collections.synchronizedMap(new HashMap<String, String>());
 	/**
@@ -44,7 +46,7 @@ public class ConstData {
 	public static final String EXTRA_IS_SEARCH = "is_search";
 	public static final String UNKNOW = "unknow";
 	/**是否支持多文件删除*/
-	public static boolean IS_SUPPORT_MUTIL_DELETE = true;
+	public static boolean IS_SUPPORT_MUTIL_DELETE = false;
 	public class NFS{
 		//挂载路径
 		public static final String MOUNT_PATH = "/mnt/sdcard/nfs";

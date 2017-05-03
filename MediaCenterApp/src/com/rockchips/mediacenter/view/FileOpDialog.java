@@ -34,6 +34,7 @@ public class FileOpDialog extends AppBaseDialog implements OnItemClickListener{
 	@ViewInject(R.id.list_file_op)
 	private ListView mListFileOp;
 	private boolean mIsEmptyFolder;
+	private boolean mIsMutiDeleteMode;
 	public interface Callback{
 		void onCopy(FileInfo fileInfo);
 		void onDelete(FileInfo fileInfo);
@@ -46,12 +47,13 @@ public class FileOpDialog extends AppBaseDialog implements OnItemClickListener{
 	
 	private Callback mCallback;
 	
-	public FileOpDialog(Context context, FileInfo fileInfo, boolean isEmptyFolder, Callback callback) {
+	public FileOpDialog(Context context, FileInfo fileInfo, boolean isEmptyFolder, boolean isMutiDeleteMode, Callback callback) {
 		super(context);
 		mContext = context;
 		mFileInfo = fileInfo;
 		mCallback = callback;
 		mIsEmptyFolder = isEmptyFolder;
+		mIsMutiDeleteMode = isMutiDeleteMode;
 	}
 
 	
@@ -75,6 +77,10 @@ public class FileOpDialog extends AppBaseDialog implements OnItemClickListener{
 	public void initData() {
 		String copyPath = StorageUtils.getDataFromSharedPreference(ConstData.SharedKey.COPY_FILE_PATH);
 		String movePath = StorageUtils.getDataFromSharedPreference(ConstData.SharedKey.MOVE_FILE_PATH);
+		if(mIsMutiDeleteMode){
+			mListFileOp.setAdapter(new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1, android.R.id.text1, mContext.getResources().getStringArray(R.array.file_oprations_delete)));
+			return;
+		}
 		if(TextUtils.isEmpty(copyPath) && TextUtils.isEmpty(movePath)){
 			//屏蔽paste选项
 			mListFileOp.setAdapter(new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1, android.R.id.text1, mContext.getResources().getStringArray(R.array.file_oprations_no_paste)));
@@ -110,7 +116,9 @@ public class FileOpDialog extends AppBaseDialog implements OnItemClickListener{
 			long id) {
 		switch (position) {
 		case 0:
-			if (!mIsEmptyFolder)
+			if(mIsMutiDeleteMode)
+				mCallback.onDelete(mFileInfo);
+			else if(!mIsEmptyFolder)
 				mCallback.onCopy(mFileInfo);
 			else
 				mCallback.onPaste(mFileInfo);

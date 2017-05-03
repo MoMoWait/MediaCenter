@@ -38,12 +38,14 @@ public class DeviceInitCheckThread extends Thread{
 		List<PreviewPhotoInfo> allPreviewPhotoInfos = previewPhotoInfoService.getAll(PreviewPhotoInfo.class);
 		//删除缓存数据
 		previewPhotoInfoService.deleteAll();
-		//删除缓存图片
-		for(PreviewPhotoInfo photoInfo : allPreviewPhotoInfos){
-			if(!TextUtils.isEmpty(photoInfo.getBigPhotoPath()))
-				new File(photoInfo.getBigPhotoPath()).delete();
-			if(!TextUtils.isEmpty(photoInfo.getPreviewPath()) && !ConstData.UNKNOW.equals(photoInfo.getPreviewPath()))
-				new File(photoInfo.getPreviewPath()).delete();
+		if(allPreviewPhotoInfos != null && allPreviewPhotoInfos.size() > 0){
+			//删除缓存图片
+			for(PreviewPhotoInfo photoInfo : allPreviewPhotoInfos){
+				if(!TextUtils.isEmpty(photoInfo.getBigPhotoPath()))
+					new File(photoInfo.getBigPhotoPath()).delete();
+				if(!TextUtils.isEmpty(photoInfo.getPreviewPath()) && !ConstData.UNKNOW.equals(photoInfo.getPreviewPath()))
+					new File(photoInfo.getPreviewPath()).delete();
+			}
 		}
 		//内部存储路径
 		String internelStoragePath = StorageUtils.getFlashStoragePath();

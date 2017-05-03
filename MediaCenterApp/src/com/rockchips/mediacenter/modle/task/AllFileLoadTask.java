@@ -73,7 +73,7 @@ public class AllFileLoadTask extends AsyncTask<Object, Integer, Integer> {
 							fileInfo.setSize(itemFile.length());
 							fileInfo.setType(MediaFileUtils.getMediaTypeFromFile(itemFile));
 						}
-						if(android.os.Build.VERSION.SDK_INT > 19)
+						if(!PlatformUtils.isSupportIPTV())
 							mFileInfos.add(fileInfo);
 						else if(fileInfo.getType() != ConstData.MediaType.APK)
 							mFileInfos.add(fileInfo);
