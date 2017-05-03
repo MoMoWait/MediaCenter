@@ -142,6 +142,7 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 				DialogUtils.closeLoadingDialog();
 				if(isOverTimer())
 				    return;
+				ConstData.httpPhotoCanDownload = false;
 				mTextPathTitle.setText(mCurrDevice.getDeviceName());
 				mGridImage.setVisibility(View.GONE);
 				if(fileInfos != null && fileInfos.size() > 0){
@@ -193,6 +194,7 @@ public class ALImageActivity extends AppBaseActivity implements OnItemClickListe
 				mGridAlbum.setVisibility(View.GONE);
 				mTextPathTitle.setText(mCurrDevice.getDeviceName() + ">" + folderFileInfo.getName());
 				if(fileInfos != null && fileInfos.size() > 0){
+					ConstData.httpPhotoCanDownload = true;
 					mGridImage.setVisibility(View.VISIBLE);
 					mGridImage.requestFocus();
 					mLayoutNoFiles.setVisibility(View.GONE);

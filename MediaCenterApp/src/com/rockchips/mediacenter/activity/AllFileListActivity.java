@@ -27,6 +27,7 @@ import com.rockchips.mediacenter.utils.ActivityUtils;
 import com.rockchips.mediacenter.utils.DialogUtils;
 import com.rockchips.mediacenter.utils.MediaFileUtils;
 import com.rockchips.mediacenter.utils.GetDateUtil;
+import com.rockchips.mediacenter.utils.PlatformUtils;
 import com.rockchips.mediacenter.videoplayer.InternalVideoPlayer;
 
 import android.R.integer;
@@ -171,7 +172,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	/**排序类型*/
 	private int mSortType;
 	/**是否是删除模式*/
-	private boolean mIsDeleteMode;
+	private boolean mIsMutiDeleteMode;
 	/**选中删除的文件*/
 	private List<FileInfo> mSelectDeleteFileInfos = new ArrayList<>();
 	/**是否是搜索模式*/
@@ -191,7 +192,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 			long id) {
 		Log.i(TAG, "mListFile->onItemclick");
 		FileInfo fileInfo = (FileInfo)parent.getAdapter().getItem(position);
-		if(mIsDeleteMode){
+		if(mIsMutiDeleteMode){
 			CheckBox checkBox = (CheckBox)view.findViewById(R.id.check_select);
 			checkBox.setChecked(!checkBox.isChecked());
 			if(checkBox.isChecked())
@@ -244,8 +245,8 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if(keyCode == KeyEvent.KEYCODE_BACK){
-			if(mIsDeleteMode && mCurrDevice.getDeviceType() != ConstData.DeviceType.DEVICE_TYPE_DMS){
-				mIsDeleteMode = false;
+			if(mIsMutiDeleteMode && mCurrDevice.getDeviceType() != ConstData.DeviceType.DEVICE_TYPE_DMS){
+				mIsMutiDeleteMode = false;
 				loadFiles();
 				return true;
 			}
@@ -302,13 +303,13 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 					return super.onKeyDown(keyCode, event);
 				}
 			}
-			if(keyCode == KeyEvent.KEYCODE_MENU){
-				new FileOpDialog(this, mCurrentFileInfo, isEmptyFolder, this).show();
+			if(keyCode == KeyEvent.KEYCODE_MENU && PlatformUtils.isSupportFileManager()){
+				new FileOpDialog(this, mCurrentFileInfo, isEmptyFolder, mIsMutiDeleteMode, this).show();
 				return true;
 			}else if(keyCode == KeyEvent.KEYCODE_DPAD_CENTER){
-				if(event.isLongPress()){
+				if(event.isLongPress() && PlatformUtils.isSupportFileManager()){
 					//长按打开操作对话框
-					new FileOpDialog(this, mCurrentFileInfo, isEmptyFolder, this).show();
+					new FileOpDialog(this, mCurrentFileInfo, isEmptyFolder, mIsMutiDeleteMode, this).show();
 					return true;
 				}
 			}
@@ -384,11 +385,11 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 
 	@Override
 	public void onDelete(final FileInfo fileInfo) {
-		if(ConstData.IS_SUPPORT_MUTIL_DELETE){
+		if(PlatformUtils.isSupportIPTV()){
 			//如果是删除模式
-			if(mIsDeleteMode){
+			if(mIsMutiDeleteMode){
 				if(mSelectDeleteFileInfos.size() > 0){
-					mIsDeleteMode = false;
+					//mIsMutiDeleteMode = false;
 					//显示删除提示
 					showMutiFileDeleteTipDialog();
 				}else{
@@ -397,7 +398,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 				
 			}else{
 				mSelectDeleteFileInfos.clear();
-				mIsDeleteMode = true;
+				mIsMutiDeleteMode = true;
 				loadFiles();
 			}
 			return;
@@ -529,7 +530,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 								mLayoutNoFiles.setVisibility(View.GONE);
 								mListFile.requestFocus();
 								mAllFileListAdapter = new AllFileListAdapter(AllFileListActivity.this, R.layout.adapter_file_list_item, resultFileInfos);
-								mAllFileListAdapter.setIsDeleteMode(mIsDeleteMode);
+								mAllFileListAdapter.setIsDeleteMode(mIsMutiDeleteMode);
 								mListFile.setAdapter(mAllFileListAdapter);
 								if(!TextUtils.isEmpty(mLastSelectPath)){
 									int position = getFilePosition(mLastSelectPath, resultFileInfos);
@@ -688,7 +689,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 					mLayoutNoFiles.setVisibility(View.GONE);
 					mListFile.requestFocus();
 					mAllFileListAdapter = new AllFileListAdapter(AllFileListActivity.this, R.layout.adapter_file_list_item, fileInfos);
-					mAllFileListAdapter.setIsDeleteMode(mIsDeleteMode);
+					mAllFileListAdapter.setIsDeleteMode(mIsMutiDeleteMode);
 					mListFile.setAdapter(mAllFileListAdapter);
 					if(!TextUtils.isEmpty(mLastSelectPath)){
 						int position = getFilePosition(mLastSelectPath, fileInfos);
@@ -1129,6 +1130,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 					
 					@Override
 					public void onFinished(int errCode) {
+						mIsMutiDeleteMode = false;
 						DialogUtils.closeLoadingDialog();
 						if(errCode == ConstData.FileOpErrorCode.NO_ERR){
 							//删除成功
@@ -1149,7 +1151,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 			
 			@Override
 			public void onCancel() {
-				
+				//mIsMutiDeleteMode = true;
 			}
 		});
 		deleteTipDialog.setTipText(getString(R.string.delete_selected_files));

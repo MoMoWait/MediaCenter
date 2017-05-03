@@ -56,6 +56,7 @@ import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.utils.DateUtil;
 import com.rockchips.mediacenter.utils.IICLOG;
 import com.rockchips.mediacenter.utils.PlatformUtil;
+import com.rockchips.mediacenter.utils.PlatformUtils;
 import com.rockchips.mediacenter.utils.SharedUtils;
 import com.rockchips.mediacenter.utils.StringUtils;
 import com.rockchips.mediacenter.utils.GifOpenHelper;
@@ -406,9 +407,10 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
                 default:
                     break;
             }
-            loadBackMusic();
-            playBackgroundMusic();
-            
+            if(PlatformUtils.isSupportBackMusic()){
+            	loadBackMusic();
+                playBackgroundMusic();
+            }
         }
         else
         {
@@ -431,8 +433,10 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
     {
         mLog.d(TAG, "onPause()--->");
         mbCovered = true;
-        releaseBackMusicPlayer();
-        saveBackMusic(mBackMusicInfos);
+        if(PlatformUtils.isSupportBackMusic()){
+        	releaseBackMusicPlayer();
+            saveBackMusic(mBackMusicInfos);
+        }
         super.onPause();
         if (mImageSwitcher != null)
         {
@@ -2487,12 +2491,15 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
                 2,
                 1,
                 getResources().getString(R.string.bottom_menu_image_settings));
-            mBottomPopMenu.add(3,
-                ENUM_BOTTOM_MENU_TYPE.ENUM_BOTTOM_MENU_IMAGE_BG_MUSIC,
-                R.drawable.back_music,
-                3,
-                1,
-                getResources().getString(R.string.background_music));
+            if(PlatformUtils.isSupportBackMusic()){
+            	 mBottomPopMenu.add(3,
+                         ENUM_BOTTOM_MENU_TYPE.ENUM_BOTTOM_MENU_IMAGE_BG_MUSIC,
+                         R.drawable.back_music,
+                         3,
+                         1,
+                         getResources().getString(R.string.background_music));
+            }
+           
         }
     }
     

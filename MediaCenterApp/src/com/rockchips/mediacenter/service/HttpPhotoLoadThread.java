@@ -58,6 +58,8 @@ public class HttpPhotoLoadThread extends AbstractPreviewLoadThread{
 	
 	@Override
 	public void run() {
+		if(!ConstData.httpPhotoCanDownload)
+			return;
 		if(!TextUtils.isEmpty(mFileInfo.getPreviewPath()))
 			return;
 		try{

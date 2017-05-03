@@ -27,6 +27,8 @@ public class NetDeviceAddSelectDialog extends AppBaseDialog {
 		void onRefreshAllDevices();
 		//删除Smb或NFS设备
 		void onDeleteSMBOrNFSDevices();
+		//启动家庭媒体共享
+		void onStartHomeMediaShare();
 	}
 	
 	@ViewInject(R.id.list_device_select)
@@ -73,6 +75,8 @@ public class NetDeviceAddSelectDialog extends AppBaseDialog {
 					mCallBack.onRefreshNetWorkDevice();
 				}else if(position == 4){
 					mCallBack.onRefreshAllDevices();
+				}else if(position == 5){
+					mCallBack.onStartHomeMediaShare();
 				}
 				dismiss();
 			}

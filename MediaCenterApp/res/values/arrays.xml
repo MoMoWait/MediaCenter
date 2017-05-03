@@ -24,6 +24,7 @@
         <item>@string/delete_smb_nfs</item>
         <item>@string/refresh_network_device</item>
         <item>@string/refresh_all_devices</item>
+        <item>@string/start_home_media_share</item>
     </string-array>
     
     
@@ -46,6 +47,11 @@
         <item>@string/file_op_rename</item>
         <item>@string/file_op_sort</item>
         <item>@string/file_op_search</item>
+    </string-array>
+    
+     <!-- 文件操作，文件删除操作-->
+    <string-array name="file_oprations_delete">
+        <item>@string/file_op_delete</item>
     </string-array>
     
     <!-- 文件操作，只有paste -->
