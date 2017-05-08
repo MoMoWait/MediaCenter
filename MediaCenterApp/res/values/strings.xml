@@ -383,6 +383,7 @@
     <string name="no_delete_permission">No delete permission</string>
     <string name="no_write_permission">No write permission</string>
     <string name="confirm_delete">Confirm delete?</string>
+    <string name="confirm_delete_sel_file">Confirm delete selected file?</string>
     <string name="paste_error">Paste error</string>
     <string name="exist_same_file">Exist same file(folder)</string>
     <string name="delete_part_file_error">Can not delete some files</string>
@@ -414,4 +415,7 @@
     <string name="back_music">Background music</string>
     <string name="local_no_music">Local device not contain musics</string>
     <string name="max_sel_music_tip">Max selected music count can not over 20</string>
+    <string name="delete_all">Delete all</string>
+    <string name="delete_single">Delete single</string>
+    <string name="start_home_media_share">Start home meida share</string>
 </resources>

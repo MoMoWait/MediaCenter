@@ -1,8 +1,12 @@
 package com.rockchips.mediacenter.service;
 
+import java.io.File;
 import java.util.List;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
+
+import com.rockchips.mediacenter.bean.PreviewPhotoInfo;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.modle.db.DeviceService;
 import com.rockchips.mediacenter.modle.db.FileInfoService;
@@ -31,7 +35,18 @@ public class DeviceInitCheckThread extends Thread{
 		FileInfoService fileInfoService = new FileInfoService();
 		fileInfoService.deleteAll();
 		PreviewPhotoInfoService previewPhotoInfoService = new PreviewPhotoInfoService();
+		List<PreviewPhotoInfo> allPreviewPhotoInfos = previewPhotoInfoService.getAll(PreviewPhotoInfo.class);
+		//删除缓存数据
 		previewPhotoInfoService.deleteAll();
+		if(allPreviewPhotoInfos != null && allPreviewPhotoInfos.size() > 0){
+			//删除缓存图片
+			for(PreviewPhotoInfo photoInfo : allPreviewPhotoInfos){
+				if(!TextUtils.isEmpty(photoInfo.getBigPhotoPath()))
+					new File(photoInfo.getBigPhotoPath()).delete();
+				if(!TextUtils.isEmpty(photoInfo.getPreviewPath()) && !ConstData.UNKNOW.equals(photoInfo.getPreviewPath()))
+					new File(photoInfo.getPreviewPath()).delete();
+			}
+		}
 		//内部存储路径
 		String internelStoragePath = StorageUtils.getFlashStoragePath();
 		List<String> allUsbPaths = StorageUtils.getUSBPaths(mService);
