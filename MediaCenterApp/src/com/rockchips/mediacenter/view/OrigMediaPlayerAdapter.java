@@ -694,7 +694,7 @@ public class OrigMediaPlayerAdapter implements IMediaPlayerAdapter
             return;
         }
         
-        mediaplayer.release();
+        mediaplayer = null;
     }
     
 

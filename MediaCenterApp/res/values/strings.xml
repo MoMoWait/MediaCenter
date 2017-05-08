@@ -362,7 +362,7 @@
     <string name="no_svq">No SVQ</string>
     
     <string name="search_inputhint">Search Home Devices</string>
-    <string name="more_operation_pre">Please press MENU key to more opration\nPlease press UP or DOWN
+    <string name="more_operation_pre">Please press MENU key or * key to more opration\nPlease press UP or DOWN
          key to change devices\nPlease press MENU key or long press OK key to more opration in file browser</string>
     <string name="more_operation_back">Key to more Operation</string>
     <string name="view_video">Video</string>

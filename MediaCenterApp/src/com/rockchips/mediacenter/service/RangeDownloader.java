@@ -9,6 +9,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.CoreConnectionPNames;
+
+import com.rockchips.mediacenter.utils.PlatformUtils;
+
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -111,43 +120,58 @@ public class RangeDownloader
                 RandomAccessFile raf = null;
                 try
                 {
-                    Log.d("TSS", "download 1-1");
-                    Log.d("TSS", "download 1-2");
-                    // outStream = new FileOutputStream(destFile);
+                	InputStream coonIn = null;
+                	if(PlatformUtils.getSDKVersion() >= 23){
+                        Log.d("TSS", "download 1-1");
+                        Log.d("TSS", "download 1-2");
+                        // outStream = new FileOutputStream(destFile);
 
-                    Log.d("TSS", "download 1-3");
-                    connection = downloadUrl.openConnection();
-                    Log.d("TSS", "download 1-4");
-                    String endStr = endByteIdx == UNBOUNDED ? "" : String.valueOf(endByteIdx);
-                    Log.d("TSS", "download 1-5");
-                    connection.setRequestProperty("Range", "bytes=" + startIndexTmp + "-" + endStr);
-                    Log.d("TSS", "download 1-6");
-                    ((HttpURLConnection) connection).setRequestMethod("GET");
-                    connection.setDoInput(true);
-                    Log.d("TSS", "download 1-7");
-                    connection.setDoOutput(false);
-                    Log.d("TSS", "download 1-8");
-                    connection.setConnectTimeout(connTimeOut);
-                    Log.d("TSS", "download 1-9");
-                    connection.setReadTimeout(readTimeOut);
+                        Log.d("TSS", "download 1-3");
+                        connection = downloadUrl.openConnection();
+                        Log.d("TSS", "download 1-4");
+                        String endStr = endByteIdx == UNBOUNDED ? "" : String.valueOf(endByteIdx);
+                        Log.d("TSS", "download 1-5");
+                        connection.setRequestProperty("Range", "bytes=" + startIndexTmp + "-" + endStr);
+                        Log.d("TSS", "download 1-6");
+                        ((HttpURLConnection) connection).setRequestMethod("GET");
+                        connection.setDoInput(true);
+                        Log.d("TSS", "download 1-7");
+                        connection.setDoOutput(false);
+                        Log.d("TSS", "download 1-8");
+                        connection.setConnectTimeout(connTimeOut);
+                        Log.d("TSS", "download 1-9");
+                        connection.setReadTimeout(readTimeOut);
 
-                    Log.d("TSS", "B connection.connect()");
-                    connection.connect();
+                        Log.d("TSS", "B connection.connect()");
+                        connection.connect();
 
-                    Log.d("TSS", "E connection.connect()");
+                        Log.d("TSS", "E connection.connect()");
 
-                    int iRetCode = ((HttpURLConnection) connection).getResponseCode();
-                    if (iRetCode != 206 && iRetCode != 200)
-                    {// 错误
-                        Log.d("TSS", "E getResponseCode:" + iRetCode);
-                        break;
-                    }
-                    InputStream coonIn = null;
+                        int iRetCode = ((HttpURLConnection) connection).getResponseCode();
+                        if (iRetCode != 206 && iRetCode != 200)
+                        {// 错误
+                            Log.d("TSS", "E getResponseCode:" + iRetCode);
+                            break;
+                        }
+                	}
+                    
                     try
                     {
-                        coonIn = connection.getInputStream();
-                        inStream = new BufferedInputStream(coonIn, BUFFER_SIZE);
-
+                    	if(PlatformUtils.getSDKVersion() >= 23){
+                    		 coonIn = connection.getInputStream();
+                    	}else{
+                    		HttpClient client = new DefaultHttpClient();
+        					client.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 2000); 
+        					client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 5000);
+        					HttpGet httpGet = new HttpGet(downloadUrl.toString());
+        					HttpResponse response = client.execute(httpGet);
+        					if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK)
+        						coonIn = response.getEntity().getContent();
+        					client = null;
+                    	}
+                    	if(coonIn == null)
+                    		return;
+                    	inStream = new BufferedInputStream(coonIn, BUFFER_SIZE);
                         Log.d("TSS", " download 1-10");
                         int bytesRead;
                         byte[] buffer = new byte[BUFFER_SIZE];
