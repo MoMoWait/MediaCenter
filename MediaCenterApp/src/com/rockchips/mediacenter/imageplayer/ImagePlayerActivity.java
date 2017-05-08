@@ -80,7 +80,6 @@ import com.rockchips.mediacenter.view.BottomPopMenu;
 import com.rockchips.mediacenter.view.MenuCategory;
 import com.rockchips.mediacenter.view.MenuItemImpl;
 import com.rockchips.mediacenter.view.OnSelectTypeListener;
-import com.rockchips.mediacenter.utils.ToastUtil;
 
 /**
  * ImagePlayerActivity
@@ -1011,6 +1010,7 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
             case KeyEvent.KEYCODE_BACK:
                 return super.onKeyDown(keyCode, event);
             case KeyEvent.KEYCODE_MENU:
+            case KeyEvent.KEYCODE_STAR:
                 mLog.d(TAG, "KeyEvent.KEYCODE_MENU");
                 openBottomMenu();
                 
@@ -2305,6 +2305,19 @@ public class ImagePlayerActivity extends PlayerBaseActivity implements DLNAImage
                 mPopMenu.addMenuCategory(menuCgy);
             }
             
+            /**
+             * 播放模式
+             */
+            if (0 != (loadManuFlag & MANU_FLAG_PLAY_MODE))
+            {
+                menuCgy = new MenuCategory();
+                menuCgy.setCategoryName(getResources().getString(R.string.switch_with));
+                itemImpls = new ArrayList<MenuItemImpl>();
+                loadMenuItemsForPlayMode(itemImpls);
+                menuCgy.setMenuItems(itemImpls);            
+                menuCgy.setSelectIndex(mImagePlaySetHelper.getPlayModeIndex());
+                mPopMenu.addMenuCategory(menuCgy);
+            }
         }
         
         /**

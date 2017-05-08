@@ -247,12 +247,26 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
       
     }
 
+    @Override
     public void stopPlayback()
     {
+    	Log.i(TAG, "stopPlayback->stackTrace:" + android.util.Log.getStackTraceString(new Throwable()));
         mIsPrepared = false;
-        mMediaPlayer = null;
-        
+        //mMediaPlayer = null;
+        //获取VideoView下mMedaPlayer的状态
+        try{
+        	  Field mediaField = getClass().getDeclaredField("mMediaPlayer");
+              mediaField.setAccessible(true);
+              Object mediaObject = mediaField.get(this);
+              Log.i(TAG, "stopPlayback->mediaObject:" + mediaObject);
+        }catch (Exception e){
+        	
+        }
+      
         super.stopPlayback();
+        mMediaPlayer = null;
+        mediaplayer.release();
+        Log.i(TAG, "stopPlayback->mMediaPlayer = " + mMediaPlayer);
        
     }
 

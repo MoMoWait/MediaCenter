@@ -4,9 +4,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import android.os.SystemProperties;
-import com.rockchips.mediacenter.utils.PlatformUtils;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;

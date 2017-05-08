@@ -365,6 +365,7 @@ public class MainActivity extends AppBaseActivity implements OnDeviceSelectedLis
         switch (keyCode)
         {
         	case KeyEvent.KEYCODE_MENU:
+        	case KeyEvent.KEYCODE_STAR:
         		showNetWorkSelectDialog();
         		break;
             case KeyEvent.KEYCODE_BACK:

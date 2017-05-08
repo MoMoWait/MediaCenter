@@ -303,7 +303,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 					return super.onKeyDown(keyCode, event);
 				}
 			}
-			if(keyCode == KeyEvent.KEYCODE_MENU && PlatformUtils.isSupportFileManager()){
+			if((keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_STAR) && PlatformUtils.isSupportFileManager()){
 				new FileOpDialog(this, mCurrentFileInfo, isEmptyFolder, mIsMutiDeleteMode, this).show();
 				return true;
 			}else if(keyCode == KeyEvent.KEYCODE_DPAD_CENTER){

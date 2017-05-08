@@ -714,6 +714,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
                 return true;
 
             case KeyEvent.KEYCODE_MENU:
+            case KeyEvent.KEYCODE_STAR:
                 Log.d(TAG, "process menu key 2...");
                 createBottomPopMenu();
                 break;
@@ -774,7 +775,7 @@ public class AudioPlayerActivity extends PlayerBaseActivity implements OnWheelCh
     	Log.i("Audio_OnKey", "onKeyUp");
     	removeUiMessage(MSG_SHOW_BACKGRPUND_PICS);
     	if(PlatformUtils.isSupportBackPhoto()){
-    		if(keyCode == KeyEvent.KEYCODE_MENU)
+    		if(keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_STAR)
         		sendUiMessage(MSG_SHOW_BACKGRPUND_PICS, BG_IMAGE_SHOW_DELAY_TIME + 5);
         	else
         		sendUiMessage(MSG_SHOW_BACKGRPUND_PICS, BG_IMAGE_SHOW_DELAY_TIME);

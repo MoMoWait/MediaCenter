@@ -4,6 +4,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.CoreConnectionPNames;
+
+import com.rockchips.mediacenter.utils.PlatformUtils;
+
 import android.util.Log;
 
 public class HttpUtils
@@ -14,6 +23,24 @@ public class HttpUtils
     {
         try
         {
+        	if(PlatformUtils.getSDKVersion() <= 19){
+        		HttpClient client = new DefaultHttpClient();
+    			client.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 2000); 
+    			client.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 5000);
+    			Log.i(TAG, "getHttpResourceDetails->httpGet->url:" + url.toString());
+    			HttpGet httpGet = new HttpGet(url.toString());
+    			HttpResponse response = client.execute(httpGet);
+    			if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
+    				HttpDetails httpDetails = new HttpDetails();
+                    httpDetails.contentLength = (int)response.getEntity().getContentLength();
+                    httpDetails.acceptRanges = null;
+                    httpDetails.responseCode = HttpStatus.SC_OK;
+                    client = null;
+                    return httpDetails;
+    			}
+               client = null;
+        	}
+
             URLConnection conn2 = url.openConnection();
 
             // 首次连接获取长度===========================================

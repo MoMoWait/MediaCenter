@@ -196,6 +196,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     private long timeWhenSeek = 0;
     private Object mCurrSelectType;
     //begin add by caochao for DTS2014111006777 媒体中心视频时概率性出现“该视频无法播放”
+    private MediaPlayer mOriginMediaPlayer;
     private int mBufferUpdatePercent = 0;
     /**
      * 是否关闭字幕
@@ -264,8 +265,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     private void initEvent(){
         final String CRLF = System.getProperty("line.separator");
         mTextSubtitle.setVisibility(View.GONE);
-    	MediaPlayer originMediaPlayer = mMediaPlayer.getOriginMediaPlayer();
-    	originMediaPlayer.setOnTimedTextListener(new  MediaPlayer.OnTimedTextListener() {
+        mOriginMediaPlayer = null;
+    	mOriginMediaPlayer = mMediaPlayer.getOriginMediaPlayer();
+    	mOriginMediaPlayer.setOnTimedTextListener(new  MediaPlayer.OnTimedTextListener() {
 			
 			@Override
 			public void onTimedText(MediaPlayer mp, TimedText text) {
@@ -379,6 +381,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         {
             Log.e(TAG, "There is something wrong with the Mediaplayer, maybe more than one stop.");
         }
+        mOriginMediaPlayer = null;
     }
 
     @Override
@@ -421,6 +424,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         switch (keyCode)
         {
             case KeyEvent.KEYCODE_MENU:
+            case KeyEvent.KEYCODE_STAR:
             	if(mVV.isSeeking())
             		return true;
             	if(!isMenuNeedShow)
@@ -856,10 +860,16 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
      * @param visible
      */
     private void setVideoSubtitleVisible(boolean visible){
-    	 MediaPlayer originMediaPlayer = mMediaPlayer.getOriginMediaPlayer();
      	try{
-     		Method method = MediaPlayer.class.getDeclaredMethod("setSubtitleVisible", boolean.class);
-     		method.invoke(originMediaPlayer, visible);
+     		Method method = null;
+     		if(PlatformUtils.getSDKVersion() <= 19){
+     			method = MediaPlayer.class.getDeclaredMethod("setSubtitleVisible", int.class);
+     			method.invoke(mOriginMediaPlayer, visible ? 1 : 0);
+     		}else{
+     			method = MediaPlayer.class.getDeclaredMethod("setSubtitleVisible", boolean.class);
+     			method.invoke(mOriginMediaPlayer, visible);
+     		}
+     		
      	}catch (Exception e){
      		Log.i(TAG, "resetSubtitleVisible->resetSubtitleVisible->exception2:" + e);
      	}
@@ -997,8 +1007,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
      */
     public void set3DMode(int mode){
     	//使用Mediaplayer设置3D模式
-    	MediaPlayer mediaPlayer = mMediaPlayer.getOriginMediaPlayer();
-    	mediaPlayer.set3DMode(mode);
+    	if(mOriginMediaPlayer != null)
+    		mOriginMediaPlayer.set3DMode(mode);
     	mPlayStateInfo.set3DMode(mode);
     }
     
@@ -1559,11 +1569,10 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         {
             if (mVV != null)
             {
-            	MediaPlayer mediaPlayer = mMediaPlayer.getOriginMediaPlayer();
-            	if(menuIndex != subNum){
+            	if(menuIndex != subNum && mOriginMediaPlayer != null){
             		mIsCloseSubtitle = false;
             		setVideoSubtitleVisible(true);
-            		mediaPlayer.selectTrack(trackIndex);
+            		mOriginMediaPlayer.selectTrack(trackIndex);
             	}
             	else{
             		mIsCloseSubtitle = true;

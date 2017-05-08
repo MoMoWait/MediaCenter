@@ -47,6 +47,8 @@ public class DeviceInitCheckThread extends Thread{
 					new File(photoInfo.getPreviewPath()).delete();
 			}
 		}
+		allPreviewPhotoInfos = previewPhotoInfoService.getAll(PreviewPhotoInfo.class);
+		Log.i(TAG, "DeviceInitCheckThread->allPreviewPhotoInfos->isEmpty:" + (allPreviewPhotoInfos == null || allPreviewPhotoInfos.size() == 0));
 		//内部存储路径
 		String internelStoragePath = StorageUtils.getFlashStoragePath();
 		List<String> allUsbPaths = StorageUtils.getUSBPaths(mService);
