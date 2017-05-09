@@ -544,13 +544,7 @@ public class OrigMediaPlayerAdapter implements IMediaPlayerAdapter
      */
     public void setMediaPlayer(MediaPlayer newVal)
     {
-        if(newVal == null)
-        {
-            mediaplayer = new MediaPlayer();
-        }else
-        {
-            mediaplayer = newVal;
-        }
+    	mediaplayer = newVal;
     }
   
     

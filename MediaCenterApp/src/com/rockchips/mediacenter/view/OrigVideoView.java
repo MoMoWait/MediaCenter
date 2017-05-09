@@ -11,14 +11,11 @@ package com.rockchips.mediacenter.view;
 
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
-
-import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.media.AudioManager;
@@ -29,8 +26,8 @@ import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.WindowManager;
 import android.widget.VideoView;
-
 import com.rockchips.mediacenter.utils.IICLOG;
+import com.rockchips.mediacenter.utils.PlatformUtils;
 import com.rockchips.mediacenter.service.IMediaPlayerAdapter;
 import com.rockchips.mediacenter.service.IVideoViewAdapter;
 import com.rockchips.mediacenter.bean.AudioInfoOfVideo;
@@ -142,6 +139,8 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
     private void init(Context context)
     {
     	setOnErrorListener(mOnErrorListener);
+    	if(PlatformUtils.getSDKVersion() <= 19)
+    		setOnPreparedListener();
         mContext = context;
         
         if(mediaplayer == null)
@@ -586,10 +585,11 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
     {
         public void onPrepared(MediaPlayer mp)
         {
+        	Log.i(TAG, "OrigVideoView->onPrepared");
             mIsPrepared = true;
             mMediaPlayer = mp;
             mediaplayer.setMediaPlayer(mp);
-            setmediaPlayerAdapter(mediaplayer);
+            //setmediaPlayerAdapter(mediaplayer);
             mp.setOnBufferingUpdateListener(mbufferingListener);
             mp.setOnErrorListener(mOnErrorListener);
             mp.setOnCompletionListener(mcompleteListener);
@@ -762,12 +762,8 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
         {
             if(onErrorListener != null)
             {
-                if(getmediaPlayerAdapter() == null)
-                {
-                    mediaplayer.setMediaPlayer(mp);
-                    setmediaPlayerAdapter(mediaplayer);
-                }
-                
+            	mediaplayer.setMediaPlayer(mp);
+                //setmediaPlayerAdapter(mediaplayer);
                 onErrorListener.onError(getmediaPlayerAdapter(), what, extra);
             }
             return true;
@@ -1099,5 +1095,100 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
     	}
     	
     }
+    /**
+     * 通过反射屏蔽VideoView默认的Prepared处理
+     */
+    public void setOnPreparedListener(){
+    	setFieldValue("mPreparedListener", mDefaultPreparedListener);
+    }
     
+    public void setFieldValue(String filedName, Object value){
+    	try{
+    		Field field = getClass().getSuperclass().getDeclaredField(filedName);
+    		field.setAccessible(true);
+    		field.set(this, value);
+    	}catch (Exception e){
+    		Log.e(TAG, "setFieldValue->filedName:" + filedName);
+    		Log.e(TAG, "setFieldValue->value:" + value);
+    		Log.e(TAG, "setFieldValue->exception:" + e);
+    	}
+    	
+    }
+    
+    public Object getFieldValue(String filedName){
+    	try{
+    		Field field = getClass().getSuperclass().getDeclaredField(filedName);
+    		field.setAccessible(true);
+    		return field.get(this);
+    	}catch (Exception e){
+    		Log.e(TAG, "getFieldValue->filedName:" + filedName);
+    		Log.e(TAG, "getFieldValue->exception:" + e);
+    	}
+    	return null;
+    }
+    
+    public Object invokeMethod(Object object, String methodName, Class<?>[]paramTypes, Object[] values){
+    	try{
+    		Method method = object.getClass().getDeclaredMethod(methodName, paramTypes);
+        	method.setAccessible(true);
+        	return method.invoke(object, values);
+        	//return method.invoke(object, paramTypes);
+    	}catch (Exception e){
+    		Log.e(TAG, "invokeMethod->methodName:" + methodName);
+    		Log.e(TAG, "invokeMethod->exception:" + e);
+    	
+    	}
+    	return null;
+    }
+    
+    private MediaPlayer.OnPreparedListener mDefaultPreparedListener = new MediaPlayer.OnPreparedListener() {
+		
+		@Override
+		public void onPrepared(MediaPlayer mp) {
+			Log.i(TAG, "mDefaultPreparedListener->onPrepared");
+			// mCurrentState = STATE_PREPARED;
+			setFieldValue("mCurrentState", 2);
+			setFieldValue("mCanPause", true);
+			setFieldValue("mCanSeekBack", true);
+			setFieldValue("mCanSeekForward", true);
+			if (getFieldValue("mOnPreparedListener") != null) {
+				mPreparedListener.onPrepared((MediaPlayer) getFieldValue("mMediaPlayer"));
+			}
+			if (getFieldValue("mMediaController") != null)
+				invokeMethod(getFieldValue("mMediaController"), "setEnabled", new Class<?>[] { boolean.class }, new Object[] { true });
+			setFieldValue("mVideoWidth", mp.getVideoWidth());
+			setFieldValue("mVideoHeight", mp.getVideoWidth());
+			int seekToPosition = (int) getFieldValue("mSeekWhenPrepared");
+			if (seekToPosition != 0) {
+				seekTo(seekToPosition);
+			}
+			int videoWidth = (int) getFieldValue("mVideoWidth");
+			int videoHeight = (int) getFieldValue("mVideoHeight");
+			if (videoWidth != 0 && videoHeight != 0) {
+				getHolder().setFixedSize(videoWidth, videoHeight);
+				if ((int) getFieldValue("mSurfaceWidth") == videoWidth
+						&& (int) getFieldValue("mSurfaceHeight") == videoHeight) {
+					if ((int) getFieldValue("mTargetState") == 3) {
+						start();
+						if (getFieldValue("mMediaController") != null) {
+							invokeMethod(getFieldValue("mMediaController"),
+									"show", new Class<?>[0], new Object[0]);
+						}
+					} else if (!isPlaying()
+							&& (seekToPosition != 0 || getCurrentPosition() > 0)) {
+						if (getFieldValue("mMediaController") != null) {
+							invokeMethod(getFieldValue("mMediaController"),
+									"show", new Class<?>[] { int.class },
+									new Object[] { 0 });
+						}
+					}
+				}
+			} else {
+				if ((int) getFieldValue("mTargetState") == 3) {
+					start();
+				}
+			}
+		}
+	};
+        
 }
