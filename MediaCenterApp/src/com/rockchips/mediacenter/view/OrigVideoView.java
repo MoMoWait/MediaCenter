@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import momo.cn.edu.fjnu.androidutils.utils.SizeUtils;
 import android.app.Service;
 import android.content.Context;
 import android.media.AudioManager;
@@ -26,6 +28,7 @@ import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.WindowManager;
 import android.widget.VideoView;
+import android.app.Activity;
 import com.rockchips.mediacenter.utils.IICLOG;
 import com.rockchips.mediacenter.utils.PlatformUtils;
 import com.rockchips.mediacenter.service.IMediaPlayerAdapter;
@@ -260,19 +263,7 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
     @Override
     public void stopPlayback()
     {
-    	Log.i(TAG, "stopPlayback->stackTrace:" + android.util.Log.getStackTraceString(new Throwable()));
         mIsPrepared = false;
-        //mMediaPlayer = null;
-        //获取VideoView下mMedaPlayer的状态
-        try{
-        	  Field mediaField = getClass().getDeclaredField("mMediaPlayer");
-              mediaField.setAccessible(true);
-              Object mediaObject = mediaField.get(this);
-              Log.i(TAG, "stopPlayback->mediaObject:" + mediaObject);
-        }catch (Exception e){
-        	
-        }
-      
         super.stopPlayback();
         mMediaPlayer = null;
         mediaplayer.release();

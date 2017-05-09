@@ -39,6 +39,7 @@ import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.modle.db.FileInfoService;
 import com.rockchips.mediacenter.modle.db.PreviewPhotoInfoService;
 import com.rockchips.mediacenter.utils.MediaUtils;
+import com.rockchips.mediacenter.utils.PlatformUtils;
 
 /**
  * @author GaoFei
