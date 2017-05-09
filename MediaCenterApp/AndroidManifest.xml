@@ -152,11 +152,18 @@
         <activity
             android:name="com.rockchips.mediacenter.videoplayer.InternalVideoPlayer"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
-            android:exported="false"
+            android:exported="true"
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen" >
             <intent-filter>
+                 <action android:name="android.intent.action.VIEW"/>
+                 <category android:name="android.intent.category.DEFAULT"/>
+                 <category android:name="android.intent.category.BROWSABLE"/>
+                 <data android:mimeType="video/*"/>
+            </intent-filter>
+
+	    <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
