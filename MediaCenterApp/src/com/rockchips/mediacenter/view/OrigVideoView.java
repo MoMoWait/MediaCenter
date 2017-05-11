@@ -267,7 +267,6 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
         super.stopPlayback();
         mMediaPlayer = null;
         mediaplayer.release();
-        Log.i(TAG, "stopPlayback->mMediaPlayer = " + mMediaPlayer);
        
     }
 
@@ -760,48 +759,7 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
             return true;
         }
     };
-//    
-//    private com.hisilicon.android.mediaplayer.HiMediaPlayer.OnFastForwardCompleteListener mFF = new HiMediaPlayer.OnFastForwardCompleteListener()
-//    {
-//        
-//        @Override
-//        public void onFastForwardComplete(HiMediaPlayer mp)
-//        {
-//            if(mOnFastForwardCompleteListener != null)
-//            {
-//                if(getmediaPlayerAdapter() == null)
-//                {
-//                    mediaplayer.setmediaPlayer(mp);
-//                    setmediaPlayerAdapter(mediaplayer);
-//                }
-//                
-//                mOnFastForwardCompleteListener.onFastForwardComplete(getmediaPlayerAdapter());
-//            }
-//        }
-//
-//    };
-//    
-//    private com.hisilicon.android.mediaplayer.HiMediaPlayer.OnFastBackwordCompleteListener mFB = new HiMediaPlayer.OnFastBackwordCompleteListener()
-//    {
-//        
-//        @Override
-//        public void onFastBackwordComplete(HiMediaPlayer mp)
-//        {
-//            if(mOnFastBackwordCompleteListener != null)
-//            {
-//                if(getmediaPlayerAdapter() == null)
-//                {
-//                    mediaplayer.setmediaPlayer(mp);
-//                    setmediaPlayerAdapter(mediaplayer);
-//                }
-//                
-//                mOnFastBackwordCompleteListener.onFastBackwordComplete(getmediaPlayerAdapter());
-//            }
-//        }
-//
-//    };
-//    
-//    
+
     @Override
     public void setOutRange(int left, int top, int w, int h)
     {

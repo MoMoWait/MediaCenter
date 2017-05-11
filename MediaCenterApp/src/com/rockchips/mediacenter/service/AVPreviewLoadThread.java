@@ -7,6 +7,8 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.UUID;
@@ -33,11 +35,15 @@ import android.provider.MediaStore.Video.Thumbnails;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
+
+import com.rockchips.mediacenter.audioplayer.SongInfo;
 import com.rockchips.mediacenter.bean.FileInfo;
 import com.rockchips.mediacenter.bean.PreviewPhotoInfo;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.modle.db.FileInfoService;
 import com.rockchips.mediacenter.modle.db.PreviewPhotoInfoService;
+import com.rockchips.mediacenter.retrieve.EncodeUtil;
+import com.rockchips.mediacenter.utils.CharsetUtils;
 import com.rockchips.mediacenter.utils.MediaUtils;
 import com.rockchips.mediacenter.utils.PlatformUtils;
 
@@ -70,6 +76,7 @@ public class AVPreviewLoadThread extends AbstractPreviewLoadThread{
 		if(photoInfo != null){
 			mFileInfo.setPreviewPath(photoInfo.getPreviewPath());
 			mFileInfo.setDuration(photoInfo.getDuration());
+			mFileInfo.setOtherInfo(photoInfo.getOhterInfo());
 			updateToDB();
 			sendRefreshBroadCast();
 			return;
@@ -176,9 +183,21 @@ public class AVPreviewLoadThread extends AbstractPreviewLoadThread{
             Log.i(TAG, "AVPreviewLoadThread->getVideoThumbnail->all:" + (videoThumbnailEnd - videoThumbnailStart) / 1000 + "s");
         }else{
             byte[] albumData = mediaMetadataRetriever.getEmbeddedPicture();
-            String title = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-            String album = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-            String artist = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+            String title = null;
+            String album = null;
+            String artist = null;
+            title =	mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+            album = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+            artist = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+            if(title != null)
+            	title = title.trim();
+            if(album != null)
+            	album = album.trim();
+            if(artist != null)
+            	artist = artist.trim();
+            title = EncodeUtil.getRightEncodeString(title);
+            album = EncodeUtil.getRightEncodeString(album);
+            artist = EncodeUtil.getRightEncodeString(artist);
             Log.i(TAG, "AVPreviewLoadThread->title:" + title);
             Log.i(TAG, "AVPreviewLoadThread->albumName:" + album);
             Log.i(TAG, "AVPreviewLoadThread->artist:" + artist);
