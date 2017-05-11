@@ -401,6 +401,11 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     		
     	}
         super.onStop();
+        try{
+        	mVV.stopPlayback();
+        }catch (Exception e){
+        	
+        }
         
     }
     
