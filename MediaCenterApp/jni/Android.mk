@@ -12,9 +12,11 @@ LOCAL_DEFAULT_CPP_EXTENSION := cpp
 # All of the source files that we will compile.
 LOCAL_SRC_FILES := native.cpp
  
-LOCAL_SHARED_LIBRARIES := \
+#LOCAL_SHARED_LIBRARIES := \
     libutils liblog libmedia_jni libmedia libbinder libnativehelper
  
+LOCAL_SHARED_LIBRARIES := \
+    libutils liblog libmedia libbinder libnativehelper
 LOCAL_C_INCLUDES += \
     $(JNI_H_INCLUDE)
 

@@ -28,7 +28,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
-import com.rockchips.mediacenter.viewutils.R;
+import com.rockchips.mediacenter.R;
 
 /**
  * 
