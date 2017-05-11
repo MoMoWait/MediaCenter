@@ -45,6 +45,7 @@ import com.rockchips.mediacenter.modle.db.PreviewPhotoInfoService;
 import com.rockchips.mediacenter.retrieve.EncodeUtil;
 import com.rockchips.mediacenter.utils.CharsetUtils;
 import com.rockchips.mediacenter.utils.MediaUtils;
+import com.rockchips.mediacenter.utils.PlatformUtils;
 
 /**
  * @author GaoFei

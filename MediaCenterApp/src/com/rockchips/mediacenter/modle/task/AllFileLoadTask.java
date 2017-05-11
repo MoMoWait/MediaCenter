@@ -14,6 +14,7 @@ import com.rockchips.mediacenter.bean.LocalMediaFile;
 import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.modle.db.FileInfoService;
 import com.rockchips.mediacenter.utils.MediaFileUtils;
+import com.rockchips.mediacenter.utils.PlatformUtils;
 
 import android.os.AsyncTask;
 import android.util.Log;

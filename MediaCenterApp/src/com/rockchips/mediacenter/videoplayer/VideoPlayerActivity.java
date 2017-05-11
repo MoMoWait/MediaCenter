@@ -60,6 +60,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import java.io.File;
+import java.lang.reflect.Method;
 
 import org.xutils.x;
 import org.xutils.view.annotation.ViewInject;
@@ -79,6 +80,7 @@ import com.rockchips.mediacenter.utils.DateUtil;
 import com.rockchips.mediacenter.utils.MathUtil;
 import com.rockchips.mediacenter.utils.MediaUtils;
 import com.rockchips.mediacenter.utils.PlatformUtil;
+import com.rockchips.mediacenter.utils.PlatformUtils;
 import com.rockchips.mediacenter.utils.StringUtils;
 import com.rockchips.mediacenter.service.IMediaPlayerAdapter;
 import com.rockchips.mediacenter.service.IVideoViewAdapter;
@@ -1647,7 +1649,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             	}
             	else{
             		mIsCloseSubtitle = true;
-            		mediaPlayer.setSubtitleVisible(false);
+            		setVideoSubtitleVisible(false);
+            		//mediaPlayer.setSubtitleVisible(false);
             	}
             	subId = menuIndex;
                /* Log.d(TAG, "subtitle 1 subNum:" + subNum);
