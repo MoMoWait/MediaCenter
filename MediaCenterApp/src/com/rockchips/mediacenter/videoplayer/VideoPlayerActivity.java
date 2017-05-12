@@ -218,6 +218,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     private boolean mIsFirstSeek = true;
     /**是否需要弹出控制栏*/
     private boolean mIsNeedShowPop;
+    /**是否播放完成*/
+    private boolean mIsPlayCompleted;
     @ViewInject(R.id.vv)
     private OrigVideoView mVV;
     @ViewInject(R.id.video_layout)
@@ -413,7 +415,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
      
     @Override
     public void finish() {
-    	Log.i(TAG, "finish->stackTrace:" + android.util.Log.getStackTraceString(new Throwable()));
+    	//Log.i(TAG, "finish->stackTrace:" + android.util.Log.getStackTraceString(new Throwable()));
     	super.finish();
     }
     
@@ -846,6 +848,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             /** liyang DTS2013051702993 **/
             // 本地播放视频文件，设置视频循环播放，影片播放完，在将要播放下一影片时，切换全屏播放模式或音轨或字幕时，停止运行。
             isMenuNeedShow = true;
+            //视频播放完成标记
+            mIsPlayCompleted = false;
             //重置视频字幕显示
             resetSubtitleVisible();
             play();
@@ -2612,7 +2616,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     private void savePositionNow()
     {
         Log.d(TAG, "---->MSG_UI_VIDEOVIEW_SAVE_POS  invoke");
-
+        if(mIsPlayCompleted)
+        	return;
         FileInfo mbi = getCurrentMediaInfo();
 
         if (mbi != null)
@@ -3066,7 +3071,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         isHasPrepared = false;
         //播放完成，重置当前Seek位置
         mSeekPosition = 0;
-        
+        //视频播放完成标记
+        mIsPlayCompleted = true;
         //隐藏控制栏
         if(mSeekBarLayout.getVisibility() == View.VISIBLE){
         	if(null != mUIHandler){
@@ -3230,11 +3236,10 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 			mSeekBarLayout.setPlayStatus(ConstData.VIDEO_PLAY_STATUS.FAST_GO);
 			//Log.i(TAG, "change play step:" + (mFastGoCount << 1));
 			mSeekPosition += ((mFastGoCount >> 1) * 1000 + CHANGE_PLAY_TIME_STEP);
-			//不允许快进到最后
 			if(mSeekPosition > duration)
-				mSeekPosition = duration - 2000;
-			if(mSeekPosition < 0)
-				mSeekPosition = 0;
+				mSeekPosition = duration;
+			/*if(mSeekPosition < 0)
+				mSeekPosition = 0;*/
 			break;
 		case -1:
 			//快退
