@@ -25,6 +25,7 @@ import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.WindowManager;
 import android.widget.VideoView;
@@ -350,8 +351,10 @@ public class OrigVideoView extends VideoView implements IVideoViewAdapter
     private OnCompleteListener mOnCompleteListener;
     private MediaPlayer.OnCompletionListener mcompleteListener = new MediaPlayer.OnCompletionListener()
     {
+    	
         public void onCompletion(MediaPlayer arg0)
         {
+        	Log.i(TAG, "onCompletion");
             if (mOnCompleteListener != null)
             {
                 mOnCompleteListener.onCompletion(getmediaPlayerAdapter());
