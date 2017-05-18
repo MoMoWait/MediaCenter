@@ -418,4 +418,7 @@
     <string name="delete_all">Delete all</string>
     <string name="delete_single">Delete single</string>
     <string name="start_home_media_share">Start home meida share</string>
+    <string name="plug_image_app_name">Picture Viewer</string>
+    <string name="plug_video_app_name">Video Player</string>
+    <string name="plug_music_app_name">Music Player</string>
 </resources>

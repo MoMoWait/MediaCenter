@@ -69,5 +69,5 @@
     <color name="itemUnFocused">#FFFFFF</color>
     <color name="file_num_bg">#7bbbe8</color>
     <color name="music_list_select_color">#7F13227a</color>
-    
+    <color name="hint_foreground_light">#808080</color>
 </resources>
