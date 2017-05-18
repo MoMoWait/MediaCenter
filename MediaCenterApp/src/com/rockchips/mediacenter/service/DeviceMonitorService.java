@@ -31,6 +31,9 @@ import org.fourthline.cling.support.model.DIDLContent;
 import org.fourthline.cling.support.model.DIDLObject;
 import org.fourthline.cling.support.model.SortCriterion;
 import org.fourthline.cling.support.model.container.Container;
+
+import com.rockchip.mediacenter.SystemDeviceService;
+import com.rockchip.mediacenter.SystemSettingUtils;
 import com.rockchips.mediacenter.bean.Device;
 import com.rockchips.mediacenter.bean.DeviceScanInfo;
 import com.rockchips.mediacenter.bean.FileInfo;
@@ -370,6 +373,10 @@ public class DeviceMonitorService extends Service {
 	 * 绑定各种服务
 	 */
 	private void attachService() {
+		/**启动DMR服务*/
+		Intent dmrServiceIntent = new Intent(this, SystemDeviceService.class);
+		startService(dmrServiceIntent);
+		
 		Intent upnpIntent = new Intent(this, MediaUpnpService.class);
 		try{
 			// 绑定UPNP服务
@@ -530,6 +537,8 @@ public class DeviceMonitorService extends Service {
 			if(device.getType().getType().equals("MediaServer")){
 				Log.i(TAG, "remoteDeviceAdded->device->descriptionURL:" + device.getIdentity().getDescriptorURL().toString());
 				Log.i(TAG, "remoteDeviceAdded->device->Udn:" + device.getIdentity().getUdn().getIdentifierString());
+				if(SystemSettingUtils.getMediaServerName(DeviceMonitorService.this).equals(device.getDetails().getFriendlyName()))
+					return;
 				Bundle mountBundle = new Bundle();
 				mountBundle.putBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK, false);
 				mountBundle.putString(ConstData.DeviceMountMsg.MOUNT_PATH, device.getIdentity().getDescriptorURL().toString());
@@ -547,6 +556,8 @@ public class DeviceMonitorService extends Service {
 			if(device.getType().getType().equals("MediaServer")){
 				Log.i(TAG, "remoteDeviceRemoved->device->descriptionURL:" + device.getIdentity().getDescriptorURL().toString());
 				Log.i(TAG, "remoteDeviceRemoved->device->Udn:" + device.getIdentity().getUdn().getIdentifierString());
+				if(SystemSettingUtils.getMediaServerName(DeviceMonitorService.this).equals(device.getDetails().getFriendlyName()))
+					return;
 				Bundle downBundle = new Bundle();
 				downBundle.putBoolean(ConstData.DeviceMountMsg.IS_FROM_NETWORK, false);
 				downBundle.putString(ConstData.DeviceMountMsg.MOUNT_PATH, device.getIdentity().getDescriptorURL().toString());

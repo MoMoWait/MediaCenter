@@ -1,0 +1,1885 @@
+SQLite.ProgressHandler
+SQLite.Exception
+SQLite.JDBC2z.JDBCResultSet
+SQLite.JDBC2z.JDBCDatabaseMetaData
+SQLite.Authorizer
+SQLite.JDBCDriver
+SQLite.JDBC2z.JDBCResultSetMetaData
+SQLite.JDBC2z.JDBCPreparedStatement
+SQLite.JDBC2z.JDBCStatement
+SQLite.StringEncoder
+SQLite.Trace
+SQLite.Constants
+SQLite.Callback
+SQLite.Shell
+SQLite.Function
+SQLite.Vm
+SQLite.BusyHandler
+SQLite.JDBC2z.TableResultX
+SQLite.FunctionContext
+SQLite.JDBC2z.JDBCConnection
+SQLite.Stmt
+SQLite.Blob
+SQLite.TableResult
+SQLite.Database
+SQLite.ProgressHandler
+SQLite.Exception
+SQLite.JDBC2z.JDBCResultSet
+SQLite.JDBC2z.JDBCDatabaseMetaData
+SQLite.Authorizer
+SQLite.JDBCDriver
+SQLite.JDBC2z.JDBCResultSetMetaData
+SQLite.JDBC2z.JDBCPreparedStatement
+SQLite.JDBC2z.JDBCStatement
+SQLite.StringEncoder
+SQLite.Trace
+SQLite.Constants
+SQLite.Callback
+SQLite.DBDump
+SQLite.Shell
+SQLite.Function
+SQLite.Vm
+SQLite.BlobR
+SQLite.BlobW
+SQLite.BusyHandler
+SQLite.JDBC2z.TableResultX
+SQLite.JDBC2z.BatchArg
+SQLite.FunctionContext
+SQLite.JDBC2z.JDBCConnection
+SQLite.JDBC2z.DatabaseX
+SQLite.Stmt
+SQLite.Blob
+SQLite.TableResult
+SQLite.Database
+SQLite.ProgressHandler: boolean progress()
+SQLite.Exception: Exception(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: int row
+SQLite.JDBC2z.JDBCResultSet: SQLite.TableResult tr
+SQLite.JDBC2z.JDBCResultSet: SQLite.JDBC2z.JDBCStatement s
+SQLite.JDBC2z.JDBCResultSet: SQLite.JDBC2z.JDBCResultSetMetaData md
+SQLite.JDBC2z.JDBCResultSet: java.lang.String lastg
+SQLite.JDBC2z.JDBCResultSet: int updatable
+SQLite.JDBC2z.JDBCResultSet: java.lang.String uptable
+SQLite.JDBC2z.JDBCResultSet: java.lang.String[] pkcols
+SQLite.JDBC2z.JDBCResultSet: int[] pkcoli
+SQLite.JDBC2z.JDBCResultSet: int UPD_UNKNOWN
+SQLite.JDBC2z.JDBCResultSet: int UPD_NO
+SQLite.JDBC2z.JDBCResultSet: int UPD_INS
+SQLite.JDBC2z.JDBCResultSet: int UPD_INSUPDDEL
+SQLite.JDBC2z.JDBCResultSet: boolean oninsrow
+SQLite.JDBC2z.JDBCResultSet: java.lang.String[] rowbuf
+SQLite.JDBC2z.JDBCResultSet: boolean nullrepl
+SQLite.JDBC2z.JDBCResultSet: SQLite.TableResult tr
+SQLite.JDBC2z.JDBCResultSet: SQLite.JDBC2z.JDBCStatement s
+SQLite.JDBC2z.JDBCResultSet: SQLite.JDBC2z.JDBCResultSetMetaData md
+SQLite.JDBC2z.JDBCResultSet: java.lang.String lastg
+SQLite.JDBC2z.JDBCResultSet: java.lang.String uptable
+SQLite.JDBC2z.JDBCResultSet: JDBCResultSet(SQLite.TableResult,SQLite.JDBC2z.JDBCStatement)
+SQLite.JDBC2z.JDBCResultSet: boolean isUpdatable()
+SQLite.JDBC2z.JDBCResultSet: void fillRowbuf()
+SQLite.JDBC2z.JDBCResultSet: boolean next()
+SQLite.JDBC2z.JDBCResultSet: int findColumn(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: int getRow()
+SQLite.JDBC2z.JDBCResultSet: boolean previous()
+SQLite.JDBC2z.JDBCResultSet: boolean absolute(int)
+SQLite.JDBC2z.JDBCResultSet: boolean relative(int)
+SQLite.JDBC2z.JDBCResultSet: void setFetchDirection(int)
+SQLite.JDBC2z.JDBCResultSet: int getFetchDirection()
+SQLite.JDBC2z.JDBCResultSet: void setFetchSize(int)
+SQLite.JDBC2z.JDBCResultSet: int getFetchSize()
+SQLite.JDBC2z.JDBCResultSet: java.lang.String getString(int)
+SQLite.JDBC2z.JDBCResultSet: java.lang.String getString(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: int getInt(int)
+SQLite.JDBC2z.JDBCResultSet: java.lang.Integer internalGetInt(int)
+SQLite.JDBC2z.JDBCResultSet: int getInt(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: boolean getBoolean(int)
+SQLite.JDBC2z.JDBCResultSet: boolean getBoolean(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: java.sql.ResultSetMetaData getMetaData()
+SQLite.JDBC2z.JDBCResultSet: short getShort(int)
+SQLite.JDBC2z.JDBCResultSet: java.lang.Short internalGetShort(int)
+SQLite.JDBC2z.JDBCResultSet: short getShort(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: java.sql.Time getTime(int)
+SQLite.JDBC2z.JDBCResultSet: java.sql.Time internalGetTime(int,java.util.Calendar)
+SQLite.JDBC2z.JDBCResultSet: java.sql.Time getTime(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: java.sql.Time getTime(int,java.util.Calendar)
+SQLite.JDBC2z.JDBCResultSet: java.sql.Time getTime(java.lang.String,java.util.Calendar)
+SQLite.JDBC2z.JDBCResultSet: java.sql.Timestamp getTimestamp(int)
+SQLite.JDBC2z.JDBCResultSet: java.sql.Timestamp internalGetTimestamp(int,java.util.Calendar)
+SQLite.JDBC2z.JDBCResultSet: java.sql.Timestamp getTimestamp(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: java.sql.Timestamp getTimestamp(int,java.util.Calendar)
+SQLite.JDBC2z.JDBCResultSet: java.sql.Timestamp getTimestamp(java.lang.String,java.util.Calendar)
+SQLite.JDBC2z.JDBCResultSet: java.sql.Date getDate(int)
+SQLite.JDBC2z.JDBCResultSet: java.sql.Date internalGetDate(int,java.util.Calendar)
+SQLite.JDBC2z.JDBCResultSet: java.sql.Date getDate(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: java.sql.Date getDate(int,java.util.Calendar)
+SQLite.JDBC2z.JDBCResultSet: java.sql.Date getDate(java.lang.String,java.util.Calendar)
+SQLite.JDBC2z.JDBCResultSet: double getDouble(int)
+SQLite.JDBC2z.JDBCResultSet: java.lang.Double internalGetDouble(int)
+SQLite.JDBC2z.JDBCResultSet: double getDouble(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: float getFloat(int)
+SQLite.JDBC2z.JDBCResultSet: java.lang.Float internalGetFloat(int)
+SQLite.JDBC2z.JDBCResultSet: float getFloat(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: long getLong(int)
+SQLite.JDBC2z.JDBCResultSet: java.lang.Long internalGetLong(int)
+SQLite.JDBC2z.JDBCResultSet: long getLong(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: java.io.InputStream getUnicodeStream(int)
+SQLite.JDBC2z.JDBCResultSet: java.io.InputStream getUnicodeStream(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: java.io.InputStream getAsciiStream(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: java.io.InputStream getAsciiStream(int)
+SQLite.JDBC2z.JDBCResultSet: java.math.BigDecimal getBigDecimal(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: java.math.BigDecimal getBigDecimal(java.lang.String,int)
+SQLite.JDBC2z.JDBCResultSet: java.math.BigDecimal getBigDecimal(int)
+SQLite.JDBC2z.JDBCResultSet: java.math.BigDecimal getBigDecimal(int,int)
+SQLite.JDBC2z.JDBCResultSet: java.io.InputStream getBinaryStream(int)
+SQLite.JDBC2z.JDBCResultSet: java.io.InputStream getBinaryStream(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: byte getByte(int)
+SQLite.JDBC2z.JDBCResultSet: byte getByte(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: byte[] getBytes(int)
+SQLite.JDBC2z.JDBCResultSet: byte[] getBytes(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: java.lang.String getCursorName()
+SQLite.JDBC2z.JDBCResultSet: java.lang.Object getObject(int)
+SQLite.JDBC2z.JDBCResultSet: java.lang.Object getObject(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: java.lang.Object getObject(int,java.util.Map)
+SQLite.JDBC2z.JDBCResultSet: java.lang.Object getObject(java.lang.String,java.util.Map)
+SQLite.JDBC2z.JDBCResultSet: java.sql.Ref getRef(int)
+SQLite.JDBC2z.JDBCResultSet: java.sql.Ref getRef(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: java.sql.Blob getBlob(int)
+SQLite.JDBC2z.JDBCResultSet: java.sql.Blob getBlob(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: java.sql.Clob getClob(int)
+SQLite.JDBC2z.JDBCResultSet: java.sql.Clob getClob(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: java.sql.Array getArray(int)
+SQLite.JDBC2z.JDBCResultSet: java.sql.Array getArray(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: java.io.Reader getCharacterStream(int)
+SQLite.JDBC2z.JDBCResultSet: java.io.Reader getCharacterStream(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: java.sql.SQLWarning getWarnings()
+SQLite.JDBC2z.JDBCResultSet: boolean wasNull()
+SQLite.JDBC2z.JDBCResultSet: void clearWarnings()
+SQLite.JDBC2z.JDBCResultSet: boolean isFirst()
+SQLite.JDBC2z.JDBCResultSet: boolean isBeforeFirst()
+SQLite.JDBC2z.JDBCResultSet: void beforeFirst()
+SQLite.JDBC2z.JDBCResultSet: boolean first()
+SQLite.JDBC2z.JDBCResultSet: boolean isAfterLast()
+SQLite.JDBC2z.JDBCResultSet: void afterLast()
+SQLite.JDBC2z.JDBCResultSet: boolean isLast()
+SQLite.JDBC2z.JDBCResultSet: boolean last()
+SQLite.JDBC2z.JDBCResultSet: int getType()
+SQLite.JDBC2z.JDBCResultSet: int getConcurrency()
+SQLite.JDBC2z.JDBCResultSet: boolean rowUpdated()
+SQLite.JDBC2z.JDBCResultSet: boolean rowInserted()
+SQLite.JDBC2z.JDBCResultSet: boolean rowDeleted()
+SQLite.JDBC2z.JDBCResultSet: void insertRow()
+SQLite.JDBC2z.JDBCResultSet: void updateRow()
+SQLite.JDBC2z.JDBCResultSet: void deleteRow()
+SQLite.JDBC2z.JDBCResultSet: void refreshRow()
+SQLite.JDBC2z.JDBCResultSet: void cancelRowUpdates()
+SQLite.JDBC2z.JDBCResultSet: void moveToInsertRow()
+SQLite.JDBC2z.JDBCResultSet: void moveToCurrentRow()
+SQLite.JDBC2z.JDBCResultSet: void updateNull(int)
+SQLite.JDBC2z.JDBCResultSet: void updateBoolean(int,boolean)
+SQLite.JDBC2z.JDBCResultSet: void updateByte(int,byte)
+SQLite.JDBC2z.JDBCResultSet: void updateShort(int,short)
+SQLite.JDBC2z.JDBCResultSet: void updateInt(int,int)
+SQLite.JDBC2z.JDBCResultSet: void updateLong(int,long)
+SQLite.JDBC2z.JDBCResultSet: void updateFloat(int,float)
+SQLite.JDBC2z.JDBCResultSet: void updateDouble(int,double)
+SQLite.JDBC2z.JDBCResultSet: void updateBigDecimal(int,java.math.BigDecimal)
+SQLite.JDBC2z.JDBCResultSet: void updateString(int,java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: void updateBytes(int,byte[])
+SQLite.JDBC2z.JDBCResultSet: void updateDate(int,java.sql.Date)
+SQLite.JDBC2z.JDBCResultSet: void updateTime(int,java.sql.Time)
+SQLite.JDBC2z.JDBCResultSet: void updateTimestamp(int,java.sql.Timestamp)
+SQLite.JDBC2z.JDBCResultSet: void updateAsciiStream(int,java.io.InputStream,int)
+SQLite.JDBC2z.JDBCResultSet: void updateBinaryStream(int,java.io.InputStream,int)
+SQLite.JDBC2z.JDBCResultSet: void updateCharacterStream(int,java.io.Reader,int)
+SQLite.JDBC2z.JDBCResultSet: void updateObject(int,java.lang.Object)
+SQLite.JDBC2z.JDBCResultSet: void updateObject(int,java.lang.Object,int)
+SQLite.JDBC2z.JDBCResultSet: void updateNull(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: void updateBoolean(java.lang.String,boolean)
+SQLite.JDBC2z.JDBCResultSet: void updateByte(java.lang.String,byte)
+SQLite.JDBC2z.JDBCResultSet: void updateShort(java.lang.String,short)
+SQLite.JDBC2z.JDBCResultSet: void updateInt(java.lang.String,int)
+SQLite.JDBC2z.JDBCResultSet: void updateLong(java.lang.String,long)
+SQLite.JDBC2z.JDBCResultSet: void updateFloat(java.lang.String,float)
+SQLite.JDBC2z.JDBCResultSet: void updateDouble(java.lang.String,double)
+SQLite.JDBC2z.JDBCResultSet: void updateBigDecimal(java.lang.String,java.math.BigDecimal)
+SQLite.JDBC2z.JDBCResultSet: void updateString(java.lang.String,java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: void updateBytes(java.lang.String,byte[])
+SQLite.JDBC2z.JDBCResultSet: void updateDate(java.lang.String,java.sql.Date)
+SQLite.JDBC2z.JDBCResultSet: void updateTime(java.lang.String,java.sql.Time)
+SQLite.JDBC2z.JDBCResultSet: void updateTimestamp(java.lang.String,java.sql.Timestamp)
+SQLite.JDBC2z.JDBCResultSet: void updateAsciiStream(java.lang.String,java.io.InputStream,int)
+SQLite.JDBC2z.JDBCResultSet: void updateBinaryStream(java.lang.String,java.io.InputStream,int)
+SQLite.JDBC2z.JDBCResultSet: void updateCharacterStream(java.lang.String,java.io.Reader,int)
+SQLite.JDBC2z.JDBCResultSet: void updateObject(java.lang.String,java.lang.Object)
+SQLite.JDBC2z.JDBCResultSet: void updateObject(java.lang.String,java.lang.Object,int)
+SQLite.JDBC2z.JDBCResultSet: java.sql.Statement getStatement()
+SQLite.JDBC2z.JDBCResultSet: void close()
+SQLite.JDBC2z.JDBCResultSet: java.net.URL getURL(int)
+SQLite.JDBC2z.JDBCResultSet: java.net.URL getURL(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: void updateRef(int,java.sql.Ref)
+SQLite.JDBC2z.JDBCResultSet: void updateRef(java.lang.String,java.sql.Ref)
+SQLite.JDBC2z.JDBCResultSet: void updateBlob(int,java.sql.Blob)
+SQLite.JDBC2z.JDBCResultSet: void updateBlob(java.lang.String,java.sql.Blob)
+SQLite.JDBC2z.JDBCResultSet: void updateClob(int,java.sql.Clob)
+SQLite.JDBC2z.JDBCResultSet: void updateClob(java.lang.String,java.sql.Clob)
+SQLite.JDBC2z.JDBCResultSet: void updateArray(int,java.sql.Array)
+SQLite.JDBC2z.JDBCResultSet: void updateArray(java.lang.String,java.sql.Array)
+SQLite.JDBC2z.JDBCResultSet: java.sql.RowId getRowId(int)
+SQLite.JDBC2z.JDBCResultSet: java.sql.RowId getRowId(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: void updateRowId(int,java.sql.RowId)
+SQLite.JDBC2z.JDBCResultSet: void updateRowId(java.lang.String,java.sql.RowId)
+SQLite.JDBC2z.JDBCResultSet: int getHoldability()
+SQLite.JDBC2z.JDBCResultSet: boolean isClosed()
+SQLite.JDBC2z.JDBCResultSet: void updateNString(int,java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: void updateNString(java.lang.String,java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: void updateNClob(int,java.sql.NClob)
+SQLite.JDBC2z.JDBCResultSet: void updateNClob(java.lang.String,java.sql.NClob)
+SQLite.JDBC2z.JDBCResultSet: java.sql.NClob getNClob(int)
+SQLite.JDBC2z.JDBCResultSet: java.sql.NClob getNClob(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: java.sql.SQLXML getSQLXML(int)
+SQLite.JDBC2z.JDBCResultSet: java.sql.SQLXML getSQLXML(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: void updateSQLXML(int,java.sql.SQLXML)
+SQLite.JDBC2z.JDBCResultSet: void updateSQLXML(java.lang.String,java.sql.SQLXML)
+SQLite.JDBC2z.JDBCResultSet: java.lang.String getNString(int)
+SQLite.JDBC2z.JDBCResultSet: java.lang.String getNString(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: java.io.Reader getNCharacterStream(int)
+SQLite.JDBC2z.JDBCResultSet: java.io.Reader getNCharacterStream(java.lang.String)
+SQLite.JDBC2z.JDBCResultSet: void updateNCharacterStream(int,java.io.Reader,long)
+SQLite.JDBC2z.JDBCResultSet: void updateNCharacterStream(java.lang.String,java.io.Reader,long)
+SQLite.JDBC2z.JDBCResultSet: void updateAsciiStream(int,java.io.InputStream,long)
+SQLite.JDBC2z.JDBCResultSet: void updateAsciiStream(java.lang.String,java.io.InputStream,long)
+SQLite.JDBC2z.JDBCResultSet: void updateBinaryStream(int,java.io.InputStream,long)
+SQLite.JDBC2z.JDBCResultSet: void updateBinaryStream(java.lang.String,java.io.InputStream,long)
+SQLite.JDBC2z.JDBCResultSet: void updateCharacterStream(int,java.io.Reader,long)
+SQLite.JDBC2z.JDBCResultSet: void updateCharacterStream(java.lang.String,java.io.Reader,long)
+SQLite.JDBC2z.JDBCResultSet: void updateBlob(int,java.io.InputStream,long)
+SQLite.JDBC2z.JDBCResultSet: void updateBlob(java.lang.String,java.io.InputStream,long)
+SQLite.JDBC2z.JDBCResultSet: void updateClob(int,java.io.Reader,long)
+SQLite.JDBC2z.JDBCResultSet: void updateClob(java.lang.String,java.io.Reader,long)
+SQLite.JDBC2z.JDBCResultSet: void updateNClob(int,java.io.Reader,long)
+SQLite.JDBC2z.JDBCResultSet: void updateNClob(java.lang.String,java.io.Reader,long)
+SQLite.JDBC2z.JDBCResultSet: void updateNCharacterStream(int,java.io.Reader)
+SQLite.JDBC2z.JDBCResultSet: void updateNCharacterStream(java.lang.String,java.io.Reader)
+SQLite.JDBC2z.JDBCResultSet: void updateAsciiStream(int,java.io.InputStream)
+SQLite.JDBC2z.JDBCResultSet: void updateAsciiStream(java.lang.String,java.io.InputStream)
+SQLite.JDBC2z.JDBCResultSet: void updateBinaryStream(int,java.io.InputStream)
+SQLite.JDBC2z.JDBCResultSet: void updateBinaryStream(java.lang.String,java.io.InputStream)
+SQLite.JDBC2z.JDBCResultSet: void updateCharacterStream(int,java.io.Reader)
+SQLite.JDBC2z.JDBCResultSet: void updateCharacterStream(java.lang.String,java.io.Reader)
+SQLite.JDBC2z.JDBCResultSet: void updateBlob(int,java.io.InputStream)
+SQLite.JDBC2z.JDBCResultSet: void updateBlob(java.lang.String,java.io.InputStream)
+SQLite.JDBC2z.JDBCResultSet: void updateClob(int,java.io.Reader)
+SQLite.JDBC2z.JDBCResultSet: void updateClob(java.lang.String,java.io.Reader)
+SQLite.JDBC2z.JDBCResultSet: void updateNClob(int,java.io.Reader)
+SQLite.JDBC2z.JDBCResultSet: void updateNClob(java.lang.String,java.io.Reader)
+SQLite.JDBC2z.JDBCResultSet: java.lang.Object unwrap(java.lang.Class)
+SQLite.JDBC2z.JDBCResultSet: boolean isWrapperFor(java.lang.Class)
+SQLite.JDBC2z.JDBCDatabaseMetaData: SQLite.JDBC2z.JDBCConnection conn
+SQLite.JDBC2z.JDBCDatabaseMetaData: SQLite.JDBC2z.JDBCConnection conn
+SQLite.JDBC2z.JDBCDatabaseMetaData: JDBCDatabaseMetaData(SQLite.JDBC2z.JDBCConnection)
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean allProceduresAreCallable()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean allTablesAreSelectable()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.lang.String getURL()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.lang.String getUserName()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean isReadOnly()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean nullsAreSortedHigh()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean nullsAreSortedLow()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean nullsAreSortedAtStart()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean nullsAreSortedAtEnd()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.lang.String getDatabaseProductName()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.lang.String getDatabaseProductVersion()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.lang.String getDriverName()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.lang.String getDriverVersion()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getDriverMajorVersion()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getDriverMinorVersion()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean usesLocalFiles()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean usesLocalFilePerTable()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsMixedCaseIdentifiers()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean storesUpperCaseIdentifiers()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean storesLowerCaseIdentifiers()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean storesMixedCaseIdentifiers()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsMixedCaseQuotedIdentifiers()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean storesUpperCaseQuotedIdentifiers()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean storesLowerCaseQuotedIdentifiers()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean storesMixedCaseQuotedIdentifiers()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.lang.String getIdentifierQuoteString()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.lang.String getSQLKeywords()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.lang.String getNumericFunctions()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.lang.String getStringFunctions()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.lang.String getSystemFunctions()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.lang.String getTimeDateFunctions()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.lang.String getSearchStringEscape()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.lang.String getExtraNameCharacters()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsAlterTableWithAddColumn()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsAlterTableWithDropColumn()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsColumnAliasing()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean nullPlusNonNullIsNull()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsConvert()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsConvert(int,int)
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsTableCorrelationNames()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsDifferentTableCorrelationNames()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsExpressionsInOrderBy()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsOrderByUnrelated()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsGroupBy()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsGroupByUnrelated()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsGroupByBeyondSelect()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsLikeEscapeClause()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsMultipleResultSets()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsMultipleTransactions()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsNonNullableColumns()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsMinimumSQLGrammar()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsCoreSQLGrammar()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsExtendedSQLGrammar()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsANSI92EntryLevelSQL()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsANSI92IntermediateSQL()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsANSI92FullSQL()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsIntegrityEnhancementFacility()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsOuterJoins()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsFullOuterJoins()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsLimitedOuterJoins()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.lang.String getSchemaTerm()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.lang.String getProcedureTerm()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.lang.String getCatalogTerm()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean isCatalogAtStart()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.lang.String getCatalogSeparator()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsSchemasInDataManipulation()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsSchemasInProcedureCalls()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsSchemasInTableDefinitions()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsSchemasInIndexDefinitions()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsSchemasInPrivilegeDefinitions()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsCatalogsInDataManipulation()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsCatalogsInProcedureCalls()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsCatalogsInTableDefinitions()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsCatalogsInIndexDefinitions()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsCatalogsInPrivilegeDefinitions()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsPositionedDelete()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsPositionedUpdate()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsSelectForUpdate()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsStoredProcedures()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsSubqueriesInComparisons()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsSubqueriesInExists()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsSubqueriesInIns()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsSubqueriesInQuantifieds()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsCorrelatedSubqueries()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsUnion()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsUnionAll()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsOpenCursorsAcrossCommit()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsOpenCursorsAcrossRollback()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsOpenStatementsAcrossCommit()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsOpenStatementsAcrossRollback()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getMaxBinaryLiteralLength()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getMaxCharLiteralLength()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getMaxColumnNameLength()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getMaxColumnsInGroupBy()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getMaxColumnsInIndex()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getMaxColumnsInOrderBy()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getMaxColumnsInSelect()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getMaxColumnsInTable()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getMaxConnections()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getMaxCursorNameLength()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getMaxIndexLength()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getMaxSchemaNameLength()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getMaxProcedureNameLength()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getMaxCatalogNameLength()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getMaxRowSize()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean doesMaxRowSizeIncludeBlobs()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getMaxStatementLength()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getMaxStatements()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getMaxTableNameLength()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getMaxTablesInSelect()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getMaxUserNameLength()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getDefaultTransactionIsolation()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsTransactions()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsTransactionIsolationLevel(int)
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsDataDefinitionAndDataManipulationTransactions()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsDataManipulationTransactionsOnly()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean dataDefinitionCausesTransactionCommit()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean dataDefinitionIgnoredInTransactions()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.ResultSet getProcedures(java.lang.String,java.lang.String,java.lang.String)
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.ResultSet getProcedureColumns(java.lang.String,java.lang.String,java.lang.String,java.lang.String)
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.ResultSet getTables(java.lang.String,java.lang.String,java.lang.String,java.lang.String[])
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.ResultSet getSchemas()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.ResultSet getCatalogs()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.ResultSet getTableTypes()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.ResultSet getColumns(java.lang.String,java.lang.String,java.lang.String,java.lang.String)
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.ResultSet getColumnPrivileges(java.lang.String,java.lang.String,java.lang.String,java.lang.String)
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.ResultSet getTablePrivileges(java.lang.String,java.lang.String,java.lang.String)
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.ResultSet getBestRowIdentifier(java.lang.String,java.lang.String,java.lang.String,int,boolean)
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.ResultSet getVersionColumns(java.lang.String,java.lang.String,java.lang.String)
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.ResultSet getPrimaryKeys(java.lang.String,java.lang.String,java.lang.String)
+SQLite.JDBC2z.JDBCDatabaseMetaData: void internalImportedKeys(java.lang.String,java.lang.String,SQLite.JDBC2z.JDBCResultSet,SQLite.JDBC2z.TableResultX)
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.ResultSet getImportedKeys(java.lang.String,java.lang.String,java.lang.String)
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.ResultSet getExportedKeys(java.lang.String,java.lang.String,java.lang.String)
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.ResultSet getCrossReference(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String)
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.ResultSet getTypeInfo()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.ResultSet getIndexInfo(java.lang.String,java.lang.String,java.lang.String,boolean,boolean)
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsResultSetType(int)
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsResultSetConcurrency(int,int)
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean ownUpdatesAreVisible(int)
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean ownDeletesAreVisible(int)
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean ownInsertsAreVisible(int)
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean othersUpdatesAreVisible(int)
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean othersDeletesAreVisible(int)
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean othersInsertsAreVisible(int)
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean updatesAreDetected(int)
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean deletesAreDetected(int)
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean insertsAreDetected(int)
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsBatchUpdates()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.ResultSet getUDTs(java.lang.String,java.lang.String,java.lang.String,int[])
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.Connection getConnection()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsSavepoints()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsNamedParameters()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsMultipleOpenResults()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsGetGeneratedKeys()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsResultSetHoldability(int)
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsStatementPooling()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean locatorsUpdateCopy()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.ResultSet getSuperTypes(java.lang.String,java.lang.String,java.lang.String)
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.ResultSet getSuperTables(java.lang.String,java.lang.String,java.lang.String)
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.ResultSet getAttributes(java.lang.String,java.lang.String,java.lang.String,java.lang.String)
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getResultSetHoldability()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getDatabaseMajorVersion()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getDatabaseMinorVersion()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getJDBCMajorVersion()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getJDBCMinorVersion()
+SQLite.JDBC2z.JDBCDatabaseMetaData: int getSQLStateType()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.RowIdLifetime getRowIdLifetime()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.ResultSet getSchemas(java.lang.String,java.lang.String)
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean supportsStoredFunctionsUsingCallSyntax()
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean autoCommitFailureClosesAllResultSets()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.ResultSet getClientInfoProperties()
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.ResultSet getFunctions(java.lang.String,java.lang.String,java.lang.String)
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.sql.ResultSet getFunctionColumns(java.lang.String,java.lang.String,java.lang.String,java.lang.String)
+SQLite.JDBC2z.JDBCDatabaseMetaData: java.lang.Object unwrap(java.lang.Class)
+SQLite.JDBC2z.JDBCDatabaseMetaData: boolean isWrapperFor(java.lang.Class)
+SQLite.Authorizer: int authorize(int,java.lang.String,java.lang.String,java.lang.String,java.lang.String)
+SQLite.JDBCDriver: int MAJORVERSION
+SQLite.JDBCDriver: boolean sharedCache
+SQLite.JDBCDriver: java.lang.String vfs
+SQLite.JDBCDriver: java.lang.reflect.Constructor makeConn
+SQLite.JDBCDriver: java.sql.Connection conn
+SQLite.JDBCDriver: java.lang.String vfs
+SQLite.JDBCDriver: java.lang.reflect.Constructor makeConn
+SQLite.JDBCDriver: java.sql.Connection conn
+SQLite.JDBCDriver: JDBCDriver()
+SQLite.JDBCDriver: boolean acceptsURL(java.lang.String)
+SQLite.JDBCDriver: java.sql.Connection connect(java.lang.String,java.util.Properties)
+SQLite.JDBCDriver: int getMajorVersion()
+SQLite.JDBCDriver: int getMinorVersion()
+SQLite.JDBCDriver: java.sql.DriverPropertyInfo[] getPropertyInfo(java.lang.String,java.util.Properties)
+SQLite.JDBCDriver: boolean jdbcCompliant()
+SQLite.JDBC2z.JDBCResultSetMetaData: SQLite.JDBC2z.JDBCResultSet r
+SQLite.JDBC2z.JDBCResultSetMetaData: SQLite.JDBC2z.JDBCResultSet r
+SQLite.JDBC2z.JDBCResultSetMetaData: JDBCResultSetMetaData(SQLite.JDBC2z.JDBCResultSet)
+SQLite.JDBC2z.JDBCResultSetMetaData: java.lang.String getCatalogName(int)
+SQLite.JDBC2z.JDBCResultSetMetaData: java.lang.String getColumnClassName(int)
+SQLite.JDBC2z.JDBCResultSetMetaData: int getColumnCount()
+SQLite.JDBC2z.JDBCResultSetMetaData: int getColumnDisplaySize(int)
+SQLite.JDBC2z.JDBCResultSetMetaData: java.lang.String getColumnLabel(int)
+SQLite.JDBC2z.JDBCResultSetMetaData: java.lang.String getColumnName(int)
+SQLite.JDBC2z.JDBCResultSetMetaData: int getColumnType(int)
+SQLite.JDBC2z.JDBCResultSetMetaData: java.lang.String getColumnTypeName(int)
+SQLite.JDBC2z.JDBCResultSetMetaData: int getPrecision(int)
+SQLite.JDBC2z.JDBCResultSetMetaData: int getScale(int)
+SQLite.JDBC2z.JDBCResultSetMetaData: java.lang.String getSchemaName(int)
+SQLite.JDBC2z.JDBCResultSetMetaData: java.lang.String getTableName(int)
+SQLite.JDBC2z.JDBCResultSetMetaData: boolean isAutoIncrement(int)
+SQLite.JDBC2z.JDBCResultSetMetaData: boolean isCaseSensitive(int)
+SQLite.JDBC2z.JDBCResultSetMetaData: boolean isCurrency(int)
+SQLite.JDBC2z.JDBCResultSetMetaData: boolean isDefinitelyWritable(int)
+SQLite.JDBC2z.JDBCResultSetMetaData: int isNullable(int)
+SQLite.JDBC2z.JDBCResultSetMetaData: boolean isReadOnly(int)
+SQLite.JDBC2z.JDBCResultSetMetaData: boolean isSearchable(int)
+SQLite.JDBC2z.JDBCResultSetMetaData: boolean isSigned(int)
+SQLite.JDBC2z.JDBCResultSetMetaData: boolean isWritable(int)
+SQLite.JDBC2z.JDBCResultSetMetaData: java.lang.Object unwrap(java.lang.Class)
+SQLite.JDBC2z.JDBCResultSetMetaData: boolean isWrapperFor(java.lang.Class)
+SQLite.JDBC2z.JDBCPreparedStatement: java.lang.String sql
+SQLite.JDBC2z.JDBCPreparedStatement: java.lang.String[] args
+SQLite.JDBC2z.JDBCPreparedStatement: boolean[] blobs
+SQLite.JDBC2z.JDBCPreparedStatement: java.util.ArrayList batch
+SQLite.JDBC2z.JDBCPreparedStatement: boolean nullrepl
+SQLite.JDBC2z.JDBCPreparedStatement: java.lang.String sql
+SQLite.JDBC2z.JDBCPreparedStatement: java.util.ArrayList batch
+SQLite.JDBC2z.JDBCPreparedStatement: JDBCPreparedStatement(SQLite.JDBC2z.JDBCConnection,java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: java.lang.String fixup(java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: java.lang.String fixup2(java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: java.sql.ResultSet executeQuery()
+SQLite.JDBC2z.JDBCPreparedStatement: int executeUpdate()
+SQLite.JDBC2z.JDBCPreparedStatement: void setNull(int,int)
+SQLite.JDBC2z.JDBCPreparedStatement: void setBoolean(int,boolean)
+SQLite.JDBC2z.JDBCPreparedStatement: void setByte(int,byte)
+SQLite.JDBC2z.JDBCPreparedStatement: void setShort(int,short)
+SQLite.JDBC2z.JDBCPreparedStatement: void setInt(int,int)
+SQLite.JDBC2z.JDBCPreparedStatement: void setLong(int,long)
+SQLite.JDBC2z.JDBCPreparedStatement: void setFloat(int,float)
+SQLite.JDBC2z.JDBCPreparedStatement: void setDouble(int,double)
+SQLite.JDBC2z.JDBCPreparedStatement: void setBigDecimal(int,java.math.BigDecimal)
+SQLite.JDBC2z.JDBCPreparedStatement: void setString(int,java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: void setBytes(int,byte[])
+SQLite.JDBC2z.JDBCPreparedStatement: void setDate(int,java.sql.Date)
+SQLite.JDBC2z.JDBCPreparedStatement: void setTime(int,java.sql.Time)
+SQLite.JDBC2z.JDBCPreparedStatement: void setTimestamp(int,java.sql.Timestamp)
+SQLite.JDBC2z.JDBCPreparedStatement: void setAsciiStream(int,java.io.InputStream,int)
+SQLite.JDBC2z.JDBCPreparedStatement: void setUnicodeStream(int,java.io.InputStream,int)
+SQLite.JDBC2z.JDBCPreparedStatement: void setBinaryStream(int,java.io.InputStream,int)
+SQLite.JDBC2z.JDBCPreparedStatement: void clearParameters()
+SQLite.JDBC2z.JDBCPreparedStatement: void setObject(int,java.lang.Object,int,int)
+SQLite.JDBC2z.JDBCPreparedStatement: void setObject(int,java.lang.Object,int)
+SQLite.JDBC2z.JDBCPreparedStatement: void setObject(int,java.lang.Object)
+SQLite.JDBC2z.JDBCPreparedStatement: boolean execute()
+SQLite.JDBC2z.JDBCPreparedStatement: void addBatch()
+SQLite.JDBC2z.JDBCPreparedStatement: int[] executeBatch()
+SQLite.JDBC2z.JDBCPreparedStatement: void clearBatch()
+SQLite.JDBC2z.JDBCPreparedStatement: void close()
+SQLite.JDBC2z.JDBCPreparedStatement: void setCharacterStream(int,java.io.Reader,int)
+SQLite.JDBC2z.JDBCPreparedStatement: void setRef(int,java.sql.Ref)
+SQLite.JDBC2z.JDBCPreparedStatement: void setBlob(int,java.sql.Blob)
+SQLite.JDBC2z.JDBCPreparedStatement: void setClob(int,java.sql.Clob)
+SQLite.JDBC2z.JDBCPreparedStatement: void setArray(int,java.sql.Array)
+SQLite.JDBC2z.JDBCPreparedStatement: java.sql.ResultSetMetaData getMetaData()
+SQLite.JDBC2z.JDBCPreparedStatement: void setDate(int,java.sql.Date,java.util.Calendar)
+SQLite.JDBC2z.JDBCPreparedStatement: void setTime(int,java.sql.Time,java.util.Calendar)
+SQLite.JDBC2z.JDBCPreparedStatement: void setTimestamp(int,java.sql.Timestamp,java.util.Calendar)
+SQLite.JDBC2z.JDBCPreparedStatement: void setNull(int,int,java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: java.sql.ParameterMetaData getParameterMetaData()
+SQLite.JDBC2z.JDBCPreparedStatement: void registerOutputParameter(java.lang.String,int)
+SQLite.JDBC2z.JDBCPreparedStatement: void registerOutputParameter(java.lang.String,int,int)
+SQLite.JDBC2z.JDBCPreparedStatement: void registerOutputParameter(java.lang.String,int,java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: java.net.URL getURL(int)
+SQLite.JDBC2z.JDBCPreparedStatement: void setURL(int,java.net.URL)
+SQLite.JDBC2z.JDBCPreparedStatement: void setNull(java.lang.String,int)
+SQLite.JDBC2z.JDBCPreparedStatement: void setBoolean(java.lang.String,boolean)
+SQLite.JDBC2z.JDBCPreparedStatement: void setByte(java.lang.String,byte)
+SQLite.JDBC2z.JDBCPreparedStatement: void setShort(java.lang.String,short)
+SQLite.JDBC2z.JDBCPreparedStatement: void setInt(java.lang.String,int)
+SQLite.JDBC2z.JDBCPreparedStatement: void setLong(java.lang.String,long)
+SQLite.JDBC2z.JDBCPreparedStatement: void setFloat(java.lang.String,float)
+SQLite.JDBC2z.JDBCPreparedStatement: void setDouble(java.lang.String,double)
+SQLite.JDBC2z.JDBCPreparedStatement: void setBigDecimal(java.lang.String,java.math.BigDecimal)
+SQLite.JDBC2z.JDBCPreparedStatement: void setString(java.lang.String,java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: void setBytes(java.lang.String,byte[])
+SQLite.JDBC2z.JDBCPreparedStatement: void setDate(java.lang.String,java.sql.Date)
+SQLite.JDBC2z.JDBCPreparedStatement: void setTime(java.lang.String,java.sql.Time)
+SQLite.JDBC2z.JDBCPreparedStatement: void setTimestamp(java.lang.String,java.sql.Timestamp)
+SQLite.JDBC2z.JDBCPreparedStatement: void setAsciiStream(java.lang.String,java.io.InputStream,int)
+SQLite.JDBC2z.JDBCPreparedStatement: void setBinaryStream(java.lang.String,java.io.InputStream,int)
+SQLite.JDBC2z.JDBCPreparedStatement: void setObject(java.lang.String,java.lang.Object,int,int)
+SQLite.JDBC2z.JDBCPreparedStatement: void setObject(java.lang.String,java.lang.Object,int)
+SQLite.JDBC2z.JDBCPreparedStatement: void setObject(java.lang.String,java.lang.Object)
+SQLite.JDBC2z.JDBCPreparedStatement: void setCharacterStream(java.lang.String,java.io.Reader,int)
+SQLite.JDBC2z.JDBCPreparedStatement: void setDate(java.lang.String,java.sql.Date,java.util.Calendar)
+SQLite.JDBC2z.JDBCPreparedStatement: void setTime(java.lang.String,java.sql.Time,java.util.Calendar)
+SQLite.JDBC2z.JDBCPreparedStatement: void setTimestamp(java.lang.String,java.sql.Timestamp,java.util.Calendar)
+SQLite.JDBC2z.JDBCPreparedStatement: void setNull(java.lang.String,int,java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: java.lang.String getString(java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: boolean getBoolean(java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: byte getByte(java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: short getShort(java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: int getInt(java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: long getLong(java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: float getFloat(java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: double getDouble(java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: byte[] getBytes(java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: java.sql.Date getDate(java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: java.sql.Time getTime(java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: java.sql.Timestamp getTimestamp(java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: java.lang.Object getObject(java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: java.lang.Object getObject(int)
+SQLite.JDBC2z.JDBCPreparedStatement: java.math.BigDecimal getBigDecimal(java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: java.lang.Object getObject(java.lang.String,java.util.Map)
+SQLite.JDBC2z.JDBCPreparedStatement: java.lang.Object getObject(int,java.util.Map)
+SQLite.JDBC2z.JDBCPreparedStatement: java.sql.Ref getRef(int)
+SQLite.JDBC2z.JDBCPreparedStatement: java.sql.Ref getRef(java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: java.sql.Blob getBlob(java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: java.sql.Blob getBlob(int)
+SQLite.JDBC2z.JDBCPreparedStatement: java.sql.Clob getClob(java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: java.sql.Clob getClob(int)
+SQLite.JDBC2z.JDBCPreparedStatement: java.sql.Array getArray(java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: java.sql.Array getArray(int)
+SQLite.JDBC2z.JDBCPreparedStatement: java.sql.Date getDate(java.lang.String,java.util.Calendar)
+SQLite.JDBC2z.JDBCPreparedStatement: java.sql.Date getDate(int,java.util.Calendar)
+SQLite.JDBC2z.JDBCPreparedStatement: java.sql.Time getTime(java.lang.String,java.util.Calendar)
+SQLite.JDBC2z.JDBCPreparedStatement: java.sql.Time getTime(int,java.util.Calendar)
+SQLite.JDBC2z.JDBCPreparedStatement: java.sql.Timestamp getTimestamp(java.lang.String,java.util.Calendar)
+SQLite.JDBC2z.JDBCPreparedStatement: java.sql.Timestamp getTimestamp(int,java.util.Calendar)
+SQLite.JDBC2z.JDBCPreparedStatement: java.net.URL getURL(java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: void setRowId(int,java.sql.RowId)
+SQLite.JDBC2z.JDBCPreparedStatement: void setRowId(java.lang.String,java.sql.RowId)
+SQLite.JDBC2z.JDBCPreparedStatement: void setNString(int,java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: void setNString(java.lang.String,java.lang.String)
+SQLite.JDBC2z.JDBCPreparedStatement: void setNCharacterStream(int,java.io.Reader,long)
+SQLite.JDBC2z.JDBCPreparedStatement: void setNCharacterStream(java.lang.String,java.io.Reader,long)
+SQLite.JDBC2z.JDBCPreparedStatement: void setNClob(int,java.sql.NClob)
+SQLite.JDBC2z.JDBCPreparedStatement: void setNClob(java.lang.String,java.sql.NClob)
+SQLite.JDBC2z.JDBCPreparedStatement: void setClob(int,java.io.Reader,long)
+SQLite.JDBC2z.JDBCPreparedStatement: void setClob(java.lang.String,java.io.Reader,long)
+SQLite.JDBC2z.JDBCPreparedStatement: void setBlob(int,java.io.InputStream,long)
+SQLite.JDBC2z.JDBCPreparedStatement: void setBlob(java.lang.String,java.io.InputStream,long)
+SQLite.JDBC2z.JDBCPreparedStatement: void setNClob(int,java.io.Reader,long)
+SQLite.JDBC2z.JDBCPreparedStatement: void setNClob(java.lang.String,java.io.Reader,long)
+SQLite.JDBC2z.JDBCPreparedStatement: void setSQLXML(int,java.sql.SQLXML)
+SQLite.JDBC2z.JDBCPreparedStatement: void setSQLXML(java.lang.String,java.sql.SQLXML)
+SQLite.JDBC2z.JDBCPreparedStatement: void setAsciiStream(int,java.io.InputStream,long)
+SQLite.JDBC2z.JDBCPreparedStatement: void setAsciiStream(java.lang.String,java.io.InputStream,long)
+SQLite.JDBC2z.JDBCPreparedStatement: void setBinaryStream(int,java.io.InputStream,long)
+SQLite.JDBC2z.JDBCPreparedStatement: void setBinaryStream(java.lang.String,java.io.InputStream,long)
+SQLite.JDBC2z.JDBCPreparedStatement: void setCharacterStream(int,java.io.Reader,long)
+SQLite.JDBC2z.JDBCPreparedStatement: void setCharacterStream(java.lang.String,java.io.Reader,long)
+SQLite.JDBC2z.JDBCPreparedStatement: void setAsciiStream(int,java.io.InputStream)
+SQLite.JDBC2z.JDBCPreparedStatement: void setAsciiStream(java.lang.String,java.io.InputStream)
+SQLite.JDBC2z.JDBCPreparedStatement: void setBinaryStream(int,java.io.InputStream)
+SQLite.JDBC2z.JDBCPreparedStatement: void setBinaryStream(java.lang.String,java.io.InputStream)
+SQLite.JDBC2z.JDBCPreparedStatement: void setCharacterStream(int,java.io.Reader)
+SQLite.JDBC2z.JDBCPreparedStatement: void setCharacterStream(java.lang.String,java.io.Reader)
+SQLite.JDBC2z.JDBCPreparedStatement: void setNCharacterStream(int,java.io.Reader)
+SQLite.JDBC2z.JDBCPreparedStatement: void setNCharacterStream(java.lang.String,java.io.Reader)
+SQLite.JDBC2z.JDBCPreparedStatement: void setClob(int,java.io.Reader)
+SQLite.JDBC2z.JDBCPreparedStatement: void setClob(java.lang.String,java.io.Reader)
+SQLite.JDBC2z.JDBCPreparedStatement: void setBlob(int,java.io.InputStream)
+SQLite.JDBC2z.JDBCPreparedStatement: void setBlob(java.lang.String,java.io.InputStream)
+SQLite.JDBC2z.JDBCPreparedStatement: void setNClob(int,java.io.Reader)
+SQLite.JDBC2z.JDBCPreparedStatement: void setNClob(java.lang.String,java.io.Reader)
+SQLite.JDBC2z.JDBCStatement: SQLite.JDBC2z.JDBCConnection conn
+SQLite.JDBC2z.JDBCStatement: SQLite.JDBC2z.JDBCResultSet rs
+SQLite.JDBC2z.JDBCStatement: int updcnt
+SQLite.JDBC2z.JDBCStatement: int maxrows
+SQLite.JDBC2z.JDBCStatement: java.util.ArrayList batch
+SQLite.JDBC2z.JDBCStatement: SQLite.JDBC2z.JDBCConnection conn
+SQLite.JDBC2z.JDBCStatement: SQLite.JDBC2z.JDBCResultSet rs
+SQLite.JDBC2z.JDBCStatement: java.util.ArrayList batch
+SQLite.JDBC2z.JDBCStatement: JDBCStatement(SQLite.JDBC2z.JDBCConnection)
+SQLite.JDBC2z.JDBCStatement: void setFetchSize(int)
+SQLite.JDBC2z.JDBCStatement: int getFetchSize()
+SQLite.JDBC2z.JDBCStatement: int getMaxRows()
+SQLite.JDBC2z.JDBCStatement: void setMaxRows(int)
+SQLite.JDBC2z.JDBCStatement: void setFetchDirection(int)
+SQLite.JDBC2z.JDBCStatement: int getFetchDirection()
+SQLite.JDBC2z.JDBCStatement: int getResultSetConcurrency()
+SQLite.JDBC2z.JDBCStatement: int getResultSetType()
+SQLite.JDBC2z.JDBCStatement: void setQueryTimeout(int)
+SQLite.JDBC2z.JDBCStatement: int getQueryTimeout()
+SQLite.JDBC2z.JDBCStatement: java.sql.ResultSet getResultSet()
+SQLite.JDBC2z.JDBCStatement: java.sql.ResultSet executeQuery(java.lang.String)
+SQLite.JDBC2z.JDBCStatement: boolean execute(java.lang.String)
+SQLite.JDBC2z.JDBCStatement: void cancel()
+SQLite.JDBC2z.JDBCStatement: void clearWarnings()
+SQLite.JDBC2z.JDBCStatement: java.sql.Connection getConnection()
+SQLite.JDBC2z.JDBCStatement: void addBatch(java.lang.String)
+SQLite.JDBC2z.JDBCStatement: int[] executeBatch()
+SQLite.JDBC2z.JDBCStatement: void clearBatch()
+SQLite.JDBC2z.JDBCStatement: void close()
+SQLite.JDBC2z.JDBCStatement: int executeUpdate(java.lang.String)
+SQLite.JDBC2z.JDBCStatement: int getMaxFieldSize()
+SQLite.JDBC2z.JDBCStatement: boolean getMoreResults()
+SQLite.JDBC2z.JDBCStatement: int getUpdateCount()
+SQLite.JDBC2z.JDBCStatement: java.sql.SQLWarning getWarnings()
+SQLite.JDBC2z.JDBCStatement: void setCursorName(java.lang.String)
+SQLite.JDBC2z.JDBCStatement: void setEscapeProcessing(boolean)
+SQLite.JDBC2z.JDBCStatement: void setMaxFieldSize(int)
+SQLite.JDBC2z.JDBCStatement: boolean getMoreResults(int)
+SQLite.JDBC2z.JDBCStatement: java.sql.ResultSet getGeneratedKeys()
+SQLite.JDBC2z.JDBCStatement: int executeUpdate(java.lang.String,int)
+SQLite.JDBC2z.JDBCStatement: int executeUpdate(java.lang.String,int[])
+SQLite.JDBC2z.JDBCStatement: int executeUpdate(java.lang.String,java.lang.String[])
+SQLite.JDBC2z.JDBCStatement: boolean execute(java.lang.String,int)
+SQLite.JDBC2z.JDBCStatement: boolean execute(java.lang.String,int[])
+SQLite.JDBC2z.JDBCStatement: boolean execute(java.lang.String,java.lang.String[])
+SQLite.JDBC2z.JDBCStatement: int getResultSetHoldability()
+SQLite.JDBC2z.JDBCStatement: boolean isClosed()
+SQLite.JDBC2z.JDBCStatement: void setPoolable(boolean)
+SQLite.JDBC2z.JDBCStatement: boolean isPoolable()
+SQLite.JDBC2z.JDBCStatement: java.lang.Object unwrap(java.lang.Class)
+SQLite.JDBC2z.JDBCStatement: boolean isWrapperFor(java.lang.Class)
+SQLite.JDBC2z.JDBCStatement: SQLite.JDBC2z.JDBCConnection conn
+SQLite.JDBC2z.JDBCStatement: SQLite.JDBC2z.JDBCResultSet rs
+SQLite.JDBC2z.JDBCStatement: int updcnt
+SQLite.JDBC2z.JDBCStatement: int maxrows
+SQLite.JDBC2z.JDBCStatement: java.util.ArrayList batch
+SQLite.JDBC2z.JDBCStatement: SQLite.JDBC2z.JDBCConnection conn
+SQLite.JDBC2z.JDBCStatement: SQLite.JDBC2z.JDBCResultSet rs
+SQLite.JDBC2z.JDBCStatement: java.util.ArrayList batch
+SQLite.JDBC2z.JDBCStatement: JDBCStatement(SQLite.JDBC2z.JDBCConnection)
+SQLite.JDBC2z.JDBCStatement: void setFetchSize(int)
+SQLite.JDBC2z.JDBCStatement: int getFetchSize()
+SQLite.JDBC2z.JDBCStatement: int getMaxRows()
+SQLite.JDBC2z.JDBCStatement: void setMaxRows(int)
+SQLite.JDBC2z.JDBCStatement: void setFetchDirection(int)
+SQLite.JDBC2z.JDBCStatement: int getFetchDirection()
+SQLite.JDBC2z.JDBCStatement: int getResultSetConcurrency()
+SQLite.JDBC2z.JDBCStatement: int getResultSetType()
+SQLite.JDBC2z.JDBCStatement: void setQueryTimeout(int)
+SQLite.JDBC2z.JDBCStatement: int getQueryTimeout()
+SQLite.JDBC2z.JDBCStatement: java.sql.ResultSet getResultSet()
+SQLite.JDBC2z.JDBCStatement: java.sql.ResultSet executeQuery(java.lang.String)
+SQLite.JDBC2z.JDBCStatement: boolean execute(java.lang.String)
+SQLite.JDBC2z.JDBCStatement: void cancel()
+SQLite.JDBC2z.JDBCStatement: void clearWarnings()
+SQLite.JDBC2z.JDBCStatement: java.sql.Connection getConnection()
+SQLite.JDBC2z.JDBCStatement: void addBatch(java.lang.String)
+SQLite.JDBC2z.JDBCStatement: int[] executeBatch()
+SQLite.JDBC2z.JDBCStatement: void clearBatch()
+SQLite.JDBC2z.JDBCStatement: void close()
+SQLite.JDBC2z.JDBCStatement: int executeUpdate(java.lang.String)
+SQLite.JDBC2z.JDBCStatement: int getMaxFieldSize()
+SQLite.JDBC2z.JDBCStatement: boolean getMoreResults()
+SQLite.JDBC2z.JDBCStatement: int getUpdateCount()
+SQLite.JDBC2z.JDBCStatement: java.sql.SQLWarning getWarnings()
+SQLite.JDBC2z.JDBCStatement: void setCursorName(java.lang.String)
+SQLite.JDBC2z.JDBCStatement: void setEscapeProcessing(boolean)
+SQLite.JDBC2z.JDBCStatement: void setMaxFieldSize(int)
+SQLite.JDBC2z.JDBCStatement: boolean getMoreResults(int)
+SQLite.JDBC2z.JDBCStatement: java.sql.ResultSet getGeneratedKeys()
+SQLite.JDBC2z.JDBCStatement: int executeUpdate(java.lang.String,int)
+SQLite.JDBC2z.JDBCStatement: int executeUpdate(java.lang.String,int[])
+SQLite.JDBC2z.JDBCStatement: int executeUpdate(java.lang.String,java.lang.String[])
+SQLite.JDBC2z.JDBCStatement: boolean execute(java.lang.String,int)
+SQLite.JDBC2z.JDBCStatement: boolean execute(java.lang.String,int[])
+SQLite.JDBC2z.JDBCStatement: boolean execute(java.lang.String,java.lang.String[])
+SQLite.JDBC2z.JDBCStatement: int getResultSetHoldability()
+SQLite.JDBC2z.JDBCStatement: boolean isClosed()
+SQLite.JDBC2z.JDBCStatement: void setPoolable(boolean)
+SQLite.JDBC2z.JDBCStatement: boolean isPoolable()
+SQLite.JDBC2z.JDBCStatement: java.lang.Object unwrap(java.lang.Class)
+SQLite.JDBC2z.JDBCStatement: boolean isWrapperFor(java.lang.Class)
+SQLite.StringEncoder: StringEncoder()
+SQLite.StringEncoder: java.lang.String encode(byte[])
+SQLite.StringEncoder: byte[] decode(java.lang.String)
+SQLite.StringEncoder: byte[] byteCopy(byte[],int,int,byte[])
+SQLite.StringEncoder: java.lang.String encodeX(byte[])
+SQLite.Trace: void trace(java.lang.String)
+SQLite.Constants: int drv_minor
+SQLite.Constants: int SQLITE_VERSION_NUMBER
+SQLite.Constants: int SQLITE_OK
+SQLite.Constants: int SQLITE_ERROR
+SQLite.Constants: int SQLITE_INTERNAL
+SQLite.Constants: int SQLITE_PERM
+SQLite.Constants: int SQLITE_ABORT
+SQLite.Constants: int SQLITE_BUSY
+SQLite.Constants: int SQLITE_LOCKED
+SQLite.Constants: int SQLITE_NOMEM
+SQLite.Constants: int SQLITE_READONLY
+SQLite.Constants: int SQLITE_INTERRUPT
+SQLite.Constants: int SQLITE_IOERR
+SQLite.Constants: int SQLITE_CORRUPT
+SQLite.Constants: int SQLITE_NOTFOUND
+SQLite.Constants: int SQLITE_FULL
+SQLite.Constants: int SQLITE_CANTOPEN
+SQLite.Constants: int SQLITE_PROTOCOL
+SQLite.Constants: int SQLITE_EMPTY
+SQLite.Constants: int SQLITE_SCHEMA
+SQLite.Constants: int SQLITE_TOOBIG
+SQLite.Constants: int SQLITE_CONSTRAINT
+SQLite.Constants: int SQLITE_MISMATCH
+SQLite.Constants: int SQLITE_MISUSE
+SQLite.Constants: int SQLITE_NOLFS
+SQLite.Constants: int SQLITE_AUTH
+SQLite.Constants: int SQLITE_FORMAT
+SQLite.Constants: int SQLITE_RANGE
+SQLite.Constants: int SQLITE_NOTADB
+SQLite.Constants: int SQLITE_ROW
+SQLite.Constants: int SQLITE_DONE
+SQLite.Constants: int SQLITE_OPEN_READONLY
+SQLite.Constants: int SQLITE_OPEN_READWRITE
+SQLite.Constants: int SQLITE_OPEN_CREATE
+SQLite.Constants: int SQLITE_OPEN_DELETEONCLOSE
+SQLite.Constants: int SQLITE_OPEN_EXCLUSIVE
+SQLite.Constants: int SQLITE_OPEN_MAIN_DB
+SQLite.Constants: int SQLITE_OPEN_TEMP_DB
+SQLite.Constants: int SQLITE_OPEN_TRANSIENT_DB
+SQLite.Constants: int SQLITE_OPEN_MAIN_JOURNAL
+SQLite.Constants: int SQLITE_OPEN_TEMP_JOURNAL
+SQLite.Constants: int SQLITE_OPEN_SUBJOURNAL
+SQLite.Constants: int SQLITE_OPEN_MASTER_JOURNAL
+SQLite.Constants: int SQLITE_OPEN_NOMUTEX
+SQLite.Constants: int SQLITE_OPEN_FULLMUTEX
+SQLite.Constants: int SQLITE_OPEN_SHAREDCACHE
+SQLite.Constants: int SQLITE_OPEN_PRIVATECACHE
+SQLite.Constants: int SQLITE_IOCAP_ATOMIC
+SQLite.Constants: int SQLITE_IOCAP_ATOMIC512
+SQLite.Constants: int SQLITE_IOCAP_ATOMIC1K
+SQLite.Constants: int SQLITE_IOCAP_ATOMIC2K
+SQLite.Constants: int SQLITE_IOCAP_ATOMIC4K
+SQLite.Constants: int SQLITE_IOCAP_ATOMIC8K
+SQLite.Constants: int SQLITE_IOCAP_ATOMIC16K
+SQLite.Constants: int SQLITE_IOCAP_ATOMIC32K
+SQLite.Constants: int SQLITE_IOCAP_ATOMIC64K
+SQLite.Constants: int SQLITE_IOCAP_SAFE_APPEND
+SQLite.Constants: int SQLITE_IOCAP_SEQUENTIAL
+SQLite.Constants: int SQLITE_LOCK_NONE
+SQLite.Constants: int SQLITE_LOCK_SHARED
+SQLite.Constants: int SQLITE_LOCK_RESERVED
+SQLite.Constants: int SQLITE_LOCK_PENDING
+SQLite.Constants: int SQLITE_LOCK_EXCLUSIVE
+SQLite.Constants: int SQLITE_SYNC_NORMAL
+SQLite.Constants: int SQLITE_SYNC_FULL
+SQLite.Constants: int SQLITE_SYNC_DATAONLY
+SQLite.Constants: int SQLITE_FCNTL_LOCKSTATE
+SQLite.Constants: int SQLITE_GET_LOCKPROXYFILE
+SQLite.Constants: int SQLITE_SET_LOCKPROXYFILE
+SQLite.Constants: int SQLITE_LAST_ERRNO
+SQLite.Constants: int SQLITE_ACCESS_EXISTS
+SQLite.Constants: int SQLITE_ACCESS_READWRITE
+SQLite.Constants: int SQLITE_ACCESS_READ
+SQLite.Constants: int SQLITE_CONFIG_SINGLETHREAD
+SQLite.Constants: int SQLITE_CONFIG_MULTITHREAD
+SQLite.Constants: int SQLITE_CONFIG_SERIALIZED
+SQLite.Constants: int SQLITE_CONFIG_MALLOC
+SQLite.Constants: int SQLITE_CONFIG_GETMALLOC
+SQLite.Constants: int SQLITE_CONFIG_SCRATCH
+SQLite.Constants: int SQLITE_CONFIG_PAGECACHE
+SQLite.Constants: int SQLITE_CONFIG_HEAP
+SQLite.Constants: int SQLITE_CONFIG_MEMSTATUS
+SQLite.Constants: int SQLITE_CONFIG_MUTEX
+SQLite.Constants: int SQLITE_CONFIG_GETMUTEX
+SQLite.Constants: int SQLITE_CONFIG_LOOKASIDE
+SQLite.Constants: int SQLITE_CONFIG_PCACHE
+SQLite.Constants: int SQLITE_CONFIG_GETPCACHE
+SQLite.Constants: int SQLITE_DBCONFIG_LOOKASIDE
+SQLite.Constants: int SQLITE_DENY
+SQLite.Constants: int SQLITE_IGNORE
+SQLite.Constants: int SQLITE_CREATE_INDEX
+SQLite.Constants: int SQLITE_CREATE_TABLE
+SQLite.Constants: int SQLITE_CREATE_TEMP_INDEX
+SQLite.Constants: int SQLITE_CREATE_TEMP_TABLE
+SQLite.Constants: int SQLITE_CREATE_TEMP_TRIGGER
+SQLite.Constants: int SQLITE_CREATE_TEMP_VIEW
+SQLite.Constants: int SQLITE_CREATE_TRIGGER
+SQLite.Constants: int SQLITE_CREATE_VIEW
+SQLite.Constants: int SQLITE_DELETE
+SQLite.Constants: int SQLITE_DROP_INDEX
+SQLite.Constants: int SQLITE_DROP_TABLE
+SQLite.Constants: int SQLITE_DROP_TEMP_INDEX
+SQLite.Constants: int SQLITE_DROP_TEMP_TABLE
+SQLite.Constants: int SQLITE_DROP_TEMP_TRIGGER
+SQLite.Constants: int SQLITE_DROP_TEMP_VIEW
+SQLite.Constants: int SQLITE_DROP_TRIGGER
+SQLite.Constants: int SQLITE_DROP_VIEW
+SQLite.Constants: int SQLITE_INSERT
+SQLite.Constants: int SQLITE_PRAGMA
+SQLite.Constants: int SQLITE_READ
+SQLite.Constants: int SQLITE_SELECT
+SQLite.Constants: int SQLITE_TRANSACTION
+SQLite.Constants: int SQLITE_UPDATE
+SQLite.Constants: int SQLITE_ATTACH
+SQLite.Constants: int SQLITE_DETACH
+SQLite.Constants: int SQLITE_ALTER_TABLE
+SQLite.Constants: int SQLITE_REINDEX
+SQLite.Constants: int SQLITE_ANALYZE
+SQLite.Constants: int SQLITE_CREATE_VTABLE
+SQLite.Constants: int SQLITE_DROP_VTABLE
+SQLite.Constants: int SQLITE_FUNCTION
+SQLite.Constants: int SQLITE_SAVEPOINT
+SQLite.Constants: int SQLITE_COPY
+SQLite.Constants: int SQLITE_LIMIT_LENGTH
+SQLite.Constants: int SQLITE_LIMIT_SQL_LENGTH
+SQLite.Constants: int SQLITE_LIMIT_COLUMN
+SQLite.Constants: int SQLITE_LIMIT_EXPR_DEPTH
+SQLite.Constants: int SQLITE_LIMIT_COMPOUND_SELECT
+SQLite.Constants: int SQLITE_LIMIT_VDBE_OP
+SQLite.Constants: int SQLITE_LIMIT_FUNCTION_ARG
+SQLite.Constants: int SQLITE_LIMIT_ATTACHED
+SQLite.Constants: int SQLITE_LIMIT_LIKE_PATTERN_LENGTH
+SQLite.Constants: int SQLITE_LIMIT_VARIABLE_NUMBER
+SQLite.Constants: int SQLITE_LIMIT_TRIGGER_DEPTH
+SQLite.Constants: int SQLITE_INTEGER
+SQLite.Constants: int SQLITE_FLOAT
+SQLite.Constants: int SQLITE_BLOB
+SQLite.Constants: int SQLITE_NULL
+SQLite.Constants: int SQLITE3_TEXT
+SQLite.Constants: int SQLITE_UTF8
+SQLite.Constants: int SQLITE_UTF16LE
+SQLite.Constants: int SQLITE_UTF16BE
+SQLite.Constants: int SQLITE_UTF16
+SQLite.Constants: int SQLITE_ANY
+SQLite.Constants: int SQLITE_UTF16_ALIGNED
+SQLite.Constants: int SQLITE_INDEX_CONSTRAINT_EQ
+SQLite.Constants: int SQLITE_INDEX_CONSTRAINT_GT
+SQLite.Constants: int SQLITE_INDEX_CONSTRAINT_LE
+SQLite.Constants: int SQLITE_INDEX_CONSTRAINT_LT
+SQLite.Constants: int SQLITE_INDEX_CONSTRAINT_GE
+SQLite.Constants: int SQLITE_INDEX_CONSTRAINT_MATCH
+SQLite.Constants: int SQLITE_MUTEX_FAST
+SQLite.Constants: int SQLITE_MUTEX_RECURSIVE
+SQLite.Constants: int SQLITE_MUTEX_STATIC_MASTER
+SQLite.Constants: int SQLITE_MUTEX_STATIC_MEM
+SQLite.Constants: int SQLITE_MUTEX_STATIC_MEM2
+SQLite.Constants: int SQLITE_MUTEX_STATIC_OPEN
+SQLite.Constants: int SQLITE_MUTEX_STATIC_PRNG
+SQLite.Constants: int SQLITE_MUTEX_STATIC_LRU
+SQLite.Constants: int SQLITE_MUTEX_STATIC_LRU2
+SQLite.Constants: int SQLITE_TESTCTRL_FIRST
+SQLite.Constants: int SQLITE_TESTCTRL_PRNG_SAVE
+SQLite.Constants: int SQLITE_TESTCTRL_PRNG_RESTORE
+SQLite.Constants: int SQLITE_TESTCTRL_PRNG_RESET
+SQLite.Constants: int SQLITE_TESTCTRL_BITVEC_TEST
+SQLite.Constants: int SQLITE_TESTCTRL_FAULT_INSTALL
+SQLite.Constants: int SQLITE_TESTCTRL_BENIGN_MALLOC_HOOKS
+SQLite.Constants: int SQLITE_TESTCTRL_PENDING_BYTE
+SQLite.Constants: int SQLITE_TESTCTRL_ASSERT
+SQLite.Constants: int SQLITE_TESTCTRL_ALWAYS
+SQLite.Constants: int SQLITE_TESTCTRL_RESERVE
+SQLite.Constants: int SQLITE_TESTCTRL_OPTIMIZATIONS
+SQLite.Constants: int SQLITE_TESTCTRL_ISKEYWORD
+SQLite.Constants: int SQLITE_TESTCTRL_LAST
+SQLite.Constants: int SQLITE_STATUS_MEMORY_USED
+SQLite.Constants: int SQLITE_STATUS_PAGECACHE_USED
+SQLite.Constants: int SQLITE_STATUS_PAGECACHE_OVERFLOW
+SQLite.Constants: int SQLITE_STATUS_SCRATCH_USED
+SQLite.Constants: int SQLITE_STATUS_SCRATCH_OVERFLOW
+SQLite.Constants: int SQLITE_STATUS_MALLOC_SIZE
+SQLite.Constants: int SQLITE_STATUS_PARSER_STACK
+SQLite.Constants: int SQLITE_STATUS_PAGECACHE_SIZE
+SQLite.Constants: int SQLITE_STATUS_SCRATCH_SIZE
+SQLite.Constants: int SQLITE_DBSTATUS_LOOKASIDE_USED
+SQLite.Constants: int SQLITE_STMTSTATUS_FULLSCAN_STEP
+SQLite.Constants: int SQLITE_STMTSTATUS_SORT
+SQLite.Constants: Constants()
+SQLite.Callback: void columns(java.lang.String[])
+SQLite.Callback: void types(java.lang.String[])
+SQLite.Callback: boolean newrow(java.lang.String[])
+SQLite.DBDump: SQLite.Shell s
+SQLite.DBDump: void columns(java.lang.String[])
+SQLite.DBDump: void types(java.lang.String[])
+SQLite.DBDump: boolean newrow(java.lang.String[])
+SQLite.Shell: SQLite.Database db
+SQLite.Shell: java.lang.String tableName
+SQLite.Shell: java.lang.String sep
+SQLite.Shell: java.lang.String destTable
+SQLite.Shell: java.io.PrintWriter pw
+SQLite.Shell: java.io.PrintWriter err
+SQLite.Shell: Shell(java.io.PrintWriter,java.io.PrintWriter)
+SQLite.Shell: Shell(java.io.PrintStream,java.io.PrintStream)
+SQLite.Shell: java.lang.Object clone()
+SQLite.Shell: java.lang.String sql_quote_dbl(java.lang.String)
+SQLite.Shell: java.lang.String sql_quote(java.lang.String)
+SQLite.Shell: void columns(java.lang.String[])
+SQLite.Shell: void types(java.lang.String[])
+SQLite.Shell: boolean newrow(java.lang.String[])
+SQLite.Shell: void main(java.lang.String[])
+SQLite.Function: void function(SQLite.FunctionContext,java.lang.String[])
+SQLite.Function: void step(SQLite.FunctionContext,java.lang.String[])
+SQLite.Function: void last_step(SQLite.FunctionContext)
+SQLite.Vm: long handle
+SQLite.Vm: int error_code
+SQLite.Vm: Vm()
+SQLite.Vm: boolean step(SQLite.Callback)
+SQLite.Vm: boolean compile()
+SQLite.Vm: void stop()
+SQLite.Vm: void finalize()
+SQLite.Vm: void internal_init()
+SQLite.BlobR: SQLite.Blob blob
+SQLite.BlobR: int pos
+SQLite.BlobR: SQLite.Blob blob
+SQLite.BlobR: int available()
+SQLite.BlobR: void mark(int)
+SQLite.BlobR: void reset()
+SQLite.BlobR: boolean markSupported()
+SQLite.BlobR: void close()
+SQLite.BlobR: long skip(long)
+SQLite.BlobR: int read()
+SQLite.BlobR: int read(byte[])
+SQLite.BlobR: int read(byte[],int,int)
+SQLite.BlobW: SQLite.Blob blob
+SQLite.BlobW: int pos
+SQLite.BlobW: SQLite.Blob blob
+SQLite.BlobW: void flush()
+SQLite.BlobW: void close()
+SQLite.BlobW: void write(int)
+SQLite.BlobW: void write(byte[])
+SQLite.BlobW: void write(byte[],int,int)
+SQLite.BusyHandler: boolean busy(java.lang.String,int)
+SQLite.JDBC2z.TableResultX: int[] sql_type
+SQLite.JDBC2z.TableResultX: TableResultX()
+SQLite.JDBC2z.TableResultX: TableResultX(int)
+SQLite.JDBC2z.TableResultX: TableResultX(SQLite.TableResult)
+SQLite.TableResult: int ncolumns
+SQLite.TableResult: int nrows
+SQLite.TableResult: java.lang.String[] column
+SQLite.TableResult: java.lang.String[] types
+SQLite.TableResult: java.util.Vector rows
+SQLite.TableResult: int maxrows
+SQLite.TableResult: boolean atmaxrows
+SQLite.TableResult: java.util.Vector rows
+SQLite.TableResult: TableResult()
+SQLite.TableResult: TableResult(int)
+SQLite.TableResult: void clear()
+SQLite.TableResult: void columns(java.lang.String[])
+SQLite.TableResult: void types(java.lang.String[])
+SQLite.TableResult: boolean newrow(java.lang.String[])
+SQLite.TableResult: java.lang.String toString()
+SQLite.JDBC2z.BatchArg: java.lang.String arg
+SQLite.FunctionContext: long handle
+SQLite.FunctionContext: FunctionContext()
+SQLite.FunctionContext: void set_result(java.lang.String)
+SQLite.FunctionContext: void set_result(int)
+SQLite.FunctionContext: void set_result(double)
+SQLite.FunctionContext: void set_error(java.lang.String)
+SQLite.FunctionContext: void set_result(byte[])
+SQLite.FunctionContext: void set_result_zeroblob(int)
+SQLite.FunctionContext: int count()
+SQLite.FunctionContext: void internal_init()
+SQLite.JDBC2z.JDBCConnection: SQLite.JDBC2z.DatabaseX db
+SQLite.JDBC2z.JDBCConnection: java.lang.String url
+SQLite.JDBC2z.JDBCConnection: java.lang.String enc
+SQLite.JDBC2z.JDBCConnection: java.lang.String vfs
+SQLite.JDBC2z.JDBCConnection: boolean autocommit
+SQLite.JDBC2z.JDBCConnection: boolean intrans
+SQLite.JDBC2z.JDBCConnection: int timeout
+SQLite.JDBC2z.JDBCConnection: boolean useJulian
+SQLite.JDBC2z.JDBCConnection: java.lang.String dbfile
+SQLite.JDBC2z.JDBCConnection: SQLite.JDBC2z.JDBCDatabaseMetaData meta
+SQLite.JDBC2z.JDBCConnection: long t0
+SQLite.JDBC2z.JDBCConnection: boolean readonly
+SQLite.JDBC2z.JDBCConnection: int trmode
+SQLite.JDBC2z.JDBCConnection: SQLite.JDBC2z.DatabaseX db
+SQLite.JDBC2z.JDBCConnection: java.lang.String url
+SQLite.JDBC2z.JDBCConnection: java.lang.String enc
+SQLite.JDBC2z.JDBCConnection: java.lang.String vfs
+SQLite.JDBC2z.JDBCConnection: java.lang.String dbfile
+SQLite.JDBC2z.JDBCConnection: SQLite.JDBC2z.JDBCDatabaseMetaData meta
+SQLite.JDBC2z.JDBCConnection: boolean busy0(SQLite.JDBC2z.DatabaseX,int)
+SQLite.JDBC2z.JDBCConnection: boolean busy(java.lang.String,int)
+SQLite.JDBC2z.JDBCConnection: boolean busy3(SQLite.JDBC2z.DatabaseX,int)
+SQLite.JDBC2z.JDBCConnection: SQLite.JDBC2z.DatabaseX open(boolean)
+SQLite.JDBC2z.JDBCConnection: JDBCConnection(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String)
+SQLite.JDBC2z.JDBCConnection: SQLite.Database getSQLiteDatabase()
+SQLite.JDBC2z.JDBCConnection: java.sql.Statement createStatement()
+SQLite.JDBC2z.JDBCConnection: java.sql.Statement createStatement(int,int)
+SQLite.JDBC2z.JDBCConnection: java.sql.DatabaseMetaData getMetaData()
+SQLite.JDBC2z.JDBCConnection: void close()
+SQLite.JDBC2z.JDBCConnection: boolean isClosed()
+SQLite.JDBC2z.JDBCConnection: boolean isReadOnly()
+SQLite.JDBC2z.JDBCConnection: void clearWarnings()
+SQLite.JDBC2z.JDBCConnection: void commit()
+SQLite.JDBC2z.JDBCConnection: boolean getAutoCommit()
+SQLite.JDBC2z.JDBCConnection: java.lang.String getCatalog()
+SQLite.JDBC2z.JDBCConnection: int getTransactionIsolation()
+SQLite.JDBC2z.JDBCConnection: java.sql.SQLWarning getWarnings()
+SQLite.JDBC2z.JDBCConnection: java.lang.String nativeSQL(java.lang.String)
+SQLite.JDBC2z.JDBCConnection: java.sql.CallableStatement prepareCall(java.lang.String)
+SQLite.JDBC2z.JDBCConnection: java.sql.CallableStatement prepareCall(java.lang.String,int,int)
+SQLite.JDBC2z.JDBCConnection: java.sql.PreparedStatement prepareStatement(java.lang.String)
+SQLite.JDBC2z.JDBCConnection: java.sql.PreparedStatement prepareStatement(java.lang.String,int,int)
+SQLite.JDBC2z.JDBCConnection: void rollback()
+SQLite.JDBC2z.JDBCConnection: void setAutoCommit(boolean)
+SQLite.JDBC2z.JDBCConnection: void setCatalog(java.lang.String)
+SQLite.JDBC2z.JDBCConnection: void setReadOnly(boolean)
+SQLite.JDBC2z.JDBCConnection: void setTransactionIsolation(int)
+SQLite.JDBC2z.JDBCConnection: java.util.Map getTypeMap()
+SQLite.JDBC2z.JDBCConnection: void setTypeMap(java.util.Map)
+SQLite.JDBC2z.JDBCConnection: int getHoldability()
+SQLite.JDBC2z.JDBCConnection: void setHoldability(int)
+SQLite.JDBC2z.JDBCConnection: java.sql.Savepoint setSavepoint()
+SQLite.JDBC2z.JDBCConnection: java.sql.Savepoint setSavepoint(java.lang.String)
+SQLite.JDBC2z.JDBCConnection: void rollback(java.sql.Savepoint)
+SQLite.JDBC2z.JDBCConnection: void releaseSavepoint(java.sql.Savepoint)
+SQLite.JDBC2z.JDBCConnection: java.sql.Statement createStatement(int,int,int)
+SQLite.JDBC2z.JDBCConnection: java.sql.PreparedStatement prepareStatement(java.lang.String,int,int,int)
+SQLite.JDBC2z.JDBCConnection: java.sql.CallableStatement prepareCall(java.lang.String,int,int,int)
+SQLite.JDBC2z.JDBCConnection: java.sql.PreparedStatement prepareStatement(java.lang.String,int)
+SQLite.JDBC2z.JDBCConnection: java.sql.PreparedStatement prepareStatement(java.lang.String,int[])
+SQLite.JDBC2z.JDBCConnection: java.sql.PreparedStatement prepareStatement(java.lang.String,java.lang.String[])
+SQLite.JDBC2z.JDBCConnection: java.sql.Clob createClob()
+SQLite.JDBC2z.JDBCConnection: java.sql.Blob createBlob()
+SQLite.JDBC2z.JDBCConnection: java.sql.NClob createNClob()
+SQLite.JDBC2z.JDBCConnection: java.sql.SQLXML createSQLXML()
+SQLite.JDBC2z.JDBCConnection: boolean isValid(int)
+SQLite.JDBC2z.JDBCConnection: void setClientInfo(java.lang.String,java.lang.String)
+SQLite.JDBC2z.JDBCConnection: void setClientInfo(java.util.Properties)
+SQLite.JDBC2z.JDBCConnection: java.lang.String getClientInfo(java.lang.String)
+SQLite.JDBC2z.JDBCConnection: java.util.Properties getClientInfo()
+SQLite.JDBC2z.JDBCConnection: java.sql.Array createArrayOf(java.lang.String,java.lang.Object[])
+SQLite.JDBC2z.JDBCConnection: java.sql.Struct createStruct(java.lang.String,java.lang.Object[])
+SQLite.JDBC2z.JDBCConnection: java.lang.Object unwrap(java.lang.Class)
+SQLite.JDBC2z.JDBCConnection: boolean isWrapperFor(java.lang.Class)
+SQLite.JDBC2z.DatabaseX: java.lang.Object lock
+SQLite.JDBC2z.DatabaseX: DatabaseX()
+SQLite.JDBC2z.DatabaseX: void exec(java.lang.String,SQLite.Callback)
+SQLite.JDBC2z.DatabaseX: void exec(java.lang.String,SQLite.Callback,java.lang.String[])
+SQLite.JDBC2z.DatabaseX: SQLite.TableResult get_table(java.lang.String,java.lang.String[])
+SQLite.JDBC2z.DatabaseX: void get_table(java.lang.String,java.lang.String[],SQLite.TableResult)
+SQLite.Database: long handle
+SQLite.Database: int error_code
+SQLite.Database: Database()
+SQLite.Database: void open(java.lang.String,int)
+SQLite.Database: void open(java.lang.String,int,java.lang.String)
+SQLite.Database: void open(java.lang.String,int,java.lang.String,boolean)
+SQLite.Database: void _open(java.lang.String,int)
+SQLite.Database: void _open4(java.lang.String,int,java.lang.String,boolean)
+SQLite.Database: void open_aux_file(java.lang.String)
+SQLite.Database: void _open_aux_file(java.lang.String)
+SQLite.Database: void finalize()
+SQLite.Database: void _finalize()
+SQLite.Database: void close()
+SQLite.Database: void _close()
+SQLite.Database: void exec(java.lang.String,SQLite.Callback)
+SQLite.Database: void _exec(java.lang.String,SQLite.Callback)
+SQLite.Database: void exec(java.lang.String,SQLite.Callback,java.lang.String[])
+SQLite.Database: void _exec(java.lang.String,SQLite.Callback,java.lang.String[])
+SQLite.Database: long last_insert_rowid()
+SQLite.Database: long _last_insert_rowid()
+SQLite.Database: void interrupt()
+SQLite.Database: void _interrupt()
+SQLite.Database: long changes()
+SQLite.Database: long _changes()
+SQLite.Database: void busy_handler(SQLite.BusyHandler)
+SQLite.Database: void _busy_handler(SQLite.BusyHandler)
+SQLite.Database: void busy_timeout(int)
+SQLite.Database: void _busy_timeout(int)
+SQLite.Database: SQLite.TableResult get_table(java.lang.String,int)
+SQLite.Database: SQLite.TableResult get_table(java.lang.String)
+SQLite.Database: SQLite.TableResult get_table(java.lang.String,int,java.lang.String[])
+SQLite.Database: SQLite.TableResult get_table(java.lang.String,java.lang.String[])
+SQLite.Database: void get_table(java.lang.String,java.lang.String[],SQLite.TableResult)
+SQLite.Database: boolean complete(java.lang.String)
+SQLite.Database: boolean _complete(java.lang.String)
+SQLite.Database: java.lang.String version()
+SQLite.Database: java.lang.String dbversion()
+SQLite.Database: void create_function(java.lang.String,int,SQLite.Function)
+SQLite.Database: void _create_function(java.lang.String,int,SQLite.Function)
+SQLite.Database: void create_aggregate(java.lang.String,int,SQLite.Function)
+SQLite.Database: void _create_aggregate(java.lang.String,int,SQLite.Function)
+SQLite.Database: void function_type(java.lang.String,int)
+SQLite.Database: void _function_type(java.lang.String,int)
+SQLite.Database: int last_error()
+SQLite.Database: void set_last_error(int)
+SQLite.Database: java.lang.String error_message()
+SQLite.Database: java.lang.String _errmsg()
+SQLite.Database: java.lang.String error_string(int)
+SQLite.Database: void set_encoding(java.lang.String)
+SQLite.Database: void _set_encoding(java.lang.String)
+SQLite.Database: void set_authorizer(SQLite.Authorizer)
+SQLite.Database: void _set_authorizer(SQLite.Authorizer)
+SQLite.Database: void trace(SQLite.Trace)
+SQLite.Database: void _trace(SQLite.Trace)
+SQLite.Database: SQLite.Vm compile(java.lang.String)
+SQLite.Database: SQLite.Vm compile(java.lang.String,java.lang.String[])
+SQLite.Database: SQLite.Stmt prepare(java.lang.String)
+SQLite.Database: SQLite.Blob open_blob(java.lang.String,java.lang.String,java.lang.String,long,boolean)
+SQLite.Database: boolean is3()
+SQLite.Database: void vm_compile(java.lang.String,SQLite.Vm)
+SQLite.Database: void vm_compile_args(java.lang.String,SQLite.Vm,java.lang.String[])
+SQLite.Database: void stmt_prepare(java.lang.String,SQLite.Stmt)
+SQLite.Database: void _open_blob(java.lang.String,java.lang.String,java.lang.String,long,boolean,SQLite.Blob)
+SQLite.Database: void progress_handler(int,SQLite.ProgressHandler)
+SQLite.Database: void _progress_handler(int,SQLite.ProgressHandler)
+SQLite.Database: void key(byte[])
+SQLite.Database: void key(java.lang.String)
+SQLite.Database: void _key(byte[])
+SQLite.Database: void rekey(byte[])
+SQLite.Database: void rekey(java.lang.String)
+SQLite.Database: void _rekey(byte[])
+SQLite.Database: boolean _enable_shared_cache(boolean)
+SQLite.Database: void internal_init()
+SQLite.Database: long long_from_julian(double)
+SQLite.Database: long long_from_julian(java.lang.String)
+SQLite.Database: double julian_from_long(long)
+SQLite.Stmt: long handle
+SQLite.Stmt: int error_code
+SQLite.Stmt: Stmt()
+SQLite.Stmt: boolean prepare()
+SQLite.Stmt: boolean step()
+SQLite.Stmt: void close()
+SQLite.Stmt: void reset()
+SQLite.Stmt: void clear_bindings()
+SQLite.Stmt: void bind(int,int)
+SQLite.Stmt: void bind(int,long)
+SQLite.Stmt: void bind(int,double)
+SQLite.Stmt: void bind(int,byte[])
+SQLite.Stmt: void bind(int,java.lang.String)
+SQLite.Stmt: void bind(int)
+SQLite.Stmt: void bind_zeroblob(int,int)
+SQLite.Stmt: int bind_parameter_count()
+SQLite.Stmt: java.lang.String bind_parameter_name(int)
+SQLite.Stmt: int bind_parameter_index(java.lang.String)
+SQLite.Stmt: int column_int(int)
+SQLite.Stmt: long column_long(int)
+SQLite.Stmt: double column_double(int)
+SQLite.Stmt: byte[] column_bytes(int)
+SQLite.Stmt: java.lang.String column_string(int)
+SQLite.Stmt: int column_type(int)
+SQLite.Stmt: int column_count()
+SQLite.Stmt: java.lang.Object column(int)
+SQLite.Stmt: java.lang.String column_table_name(int)
+SQLite.Stmt: java.lang.String column_database_name(int)
+SQLite.Stmt: java.lang.String column_decltype(int)
+SQLite.Stmt: java.lang.String column_origin_name(int)
+SQLite.Stmt: void finalize()
+SQLite.Stmt: void internal_init()
+SQLite.Blob: long handle
+SQLite.Blob: int size
+SQLite.Blob: Blob()
+SQLite.Blob: java.io.InputStream getInputStream()
+SQLite.Blob: java.io.OutputStream getOutputStream()
+SQLite.Blob: void close()
+SQLite.Blob: void finalize()
+SQLite.Blob: void internal_init()
+SQLite.TableResult: int ncolumns
+SQLite.TableResult: int nrows
+SQLite.TableResult: java.lang.String[] column
+SQLite.TableResult: java.lang.String[] types
+SQLite.TableResult: java.util.Vector rows
+SQLite.TableResult: int maxrows
+SQLite.TableResult: boolean atmaxrows
+SQLite.TableResult: java.util.Vector rows
+SQLite.TableResult: TableResult()
+SQLite.TableResult: TableResult(int)
+SQLite.TableResult: void clear()
+SQLite.TableResult: void columns(java.lang.String[])
+SQLite.TableResult: void types(java.lang.String[])
+SQLite.TableResult: boolean newrow(java.lang.String[])
+SQLite.TableResult: java.lang.String toString()
+SQLite.Database: long handle
+SQLite.Database: int error_code
+SQLite.Database: Database()
+SQLite.Database: void open(java.lang.String,int)
+SQLite.Database: void open(java.lang.String,int,java.lang.String)
+SQLite.Database: void open(java.lang.String,int,java.lang.String,boolean)
+SQLite.Database: void _open(java.lang.String,int)
+SQLite.Database: void _open4(java.lang.String,int,java.lang.String,boolean)
+SQLite.Database: void open_aux_file(java.lang.String)
+SQLite.Database: void _open_aux_file(java.lang.String)
+SQLite.Database: void finalize()
+SQLite.Database: void _finalize()
+SQLite.Database: void close()
+SQLite.Database: void _close()
+SQLite.Database: void exec(java.lang.String,SQLite.Callback)
+SQLite.Database: void _exec(java.lang.String,SQLite.Callback)
+SQLite.Database: void exec(java.lang.String,SQLite.Callback,java.lang.String[])
+SQLite.Database: void _exec(java.lang.String,SQLite.Callback,java.lang.String[])
+SQLite.Database: long last_insert_rowid()
+SQLite.Database: long _last_insert_rowid()
+SQLite.Database: void interrupt()
+SQLite.Database: void _interrupt()
+SQLite.Database: long changes()
+SQLite.Database: long _changes()
+SQLite.Database: void busy_handler(SQLite.BusyHandler)
+SQLite.Database: void _busy_handler(SQLite.BusyHandler)
+SQLite.Database: void busy_timeout(int)
+SQLite.Database: void _busy_timeout(int)
+SQLite.Database: SQLite.TableResult get_table(java.lang.String,int)
+SQLite.Database: SQLite.TableResult get_table(java.lang.String)
+SQLite.Database: SQLite.TableResult get_table(java.lang.String,int,java.lang.String[])
+SQLite.Database: SQLite.TableResult get_table(java.lang.String,java.lang.String[])
+SQLite.Database: void get_table(java.lang.String,java.lang.String[],SQLite.TableResult)
+SQLite.Database: boolean complete(java.lang.String)
+SQLite.Database: boolean _complete(java.lang.String)
+SQLite.Database: java.lang.String version()
+SQLite.Database: java.lang.String dbversion()
+SQLite.Database: void create_function(java.lang.String,int,SQLite.Function)
+SQLite.Database: void _create_function(java.lang.String,int,SQLite.Function)
+SQLite.Database: void create_aggregate(java.lang.String,int,SQLite.Function)
+SQLite.Database: void _create_aggregate(java.lang.String,int,SQLite.Function)
+SQLite.Database: void function_type(java.lang.String,int)
+SQLite.Database: void _function_type(java.lang.String,int)
+SQLite.Database: int last_error()
+SQLite.Database: void set_last_error(int)
+SQLite.Database: java.lang.String error_message()
+SQLite.Database: java.lang.String _errmsg()
+SQLite.Database: java.lang.String error_string(int)
+SQLite.Database: void set_encoding(java.lang.String)
+SQLite.Database: void _set_encoding(java.lang.String)
+SQLite.Database: void set_authorizer(SQLite.Authorizer)
+SQLite.Database: void _set_authorizer(SQLite.Authorizer)
+SQLite.Database: void trace(SQLite.Trace)
+SQLite.Database: void _trace(SQLite.Trace)
+SQLite.Database: SQLite.Vm compile(java.lang.String)
+SQLite.Database: SQLite.Vm compile(java.lang.String,java.lang.String[])
+SQLite.Database: SQLite.Stmt prepare(java.lang.String)
+SQLite.Database: SQLite.Blob open_blob(java.lang.String,java.lang.String,java.lang.String,long,boolean)
+SQLite.Database: boolean is3()
+SQLite.Database: void vm_compile(java.lang.String,SQLite.Vm)
+SQLite.Database: void vm_compile_args(java.lang.String,SQLite.Vm,java.lang.String[])
+SQLite.Database: void stmt_prepare(java.lang.String,SQLite.Stmt)
+SQLite.Database: void _open_blob(java.lang.String,java.lang.String,java.lang.String,long,boolean,SQLite.Blob)
+SQLite.Database: void progress_handler(int,SQLite.ProgressHandler)
+SQLite.Database: void _progress_handler(int,SQLite.ProgressHandler)
+SQLite.Database: void key(byte[])
+SQLite.Database: void key(java.lang.String)
+SQLite.Database: void _key(byte[])
+SQLite.Database: void rekey(byte[])
+SQLite.Database: void rekey(java.lang.String)
+SQLite.Database: void _rekey(byte[])
+SQLite.Database: boolean _enable_shared_cache(boolean)
+SQLite.Database: void internal_init()
+SQLite.Database: long long_from_julian(double)
+SQLite.Database: long long_from_julian(java.lang.String)
+SQLite.Database: double julian_from_long(long)
+com.rockchip.mediacenter.dlna.model.PositionInfo
+com.rockchip.mediacenter.dlna.model.PositionInfo: android.os.Parcelable$Creator CREATOR
+com.rockchip.mediacenter.dlna.model.PositionInfo: PositionInfo()
+com.rockchip.mediacenter.dlna.model.PositionInfo: java.lang.String getTrack()
+com.rockchip.mediacenter.dlna.model.PositionInfo: void setTrack(java.lang.String)
+com.rockchip.mediacenter.dlna.model.PositionInfo: java.lang.String getTrackDuration()
+com.rockchip.mediacenter.dlna.model.PositionInfo: void setTrackDuration(java.lang.String)
+com.rockchip.mediacenter.dlna.model.PositionInfo: java.lang.String getTrackMetaData()
+com.rockchip.mediacenter.dlna.model.PositionInfo: void setTrackMetaData(java.lang.String)
+com.rockchip.mediacenter.dlna.model.PositionInfo: java.lang.String getTrackURI()
+com.rockchip.mediacenter.dlna.model.PositionInfo: void setTrackURI(java.lang.String)
+com.rockchip.mediacenter.dlna.model.PositionInfo: java.lang.String getRelTime()
+com.rockchip.mediacenter.dlna.model.PositionInfo: void setRelTime(java.lang.String)
+com.rockchip.mediacenter.dlna.model.PositionInfo: java.lang.String getAbsTime()
+com.rockchip.mediacenter.dlna.model.PositionInfo: void setAbsTime(java.lang.String)
+com.rockchip.mediacenter.dlna.model.PositionInfo: java.lang.String getRelCount()
+com.rockchip.mediacenter.dlna.model.PositionInfo: void setRelCount(java.lang.String)
+com.rockchip.mediacenter.dlna.model.PositionInfo: java.lang.String getAbsCount()
+com.rockchip.mediacenter.dlna.model.PositionInfo: void setAbsCount(java.lang.String)
+com.rockchip.mediacenter.dlna.model.PositionInfo: boolean isSuccessed()
+com.rockchip.mediacenter.dlna.model.PositionInfo: void setSuccessed(boolean)
+com.rockchip.mediacenter.dlna.model.PositionInfo: int describeContents()
+com.rockchip.mediacenter.dlna.model.PositionInfo: void writeToParcel(android.os.Parcel,int)
+com.rockchip.mediacenter.dlna.model.DeviceEntityUtils
+com.rockchip.mediacenter.dlna.model.DeviceEntityUtils: DeviceEntityUtils()
+com.rockchip.mediacenter.dlna.model.DeviceEntityUtils: com.rockchip.mediacenter.dlna.model.DeviceItem getDeviceItem(com.rockchip.mediacenter.core.upnp.Device)
+com.rockchip.mediacenter.dlna.model.TransportInfo
+com.rockchip.mediacenter.dlna.model.TransportInfo: android.os.Parcelable$Creator CREATOR
+com.rockchip.mediacenter.dlna.model.TransportInfo: TransportInfo()
+com.rockchip.mediacenter.dlna.model.TransportInfo: java.lang.String getCurrentTransportState()
+com.rockchip.mediacenter.dlna.model.TransportInfo: void setCurrentTransportState(java.lang.String)
+com.rockchip.mediacenter.dlna.model.TransportInfo: java.lang.String getCurrentTransportStatus()
+com.rockchip.mediacenter.dlna.model.TransportInfo: void setCurrentTransportStatus(java.lang.String)
+com.rockchip.mediacenter.dlna.model.TransportInfo: java.lang.String getCurrentSpeed()
+com.rockchip.mediacenter.dlna.model.TransportInfo: void setCurrentSpeed(java.lang.String)
+com.rockchip.mediacenter.dlna.model.TransportInfo: boolean isSuccessed()
+com.rockchip.mediacenter.dlna.model.TransportInfo: void setSuccessed(boolean)
+com.rockchip.mediacenter.dlna.model.TransportInfo: int describeContents()
+com.rockchip.mediacenter.dlna.model.TransportInfo: void writeToParcel(android.os.Parcel,int)
+com.rockchip.mediacenter.dlna.model.PositionInfo$1
+com.rockchip.mediacenter.dlna.model.PositionInfo$1: com.rockchip.mediacenter.dlna.model.PositionInfo createFromParcel(android.os.Parcel)
+com.rockchip.mediacenter.dlna.model.PositionInfo$1: com.rockchip.mediacenter.dlna.model.PositionInfo[] newArray(int)
+com.rockchip.mediacenter.dlna.model.PositionInfo$1: java.lang.Object createFromParcel(android.os.Parcel)
+com.rockchip.mediacenter.dlna.model.PositionInfo$1: java.lang.Object[] newArray(int)
+com.rockchip.mediacenter.dlna.model.DeviceItem$1
+com.rockchip.mediacenter.dlna.model.DeviceItem$1: com.rockchip.mediacenter.dlna.model.DeviceItem createFromParcel(android.os.Parcel)
+com.rockchip.mediacenter.dlna.model.DeviceItem$1: com.rockchip.mediacenter.dlna.model.DeviceItem[] newArray(int)
+com.rockchip.mediacenter.dlna.model.DeviceItem$1: java.lang.Object[] newArray(int)
+com.rockchip.mediacenter.dlna.model.DeviceItem$1: java.lang.Object createFromParcel(android.os.Parcel)
+com.rockchip.mediacenter.dlna.model.TransportInfo$1
+com.rockchip.mediacenter.dlna.model.TransportInfo$1: com.rockchip.mediacenter.dlna.model.TransportInfo createFromParcel(android.os.Parcel)
+com.rockchip.mediacenter.dlna.model.TransportInfo$1: com.rockchip.mediacenter.dlna.model.TransportInfo[] newArray(int)
+com.rockchip.mediacenter.dlna.model.TransportInfo$1: java.lang.Object createFromParcel(android.os.Parcel)
+com.rockchip.mediacenter.dlna.model.TransportInfo$1: java.lang.Object[] newArray(int)
+com.rockchip.mediacenter.dlna.model.DeviceItem
+com.rockchip.mediacenter.dlna.model.DeviceItem: android.os.Parcelable$Creator CREATOR
+com.rockchip.mediacenter.dlna.model.DeviceItem: DeviceItem()
+com.rockchip.mediacenter.dlna.model.DeviceItem: java.lang.String getDeviceType()
+com.rockchip.mediacenter.dlna.model.DeviceItem: void setDeviceType(java.lang.String)
+com.rockchip.mediacenter.dlna.model.DeviceItem: java.lang.String getFriendlyName()
+com.rockchip.mediacenter.dlna.model.DeviceItem: void setFriendlyName(java.lang.String)
+com.rockchip.mediacenter.dlna.model.DeviceItem: java.lang.String getModelName()
+com.rockchip.mediacenter.dlna.model.DeviceItem: void setModelName(java.lang.String)
+com.rockchip.mediacenter.dlna.model.DeviceItem: java.lang.String getModelNumber()
+com.rockchip.mediacenter.dlna.model.DeviceItem: void setModelNumber(java.lang.String)
+com.rockchip.mediacenter.dlna.model.DeviceItem: java.lang.String getModelURL()
+com.rockchip.mediacenter.dlna.model.DeviceItem: void setModelURL(java.lang.String)
+com.rockchip.mediacenter.dlna.model.DeviceItem: java.lang.String getModelDescription()
+com.rockchip.mediacenter.dlna.model.DeviceItem: void setModelDescription(java.lang.String)
+com.rockchip.mediacenter.dlna.model.DeviceItem: java.lang.String getManufacture()
+com.rockchip.mediacenter.dlna.model.DeviceItem: void setManufacture(java.lang.String)
+com.rockchip.mediacenter.dlna.model.DeviceItem: java.lang.String getUdn()
+com.rockchip.mediacenter.dlna.model.DeviceItem: void setUdn(java.lang.String)
+com.rockchip.mediacenter.dlna.model.DeviceItem: java.lang.String getIconURL()
+com.rockchip.mediacenter.dlna.model.DeviceItem: void setIconURL(java.lang.String)
+com.rockchip.mediacenter.dlna.model.DeviceItem: java.lang.String getLargestIconURL()
+com.rockchip.mediacenter.dlna.model.DeviceItem: void setLargestIconURL(java.lang.String)
+com.rockchip.mediacenter.dlna.model.DeviceItem: boolean isLocalDevice()
+com.rockchip.mediacenter.dlna.model.DeviceItem: void setLocalDevice(boolean)
+com.rockchip.mediacenter.dlna.model.DeviceItem: java.lang.String getAddress()
+com.rockchip.mediacenter.dlna.model.DeviceItem: void setAddress(java.lang.String)
+com.rockchip.mediacenter.dlna.model.DeviceItem: int getPort()
+com.rockchip.mediacenter.dlna.model.DeviceItem: void setPort(int)
+com.rockchip.mediacenter.dlna.model.DeviceItem: java.lang.String toString()
+com.rockchip.mediacenter.dlna.model.DeviceItem: int describeContents()
+com.rockchip.mediacenter.dlna.model.DeviceItem: void writeToParcel(android.os.Parcel,int)
+com.rockchip.mediacenter.dlna.IMediaCenterService
+com.rockchip.mediacenter.dlna.IMediaCenterService: void search()
+com.rockchip.mediacenter.dlna.IMediaCenterService: void research()
+com.rockchip.mediacenter.dlna.IMediaCenterService: java.util.List getMediaServerDevice(boolean)
+com.rockchip.mediacenter.dlna.IMediaCenterService: java.util.List getMediaRendererDevice()
+com.rockchip.mediacenter.dlna.IMediaCenterService: void setTargetDevice(com.rockchip.mediacenter.dlna.model.DeviceItem)
+com.rockchip.mediacenter.dlna.IMediaCenterService: boolean setAVTransportURI(java.lang.String)
+com.rockchip.mediacenter.dlna.IMediaCenterService: boolean setMetaDataAndURI(java.lang.String,java.lang.String,java.lang.String,long,int)
+com.rockchip.mediacenter.dlna.IMediaCenterService: boolean play()
+com.rockchip.mediacenter.dlna.IMediaCenterService: boolean pause()
+com.rockchip.mediacenter.dlna.IMediaCenterService: boolean stop()
+com.rockchip.mediacenter.dlna.IMediaCenterService: boolean exit()
+com.rockchip.mediacenter.dlna.IMediaCenterService: boolean asyncExit()
+com.rockchip.mediacenter.dlna.IMediaCenterService: boolean seek(java.lang.String)
+com.rockchip.mediacenter.dlna.IMediaCenterService: int getVolume()
+com.rockchip.mediacenter.dlna.IMediaCenterService: int getMaxVolume()
+com.rockchip.mediacenter.dlna.IMediaCenterService: boolean setVolume(int)
+com.rockchip.mediacenter.dlna.IMediaCenterService: com.rockchip.mediacenter.dlna.model.TransportInfo getTransportInfo()
+com.rockchip.mediacenter.dlna.IMediaCenterService: com.rockchip.mediacenter.dlna.model.PositionInfo getPositionInfo()
+com.rockchip.mediacenter.dlna.MediaCenterServiceImpl
+com.rockchip.mediacenter.dlna.MediaCenterServiceImpl: MediaCenterServiceImpl(com.rockchip.mediacenter.DLNAService)
+com.rockchip.mediacenter.dlna.MediaCenterServiceImpl: void search()
+com.rockchip.mediacenter.dlna.MediaCenterServiceImpl: void research()
+com.rockchip.mediacenter.dlna.MediaCenterServiceImpl: java.util.List getMediaServerDevice(boolean)
+com.rockchip.mediacenter.dlna.MediaCenterServiceImpl: java.util.List getMediaRendererDevice()
+com.rockchip.mediacenter.dlna.MediaCenterServiceImpl: void setTargetDevice(com.rockchip.mediacenter.dlna.model.DeviceItem)
+com.rockchip.mediacenter.dlna.MediaCenterServiceImpl: boolean setAVTransportURI(java.lang.String)
+com.rockchip.mediacenter.dlna.MediaCenterServiceImpl: boolean setMetaDataAndURI(java.lang.String,java.lang.String,java.lang.String,long,int)
+com.rockchip.mediacenter.dlna.MediaCenterServiceImpl: boolean play()
+com.rockchip.mediacenter.dlna.MediaCenterServiceImpl: boolean pause()
+com.rockchip.mediacenter.dlna.MediaCenterServiceImpl: boolean stop()
+com.rockchip.mediacenter.dlna.MediaCenterServiceImpl: boolean seek(java.lang.String)
+com.rockchip.mediacenter.dlna.MediaCenterServiceImpl: int getVolume()
+com.rockchip.mediacenter.dlna.MediaCenterServiceImpl: boolean setVolume(int)
+com.rockchip.mediacenter.dlna.MediaCenterServiceImpl: int getMaxVolume()
+com.rockchip.mediacenter.dlna.MediaCenterServiceImpl: com.rockchip.mediacenter.dlna.model.TransportInfo getTransportInfo()
+com.rockchip.mediacenter.dlna.MediaCenterServiceImpl: com.rockchip.mediacenter.dlna.model.PositionInfo getPositionInfo()
+com.rockchip.mediacenter.dlna.MediaCenterServiceImpl: boolean asyncExit()
+com.rockchip.mediacenter.dlna.MediaCenterServiceImpl: boolean exit()
+com.rockchip.mediacenter.dlna.IMediaCenterService$Stub: IMediaCenterService$Stub()
+com.rockchip.mediacenter.dlna.IMediaCenterService$Stub: com.rockchip.mediacenter.dlna.IMediaCenterService asInterface(android.os.IBinder)
+com.rockchip.mediacenter.dlna.IMediaCenterService$Stub: android.os.IBinder asBinder()
+com.rockchip.mediacenter.dlna.IMediaCenterService$Stub: boolean onTransact(int,android.os.Parcel,android.os.Parcel,int)
+com.rockchip.mediacenter.core.xml.parser.JaxpParser
+com.rockchip.mediacenter.core.xml.parser.XmlPullParser
+com.rockchip.mediacenter.core.dlna.protocols.request.remotecontrol.PressRequest
+com.rockchip.mediacenter.core.dlna.protocols.request.contentdirectory.CreateObjectRequest
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.action.CreateObjectAction
+com.rockchip.mediacenter.core.dlna.protocols.request.contentdirectory.GetTransferProgressRequest
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.action.GetTransferProgressAction
+com.rockchip.mediacenter.core.dlna.protocols.request.contentdirectory.DestroyObjectRequest
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.action.DestroyObjectAction
+com.rockchip.mediacenter.core.dlna.protocols.request.renderingcontrol.BaseRenderingControlRequest
+com.rockchip.mediacenter.core.dlna.protocols.request.renderingcontrol.SetTransformsRequest
+com.rockchip.mediacenter.core.dlna.protocols.request.renderingcontrol.SetMuteRequest
+com.rockchip.mediacenter.core.dlna.protocols.request.renderingcontrol.GetVolumeRequest
+com.rockchip.mediacenter.core.dlna.service.renderingcontrol.action.GetVolumeAction
+com.rockchip.mediacenter.core.dlna.protocols.request.renderingcontrol.SetVolumeRequest
+com.rockchip.mediacenter.core.dlna.service.renderingcontrol.action.SetVolumeAction
+com.rockchip.mediacenter.core.dlna.protocols.request.renderingcontrol.GetTransformsRequest
+com.rockchip.mediacenter.core.dlna.protocols.request.renderingcontrol.GetAllAvailableTransformsRequest
+com.rockchip.mediacenter.core.dlna.service.renderingcontrol.action.GetLoudnessAction
+com.rockchip.mediacenter.core.dlna.service.renderingcontrol.action.SetLoudnessAction
+com.rockchip.mediacenter.core.dlna.protocols.request.renderingcontrol.GetAllowedTransformsRequest
+com.rockchip.mediacenter.core.dlna.protocols.request.renderingcontrol.GetMuteRequest
+com.rockchip.mediacenter.core.dlna.protocols.request.remotecontrol.GSensorRequest
+com.rockchip.mediacenter.core.dlna.protocols.request.remotecontrol.MoveRequest
+com.rockchip.mediacenter.core.dlna.protocols.request.contentdirectory.BrowseRequest
+com.rockchip.mediacenter.core.dlna.protocols.request.remotecontrol.LeftClickRequest
+com.rockchip.mediacenter.core.dlna.protocols.request.contentdirectory.SearchRequest
+com.rockchip.mediacenter.core.dlna.protocols.request.contentdirectory.ExportResourceRequest
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.action.ExportResourceAction
+com.rockchip.mediacenter.core.dlna.protocols.request.avtransport.BaseAVTransportRequest
+com.rockchip.mediacenter.core.dlna.protocols.request.avtransport.GetMediaInfoRequest
+com.rockchip.mediacenter.core.dlna.service.avtransport.action.GetMediaInfoAction
+com.rockchip.mediacenter.core.dlna.service.avtransport.action.GetMediaInfo_ExtAction
+com.rockchip.mediacenter.core.dlna.protocols.request.avtransport.GetPositionInfoRequest
+com.rockchip.mediacenter.core.dlna.service.avtransport.action.GetPositionInfoAction
+com.rockchip.mediacenter.core.dlna.protocols.request.avtransport.GetTransportInfoRequest
+com.rockchip.mediacenter.core.dlna.service.avtransport.action.GetTransportInfoAction
+com.rockchip.mediacenter.core.dlna.protocols.request.avtransport.GetCurrentTransportActionsRequest
+com.rockchip.mediacenter.core.dlna.service.avtransport.action.GetCurrentTransportActionsAction
+com.rockchip.mediacenter.core.dlna.protocols.request.avtransport.CommonControlPlayRequest
+com.rockchip.mediacenter.core.dlna.service.avtransport.action.SetRecordQualityModeAction
+com.rockchip.mediacenter.core.dlna.service.avtransport.action.Ext_ExitAction
+com.rockchip.mediacenter.core.dlna.service.avtransport.action.StopAction
+com.rockchip.mediacenter.core.dlna.service.avtransport.action.PlayAction
+com.rockchip.mediacenter.core.dlna.service.avtransport.action.X_ExitAction
+com.rockchip.mediacenter.core.dlna.service.avtransport.action.NextAction
+com.rockchip.mediacenter.core.dlna.service.avtransport.action.SeekAction
+com.rockchip.mediacenter.core.dlna.service.avtransport.action.SetPlayModeAction
+com.rockchip.mediacenter.core.dlna.service.avtransport.action.RecordAction
+com.rockchip.mediacenter.core.dlna.service.avtransport.action.PreviousAction
+com.rockchip.mediacenter.core.dlna.service.avtransport.action.PauseAction
+com.rockchip.mediacenter.core.dlna.protocols.request.avtransport.GetTransportSettingsRequest
+com.rockchip.mediacenter.core.dlna.service.avtransport.action.GetTransportSettingsAction
+com.rockchip.mediacenter.core.dlna.protocols.request.avtransport.GetDeviceCapabilitiesRequest
+com.rockchip.mediacenter.core.dlna.service.avtransport.action.GetDeviceCapabilitiesAction
+com.rockchip.mediacenter.core.dlna.protocols.request.avtransport.SetAVTransportURIRequest
+com.rockchip.mediacenter.core.dlna.service.avtransport.action.SetAVTransportURIAction
+com.rockchip.mediacenter.core.dlna.protocols.request.avtransport.SetNextAVTransportURIRequest
+com.rockchip.mediacenter.core.dlna.service.avtransport.action.SetNextAVTransportURIAction
+com.rockchip.mediacenter.core.dlna.protocols.request.contentdirectory.ImportResourceRequest
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.action.ImportResourceAction
+com.rockchip.mediacenter.core.dlna.protocols.request.contentdirectory.GetSystemUpdateIDRequest
+com.rockchip.mediacenter.core.dlna.protocols.request.contentdirectory.StopTransferResourceRequest
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.action.StopTransferResourceAction
+com.rockchip.mediacenter.core.dlna.service.mediareceiver.MediaReceiverRegistrar
+com.rockchip.mediacenter.core.dlna.service.AbstractService
+com.rockchip.mediacenter.core.dlna.service.connectionmanager.ConnectionManager
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.ContentDirectory
+com.rockchip.mediacenter.core.dlna.service.renderingcontrol.RenderingControl
+com.rockchip.mediacenter.core.dlna.service.avtransport.AVTransport
+com.rockchip.mediacenter.core.dlna.service.remotecontrol.RemoteControl
+com.rockchip.mediacenter.common.logging.android.AndroidLogImpl
+com.rockchip.mediacenter.common.logging.jdk14.Jdk14LoggingImpl
+com.rockchip.mediacenter.common.logging.nologging.NoLoggingImpl
+com.rockchip.mediacenter.common.logging.log4j.Log4jImpl
+com.rockchip.mediacenter.common.logging.android.AndroidLogImpl: AndroidLogImpl(java.lang.Class)
+com.rockchip.mediacenter.common.logging.jdk14.Jdk14LoggingImpl: Jdk14LoggingImpl(java.lang.Class)
+com.rockchip.mediacenter.common.logging.nologging.NoLoggingImpl: NoLoggingImpl(java.lang.Class)
+com.rockchip.mediacenter.common.logging.log4j.Log4jImpl: Log4jImpl(java.lang.Class)
+SQLite.Vm
+SQLite.Vm: boolean step(SQLite.Callback)
+SQLite.Vm: boolean compile()
+SQLite.Vm: void stop()
+SQLite.Vm: void finalize()
+SQLite.Vm: void internal_init()
+SQLite.FunctionContext
+SQLite.FunctionContext: void set_result(java.lang.String)
+SQLite.FunctionContext: void set_result(int)
+SQLite.FunctionContext: void set_result(double)
+SQLite.FunctionContext: void set_error(java.lang.String)
+SQLite.FunctionContext: void set_result(byte[])
+SQLite.FunctionContext: void set_result_zeroblob(int)
+SQLite.FunctionContext: int count()
+SQLite.FunctionContext: void internal_init()
+SQLite.Stmt
+SQLite.Stmt: boolean prepare()
+SQLite.Stmt: boolean step()
+SQLite.Stmt: void close()
+SQLite.Stmt: void reset()
+SQLite.Stmt: void clear_bindings()
+SQLite.Stmt: void bind(int,int)
+SQLite.Stmt: void bind(int,long)
+SQLite.Stmt: void bind(int,double)
+SQLite.Stmt: void bind(int,byte[])
+SQLite.Stmt: void bind(int,java.lang.String)
+SQLite.Stmt: void bind(int)
+SQLite.Stmt: void bind_zeroblob(int,int)
+SQLite.Stmt: int bind_parameter_count()
+SQLite.Stmt: java.lang.String bind_parameter_name(int)
+SQLite.Stmt: int bind_parameter_index(java.lang.String)
+SQLite.Stmt: int column_int(int)
+SQLite.Stmt: long column_long(int)
+SQLite.Stmt: double column_double(int)
+SQLite.Stmt: byte[] column_bytes(int)
+SQLite.Stmt: java.lang.String column_string(int)
+SQLite.Stmt: int column_type(int)
+SQLite.Stmt: int column_count()
+SQLite.Stmt: java.lang.String column_table_name(int)
+SQLite.Stmt: java.lang.String column_database_name(int)
+SQLite.Stmt: java.lang.String column_decltype(int)
+SQLite.Stmt: java.lang.String column_origin_name(int)
+SQLite.Stmt: void finalize()
+SQLite.Stmt: void internal_init()
+SQLite.Blob
+SQLite.Blob: void close()
+SQLite.Blob: int write(byte[],int,int,int)
+SQLite.Blob: int read(byte[],int,int,int)
+SQLite.Blob: void finalize()
+SQLite.Blob: void internal_init()
+SQLite.Database
+SQLite.Database: void _open(java.lang.String,int)
+SQLite.Database: void _open4(java.lang.String,int,java.lang.String,boolean)
+SQLite.Database: void _open_aux_file(java.lang.String)
+SQLite.Database: void _finalize()
+SQLite.Database: void _close()
+SQLite.Database: void _exec(java.lang.String,SQLite.Callback)
+SQLite.Database: void _exec(java.lang.String,SQLite.Callback,java.lang.String[])
+SQLite.Database: long _last_insert_rowid()
+SQLite.Database: void _interrupt()
+SQLite.Database: long _changes()
+SQLite.Database: void _busy_handler(SQLite.BusyHandler)
+SQLite.Database: void _busy_timeout(int)
+SQLite.Database: boolean _complete(java.lang.String)
+SQLite.Database: java.lang.String version()
+SQLite.Database: java.lang.String dbversion()
+SQLite.Database: void _create_function(java.lang.String,int,SQLite.Function)
+SQLite.Database: void _create_aggregate(java.lang.String,int,SQLite.Function)
+SQLite.Database: void _function_type(java.lang.String,int)
+SQLite.Database: java.lang.String _errmsg()
+SQLite.Database: java.lang.String error_string(int)
+SQLite.Database: void _set_encoding(java.lang.String)
+SQLite.Database: void _set_authorizer(SQLite.Authorizer)
+SQLite.Database: void _trace(SQLite.Trace)
+SQLite.Database: boolean is3()
+SQLite.Database: void vm_compile(java.lang.String,SQLite.Vm)
+SQLite.Database: void vm_compile_args(java.lang.String,SQLite.Vm,java.lang.String[])
+SQLite.Database: void stmt_prepare(java.lang.String,SQLite.Stmt)
+SQLite.Database: void _open_blob(java.lang.String,java.lang.String,java.lang.String,long,boolean,SQLite.Blob)
+SQLite.Database: void _progress_handler(int,SQLite.ProgressHandler)
+SQLite.Database: void _key(byte[])
+SQLite.Database: void _rekey(byte[])
+SQLite.Database: boolean _enable_shared_cache(boolean)
+SQLite.Database: void internal_init()
+com.rockchip.mediacenter.plugins.pictureplay.PictureController
+com.rockchip.mediacenter.plugins.pictureplay.PictureController: PictureController(android.content.Context,android.util.AttributeSet)
+com.rockchip.mediacenter.plugins.widget.IndicatorGridView
+com.rockchip.mediacenter.plugins.widget.IndicatorGridView: IndicatorGridView(android.content.Context,android.util.AttributeSet)
+com.rockchip.mediacenter.plugins.videoplay.CountdownTextView
+com.rockchip.mediacenter.plugins.videoplay.CountdownTextView: CountdownTextView(android.content.Context,android.util.AttributeSet)
+com.rockchip.mediacenter.plugins.widget.ExtDialogPreference
+com.rockchip.mediacenter.plugins.widget.ExtDialogPreference: ExtDialogPreference(android.content.Context,android.util.AttributeSet)
+com.rockchip.mediacenter.plugins.pictureplay.PictureSpace
+com.rockchip.mediacenter.plugins.pictureplay.PictureSpace: PictureSpace(android.content.Context,android.util.AttributeSet)
+com.rockchip.mediacenter.plugins.videoplay.VideoView
+com.rockchip.mediacenter.plugins.videoplay.VideoView: VideoView(android.content.Context,android.util.AttributeSet)
+com.rockchip.mediacenter.plugins.musicplay.MusicController
+com.rockchip.mediacenter.plugins.musicplay.MusicController: MusicController(android.content.Context,android.util.AttributeSet)
+com.rockchip.mediacenter.plugins.videoplay.MediaController
+com.rockchip.mediacenter.plugins.videoplay.MediaController: MediaController(android.content.Context,android.util.AttributeSet)
+com.rockchip.mediacenter.plugins.widget.AlertController$RecycleListView
+com.rockchip.mediacenter.plugins.widget.AlertController$RecycleListView: AlertController$RecycleListView(android.content.Context,android.util.AttributeSet)
+com.rockchip.mediacenter.plugins.widget.MediaGridView
+com.rockchip.mediacenter.plugins.widget.MediaGridView: MediaGridView(android.content.Context,android.util.AttributeSet)
+com.rockchip.mediacenter.plugins.widget.SwitchPreference
+com.rockchip.mediacenter.plugins.widget.SwitchPreference: SwitchPreference(android.content.Context,android.util.AttributeSet)
+com.rockchip.mediacenter.mediaplayer.ui.TransferListView
+com.rockchip.mediacenter.mediaplayer.ui.TransferListView: TransferListView(android.content.Context,android.util.AttributeSet)
+com.rockchip.mediacenter.mediaplayer.ui.AlwaysMarqueeTextView
+com.rockchip.mediacenter.mediaplayer.ui.AlwaysMarqueeTextView: AlwaysMarqueeTextView(android.content.Context,android.util.AttributeSet)
+com.rockchip.mediacenter.plugins.widget.WeightedLinearLayout
+com.rockchip.mediacenter.plugins.widget.WeightedLinearLayout: WeightedLinearLayout(android.content.Context,android.util.AttributeSet)
+com.rockchip.mediacenter.plugins.widget.EditPreference
+com.rockchip.mediacenter.plugins.widget.EditPreference: EditPreference(android.content.Context,android.util.AttributeSet)
+com.rockchip.mediacenter.plugins.widget.ExtDialogPreference: ExtDialogPreference(android.content.Context,android.util.AttributeSet)
+com.rockchip.mediacenter.plugins.pictureplay.PictureController
+com.rockchip.mediacenter.plugins.pictureplay.PictureController: PictureController(android.content.Context,android.util.AttributeSet,int)
+com.rockchip.mediacenter.plugins.widget.IndicatorGridView
+com.rockchip.mediacenter.plugins.widget.IndicatorGridView: IndicatorGridView(android.content.Context,android.util.AttributeSet,int)
+com.rockchip.mediacenter.plugins.videoplay.CountdownTextView
+com.rockchip.mediacenter.plugins.videoplay.CountdownTextView: CountdownTextView(android.content.Context,android.util.AttributeSet,int)
+com.rockchip.mediacenter.plugins.widget.ExtDialogPreference
+com.rockchip.mediacenter.plugins.widget.ExtDialogPreference: ExtDialogPreference(android.content.Context,android.util.AttributeSet,int)
+com.rockchip.mediacenter.plugins.videoplay.VideoView
+com.rockchip.mediacenter.plugins.videoplay.VideoView: VideoView(android.content.Context,android.util.AttributeSet,int)
+com.rockchip.mediacenter.plugins.widget.AlertController$RecycleListView
+com.rockchip.mediacenter.plugins.widget.AlertController$RecycleListView: AlertController$RecycleListView(android.content.Context,android.util.AttributeSet,int)
+com.rockchip.mediacenter.plugins.widget.SwitchPreference
+com.rockchip.mediacenter.plugins.widget.SwitchPreference: SwitchPreference(android.content.Context,android.util.AttributeSet,int)
+com.rockchip.mediacenter.mediaplayer.ui.TransferListView
+com.rockchip.mediacenter.mediaplayer.ui.TransferListView: TransferListView(android.content.Context,android.util.AttributeSet,int)
+com.rockchip.mediacenter.mediaplayer.ui.AlwaysMarqueeTextView
+com.rockchip.mediacenter.mediaplayer.ui.AlwaysMarqueeTextView: AlwaysMarqueeTextView(android.content.Context,android.util.AttributeSet,int)
+com.rockchip.mediacenter.plugins.widget.EditPreference
+com.rockchip.mediacenter.plugins.widget.EditPreference: EditPreference(android.content.Context,android.util.AttributeSet,int)
+com.rockchip.mediacenter.plugins.widget.ExtDialogPreference: ExtDialogPreference(android.content.Context,android.util.AttributeSet,int)
+com.rockchip.mediacenter.core.dlna.enumeration.ContentDirectoryPolicy: com.rockchip.mediacenter.core.dlna.enumeration.ContentDirectoryPolicy[] values()
+com.rockchip.mediacenter.core.dlna.enumeration.ContentDirectoryPolicy: com.rockchip.mediacenter.core.dlna.enumeration.ContentDirectoryPolicy valueOf(java.lang.String)
+com.rockchip.mediacenter.dlna.dmc.SeekMode: com.rockchip.mediacenter.dlna.dmc.SeekMode[] values()
+com.rockchip.mediacenter.dlna.dmc.SeekMode: com.rockchip.mediacenter.dlna.dmc.SeekMode valueOf(java.lang.String)
+com.rockchip.mediacenter.plugins.renderplay.PlayMode: com.rockchip.mediacenter.plugins.renderplay.PlayMode[] values()
+com.rockchip.mediacenter.plugins.renderplay.PlayMode: com.rockchip.mediacenter.plugins.renderplay.PlayMode valueOf(java.lang.String)
+com.rockchip.mediacenter.dlna.dmt.model.TransferType: com.rockchip.mediacenter.dlna.dmt.model.TransferType[] values()
+com.rockchip.mediacenter.dlna.dmt.model.TransferType: com.rockchip.mediacenter.dlna.dmt.model.TransferType valueOf(java.lang.String)
+com.rockchip.mediacenter.core.dlna.enumeration.DeviceType: com.rockchip.mediacenter.core.dlna.enumeration.DeviceType[] values()
+com.rockchip.mediacenter.core.dlna.enumeration.DeviceType: com.rockchip.mediacenter.core.dlna.enumeration.DeviceType valueOf(java.lang.String)
+com.rockchip.mediacenter.core.dlna.enumeration.ServiceType: com.rockchip.mediacenter.core.dlna.enumeration.ServiceType[] values()
+com.rockchip.mediacenter.core.dlna.enumeration.ServiceType: com.rockchip.mediacenter.core.dlna.enumeration.ServiceType valueOf(java.lang.String)
+com.rockchip.mediacenter.core.dlna.enumeration.WriteStatus: com.rockchip.mediacenter.core.dlna.enumeration.WriteStatus[] values()
+com.rockchip.mediacenter.core.dlna.enumeration.WriteStatus: com.rockchip.mediacenter.core.dlna.enumeration.WriteStatus valueOf(java.lang.String)
+com.rockchip.mediacenter.core.dlna.enumeration.MediaClassType: com.rockchip.mediacenter.core.dlna.enumeration.MediaClassType[] values()
+com.rockchip.mediacenter.core.dlna.enumeration.MediaClassType: com.rockchip.mediacenter.core.dlna.enumeration.MediaClassType valueOf(java.lang.String)
+com.rockchip.mediacenter.core.dlna.enumeration.UploadPermission: com.rockchip.mediacenter.core.dlna.enumeration.UploadPermission[] values()
+com.rockchip.mediacenter.core.dlna.enumeration.UploadPermission: com.rockchip.mediacenter.core.dlna.enumeration.UploadPermission valueOf(java.lang.String)
+com.rockchip.mediacenter.core.dlna.enumeration.DLNAType: com.rockchip.mediacenter.core.dlna.enumeration.DLNAType[] values()
+com.rockchip.mediacenter.core.dlna.enumeration.DLNAType: com.rockchip.mediacenter.core.dlna.enumeration.DLNAType valueOf(java.lang.String)
+com.rockchip.mediacenter.mediaserver.MediaShareType: com.rockchip.mediacenter.mediaserver.MediaShareType[] values()
+com.rockchip.mediacenter.mediaserver.MediaShareType: com.rockchip.mediacenter.mediaserver.MediaShareType valueOf(java.lang.String)
+com.rockchip.mediacenter.core.dlna.profile.DetectionDefinition$DetectionType: com.rockchip.mediacenter.core.dlna.profile.DetectionDefinition$DetectionType[] values()
+com.rockchip.mediacenter.core.dlna.profile.DetectionDefinition$DetectionType: com.rockchip.mediacenter.core.dlna.profile.DetectionDefinition$DetectionType valueOf(java.lang.String)
+com.rockchip.mediacenter.plugins.imageloader.ImageLoader$BindResult: com.rockchip.mediacenter.plugins.imageloader.ImageLoader$BindResult[] values()
+com.rockchip.mediacenter.plugins.imageloader.ImageLoader$BindResult: com.rockchip.mediacenter.plugins.imageloader.ImageLoader$BindResult valueOf(java.lang.String)
+com.rockchip.mediacenter.dlna.dmt.model.TransferStatus: com.rockchip.mediacenter.dlna.dmt.model.TransferStatus[] values()
+com.rockchip.mediacenter.dlna.dmt.model.TransferStatus: com.rockchip.mediacenter.dlna.dmt.model.TransferStatus valueOf(java.lang.String)
+com.rockchip.mediacenter.mediaplayer.model.DirectoryType: com.rockchip.mediacenter.mediaplayer.model.DirectoryType[] values()
+com.rockchip.mediacenter.mediaplayer.model.DirectoryType: com.rockchip.mediacenter.mediaplayer.model.DirectoryType valueOf(java.lang.String)
+com.rockchip.mediacenter.mediaplayer.MediaPlayer
+com.rockchip.mediacenter.mediaserver.MediaServer
+com.rockchip.mediacenter.IndexActivity
+com.rockchip.mediacenter.mediaplayer.ui.TransferActivity
+com.rockchip.mediacenter.plugins.renderplay.MediaRenderPlayerActivity
+com.rockchip.mediacenter.plugins.videoplay.VideoPlayer
+com.rockchip.mediacenter.plugins.pictureplay.PictureViewer
+com.rockchip.mediacenter.plugins.musicplay.MusicPlayer
+com.rockchip.mediacenter.mediaserver.ui.AddShareFolderActivity
+com.rockchip.mediacenter.mediaserver.ui.SetShareChoiceActivity
+com.rockchip.mediacenter.mediaplayer.ui.DeviceSelectorActivity
+com.rockchip.mediacenter.settings.MediaSettings
+com.rockchip.mediacenter.DLNAService
+com.rockchip.mediacenter.SystemDeviceService
+com.rockchip.mediacenter.BootReceiver
+com.rockchip.mediacenter.plugins.renderplay.MediaRenderPlayerActivity$RendererCommandBroadCast
+com.rockchip.mediacenter.core.dlna.service.avtransport.AVTransport$AVTransportStateVarBroadCast
+com.rockchip.mediacenter.plugins.widget.ExtDialogPreference
+com.rockchip.mediacenter.plugins.widget.EditPreference
+com.rockchip.mediacenter.plugins.widget.SwitchPreference
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem
+com.rockchip.mediacenter.dlna.dmp.model.ContainerItem
+com.rockchip.mediacenter.dlna.dmp.model.MediaItem
+com.rockchip.mediacenter.core.dlna.service.renderingcontrol.object.TransformItem
+com.rockchip.mediacenter.dlna.dmp.model.ObjectIdentity
+com.rockchip.mediacenter.dlna.dmp.model.RootIdentity
+SQLite.Exception
+com.rockchip.mediacenter.core.dlna.profile.ProfilesDefinitionException
+com.rockchip.mediacenter.core.upnp.device.InvalidDescriptionException
+com.rockchip.mediacenter.core.xml.ParserException
+com.rockchip.mediacenter.core.dlna.enumeration.ContentDirectoryPolicy
+com.rockchip.mediacenter.dlna.dmc.SeekMode
+com.rockchip.mediacenter.plugins.renderplay.PlayMode
+com.rockchip.mediacenter.dlna.dmt.model.TransferType
+com.rockchip.mediacenter.core.dlna.enumeration.DeviceType
+com.rockchip.mediacenter.core.dlna.enumeration.ServiceType
+com.rockchip.mediacenter.core.dlna.enumeration.WriteStatus
+com.rockchip.mediacenter.core.dlna.enumeration.MediaClassType
+com.rockchip.mediacenter.core.dlna.enumeration.UploadPermission
+com.rockchip.mediacenter.core.dlna.enumeration.DLNAType
+com.rockchip.mediacenter.mediaserver.MediaShareType
+com.rockchip.mediacenter.core.dlna.profile.DetectionDefinition$DetectionType
+com.rockchip.mediacenter.plugins.imageloader.ImageLoader$BindResult
+com.rockchip.mediacenter.dlna.dmt.model.TransferStatus
+com.rockchip.mediacenter.mediaplayer.model.DirectoryType
+com.rockchip.mediacenter.plugins.imageloader.SoftLinkedHashMap
+com.rockchip.mediacenter.plugins.imageloader.HardLinkedHashMap
+com.rockchip.mediacenter.plugins.imageloader.LruCache
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.object.SearchCapList
+com.rockchip.mediacenter.core.xml.NodeList
+com.rockchip.mediacenter.core.http.HTTPServerList
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.ContentServicePolicyList
+com.rockchip.mediacenter.core.http.ParameterList
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.object.ContentNodeList
+com.rockchip.mediacenter.mediaserver.model.StorageDeviceList
+com.rockchip.mediacenter.core.upnp.ServiceStateTable
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.object.SortCapList
+com.rockchip.mediacenter.core.upnp.IconList
+com.rockchip.mediacenter.core.upnp.DeviceList
+com.rockchip.mediacenter.core.upnp.event.SubscriberList
+com.rockchip.mediacenter.core.upnp.ssdp.SSDPSearchSocketList
+com.rockchip.mediacenter.core.upnp.ActionList
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.object.SortCriterionList
+com.rockchip.mediacenter.core.dlna.service.connectionmanager.ConnectionInfoList
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.object.ContentPropertyList
+com.rockchip.mediacenter.core.upnp.ArgumentList
+com.rockchip.mediacenter.core.upnp.event.PropertyList
+com.rockchip.mediacenter.core.upnp.ssdp.SSDPSearchResponseSocketList
+com.rockchip.mediacenter.core.upnp.ssdp.SSDPNotifySocketList
+com.rockchip.mediacenter.core.xml.AttributeList
+com.rockchip.mediacenter.core.util.ListenerList
+com.rockchip.mediacenter.core.upnp.ServiceList
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.object.item.file.FileItemNodeList
+com.rockchip.mediacenter.core.upnp.AllowedValueList
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.object.SearchCriteriaList
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.DirectoryList
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.object.item.ItemNodeList
+com.rockchip.mediacenter.dlna.dmp.model.ContentItemList
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: long serialVersionUID
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: com.rockchip.mediacenter.dlna.dmp.model.ObjectIdentity id
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: com.rockchip.mediacenter.dlna.dmp.model.ObjectIdentity parentId
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: java.lang.String title
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: java.lang.String objectClass
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: java.lang.String creator
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: java.lang.String description
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: boolean restricted
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: long size
+com.rockchip.mediacenter.dlna.dmp.model.ContainerItem: long serialVersionUID
+com.rockchip.mediacenter.dlna.dmp.model.ContainerItem: int childCount
+com.rockchip.mediacenter.dlna.dmp.model.ContainerItem: java.util.List createClass
+com.rockchip.mediacenter.dlna.dmp.model.ContainerItem: java.util.List searchClass
+com.rockchip.mediacenter.dlna.dmp.model.ContainerItem: boolean searchable
+com.rockchip.mediacenter.dlna.dmp.model.ContainerItem: boolean hasChildCount
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: long serialVersionUID
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: com.rockchip.mediacenter.dlna.dmp.model.ObjectIdentity id
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: com.rockchip.mediacenter.dlna.dmp.model.ObjectIdentity parentId
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: java.lang.String title
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: java.lang.String objectClass
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: java.lang.String creator
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: java.lang.String description
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: boolean restricted
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: long size
+com.rockchip.mediacenter.dlna.dmp.model.MediaItem: long serialVersionUID
+com.rockchip.mediacenter.dlna.dmp.model.MediaItem: java.lang.String date
+com.rockchip.mediacenter.dlna.dmp.model.MediaItem: java.lang.String artist
+com.rockchip.mediacenter.dlna.dmp.model.MediaItem: java.lang.String album
+com.rockchip.mediacenter.dlna.dmp.model.MediaItem: java.lang.String resourceURL
+com.rockchip.mediacenter.dlna.dmp.model.MediaItem: java.lang.String importUri
+com.rockchip.mediacenter.dlna.dmp.model.MediaItem: java.lang.String ifoFileUri
+com.rockchip.mediacenter.dlna.dmp.model.MediaItem: java.lang.String duration
+com.rockchip.mediacenter.dlna.dmp.model.MediaItem: java.lang.String resolution
+com.rockchip.mediacenter.dlna.dmp.model.MediaItem: java.lang.String protocolInfo
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: long serialVersionUID
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: com.rockchip.mediacenter.dlna.dmp.model.ObjectIdentity id
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: com.rockchip.mediacenter.dlna.dmp.model.ObjectIdentity parentId
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: java.lang.String title
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: java.lang.String objectClass
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: java.lang.String creator
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: java.lang.String description
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: boolean restricted
+com.rockchip.mediacenter.dlna.dmp.model.ContentItem: long size
+com.rockchip.mediacenter.core.dlna.service.renderingcontrol.object.TransformItem: long serialVersionUID
+com.rockchip.mediacenter.core.dlna.service.renderingcontrol.object.TransformItem: java.lang.String name
+com.rockchip.mediacenter.core.dlna.service.renderingcontrol.object.TransformItem: java.lang.String value
+com.rockchip.mediacenter.dlna.dmp.model.ObjectIdentity: long serialVersionUID
+com.rockchip.mediacenter.dlna.dmp.model.ObjectIdentity: java.lang.String id
+com.rockchip.mediacenter.dlna.dmp.model.RootIdentity: long serialVersionUID
+com.rockchip.mediacenter.dlna.dmp.model.ObjectIdentity: long serialVersionUID
+com.rockchip.mediacenter.dlna.dmp.model.ObjectIdentity: java.lang.String id
+com.rockchip.mediacenter.core.dlna.profile.ProfilesDefinitionException: long serialVersionUID
+com.rockchip.mediacenter.core.upnp.device.InvalidDescriptionException: long serialVersionUID
+com.rockchip.mediacenter.core.xml.ParserException: long serialVersionUID
+com.rockchip.mediacenter.dlna.dmc.SeekMode: java.lang.String mode
+com.rockchip.mediacenter.plugins.renderplay.PlayMode: int id
+com.rockchip.mediacenter.dlna.dmt.model.TransferType: int type
+com.rockchip.mediacenter.core.dlna.enumeration.DeviceType: java.lang.String type
+com.rockchip.mediacenter.core.dlna.enumeration.ServiceType: java.lang.String id
+com.rockchip.mediacenter.core.dlna.enumeration.ServiceType: java.lang.String type
+com.rockchip.mediacenter.core.dlna.enumeration.WriteStatus: java.lang.String value
+com.rockchip.mediacenter.core.dlna.enumeration.MediaClassType: java.lang.String mimeTypeFix
+com.rockchip.mediacenter.core.dlna.enumeration.MediaClassType: java.lang.String objectClassFix
+com.rockchip.mediacenter.core.dlna.enumeration.MediaClassType: java.lang.String defaultMime
+com.rockchip.mediacenter.core.dlna.enumeration.MediaClassType: java.lang.String defaultObjectClass
+com.rockchip.mediacenter.core.dlna.enumeration.UploadPermission: int id
+com.rockchip.mediacenter.core.dlna.enumeration.UploadPermission: java.lang.String permission
+com.rockchip.mediacenter.core.dlna.enumeration.DLNAType: java.lang.String type
+com.rockchip.mediacenter.mediaserver.MediaShareType: int id
+com.rockchip.mediacenter.mediaserver.MediaShareType: java.lang.String name
+com.rockchip.mediacenter.dlna.dmt.model.TransferStatus: int status
+com.rockchip.mediacenter.plugins.imageloader.SoftLinkedHashMap: long serialVersionUID
+com.rockchip.mediacenter.plugins.imageloader.SoftLinkedHashMap: long mMaxSize
+com.rockchip.mediacenter.plugins.imageloader.HardLinkedHashMap: long serialVersionUID
+com.rockchip.mediacenter.plugins.imageloader.HardLinkedHashMap: long mMaxSize
+com.rockchip.mediacenter.plugins.imageloader.LruCache: long serialVersionUID
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.object.SearchCapList: long serialVersionUID
+com.rockchip.mediacenter.core.xml.NodeList: long serialVersionUID
+com.rockchip.mediacenter.core.http.HTTPServerList: long serialVersionUID
+com.rockchip.mediacenter.core.http.HTTPServerList: java.net.InetAddress[] binds
+com.rockchip.mediacenter.core.http.HTTPServerList: int port
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.ContentServicePolicyList: long serialVersionUID
+com.rockchip.mediacenter.core.http.ParameterList: long serialVersionUID
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.object.ContentNodeList: long serialVersionUID
+com.rockchip.mediacenter.mediaserver.model.StorageDeviceList: long serialVersionUID
+com.rockchip.mediacenter.core.upnp.ServiceStateTable: long serialVersionUID
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.object.SortCapList: long serialVersionUID
+com.rockchip.mediacenter.core.upnp.IconList: long serialVersionUID
+com.rockchip.mediacenter.core.upnp.DeviceList: long serialVersionUID
+com.rockchip.mediacenter.core.upnp.event.SubscriberList: long serialVersionUID
+com.rockchip.mediacenter.core.upnp.ssdp.SSDPSearchSocketList: long serialVersionUID
+com.rockchip.mediacenter.core.upnp.ssdp.SSDPSearchSocketList: java.net.InetAddress[] binds
+com.rockchip.mediacenter.core.upnp.ssdp.SSDPSearchSocketList: java.lang.String multicastIPv4
+com.rockchip.mediacenter.core.upnp.ssdp.SSDPSearchSocketList: java.lang.String multicastIPv6
+com.rockchip.mediacenter.core.upnp.ssdp.SSDPSearchSocketList: int port
+com.rockchip.mediacenter.core.upnp.ActionList: long serialVersionUID
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.object.SortCriterionList: long serialVersionUID
+com.rockchip.mediacenter.core.dlna.service.connectionmanager.ConnectionInfoList: long serialVersionUID
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.object.ContentPropertyList: long serialVersionUID
+com.rockchip.mediacenter.core.upnp.ArgumentList: long serialVersionUID
+com.rockchip.mediacenter.core.upnp.event.PropertyList: long serialVersionUID
+com.rockchip.mediacenter.core.upnp.ssdp.SSDPSearchResponseSocketList: long serialVersionUID
+com.rockchip.mediacenter.core.upnp.ssdp.SSDPSearchResponseSocketList: java.net.InetAddress[] binds
+com.rockchip.mediacenter.core.upnp.ssdp.SSDPNotifySocketList: long serialVersionUID
+com.rockchip.mediacenter.core.upnp.ssdp.SSDPNotifySocketList: java.net.InetAddress[] binds
+com.rockchip.mediacenter.core.xml.AttributeList: long serialVersionUID
+com.rockchip.mediacenter.core.util.ListenerList: long serialVersionUID
+com.rockchip.mediacenter.core.upnp.ServiceList: long serialVersionUID
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.object.item.file.FileItemNodeList: long serialVersionUID
+com.rockchip.mediacenter.core.upnp.AllowedValueList: long serialVersionUID
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.object.SearchCriteriaList: long serialVersionUID
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.DirectoryList: long serialVersionUID
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.DirectoryList: boolean isUpdate
+com.rockchip.mediacenter.core.dlna.service.contentdirectory.object.item.ItemNodeList: long serialVersionUID
+com.rockchip.mediacenter.dlna.dmp.model.ContentItemList: long serialVersionUID
+com.rockchip.mediacenter.dlna.model.PositionInfo
+com.rockchip.mediacenter.dlna.model.PositionInfo: android.os.Parcelable$Creator CREATOR
+com.rockchip.mediacenter.dlna.model.TransportInfo
+com.rockchip.mediacenter.dlna.model.TransportInfo: android.os.Parcelable$Creator CREATOR
+com.rockchip.mediacenter.dlna.model.DeviceItem
+com.rockchip.mediacenter.dlna.model.DeviceItem: android.os.Parcelable$Creator CREATOR
+com.rockchip.mediacenter.plugins.widget.EditPreference$SavedState
+com.rockchip.mediacenter.plugins.widget.EditPreference$SavedState: android.os.Parcelable$Creator CREATOR
+com.rockchip.mediacenter.plugins.widget.ExtDialogPreference$SavedState
+com.rockchip.mediacenter.plugins.widget.ExtDialogPreference$SavedState: android.os.Parcelable$Creator CREATOR

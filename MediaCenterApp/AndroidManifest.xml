@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.rockchips.mediacenter"
-    android:versionCode="13"
-    android:versionName="2.3"
+    android:versionCode="14"
+    android:versionName="2.4"
     android:sharedUserId="android.uid.system">
 
     <uses-sdk
@@ -214,9 +214,82 @@
             </intent-filter>
         </receiver>
         
-        <service android:name="com.zxt.dlna.dmr.RenderPlayerService" />
+      <!--   <service android:name="com.zxt.dlna.dmr.RenderPlayerService" /> -->
         <service android:name="com.rockchips.mediacenter.service.MediaUpnpService"/>
         
+         <activity android:name="com.rockchip.mediacenter.plugins.pictureplay.PictureViewer"
+        	android:label="@string/plug_image_app_name"
+            android:excludeFromRecents="true"
+            android:configChanges="orientation|keyboard">
+            <!-- 
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW"/>
+				<category android:name="android.intent.category.DEFAULT"/>
+				<data android:mimeType="image/*"/>
+			</intent-filter> -->
+			<intent-filter>
+				<action android:name="com.rockchip.mediacenter.player.PictureViewer"/>
+				<category android:name="android.intent.category.DEFAULT"/>
+				<data android:scheme="file"/>
+				<data android:scheme="http"/>
+				<data android:mimeType="image/*"/>
+			</intent-filter>
+		</activity>
+		
+		<!-- Plugins Video Player-->
+		<activity android:name="com.rockchip.mediacenter.plugins.videoplay.VideoPlayer" 
+			android:label="@string/plug_video_app_name"
+            android:excludeFromRecents="true"
+            android:configChanges="orientation|keyboard|touchscreen">
+            <!-- 
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+				<category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="video/*"/>
+            </intent-filter> -->
+            <intent-filter>
+                <action android:name="com.rockchip.mediacenter.player.VideoPlayer"/>
+				<category android:name="android.intent.category.DEFAULT"/>
+				<data android:scheme="file"/>
+				<data android:scheme="http"/>
+                <data android:mimeType="video/*"/>
+            </intent-filter>
+        </activity>
+        
+        <!-- Plugins Music Player-->
+        <activity android:name="com.rockchip.mediacenter.plugins.musicplay.MusicPlayer"
+        	android:label="@string/plug_music_app_name"
+            android:theme="@android:style/Theme.Holo.Light.Dialog.NoActionBar"
+            android:excludeFromRecents="true"
+           	android:configChanges="orientation|keyboard">
+           	<!-- 
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="audio/*"/>
+            </intent-filter> -->
+            <intent-filter>
+                <action android:name="com.rockchip.mediacenter.player.MusicPlayer" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:scheme="file"/>
+				<data android:scheme="http"/>
+                <data android:mimeType="audio/*"/>
+            </intent-filter>
+        </activity>
+        
+        <!-- Services com.rockchip.mediacenter.permission.ACCESS_MEDIA_CENTER -->
+		<service android:name="com.rockchip.mediacenter.DLNAService" android:exported="true">
+			<intent-filter android:priority="10">
+	        	<action android:name="com.rockchip.mediacenter.action.MediaCenterService"/>
+	            <category android:name="android.intent.category.DEFAULT"/>
+	        </intent-filter>
+		</service>
+		<service android:name="com.rockchip.mediacenter.SystemDeviceService" android:process=":dmr_service" android:exported="true">
+			<intent-filter android:priority="10">
+	        	<action android:name="com.rockchip.mediacenter.action.SystemDeviceService"/>
+	            <category android:name="android.intent.category.DEFAULT"/>
+	        </intent-filter>
+		</service>
     </application>
 
 </manifest>

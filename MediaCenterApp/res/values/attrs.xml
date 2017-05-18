@@ -32,6 +32,5 @@
         <attr name="buttomSpaceView" format="integer"></attr>
         <attr name="numviewHight" format="integer"></attr>
     </declare-styleable>
-    
 
 </resources>

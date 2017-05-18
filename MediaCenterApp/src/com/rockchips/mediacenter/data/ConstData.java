@@ -262,6 +262,8 @@ public class ConstData {
 	    String FILE_SORT_WAY = "file_sort_way";
 	    /**文件排序类型*/
 	    String FILE_SORT_TYPE = "file_sort_type";
+	    /**媒体服务器名字*/
+	    String MEDIA_SERVER_NAME = "media_server_name";
 	}
 	
 	public interface ViewTags{
