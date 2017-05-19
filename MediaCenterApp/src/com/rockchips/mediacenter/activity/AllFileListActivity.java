@@ -551,6 +551,19 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 		mFileSearchDialog.show();
 	}
 	
+	@Override
+	public void onShare(FileInfo fileInfo) {
+		Intent intent = new Intent(Intent.ACTION_SEND);
+		intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(fileInfo.getPath())));
+		intent.setDataAndType(Uri.fromFile(new File(fileInfo.getPath())), "*/*");
+		if(intent.resolveActivity(getPackageManager()) == null){
+			ToastUtils.showToast(getString(R.string.no_exist_share_app));
+		}else{
+			startActivity(Intent.createChooser(intent, getString(R.string.share_to)));
+		}
+		
+	}
+	
     public void initDataAndView(){
     	mMemoryBitmapCache = new LruCache<String, Bitmap>((int)Runtime.getRuntime().maxMemory() / 8){
     		@Override

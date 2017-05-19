@@ -56,7 +56,7 @@ public class NetDeviceAddSelectDialog extends AppBaseDialog {
 
 	@Override
 	public void initData() {
-		if(PlatformUtils.getSDKVersion() <= 19){
+		/*if(PlatformUtils.getSDKVersion() <= 19){
 			String[] oprations = mContext.getResources().getStringArray(R.array.net_devices);
 			List<String> oprationList = new ArrayList<>();
 			for(String itemOpration : oprations){
@@ -65,7 +65,7 @@ public class NetDeviceAddSelectDialog extends AppBaseDialog {
 			oprationList.add(mContext.getString(R.string.start_home_media_share));
 			ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext, android.R.layout.simple_list_item_1, android.R.id.text1, oprationList);
 			mListNetAddSelect.setAdapter(adapter);
-		}
+		}*/
 		
 	}
 

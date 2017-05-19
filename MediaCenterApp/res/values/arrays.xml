@@ -39,6 +39,18 @@
         <item>@string/file_op_paste</item>
     </string-array>
     
+    <!-- 文件操作 -->
+    <string-array name="file_oprations_share">
+        <item>@string/file_op_copy</item>
+        <item>@string/file_op_delete</item>
+        <item>@string/file_op_move</item>
+        <item>@string/file_op_rename</item>
+        <item>@string/file_op_sort</item>
+        <item>@string/file_op_search</item>
+        <item>@string/file_op_share</item>
+        <item>@string/file_op_paste</item>
+    </string-array>
+    
     <!-- 文件操作，不包含paste -->
     <string-array name="file_oprations_no_paste">
         <item>@string/file_op_copy</item>
@@ -47,6 +59,17 @@
         <item>@string/file_op_rename</item>
         <item>@string/file_op_sort</item>
         <item>@string/file_op_search</item>
+    </string-array>
+    
+     <!-- 文件操作，不包含paste -->
+    <string-array name="file_oprations_share_no_paste">
+        <item>@string/file_op_copy</item>
+        <item>@string/file_op_delete</item>
+        <item>@string/file_op_move</item>
+        <item>@string/file_op_rename</item>
+        <item>@string/file_op_sort</item>
+        <item>@string/file_op_search</item>
+        <item>@string/file_op_share</item>
     </string-array>
     
      <!-- 文件操作，文件删除操作-->

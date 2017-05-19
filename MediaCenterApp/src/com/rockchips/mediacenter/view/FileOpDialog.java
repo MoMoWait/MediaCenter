@@ -43,6 +43,7 @@ public class FileOpDialog extends AppBaseDialog implements OnItemClickListener{
 		void onRename(FileInfo fileInfo);
 		void onSort(FileInfo fileInfo);
 		void onSearch(FileInfo fileInfo);
+		void onShare(FileInfo fileInfo);
 	}
 	
 	private Callback mCallback;
@@ -83,7 +84,10 @@ public class FileOpDialog extends AppBaseDialog implements OnItemClickListener{
 		}
 		if(TextUtils.isEmpty(copyPath) && TextUtils.isEmpty(movePath)){
 			//屏蔽paste选项
-			mListFileOp.setAdapter(new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1, android.R.id.text1, mContext.getResources().getStringArray(R.array.file_oprations_no_paste)));
+			if(mFileInfo.getType() == ConstData.MediaType.FOLDER)
+				mListFileOp.setAdapter(new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1, android.R.id.text1, mContext.getResources().getStringArray(R.array.file_oprations_no_paste)));
+			else
+				mListFileOp.setAdapter(new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1, android.R.id.text1, mContext.getResources().getStringArray(R.array.file_oprations_share_no_paste)));
 			return;
 		}
 		try{
@@ -94,7 +98,15 @@ public class FileOpDialog extends AppBaseDialog implements OnItemClickListener{
 			if(mIsEmptyFolder){
 				mListFileOp.setAdapter(new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1, android.R.id.text1, mContext.getResources().getStringArray(R.array.file_oprations_only_paste)));
 			}else if(copyOrMoveFileInfo.getParentPath().equals(mFileInfo.getParentPath()) || mFileInfo.getPath().startsWith(copyOrMoveFileInfo.getPath()) || !new File(copyOrMoveFileInfo.getPath()).exists()){
-				mListFileOp.setAdapter(new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1, android.R.id.text1, mContext.getResources().getStringArray(R.array.file_oprations_no_paste)));
+				if(mFileInfo.getType() == ConstData.MediaType.FOLDER)
+					mListFileOp.setAdapter(new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1, android.R.id.text1, mContext.getResources().getStringArray(R.array.file_oprations_no_paste)));
+				else
+					mListFileOp.setAdapter(new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1, android.R.id.text1, mContext.getResources().getStringArray(R.array.file_oprations_share_no_paste)));
+			}else{
+				if(mFileInfo.getType() == ConstData.MediaType.FOLDER)
+					mListFileOp.setAdapter(new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1, android.R.id.text1, mContext.getResources().getStringArray(R.array.file_oprations)));
+				else
+					mListFileOp.setAdapter(new ArrayAdapter<String>(mContext, android.R.layout.simple_list_item_1, android.R.id.text1, mContext.getResources().getStringArray(R.array.file_oprations_share)));
 			}
 			
 		}catch (Exception e){
@@ -145,8 +157,14 @@ public class FileOpDialog extends AppBaseDialog implements OnItemClickListener{
 			dismiss();
 			break;
 		case 6:
-			mCallback.onPaste(mFileInfo);
+			if(mFileInfo.getType() == ConstData.MediaType.FOLDER)
+				mCallback.onPaste(mFileInfo);
+			else
+				mCallback.onShare(mFileInfo);
 			dismiss();
+			break;
+		case 7:
+			mCallback.onPaste(mFileInfo);
 			break;
 		default:
 			break;

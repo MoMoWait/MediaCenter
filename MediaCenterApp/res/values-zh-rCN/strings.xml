@@ -356,10 +356,11 @@
     <string name="file_op_copy">复制</string>
     <string name="file_op_delete">删除</string>
     <string name="file_op_move">剪切</string>
-    <string name="file_op_paste">粘帖</string>
+    <string name="file_op_paste">黏贴</string>
     <string name="file_op_rename">重命名</string>
     <string name="file_op_sort">排序</string>
     <string name="file_op_search">搜索</string> 
+    <string name="file_op_share">分享</string> 
     <string name="enter_new_file_name">输入新文件名</string>
     <string name="no_svq">没有SVQ版权</string>  
     
@@ -422,4 +423,6 @@
     <string name="plug_image_app_name">图片查看器</string>
     <string name="plug_video_app_name">视频播放器</string>
     <string name="plug_music_app_name">音乐播放器</string>
+    <string name="share_to">分享到</string>
+    <string name="no_exist_share_app">不存在可分享应用</string>
 </resources>
