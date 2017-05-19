@@ -118,7 +118,10 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 	 * 当前焦点文件
 	 */
 	private FileInfo mCurrentFileInfo;
-	
+	/**
+	 * 上次焦点文件
+	 */
+	private String mLastFocusFilePath;
 	private Bitmap mOldBitmap;
 	
 	/**
@@ -399,6 +402,7 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 			}else{
 				mSelectDeleteFileInfos.clear();
 				mIsMutiDeleteMode = true;
+				mLastFocusFilePath = mCurrentFileInfo.getPath();
 				loadFiles();
 			}
 			return;
@@ -704,6 +708,11 @@ public class AllFileListActivity extends AppBaseActivity implements OnItemSelect
 					mAllFileListAdapter = new AllFileListAdapter(AllFileListActivity.this, R.layout.adapter_file_list_item, fileInfos);
 					mAllFileListAdapter.setIsDeleteMode(mIsMutiDeleteMode);
 					mListFile.setAdapter(mAllFileListAdapter);
+					if(mIsMutiDeleteMode){
+						int lastFocusPosition = getFilePosition(mLastFocusFilePath, fileInfos);
+						mListFile.setSelection(lastFocusPosition);
+						return;
+					}
 					if(!TextUtils.isEmpty(mLastSelectPath)){
 						int position = getFilePosition(mLastSelectPath, fileInfos);
 						mListFile.setSelection(position);
