@@ -358,6 +358,7 @@
     <string name="file_op_rename">Rename</string>
     <string name="file_op_sort">Sort</string>
     <string name="file_op_search">Search</string>
+    <string name="file_op_share">Share</string>
     <string name="enter_new_file_name">Enter new file name</string>
     <string name="no_svq">No SVQ</string>
     
@@ -421,4 +422,6 @@
     <string name="plug_image_app_name">Picture Viewer</string>
     <string name="plug_video_app_name">Video Player</string>
     <string name="plug_music_app_name">Music Player</string>
+    <string name="share_to">Share to</string>
+    <string name="no_exist_share_app">Not exist share app</string>
 </resources>

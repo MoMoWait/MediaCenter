@@ -60,7 +60,7 @@ public class StorageUtils {
         			for(String volumePath : volumePaths){
         				if(volumePath.startsWith("/mnt/external_sd")){
         					File sdCardFile = new File(volumePath);
-        					if(sdCardFile != null && sdCardFile.exists() && sdCardFile.list() != null)
+        					if(sdCardFile != null && sdCardFile.exists() && sdCardFile.list() != null && sdCardFile.list().length > 0)
         						sdPaths.add(volumePath);
         				}
         			}
