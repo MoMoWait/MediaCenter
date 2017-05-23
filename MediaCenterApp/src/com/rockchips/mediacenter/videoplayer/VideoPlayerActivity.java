@@ -1585,7 +1585,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             	}
             	else{
             		mIsCloseSubtitle = true;
-            		setVideoSubtitleVisible(true);
+            		setVideoSubtitleVisible(false);
             	}
             	subId = menuIndex;
                /* Log.d(TAG, "subtitle 1 subNum:" + subNum);
