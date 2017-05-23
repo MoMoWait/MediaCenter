@@ -320,7 +320,7 @@ public class ConstData {
     
     // 图片格式后缀
     public static final String[] IMAGE_SUFFIX = {"bmp", "gif", "png", "jpg", "jpeg", "jpe", "tiff", "tif", "pcd", "qti", "qtf", "qtif",
-        "ico", "pnm", "ppm"};
+        "ico", "pnm", "ppm", "webp"};
     
     
     //APK格式后缀
