@@ -52,7 +52,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.StrictMode;
-
+import android.os.Parcelable;
 /**
  * 
  * public static final String KEY_CMD = "command";
@@ -159,7 +159,7 @@ public class SystemDeviceService extends Service {
 					break;
 				case CMD_CONN_CHANGED:
 					Intent connIntent = new Intent(ConnectivityManager.CONNECTIVITY_ACTION);
-					connIntent.putExtra(ConnectivityManager.EXTRA_NETWORK_INFO, intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO));
+					connIntent.putExtra(ConnectivityManager.EXTRA_NETWORK_INFO, (Parcelable)intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO));
 					mMediaNetworkBroadCast.onReceive(this, connIntent);
 					break;
 				}
