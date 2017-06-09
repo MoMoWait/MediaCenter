@@ -406,6 +406,7 @@ public class AudioPlayStateInfo
                       }
                       if(nextIndex != getMediaList().size())
                     	  index = nextIndex;
+                      break;
                 case ConstData.MediaPlayMode.MP_MODE_SINGLE_CYC: // 单曲循环
                 	nextIndex = getCurrentIndex();
                 	if(isCanPlay(getCurrentMediaInfo()))
