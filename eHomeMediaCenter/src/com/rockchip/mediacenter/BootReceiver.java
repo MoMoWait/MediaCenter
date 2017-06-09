@@ -16,7 +16,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
-
+import android.os.Parcelable;
 public class BootReceiver extends BroadcastReceiver {
 
 	@Override
@@ -31,7 +31,7 @@ public class BootReceiver extends BroadcastReceiver {
 		}else if(ConnectivityManager.CONNECTIVITY_ACTION.equals(action)){
 			if(SystemSettingUtils.getMediaRendererAutoable(context)){
 				Intent newIntent = new Intent(context, SystemDeviceService.class);
-				newIntent.putExtra(ConnectivityManager.EXTRA_NETWORK_INFO, intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO));
+				newIntent.putExtra(ConnectivityManager.EXTRA_NETWORK_INFO, (Parcelable)intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO));
 				newIntent.putExtra(SystemDeviceService.KEY_CMD, SystemDeviceService.CMD_CONN_CHANGED);
 				context.startService(newIntent);
 			}

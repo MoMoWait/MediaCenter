@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.os.Parcelable;
 /**
  * @author GaoFei
  * 网络状态改变监听器
@@ -21,7 +22,7 @@ public class NetWorkChangeReceiver extends BroadcastReceiver{
 		Log.i(TAG, "onReceive->intent->action:" + intent.getAction());
 		LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(ConstData.BroadCastMsg.CHECK_NETWORK));
 		Intent newIntent = new Intent(context, SystemDeviceService.class);
-		newIntent.putExtra(ConnectivityManager.EXTRA_NETWORK_INFO, intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO));
+		newIntent.putExtra(ConnectivityManager.EXTRA_NETWORK_INFO, (Parcelable)intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO));
 		newIntent.putExtra(SystemDeviceService.KEY_CMD, SystemDeviceService.CMD_CONN_CHANGED);
 		context.startService(newIntent);
 	}
