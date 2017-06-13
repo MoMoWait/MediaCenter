@@ -258,9 +258,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         }
         mVV.setSubSurfaceHolder(mSubHolder);
         //控制栏初始不显示
-        mSeekBarLayout.setVisibility(View.INVISIBLE);
+        mSeekBarLayout.setVisibility(View.GONE);
         //时间显示初始时不显示
-        tiemLayout.setVisibility(View.INVISIBLE);        
+        tiemLayout.setVisibility(View.GONE);        
     }
 
     
@@ -323,7 +323,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
     {
         Log.d(TAG, "VideoPlayerActivity --> onResume()--");
         //遮罩层
-        mSubSurface.setVisibility(View.VISIBLE);
+        //mSubSurface.setVisibility(View.VISIBLE);
         /** Mender:l00174030;Reason:DTS2013041400627播放视频的过程中长按菜单键，调出近期任务，再次点击媒体中心，视频黑屏停止播放 **/
         /** 把设置URL从oncreate地方下移到此处 **/
         // 设置视频源以及seek位置
@@ -366,7 +366,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         {
             doblyPopWin.hideDoblyWin();
         }
-        mSubSurface.setVisibility(View.INVISIBLE);
+        //mSubSurface.setVisibility(View.INVISIBLE);
         
         try
         {
@@ -446,7 +446,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             	if(mTextRestartPlay.getVisibility() == View.VISIBLE){
             		mVV.isSeeking(true);
             		sendSeekMsg(0);
-            		mTextRestartPlay.setVisibility(View.INVISIBLE);
+            		mTextRestartPlay.setVisibility(View.GONE);
             	}else if(mSeekBarLayout.getVisibility() != View.VISIBLE){
             		showPop();
             	}else{
@@ -500,7 +500,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             case KeyEvent.KEYCODE_MEDIA_STOP:
                 Log.d("vvvv", "onKeyDown - KEYCODE_BACK --" + this);
                 // 在关闭当前activity前，得先把显示字幕的surfaceview隐藏，解决4.2系统 退出时有个黑块的bug
-                mSubSurface.setVisibility(View.INVISIBLE);
+                //mSubSurface.setVisibility(View.INVISIBLE);
                 // Log.e(TAG, "finish");
                 finish();
                 break;
@@ -755,7 +755,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
        
         stop();
 
-        mSubSurface.setVisibility(View.INVISIBLE);
+        //mSubSurface.setVisibility(View.INVISIBLE);
         finish();
     }
 
@@ -1057,7 +1057,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         {
             //播放器关闭，Activity销毁时，先回发stop状态，再立即解除绑定，其后不再向Sender端回发播放器的任何状态
             stop();
-            mSubSurface.setVisibility(View.INVISIBLE);
+            //mSubSurface.setVisibility(View.INVISIBLE);
             finish();
             return false;
         }
@@ -2281,8 +2281,8 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                     break;
 
                 case ConstData.VideoPlayUIMsg.MSG_HIDE_CONTROLER:
-                	mSeekBarLayout.setVisibility(View.INVISIBLE);
-            		tiemLayout.setVisibility(View.INVISIBLE);
+                	mSeekBarLayout.setVisibility(View.GONE);
+            		tiemLayout.setVisibility(View.GONE);
             		if(null != mUIHandler)
             			mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_PROGRESS_CHANGED);
                     break;
@@ -2387,7 +2387,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
                 	mUIHandler.sendEmptyMessageDelayed(ConstData.VideoPlayUIMsg.MSG_HIDE_RESTART, 3000);
                 	break;
                 case ConstData.VideoPlayUIMsg.MSG_HIDE_RESTART:
-                	mTextRestartPlay.setVisibility(View.INVISIBLE);
+                	mTextRestartPlay.setVisibility(View.GONE);
                 	break;
                 default:
                     break;
@@ -3079,7 +3079,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         		mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_SHOW_CONTROLER);
         		mUIHandler.removeMessages(ConstData.VideoPlayUIMsg.MSG_HIDE_CONTROLER);
         	}
-        	mSeekBarLayout.setVisibility(View.INVISIBLE);
+        	mSeekBarLayout.setVisibility(View.GONE);
         }
         
         //重置视频播放记录
@@ -3108,7 +3108,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 
             stop();
 
-            mSubSurface.setVisibility(View.INVISIBLE);
+            //mSubSurface.setVisibility(View.INVISIBLE);
             finish();
             return;
         }
@@ -3126,7 +3126,7 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
             
             stop();
 
-            mSubSurface.setVisibility(View.INVISIBLE);
+            //mSubSurface.setVisibility(View.INVISIBLE);
             finish();
         }
         else
@@ -3259,6 +3259,6 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
 	 */
 	private void hideRestartPlayTip(){
 		if(mTextRestartPlay.getVisibility() == View.VISIBLE)
-    		mTextRestartPlay.setVisibility(View.INVISIBLE);
+    		mTextRestartPlay.setVisibility(View.GONE);
 	}
 }
