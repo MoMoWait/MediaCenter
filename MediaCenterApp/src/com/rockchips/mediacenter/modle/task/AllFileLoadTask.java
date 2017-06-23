@@ -66,7 +66,10 @@ public class AllFileLoadTask extends AsyncTask<Object, Integer, Integer> {
 								fileInfo.setType(ConstData.MediaType.VIDEO);
 							}else{
 								fileInfo.setType(ConstData.MediaType.FOLDER);
-								fileInfo.setChildCount(itemFile.listFiles().length);
+								File[] childFiles = itemFile.listFiles();
+								if(childFiles != null){
+									fileInfo.setChildCount(childFiles.length);
+								}
 								fileInfo.setSize(itemFile.length());
 							}
 						}else{
