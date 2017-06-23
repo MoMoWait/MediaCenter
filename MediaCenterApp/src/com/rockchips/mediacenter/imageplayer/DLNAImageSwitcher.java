@@ -49,6 +49,7 @@ import com.rockchips.mediacenter.data.ConstData;
 import com.rockchips.mediacenter.utils.DateUtil;
 import com.rockchips.mediacenter.utils.IICLOG;
 import com.rockchips.mediacenter.utils.Performance;
+import com.rockchips.mediacenter.utils.PlatformUtils;
 import com.rockchips.mediacenter.utils.StringUtils;
 import com.rockchips.mediacenter.bean.PlayStateInfo;
 import com.rockchips.mediacenter.utils.GifOpenHelper;
@@ -565,12 +566,18 @@ public class DLNAImageSwitcher extends ImageSwitcher implements
                     break;
                 case MSG_DLNA_UI_SET_FIX_CENTER:
                     if (mImageView != null) {
-                        mImageView.setScaleType(ScaleType.FIT_CENTER);
+                    	if(PlatformUtils.getSDKVersion() <= 19)
+                    		mImageView.setScaleType(ScaleType.FIT_XY);
+                    	else
+                    		mImageView.setScaleType(ScaleType.FIT_CENTER);
                     }
                     break;
                 case MSG_DLNA_UI_SET_CENTER_INSIDE:
                     if (mImageView != null) {
-                        mImageView.setScaleType(ScaleType.CENTER_INSIDE);
+                    	if(PlatformUtils.getSDKVersion() <= 19)
+                    		mImageView.setScaleType(ScaleType.FIT_XY);
+                    	else
+                    		mImageView.setScaleType(ScaleType.CENTER_INSIDE);
                     }
                     break;
                 case MSG_DLNA_UI_SET_IMAGE_DETAIL:
@@ -827,7 +834,7 @@ public class DLNAImageSwitcher extends ImageSwitcher implements
                         // 解决由GifOpenHelper类解码出来的Bitmap，显示有时会被拉伸的问题。
                         Bitmap bitmap = da.getBitmap();
                         View view = getNextView();
-                        if (bitmap.getWidth() < getWidth()
+                        if (PlatformUtils.getSDKVersion() > 19 && bitmap.getWidth() < getWidth()
                                 && bitmap.getHeight() < getHeight()) {
                             int bW = bitmap.getWidth();
                             int bH = bitmap.getHeight();
@@ -2097,8 +2104,10 @@ public class DLNAImageSwitcher extends ImageSwitcher implements
         mIv.setDrawingCacheEnabled(true);
 
         mIv.setBackgroundColor(Color.TRANSPARENT);
-
-        mIv.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        if(PlatformUtils.getSDKVersion() <= 19)
+        	mIv.setScaleType(ScaleType.CENTER_INSIDE);
+        else
+        	mIv.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 
         mIv.setLayoutParams(new ImageSwitcher.LayoutParams(
                 LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
