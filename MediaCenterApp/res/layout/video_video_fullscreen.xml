@@ -16,10 +16,10 @@
 
     <!-- subtitle (must be inited before videoview ) -->
 
-    <SurfaceView
+    <!--<SurfaceView
         android:id="@+id/subtitle"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"/>-->
 
     <TextView 
         android:id="@+id/text_subtitle"
