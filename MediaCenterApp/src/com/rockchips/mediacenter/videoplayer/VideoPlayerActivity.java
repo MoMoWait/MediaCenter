@@ -254,9 +254,9 @@ public class VideoPlayerActivity extends PlayerBaseActivity implements OnSelectT
         mVV.setOnBufferingUpdateListener(onBufferingUpdateListener);
         if (mSubHolder == null)
         {
-            mSubHolder = mSubSurface.getHolder();
+            //mSubHolder = mSubSurface.getHolder();
         }
-        mVV.setSubSurfaceHolder(mSubHolder);
+        //mVV.setSubSurfaceHolder(mSubHolder);
         //控制栏初始不显示
         mSeekBarLayout.setVisibility(View.GONE);
         //时间显示初始时不显示
